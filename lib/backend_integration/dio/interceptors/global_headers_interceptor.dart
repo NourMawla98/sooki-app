@@ -1,0 +1,48 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+
+/// Interceptor that adds global headers to all API requests
+///
+/// Headers included:
+/// - X-App-Version: Application version
+/// - X-Platform: iOS, Android, Web, etc.
+/// - X-Platform-Version: OS/Platform version
+class GlobalHeadersInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    // Add app version
+    options.headers['X-App-Version'] = '1.0.0'; // TODO: Get from package_info_plus
+
+    // Add platform information
+    options.headers['X-Platform'] = _getPlatform();
+
+    // Add platform version
+    if (!kIsWeb) {
+      options.headers['X-Platform-Version'] = _getPlatformVersion();
+    }
+
+    super.onRequest(options, handler);
+  }
+
+  /// Get the current platform name
+  String _getPlatform() {
+    if (kIsWeb) return 'Web';
+    if (Platform.isAndroid) return 'Android';
+    if (Platform.isIOS) return 'iOS';
+    if (Platform.isMacOS) return 'macOS';
+    if (Platform.isWindows) return 'Windows';
+    if (Platform.isLinux) return 'Linux';
+    return 'Unknown';
+  }
+
+  /// Get the platform version
+  String _getPlatformVersion() {
+    try {
+      return Platform.operatingSystemVersion;
+    } catch (_) {
+      return 'Unknown';
+    }
+  }
+}
