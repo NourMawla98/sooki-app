@@ -67,7 +67,7 @@ class AppLogo extends StatelessWidget {
           circleSize: 32,
           containerWidth: 35,
           containerHeight: 56,
-          animationDistance: 80,
+          animationDistance: 20,
         );
       case LogoSize.medium:
         return const _LogoConfig(
@@ -75,7 +75,7 @@ class AppLogo extends StatelessWidget {
           circleSize: 22,
           containerWidth: 25,
           containerHeight: 36,
-          animationDistance: 30,
+          animationDistance: 10,
         );
       case LogoSize.small:
         return const _LogoConfig(
@@ -83,7 +83,7 @@ class AppLogo extends StatelessWidget {
           circleSize: 18,
           containerWidth: 21,
           containerHeight: 29,
-          animationDistance: 20,
+          animationDistance: 10,
         );
     }
   }
