@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../themes/themes.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
+import '../sign_up/sign_up_screen.dart';
 import 'widgets/pulsing_dots.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -45,6 +48,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Start animations
     _fadeController.forward();
+
+    // Navigate to sign-up screen after 2 seconds
+    Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SignUpScreen()),
+        );
+      }
+    });
   }
 
   @override
@@ -56,17 +69,64 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: AppColors.splashGradient,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: AppColors.splashGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
           ),
-        ),
-        child: SafeArea(
+
+          // Ombre gradient overlays
+          // Orange glow - top right
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.accentRed.withOpacity(0.3),
+                    AppColors.accentRed.withOpacity(0.1),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Blue glow - bottom left
+          Positioned(
+            bottom: -100,
+            left: -100,
+            child: Container(
+              width: 350,
+              height: 350,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF4FC3F7).withOpacity(0.4), // Light blue
+                    const Color(0xFF4FC3F7).withOpacity(0.2),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Main content
+          SafeArea(
           child: Column(
             children: [
               // Top spacer
@@ -116,6 +176,7 @@ class _SplashScreenState extends State<SplashScreen>
             ],
           ),
         ),
+        ],
       ),
     );
   }

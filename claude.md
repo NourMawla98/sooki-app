@@ -1,5 +1,8 @@
 # Sooki App - Development Guidelines
 
+## Session Progress
+**IMPORTANT**: Check `.serena/memories/session_progress.md` at the start of each session to understand what was accomplished and pick up where we left off.
+
 ## Design Reference
 **Magic Patterns Design**: https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7
 
@@ -27,9 +30,13 @@
 ```
 lib/
 ├── ui/
-│   ├── screens/        # Feature screens
+│   ├── screens/              # Feature screens
 │   └── reusable_components/  # Shared widgets
-├── themes/             # Colors, text styles, theme
+│       ├── buttons/          # Button components
+│       ├── dropdowns/        # Dropdown components
+│       ├── input_fields/     # Form input components
+│       └── ...               # Other component categories
+├── themes/                   # Colors, text styles, theme
 └── backend_integration/
 ```
 
@@ -42,3 +49,9 @@ lib/
 ## Current Reusable Components
 - `AppLogo` - Animated logo with shopping bag and truck icons (3 sizes: large, medium, small)
 - `PulsingDots` - Loading indicator with 3 pulsing dots
+- `FloatingEmoji` - Animated floating emoji with customizable position, rotation, and float distance
+- `PrimaryButton` - Primary action button (filled purple) with loading state
+- `SecondaryButton` - Secondary action button (white with border)
+- `CustomTextField` - Text input field with label, validation, and password toggle
+- `LanguageSelector` (dropdowns/) - Functional language dropdown with menu (English, العربية, Français)
+- `ThemeToggleButton` - Light/dark mode toggle button
