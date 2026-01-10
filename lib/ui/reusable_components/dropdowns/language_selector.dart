@@ -5,10 +5,7 @@ import '../../../themes/themes.dart';
 class LanguageSelector extends StatefulWidget {
   final ValueChanged<String>? onLanguageChanged;
 
-  const LanguageSelector({
-    super.key,
-    this.onLanguageChanged,
-  });
+  const LanguageSelector({super.key, this.onLanguageChanged});
 
   @override
   State<LanguageSelector> createState() => _LanguageSelectorState();
@@ -34,7 +31,7 @@ class _LanguageSelectorState extends State<LanguageSelector>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
 
@@ -42,7 +39,7 @@ class _LanguageSelectorState extends State<LanguageSelector>
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
   }
@@ -93,89 +90,74 @@ class _LanguageSelectorState extends State<LanguageSelector>
         child: Stack(
           children: [
             Positioned(
-              width: size.width + 40,
+              width: 140,
               child: CompositedTransformFollower(
                 link: _layerLink,
                 showWhenUnlinked: false,
-                offset: Offset(-20, size.height + 8),
+                offset: Offset(0, size.height + 8),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
-                  child: ScaleTransition(
-                    scale: _scaleAnimation,
-                    alignment: Alignment.topCenter,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.shadowDark,
-                              blurRadius: 20,
-                              spreadRadius: 0,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.primaryPurple.withValues(alpha: 0.15),
+                          width: 1,
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: _languages.map((language) {
-                              final isSelected =
-                                  _selectedLanguage == language['name'];
-                              return InkWell(
-                                onTap: () {
-                                  if (!isSelected) {
-                                    setState(() {
-                                      _selectedLanguage = language['name']!;
-                                    });
-                                    widget.onLanguageChanged
-                                        ?.call(language['name']!);
-                                  }
-                                  _closeDropdown();
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? AppColors.primaryPurple
-                                            .withOpacity(0.08)
-                                        : Colors.transparent,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          language['name']!,
-                                          style:
-                                              AppTextStyles.bodyMedium.copyWith(
-                                            color: isSelected
-                                                ? AppColors.primaryPurple
-                                                : AppColors.textPrimary,
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                          ),
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Icon(
-                                          Icons.check,
-                                          color: AppColors.primaryPurple,
-                                          size: 20,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 24,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 8),
                           ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: _languages.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final language = entry.value;
+                            final isSelected =
+                                _selectedLanguage == language['name'];
+                            final isLast = index == _languages.length - 1;
+
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _DropdownItem(
+                                  language: language['name']!,
+                                  isSelected: isSelected,
+                                  onTap: () {
+                                    if (!isSelected) {
+                                      setState(() {
+                                        _selectedLanguage = language['name']!;
+                                      });
+                                      widget.onLanguageChanged?.call(
+                                        language['name']!,
+                                      );
+                                    }
+                                    _closeDropdown();
+                                  },
+                                ),
+                                if (!isLast)
+                                  Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    indent: 12,
+                                    endIndent: 12,
+                                    color: AppColors.primaryPurple.withValues(
+                                      alpha: 0.06,
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),
@@ -197,12 +179,9 @@ class _LanguageSelectorState extends State<LanguageSelector>
         height: 40,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: AppColors.white.withOpacity(0.2),
+          color: AppColors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppColors.white.withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.3), width: 1),
         ),
         child: InkWell(
           onTap: _toggleDropdown,
@@ -227,6 +206,69 @@ class _LanguageSelectorState extends State<LanguageSelector>
                   size: 20,
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DropdownItem extends StatefulWidget {
+  final String language;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _DropdownItem({
+    required this.language,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_DropdownItem> createState() => _DropdownItemState();
+}
+
+class _DropdownItemState extends State<_DropdownItem> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: InkWell(
+        onTap: widget.onTap,
+        onTapDown: (_) => setState(() => _isHovered = true),
+        onTapUp: (_) => setState(() => _isHovered = false),
+        onTapCancel: () => setState(() => _isHovered = false),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          color: widget.isSelected
+              ? AppColors.primaryPurple.withValues(alpha: 0.1)
+              : _isHovered
+              ? AppColors.primaryPurple.withValues(alpha: 0.04)
+              : Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.language,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: widget.isSelected
+                      ? AppColors.primaryPurple
+                      : AppColors.textPrimary,
+                  fontWeight: widget.isSelected
+                      ? FontWeight.w600
+                      : FontWeight.normal,
+                ),
+              ),
+              if (widget.isSelected)
+                Icon(
+                  Icons.check_rounded,
+                  color: AppColors.primaryPurple,
+                  size: 18,
+                ),
             ],
           ),
         ),

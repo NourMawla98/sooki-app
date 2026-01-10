@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'backend_integration/dependency_injection/dependency_injection.dart';
+import 'routes/route_exports.dart' as router;
 import 'themes/themes.dart';
 import 'ui/reusable_components/app_logo/app_logo.dart';
-import 'ui/screens/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
       title: 'Sooki',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
+      onGenerateRoute: router.generateRoute,
+      initialRoute: router.splashScreenRoute,
     );
   }
 }

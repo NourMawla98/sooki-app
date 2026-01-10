@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../routes/route_constants.dart';
 import '../../../themes/themes.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/buttons/primary_button.dart';
@@ -44,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             _isLoading = false;
           });
           // Navigate to main app after successful signup
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen()));
+          // Navigator.pushReplacementNamed(context, mainScreenRoute);
         }
       });
     }
@@ -52,12 +53,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _handleContinueAsGuest() {
     // TODO: Navigate to main app as guest
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen()));
+    // Navigator.pushReplacementNamed(context, mainScreenRoute);
   }
 
   void _navigateToSignIn() {
-    // TODO: Navigate to sign-in screen
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => SignInScreen()));
+    Navigator.pushNamed(context, signInScreenRoute);
   }
 
   Future<void> _launchUrl(String url) async {
@@ -85,7 +85,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
 
-          // Ombre gradient overlays
           // Orange glow - top right
           Positioned(
             top: -100,
@@ -97,8 +96,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.accentRed.withOpacity(0.3),
-                    AppColors.accentRed.withOpacity(0.1),
+                    AppColors.accentRed.withValues(alpha: 0.3),
+                    AppColors.accentRed.withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -117,8 +116,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF4FC3F7).withOpacity(0.4), // Light blue
-                    const Color(0xFF4FC3F7).withOpacity(0.2),
+                    const Color(
+                      0xFF4FC3F7,
+                    ).withValues(alpha: 0.4), // Light blue
+                    const Color(0xFF4FC3F7).withValues(alpha: 0.2),
                     Colors.transparent,
                   ],
                 ),
@@ -189,10 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 40),
 
                   // Logo
-                  const AppLogo(
-                    size: LogoSize.medium,
-                    isWhiteText: true,
-                  ),
+                  const AppLogo(size: LogoSize.medium, isWhiteText: true),
 
                   const SizedBox(height: 32),
 
@@ -210,7 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Sign up to start shopping',
                     style: AppTextStyles.bodyLarge.copyWith(
-                      color: AppColors.white.withOpacity(0.9),
+                      color: AppColors.white.withValues(alpha: 0.9),
                     ),
                   ),
 
@@ -341,10 +339,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.white.withOpacity(0.8),
+                        color: AppColors.white.withValues(alpha: 0.8),
                       ),
                       children: [
-                        const TextSpan(text: 'By continuing, you agree to our '),
+                        const TextSpan(
+                          text: 'By continuing, you agree to our ',
+                        ),
                         TextSpan(
                           text: 'Terms',
                           style: AppTextStyles.bodySmall.copyWith(

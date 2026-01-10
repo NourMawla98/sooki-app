@@ -23,10 +23,10 @@ class _ThemeToggleButtonState extends State<ThemeToggleButton> {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: AppColors.white.withOpacity(0.2),
+        color: AppColors.white.withValues(alpha: 0.2),
         shape: BoxShape.circle,
         border: Border.all(
-          color: AppColors.white.withOpacity(0.3),
+          color: AppColors.white.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

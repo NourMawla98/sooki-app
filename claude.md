@@ -24,7 +24,12 @@
 - All text styles from `lib/themes/app_text_styles.dart`
 - Use `.copyWith()` for style modifications (e.g., `AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold)`)
 
-**Why**: Centralized themes allow global changes with minimal fixes
+**CRITICAL - Color Opacity:**
+- ❌ **NEVER use**: `.withOpacity()` - This is DEPRECATED
+- ✅ **ALWAYS use**: `.withValues(alpha: 0.5)` for transparency
+- Example: `AppColors.white.withValues(alpha: 0.9)` NOT `AppColors.white.withOpacity(0.9)`
+
+**Why**: Centralized themes allow global changes with minimal fixes. `withValues()` provides better precision and is the modern Flutter API.
 
 ### 3. File Organization
 ```
@@ -40,7 +45,31 @@ lib/
 └── backend_integration/
 ```
 
-### 4. Best Practices
+### 4. Routing (Named Routes Pattern)
+**ALWAYS use named routes with the centralized route generator.**
+
+**Route Structure:**
+```
+lib/routes/
+├── route_constants.dart  # All route name constants
+├── route.dart            # Route generator (map-based lookup)
+└── route_exports.dart    # Barrel export file
+```
+
+**Navigation Rules:**
+- ✅ **DO**: `Navigator.pushNamed(context, signInScreenRoute)`
+- ✅ **DO**: `Navigator.pushReplacementNamed(context, mainScreenRoute)`
+- ❌ **DON'T**: `Navigator.push(context, MaterialPageRoute(builder: (_) => Screen()))`
+
+**Adding New Routes:**
+1. Add route constant in `route_constants.dart`: `const String newScreenRoute = 'new_screen';`
+2. Add route mapping in `route.dart`: `newScreenRoute: (_) => const NewScreen(),`
+3. Import in screen: `import '../../../routes/route_constants.dart';`
+4. Navigate: `Navigator.pushNamed(context, newScreenRoute);`
+
+**Why**: Centralized routing supports dynamic routes from backend, maintains clean architecture, and follows the virtual-mall-app pattern.
+
+### 5. Best Practices
 - Use semantic naming (e.g., `AppColors.primaryPurple` not `Color(0xFF4D4C7D)`)
 - Follow existing patterns in the codebase
 - Keep widgets focused and composable
