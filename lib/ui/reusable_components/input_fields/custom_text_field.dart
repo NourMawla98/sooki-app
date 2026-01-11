@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/themes.dart';
 
@@ -51,12 +52,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: AppTextStyles.inputHint,
-            prefixIcon: widget.prefixIcon,
+            prefixIcon: widget.prefixIcon != null
+                ? Center(child: widget.prefixIcon)
+                : null,
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 56,
+              maxWidth: 56,
+            ),
             suffixIcon: widget.isPassword
                 ? IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                    icon: FaIcon(
+                      _obscureText ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye,
                       color: AppColors.gray400,
+                      size: 18,
                     ),
                     onPressed: () {
                       setState(() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/themes.dart';
 
@@ -200,10 +201,10 @@ class _LanguageSelectorState extends State<LanguageSelector>
               AnimatedRotation(
                 turns: _isOpen ? 0.5 : 0,
                 duration: const Duration(milliseconds: 200),
-                child: Icon(
-                  Icons.keyboard_arrow_down,
+                child: FaIcon(
+                  FontAwesomeIcons.chevronDown,
                   color: AppColors.white,
-                  size: 20,
+                  size: 14,
                 ),
               ),
             ],
@@ -264,10 +265,10 @@ class _DropdownItemState extends State<_DropdownItem> {
                 ),
               ),
               if (widget.isSelected)
-                Icon(
-                  Icons.check_rounded,
+                FaIcon(
+                  FontAwesomeIcons.check,
                   color: AppColors.primaryPurple,
-                  size: 18,
+                  size: 16,
                 ),
             ],
           ),

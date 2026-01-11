@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../routes/route_constants.dart';
 import '../../../themes/themes.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/buttons/primary_button.dart';
@@ -251,9 +251,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             hintText: 'your@email.com',
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            prefixIcon: Icon(
-                              Icons.email_outlined,
+                            prefixIcon: FaIcon(
+                              FontAwesomeIcons.envelope,
                               color: AppColors.gray400,
+                              size: 20,
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {

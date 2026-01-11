@@ -77,7 +77,6 @@ class AppColors {
         accentRed,
         accentYellow,
         accentGreen,
-        primaryPurple,
         accentRed,
       ];
 

@@ -128,7 +128,7 @@ class AppTheme {
       ),
 
       // Bottom Navigation Bar Theme
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.white,
         selectedItemColor: AppColors.accentRed,
         unselectedItemColor: AppColors.textSecondary,
@@ -136,6 +136,10 @@ class AppTheme {
         unselectedLabelStyle: AppTextStyles.navLabel,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedIconTheme: const IconThemeData(size: 24),
+        unselectedIconTheme: const IconThemeData(size: 24),
       ),
     );
   }

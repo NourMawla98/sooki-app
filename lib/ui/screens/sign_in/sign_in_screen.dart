@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/route_constants.dart';
@@ -45,15 +46,14 @@ class _SignInScreenState extends State<SignInScreen> {
             _isLoading = false;
           });
           // Navigate to main app after successful login
-          // Navigator.pushReplacementNamed(context, mainScreenRoute);
+          Navigator.pushReplacementNamed(context, mainScreenRoute);
         }
       });
     }
   }
 
   void _handleContinueAsGuest() {
-    // TODO: Navigate to main app as guest
-    // Navigator.pushReplacementNamed(context, mainScreenRoute);
+    Navigator.pushReplacementNamed(context, mainScreenRoute);
   }
 
   void _handleForgotPassword() {
@@ -246,9 +246,10 @@ class _SignInScreenState extends State<SignInScreen> {
                             hintText: 'your@email.com',
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            prefixIcon: Icon(
-                              Icons.email_outlined,
+                            prefixIcon: FaIcon(
+                              FontAwesomeIcons.envelope,
                               color: AppColors.gray400,
+                              size: 20,
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -269,9 +270,10 @@ class _SignInScreenState extends State<SignInScreen> {
                             hintText: '••••••••',
                             controller: _passwordController,
                             isPassword: true,
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
+                            prefixIcon: FaIcon(
+                              FontAwesomeIcons.lock,
                               color: AppColors.gray400,
+                              size: 20,
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/themes.dart';
 
 class ThemeToggleButton extends StatefulWidget {
   final VoidCallback? onPressed;
 
-  const ThemeToggleButton({
-    super.key,
-    this.onPressed,
-  });
+  const ThemeToggleButton({super.key, this.onPressed});
 
   @override
   State<ThemeToggleButton> createState() => _ThemeToggleButtonState();
@@ -31,12 +29,13 @@ class _ThemeToggleButtonState extends State<ThemeToggleButton> {
         ),
       ),
       child: IconButton(
-        icon: Icon(
-          _isDarkMode ? Icons.light_mode : Icons.dark_mode,
+        icon: FaIcon(
+          _isDarkMode ? FontAwesomeIcons.solidSun : FontAwesomeIcons.solidMoon,
           color: AppColors.white,
-          size: 20,
+          size: 18,
         ),
-        onPressed: widget.onPressed ??
+        onPressed:
+            widget.onPressed ??
             () {
               setState(() {
                 _isDarkMode = !_isDarkMode;
