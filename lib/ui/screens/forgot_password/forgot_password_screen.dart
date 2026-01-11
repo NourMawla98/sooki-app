@@ -6,62 +6,66 @@ import '../../../routes/route_constants.dart';
 import '../../../themes/themes.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/buttons/primary_button.dart';
-import '../../reusable_components/buttons/secondary_button.dart';
 import '../../reusable_components/buttons/theme_toggle_button.dart';
 import '../../reusable_components/dropdowns/language_selector.dart';
 import '../../reusable_components/floating_emoji/floating_emoji.dart';
 import '../../reusable_components/input_fields/custom_text_field.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleLogin() {
+  void _handleSendResetLink() {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
-      // TODO: Implement actual login logic
+      // TODO: Implement actual forgot password logic
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           setState(() {
             _isLoading = false;
           });
-          // Navigate to main app after successful login
-          // Navigator.pushReplacementNamed(context, mainScreenRoute);
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Password reset link sent to ${_emailController.text}',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
+              backgroundColor: AppColors.primaryPurple,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+          // Navigate back to sign in screen after success
+          Navigator.pop(context);
         }
       });
     }
   }
 
-  void _handleContinueAsGuest() {
-    // TODO: Navigate to main app as guest
-    // Navigator.pushReplacementNamed(context, mainScreenRoute);
-  }
-
-  void _handleForgotPassword() {
-    Navigator.pushNamed(context, forgotPasswordScreenRoute);
-  }
-
-  void _navigateToSignUp() {
-    Navigator.pop(context); // Go back to signup screen
+  void _navigateBackToSignIn() {
+    Navigator.pop(context);
   }
 
   Future<void> _launchUrl(String url) async {
@@ -132,7 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
           // Floating emojis layer
           const FloatingEmoji(
-            emoji: '🛍️',
+            emoji: '🔑',
             size: 36,
             opacity: 0.2,
             top: 80,
@@ -142,7 +146,7 @@ class _SignInScreenState extends State<SignInScreen> {
             durationMs: 2200,
           ),
           const FloatingEmoji(
-            emoji: '❤️',
+            emoji: '📧',
             size: 30,
             opacity: 0.2,
             top: 160,
@@ -152,7 +156,7 @@ class _SignInScreenState extends State<SignInScreen> {
             durationMs: 2400,
           ),
           const FloatingEmoji(
-            emoji: '⭐',
+            emoji: '🔒',
             size: 30,
             opacity: 0.2,
             bottom: 128,
@@ -162,7 +166,7 @@ class _SignInScreenState extends State<SignInScreen> {
             durationMs: 2100,
           ),
           const FloatingEmoji(
-            emoji: '🎁',
+            emoji: '✉️',
             size: 36,
             opacity: 0.2,
             bottom: 80,
@@ -202,7 +206,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                   // Welcome text
                   Text(
-                    'Welcome Back!',
+                    'Forgot Password?',
                     style: AppTextStyles.heading1.copyWith(
                       color: AppColors.white,
                       fontSize: 32,
@@ -212,7 +216,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 8),
 
                   Text(
-                    'Log in to your account',
+                    'Enter your email to receive a password reset link',
+                    textAlign: TextAlign.center,
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: AppColors.white.withValues(alpha: 0.9),
                     ),
@@ -261,83 +266,30 @@ class _SignInScreenState extends State<SignInScreen> {
                             },
                           ),
 
-                          const SizedBox(height: 20),
-
-                          // Password field
-                          CustomTextField(
-                            label: 'Password',
-                            hintText: '••••••••',
-                            controller: _passwordController,
-                            isPassword: true,
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              color: AppColors.gray400,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Forgot Password link
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: _handleForgotPassword,
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: const Size(0, 0),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                'Forgot Password?',
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.primaryPurple,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-
                           const SizedBox(height: 24),
 
-                          // Log in button
+                          // Send reset link button
                           PrimaryButton(
-                            text: 'Log In',
-                            onPressed: _handleLogin,
+                            text: 'Send Reset Link',
+                            onPressed: _handleSendResetLink,
                             isLoading: _isLoading,
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Continue as guest button
-                          SecondaryButton(
-                            text: 'Continue as Guest',
-                            onPressed: _handleContinueAsGuest,
                           ),
 
                           const SizedBox(height: 16),
 
-                          // Sign up link
+                          // Back to log in link
                           Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Don't have an account? ",
+                                  'Remember your password? ',
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.textSecondary,
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: _navigateToSignUp,
+                                  onPressed: _navigateBackToSignIn,
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(0, 0),
@@ -345,7 +297,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: Text(
-                                    'Sign Up',
+                                    'Log In',
                                     style: AppTextStyles.bodyMedium.copyWith(
                                       color: AppColors.primaryPurple,
                                       fontWeight: FontWeight.bold,

@@ -19,7 +19,6 @@ class _LanguageSelectorState extends State<LanguageSelector>
   final LayerLink _layerLink = LayerLink();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
 
   final List<Map<String, String>> _languages = [
     {'code': 'en', 'name': 'English'},
@@ -36,10 +35,6 @@ class _LanguageSelectorState extends State<LanguageSelector>
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
   }
@@ -94,7 +89,7 @@ class _LanguageSelectorState extends State<LanguageSelector>
               child: CompositedTransformFollower(
                 link: _layerLink,
                 showWhenUnlinked: false,
-                offset: Offset(0, size.height + 8),
+                offset: Offset(-35, size.height + 5),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Material(
@@ -104,7 +99,9 @@ class _LanguageSelectorState extends State<LanguageSelector>
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.primaryPurple.withValues(alpha: 0.15),
+                          color: AppColors.primaryPurple.withValues(
+                            alpha: 0.15,
+                          ),
                           width: 1,
                         ),
                         boxShadow: [
@@ -181,7 +178,10 @@ class _LanguageSelectorState extends State<LanguageSelector>
         decoration: BoxDecoration(
           color: AppColors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.3), width: 1),
+          border: Border.all(
+            color: AppColors.white.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
         child: InkWell(
           onTap: _toggleDropdown,
