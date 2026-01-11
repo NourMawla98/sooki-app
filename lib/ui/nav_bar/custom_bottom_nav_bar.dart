@@ -17,39 +17,37 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.topCenter,
       children: [
-        // Rainbow bar
-        const RainbowBar(),
-
-        // Navigation bar with middle button
-        Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.topCenter,
-          children: [
-            // Bottom navigation bar (wrapped for rounded corners)
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadowDark,
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
+        // Bottom navigation bar (wrapped for rounded corners with rainbow bar inside)
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowDark,
+                blurRadius: 10,
+                offset: const Offset(0, -2),
               ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                child: Theme(
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Rainbow bar inside navbar
+                const RainbowBar(),
+                Theme(
                   data: ThemeData(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
@@ -135,19 +133,19 @@ class CustomBottomNavBar extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
+        ),
 
-            // Pulsing shopping button positioned above nav bar
-            // 40% above rainbow bar, 60% below
-            Positioned(
-              top: -24,
-              child: PulsingShoppingButton(
-                isSelected: currentIndex == 2,
-                onTap: () => onTap(2),
-              ),
-            ),
-          ],
+        // Pulsing shopping button positioned above nav bar
+        // 40% above rainbow bar, 60% below
+        Positioned(
+          top: -24,
+          child: PulsingShoppingButton(
+            isSelected: currentIndex == 2,
+            onTap: () => onTap(2),
+          ),
         ),
       ],
     );

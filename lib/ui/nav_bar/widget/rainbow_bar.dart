@@ -37,7 +37,6 @@ class _RainbowBarState extends State<RainbowBar>
         return Container(
           height: 4,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(2),
             gradient: LinearGradient(
               colors: [
                 ...AppColors.rainbowGradient,
