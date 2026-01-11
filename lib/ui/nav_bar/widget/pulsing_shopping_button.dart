@@ -27,7 +27,7 @@ class _PulsingShoppingButtonState extends State<PulsingShoppingButton>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1300),
       vsync: this,
     )..repeat(reverse: true);
 
@@ -96,7 +96,7 @@ class _PulsingShoppingButtonState extends State<PulsingShoppingButton>
                     child: const Center(
                       child: FaIcon(
                         FontAwesomeIcons.bagShopping,
-                        size: 24,
+                        size: 27,
                         color: AppColors.white,
                       ),
                     ),
