@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../header/app_header.dart';
 import '../../nav_bar/custom_bottom_nav_bar.dart';
 import '../browse/browse_screen.dart';
 import '../cart/cart_screen.dart';
@@ -34,9 +35,18 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
+      body: Column(
+        children: [
+          // Fixed header at the top
+          const AppHeader(),
+          // Page content below header
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _pages,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,

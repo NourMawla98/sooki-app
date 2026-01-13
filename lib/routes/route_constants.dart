@@ -9,3 +9,4 @@ const String dealsScreenRoute = 'deals';
 const String shoppingScreenRoute = 'shopping';
 const String loyaltyScreenRoute = 'loyalty';
 const String cartScreenRoute = 'cart';
+const String profileScreenRoute = 'profile';

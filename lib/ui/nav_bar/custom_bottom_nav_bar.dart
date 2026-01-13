@@ -141,7 +141,7 @@ class CustomBottomNavBar extends StatelessWidget {
         // Pulsing shopping button positioned above nav bar
         // 40% above rainbow bar, 60% below
         Positioned(
-          top: -24,
+          top: -20,
           child: PulsingShoppingButton(
             isSelected: currentIndex == 2,
             onTap: () => onTap(2),

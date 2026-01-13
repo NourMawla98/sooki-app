@@ -1,5 +1,7 @@
 # Sooki App - Development Guidelines
 
+**🔒 CRITICAL: This file (CLAUDE.md) can ONLY be edited with explicit permission from the user. Never edit this file unless the user specifically asks you to do so.**
+
 ## Session Progress
 **IMPORTANT**: Check `.serena/memories/session_progress.md` at the start of each session to understand what was accomplished and pick up where we left off.
 
@@ -99,14 +101,30 @@ lib/routes/
 
 ### 5. Planning Workflow
 **When asked to plan a feature or implementation:**
-1. Create a markdown file in the **root folder** with an appropriate descriptive title (e.g., `feature_name_plan.md`)
-2. Document the complete plan with steps, file changes, and architectural decisions
-3. **WAIT for explicit approval** before executing the plan
-4. Only implement after the user asks you to proceed
+1. **IMMEDIATELY** create a markdown file in the **root folder** with an appropriate descriptive title (e.g., `feature_name_plan.md`)
+2. If you need clarifications:
+   - Include a "Questions" section at the top of the plan file
+   - Document assumptions and multiple approaches if requirements are unclear
+   - Create preliminary plan based on best understanding
+3. Document the complete plan with:
+   - Clarification questions (if needed)
+   - Implementation steps
+   - File changes (new files, modifications)
+   - Architectural decisions
+   - Components to reuse
+   - Theme/color considerations
+4. **WAIT for explicit approval** before executing the plan
+5. Only implement after the user says "Execute the plan", "Proceed", or "Implement it"
+
+**IMPORTANT - Planning Mode Behavior:**
+- ❌ **DON'T**: Ask questions in chat without creating the plan file
+- ✅ **DO**: Create the plan file immediately with questions included
+- ❌ **DON'T**: Execute any implementation during planning
+- ✅ **DO**: Wait for explicit user approval before coding
 
 **Example:**
 - User: "Plan the user profile feature"
-- You: Create `user_profile_plan.md` in root with detailed plan
+- You: Create `user_profile_plan.md` in root with detailed plan (including questions if needed)
 - Wait for: User says "Execute the plan" or "Proceed"
 
 ### 6. Best Practices
@@ -117,10 +135,18 @@ lib/routes/
 
 ## Current Reusable Components
 - `AppLogo` - Animated logo with shopping bag and truck icons (3 sizes: large, medium, small)
+- `SooKiTextLogo` - Text-based "SooKI" logo with colored letters (used in header)
 - `PulsingDots` - Loading indicator with 3 pulsing dots
 - `FloatingEmoji` - Animated floating emoji with customizable position, rotation, and float distance
 - `PrimaryButton` - Primary action button (filled purple) with loading state
 - `SecondaryButton` - Secondary action button (white with border)
 - `CustomTextField` - Text input field with label, validation, and password toggle
+- `CustomSearchBar` (search_bar/) - Read-only search bar for header (functionality TBD)
 - `LanguageSelector` (dropdowns/) - Functional language dropdown with menu (English, العربية, Français)
 - `ThemeToggleButton` - Light/dark mode toggle button
+- `NotificationDotBadge` (badges/) - Small blue/purple dot indicator for notifications
+- `UserMenuDropdown` (menu/) - Dropdown menu with Profile and Logout options
+- `NotificationPanel` (notification_panel/) - Notification dropdown with empty state
+
+## Current App Sections
+- `AppHeader` (header/) - Fixed header with logo, notifications, menu, and search bar (shared across all nav tabs)
