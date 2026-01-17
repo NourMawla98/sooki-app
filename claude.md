@@ -103,11 +103,10 @@ lib/routes/
 **When asked to plan a feature or implementation:**
 1. **IMMEDIATELY** create a markdown file in the **root folder** with an appropriate descriptive title (e.g., `feature_name_plan.md`)
 2. If you need clarifications:
-   - Include a "Questions" section at the top of the plan file
-   - Document assumptions and multiple approaches if requirements are unclear
-   - Create preliminary plan based on best understanding
+   - **ASK QUESTIONS ONE BY ONE** using the AskUserQuestion tool with multiple choice options
+   - Wait for user response before asking the next question
+   - Document answers in the plan file as they are received
 3. Document the complete plan with:
-   - Clarification questions (if needed)
    - Implementation steps
    - File changes (new files, modifications)
    - Architectural decisions
@@ -116,15 +115,17 @@ lib/routes/
 4. **WAIT for explicit approval** before executing the plan
 5. Only implement after the user says "Execute the plan", "Proceed", or "Implement it"
 
-**IMPORTANT - Planning Mode Behavior:**
-- ❌ **DON'T**: Ask questions in chat without creating the plan file
-- ✅ **DO**: Create the plan file immediately with questions included
+**IMPORTANT - Planning Mode Question Behavior:**
+- ✅ **DO**: Ask clarification questions ONE AT A TIME using AskUserQuestion tool
+- ✅ **DO**: Provide clear options (2-4 choices) for each question
+- ❌ **DON'T**: Ask all questions at once in the plan file
 - ❌ **DON'T**: Execute any implementation during planning
 - ✅ **DO**: Wait for explicit user approval before coding
 
 **Example:**
 - User: "Plan the user profile feature"
-- You: Create `user_profile_plan.md` in root with detailed plan (including questions if needed)
+- You: Create `user_profile_plan.md` in root, then ask first clarifying question with options
+- Continue: Ask next question after receiving answer
 - Wait for: User says "Execute the plan" or "Proceed"
 
 ### 6. Best Practices

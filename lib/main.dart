@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'routes/route_exports.dart' as router;
+import 'services/language_service.dart';
 import 'themes/themes.dart';
 import 'ui/reusable_components/app_logo/app_logo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize dependency injection
-  await setupDependencyInjection();
+  // Initialize SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+
+  // Initialize language service (detects device language on first run)
+  final languageService = await LanguageService.initialize(prefs);
+
+  // Initialize dependency injection with pre-initialized services
+  await setupDependencyInjection(
+    prefs: prefs,
+    languageService: languageService,
+  );
 
   runApp(const MyApp());
 }

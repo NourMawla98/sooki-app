@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
+import '../../../services/language_service.dart';
 import '../interceptors/global_headers_interceptor.dart';
+import '../interceptors/language_interceptor.dart';
 import '../interceptors/retry_interceptor_config.dart';
 
 /// DI key for the API client
@@ -13,11 +15,13 @@ const Duration defaultTimeout = Duration(seconds: 30);
 ///
 /// Includes:
 /// - Global headers (app version, etc.)
+/// - Language query param injection (auto-added to all requests)
 /// - Retry logic for failed requests
 /// - Timeout configuration
 /// - JSON content type by default
 Dio createApiClient({
   required String baseUrl,
+  required LanguageService languageService,
   Duration? connectTimeout,
   Duration? receiveTimeout,
   Duration? sendTimeout,
@@ -38,6 +42,9 @@ Dio createApiClient({
   dio.interceptors.addAll([
     // Global headers (app version, platform, etc.)
     GlobalHeadersInterceptor(),
+
+    // Language query param (auto-injected to all requests)
+    LanguageInterceptor(languageService),
 
     // Retry logic for failed requests
     createRetryInterceptor(dio),

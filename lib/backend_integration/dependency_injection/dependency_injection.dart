@@ -1,22 +1,30 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/language_service.dart';
 import '../dio/client/api_client.dart';
 import 'dependency_injection.config.dart';
 
 /// Global service locator instance
 final GetIt serviceLocator = GetIt.instance;
 
+/// API base URL for Android emulator localhost
+const String apiBaseUrl = 'http://10.0.2.2:1010/api/';
+
 /// Initializes the dependency injection container
 ///
-/// Call this once at app startup before using any dependencies
+/// Call this once at app startup before using any dependencies.
+/// SharedPreferences and LanguageService must be initialized before calling this.
 ///
 /// Example:
 /// ```dart
 /// void main() async {
 ///   WidgetsFlutterBinding.ensureInitialized();
-///   await setupDependencyInjection();
+///   final prefs = await SharedPreferences.getInstance();
+///   final languageService = await LanguageService.initialize(prefs);
+///   await setupDependencyInjection(prefs: prefs, languageService: languageService);
 ///   runApp(MyApp());
 /// }
 /// ```
@@ -27,26 +35,29 @@ final GetIt serviceLocator = GetIt.instance;
 )
 Future<void> setupDependencyInjection({
   String environment = 'dev',
+  required SharedPreferences prefs,
+  required LanguageService languageService,
 }) async {
+  // Register pre-initialized dependencies
+  serviceLocator.registerSingleton<SharedPreferences>(prefs);
+  serviceLocator.registerSingleton<LanguageService>(languageService);
+
+  // Register Dio client with language service
+  serviceLocator.registerSingleton<Dio>(
+    createApiClient(
+      baseUrl: apiBaseUrl,
+      languageService: languageService,
+    ),
+    instanceName: apiClientKey,
+  );
+
+  // Initialize injectable dependencies
   $initGetIt(serviceLocator, environment: environment);
 }
 
 /// Module for registering external dependencies
 @module
 abstract class AppModule {
-  /// Provides the Dio HTTP client as a singleton
-  ///
-  /// TODO: Update base URL based on environment
-  @Singleton()
-  @Named(apiClientKey)
-  Dio get apiClient {
-    const String baseUrl = 'http://10.0.2.2:3000/api/'; // Android emulator localhost
-
-    return createApiClient(baseUrl: baseUrl);
-  }
-
-  // TODO: Add other external dependencies here (SharedPreferences, etc.)
-  // @preResolve
-  // @singleton
-  // Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+  // SharedPreferences and LanguageService are registered manually in setupDependencyInjection
+  // Dio client is also registered manually to inject LanguageService
 }
