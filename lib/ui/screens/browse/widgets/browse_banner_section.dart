@@ -76,10 +76,7 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
       return const SizedBox.shrink();
     }
 
-    return PromoBanner(
-      banners: _banners!,
-      onShopNowPressed: _onShopNowPressed,
-    );
+    return PromoBanner(banners: _banners!, onShopNowPressed: _onShopNowPressed);
   }
 }
 
@@ -113,10 +110,7 @@ class _BannerErrorState extends StatelessWidget {
   final String error;
   final VoidCallback onRetry;
 
-  const _BannerErrorState({
-    required this.error,
-    required this.onRetry,
-  });
+  const _BannerErrorState({required this.error, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +119,7 @@ class _BannerErrorState extends StatelessWidget {
       decoration: const BoxDecoration(
         color: AppColors.gray200,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
+          bottomLeft: Radius.circular(200),
           bottomRight: Radius.circular(20),
         ),
       ),

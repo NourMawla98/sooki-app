@@ -91,8 +91,8 @@ class _PromoBannerState extends State<PromoBanner> {
         decoration: const BoxDecoration(
           color: AppColors.primaryPurple,
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+            bottomLeft: Radius.circular(36),
+            bottomRight: Radius.circular(36),
           ),
         ),
         clipBehavior: Clip.antiAlias,
