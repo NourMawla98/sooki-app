@@ -9,8 +9,11 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+
+import '../apis/banner_api.dart' as _i923;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i174.GetIt $initGetIt(
@@ -18,6 +21,9 @@ _i174.GetIt $initGetIt(
   String? environment,
   _i526.EnvironmentFilter? environmentFilter,
 }) {
-  _i526.GetItHelper(getIt, environment, environmentFilter);
+  final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
+  gh.factory<_i923.BannerApi>(
+    () => _i923.BannerApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
   return getIt;
 }

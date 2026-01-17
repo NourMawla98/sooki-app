@@ -4,56 +4,70 @@
 
 ---
 
-## Session: January 17, 2026
+## Session: January 17, 2026 (Continued)
 
 ### What Was Accomplished
 
-#### 1. Language Management System ✅
-Implemented a complete global language system for API calls:
+#### 1. Banner Feature Implementation ✅
+Completed the promotional banner carousel for the Browse screen:
 
 **Components Created:**
-- `AppLanguage` enum - Language definitions with backend values (English=1, Arabic=2, French=3)
-- `LanguageService` - Singleton service for language detection, caching, and access
-- `LanguageInterceptor` - Dio interceptor that auto-injects `Language` query param to ALL API calls
+- `BannerDto` - Freezed model for banner API response
+- `BannerType` enum - Banner types for API requests (browsePage=1)
+- `BannerApi` - Injectable API service for fetching banners
+- `PromoBanner` - Main carousel component with auto-scroll
+- `BannerBadge` - Yellow pill badge for promotional text
+- `DotIndicator` - Page indicator dots with animation
+- `BrowseBannerSection` - Self-contained widget handling API and state
 
 **Key Features:**
-- Detects device default language on first app run
-- Caches selected language in SharedPreferences
-- Automatically adds `Language` query param to every API request
-- Supports 3 languages: English, Arabic, French
+- Edge-to-edge layout with only bottom corners rounded
+- Background images carousel from `imageUrls` array
+- Auto-scroll every 4 seconds (when 2+ images)
+- Manual swipe support via PageView
+- Dot indicators for current image
+- Badge displays `title` field, large text displays `subtitle` field
+- Gradient overlay for text readability
+- "Shop Now" button with full pill shape (360 radius)
 
-#### 2. API Infrastructure Updates
-- Updated API base URL to `http://10.0.2.2:1010/api/`
-- Modified Dio client to accept LanguageService
-- Updated DI setup to register SharedPreferences, LanguageService, and Dio client manually
+#### 2. Language Management System ✅ (From Earlier)
+- `AppLanguage` enum - Language definitions (English=1, Arabic=2, French=3)
+- `LanguageService` - Singleton for language detection and caching
+- `LanguageInterceptor` - Auto-injects `Language` query param to ALL API calls
 
-#### 3. Planning Infrastructure
-- Created comprehensive plan for Browse Screen Banner implementation
-- Updated CLAUDE.md with new planning workflow rules (ask questions one by one with options)
-- Updated .gitignore to include CLAUDE.md and CLAUDE_SESSION.md
+#### 3. CLAUDE.md Updates
+- Added **Enum Location Rule** - All enums must be in `lib/enums/`
+- Updated file organization structure
 
 ### Code Changes Made
 
-**New Files (3):**
+**New Files (Phase 2 - Banner API):**
 ```
-lib/enums/app_language.dart
-lib/services/language_service.dart
-lib/backend_integration/dio/interceptors/language_interceptor.dart
-```
-
-**Modified Files (5):**
-```
-pubspec.yaml - Added shared_preferences: ^2.2.2
-lib/main.dart - Initialize SharedPreferences and LanguageService before DI
-lib/backend_integration/dependency_injection/dependency_injection.dart - Register services, updated base URL
-lib/backend_integration/dio/client/api_client.dart - Added LanguageInterceptor
-.gitignore - Include CLAUDE.md and CLAUDE_SESSION.md
-CLAUDE.md - Updated planning workflow rules
+lib/backend_integration/dtos/banner/banner_dto.dart
+lib/backend_integration/dtos/banner/banner_dto.freezed.dart (generated)
+lib/backend_integration/dtos/banner/banner_dto.g.dart (generated)
+lib/enums/banner_type.dart
+lib/backend_integration/apis/banner_api.dart
 ```
 
-**Generated Files (regenerated):**
+**New Files (Phase 3 - UI Components):**
 ```
-lib/backend_integration/dependency_injection/dependency_injection.config.dart
+lib/ui/reusable_components/banners/promo_banner.dart
+lib/ui/reusable_components/banners/banner_badge.dart
+lib/ui/reusable_components/indicators/dot_indicator.dart
+```
+
+**New Files (Phase 4 - Integration):**
+```
+lib/ui/screens/browse/widgets/browse_banner_section.dart
+```
+
+**Modified Files:**
+```
+lib/ui/screens/browse/browse_screen.dart - Integrated BrowseBannerSection
+lib/themes/app_colors.dart - Added banner colors
+CLAUDE.md - Added enum location rule
+browse_banner_implementation_plan.md - Added skeleton loader to future enhancements
 ```
 
 ### Build Status
@@ -79,47 +93,57 @@ lib/backend_integration/dependency_injection/dependency_injection.config.dart
 - **Theme:** Centralized AppColors + AppTextStyles
 - **Local Storage:** SharedPreferences
 
-### Project Structure
+---
+
+## Project Structure
 
 ```
 lib/
-├── enums/                              # App-wide enums (NEW)
-│   └── app_language.dart               # Language enum (EN=1, AR=2, FR=3)
-├── services/                           # App services (NEW)
+├── enums/                              # ALL app enums (CRITICAL: all enums here)
+│   ├── app_language.dart               # Language enum (EN=1, AR=2, FR=3)
+│   └── banner_type.dart                # Banner type enum (browsePage=1)
+├── services/
 │   └── language_service.dart           # Language detection & caching
 ├── ui/
-│   ├── header/                         # App header
+│   ├── header/
 │   │   └── app_header.dart
-│   ├── screens/                        # Feature screens
+│   ├── screens/
 │   │   ├── splash/
 │   │   ├── sign_in/
 │   │   ├── sign_up/
 │   │   ├── forgot_password/
 │   │   ├── main/                       # Main container with nav
-│   │   ├── browse/                     # TODO: Add banner
+│   │   ├── browse/
+│   │   │   ├── browse_screen.dart      # ✅ With banner integration
+│   │   │   └── widgets/
+│   │   │       └── browse_banner_section.dart  # ✅ Banner widget
 │   │   ├── deals/                      # TODO: Implement
 │   │   ├── shopping/                   # TODO: Implement
 │   │   ├── hub/                        # TODO: Implement
 │   │   ├── loyalty/                    # TODO: Implement
 │   │   ├── cart/                       # TODO: Implement
 │   │   └── profile/                    # TODO: Implement
-│   ├── nav_bar/                        # Bottom navigation
+│   ├── nav_bar/
 │   │   ├── custom_bottom_nav_bar.dart
 │   │   └── widget/
 │   │       ├── pulsing_shopping_button.dart
 │   │       └── rainbow_bar.dart
-│   └── reusable_components/            # Shared UI components
+│   └── reusable_components/
 │       ├── app_logo/
 │       ├── badges/
+│       ├── banners/                    # ✅ NEW
+│       │   ├── promo_banner.dart       # Main carousel component
+│       │   └── banner_badge.dart       # Yellow pill badge
 │       ├── buttons/
 │       ├── dropdowns/
+│       ├── indicators/                 # ✅ NEW
+│       │   └── dot_indicator.dart      # Page indicator dots
 │       ├── input_fields/
 │       ├── menu/
 │       ├── notification_panel/
-│       ├── search_bar/
-│       └── banners/                    # TODO: Create promo_banner
+│       └── search_bar/
 ├── themes/
-│   ├── app_colors.dart
+│   ├── app_colors.dart                 # ✅ Added banner colors
 │   ├── app_text_styles.dart
 │   ├── app_theme.dart
 │   └── themes.dart
@@ -128,37 +152,49 @@ lib/
 │   ├── route.dart
 │   └── route_exports.dart
 ├── backend_integration/
-│   ├── apis/                           # TODO: Add banner_api.dart
-│   ├── dtos/                           # TODO: Add banner_dto.dart
+│   ├── apis/
+│   │   └── banner_api.dart             # ✅ NEW
+│   ├── dtos/
+│   │   └── banner/
+│   │       ├── banner_dto.dart         # ✅ NEW
+│   │       ├── banner_dto.freezed.dart
+│   │       └── banner_dto.g.dart
 │   ├── dio/
 │   │   ├── client/
-│   │   │   ├── api_client.dart         # Updated with LanguageService
+│   │   │   ├── api_client.dart
 │   │   │   ├── api_error_handler.dart
 │   │   │   └── request_executor.dart
 │   │   └── interceptors/
 │   │       ├── auth_interceptor.dart
 │   │       ├── global_headers_interceptor.dart
-│   │       ├── language_interceptor.dart  # NEW - auto-injects language
+│   │       ├── language_interceptor.dart
 │   │       └── retry_interceptor_config.dart
 │   └── dependency_injection/
-│       ├── dependency_injection.dart   # Updated with manual registration
+│       ├── dependency_injection.dart
 │       └── dependency_injection.config.dart
-└── main.dart                           # Updated with language init
+└── main.dart
 ```
 
 ---
 
 ## Architecture Decisions Log
 
+### Banner Component Design
+- **Decision:** Carousel scrolls through `imageUrls` within a single banner (not between banners)
+- **Rationale:** Each banner has multiple background images that auto-cycle
+- **Pattern:** PageView for image carousel, content overlay stays fixed
+
+### Text Field Mapping
+- **Decision:** Badge = `title` field, Large text = `subtitle` field
+- **Rationale:** Matches the design where badge shows "SUMMER SALE IS LIVE" (title) and large text shows "Vibe Check Your Style" (subtitle)
+
+### Enum Location
+- **Decision:** All enums in `lib/enums/` directory
+- **Rationale:** Centralized location makes enums easy to find and reuse
+
 ### Language System
 - **Decision:** Global language injection via Dio interceptor
 - **Rationale:** All API calls need language param, interceptor ensures consistency
-- **Pattern:** LanguageInterceptor adds `?Language=X` to every request automatically
-
-### Dependency Injection
-- **Decision:** Manual registration for SharedPreferences, LanguageService, Dio
-- **Rationale:** These need async initialization before DI setup
-- **Pattern:** Initialize in main.dart, pass to setupDependencyInjection()
 
 ### API Base URL
 - **Current:** `http://10.0.2.2:1010/api/`
@@ -168,36 +204,69 @@ lib/
 
 ## Code Patterns & Conventions
 
-### Language Enum
+### Banner DTO
 ```dart
-enum AppLanguage {
-  english(code: 'en', backendValue: 1, displayName: 'English'),
-  arabic(code: 'ar', backendValue: 2, displayName: 'العربية'),
-  french(code: 'fr', backendValue: 3, displayName: 'Français');
-
-  final String code;
-  final int backendValue;
-  final String displayName;
+@Freezed(toJson: false, fromJson: true)
+abstract class BannerDto with _$BannerDto {
+  const factory BannerDto({
+    required int id,
+    required int type,
+    required String title,
+    String? subtitle,
+    String? description,
+    String? redirectionRoute,
+    @Default([]) List<String> imageUrls,
+  }) = _BannerDto;
 }
 ```
 
-### Accessing Language Service
+### API Service Pattern
 ```dart
-// Get from service locator
-final languageService = serviceLocator<LanguageService>();
+@injectable
+class BannerApi {
+  final Dio _dio;
+  BannerApi(@Named(apiClientKey) this._dio);
 
-// Get current language
-final currentLang = languageService.currentLanguage;
-
-// Change language
-await languageService.setLanguage(AppLanguage.arabic);
+  Future<Either<ApiFailure, List<BannerDto>>> getBanners({
+    required BannerType type,
+  }) async {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'client/banners',
+      queryParameters: {'Type': type.value},
+      operationName: 'getBanners',
+      successParser: (response) {
+        final List<dynamic> data = response.data['data'];
+        return data.map((json) => BannerDto.fromJson(json)).toList();
+      },
+    );
+  }
+}
 ```
 
-### API Calls (language auto-injected)
+### Screen Widget Pattern
 ```dart
-// Language param is automatically added by LanguageInterceptor
-// GET /api/client/banners?Type=1 becomes
-// GET /api/client/banners?Type=1&Language=1
+// Self-contained widget that handles its own API call
+class BrowseBannerSection extends StatefulWidget {
+  @override
+  State<BrowseBannerSection> createState() => _BrowseBannerSectionState();
+}
+
+class _BrowseBannerSectionState extends State<BrowseBannerSection> {
+  late final BannerApi _bannerApi;
+  List<BannerDto>? _banners;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _bannerApi = serviceLocator<BannerApi>();
+    _loadBanners();
+  }
+  // ... loading, error, success states
+}
 ```
 
 ---
@@ -217,70 +286,66 @@ await languageService.setLanguage(AppLanguage.arabic);
 - Bottom navigation bar (5 tabs)
 - App header with notifications and menu
 
+**Browse Screen:**
+- Promotional banner carousel ✅
+- Auto-scroll through images ✅
+- Manual swipe support ✅
+- Dot indicators ✅
+
 **Infrastructure:**
 - Theme system (light/dark)
 - Reusable components library
-- **Language management system (NEW)**
-- **Global API language injection (NEW)**
+- Language management system
+- Global API language injection
 
 ### ❌ What's NOT Implemented Yet
 
-**Banner Implementation (In Progress):**
-- [ ] Banner DTO (Freezed model)
-- [ ] Banner API service
-- [ ] PromoBanner reusable component
-- [ ] BannerBadge component
-- [ ] DotIndicator component
-- [ ] Browse screen integration
+**Browse Screen:**
+- [ ] Skeleton loader for banner (planned)
+- [ ] Product categories
+- [ ] Product grid/list
+- [ ] Floating product items (separate API)
 
-**Screen Content:**
-- Browse screen (banner planned)
-- Deals screen
-- Shopping screen
-- Hub screen
-- Loyalty screen
-- Cart screen
-- Profile screen
+**Other Screens:**
+- [ ] Deals screen content
+- [ ] Shopping screen content
+- [ ] Hub screen content
+- [ ] Loyalty screen content
+- [ ] Cart screen content
+- [ ] Profile screen content
 
 **Features:**
-- Search functionality
-- Product browsing
-- Cart management
-- Checkout flow
-- User profile
+- [ ] Search functionality
+- [ ] Product details
+- [ ] Cart management
+- [ ] Checkout flow
+- [ ] User profile management
+
+---
+
+## Banner Colors Added
+
+```dart
+// In app_colors.dart
+static const Color bannerBackground = Color(0xFFF5E1D0); // Warm beige/peach
+static const Color bannerBadgeYellow = Color(0xFFFFD93D); // Yellow badge
+static const Color bannerTitleAccent = Color(0xFFFFD93D); // Yellow for title accent
+static const Color bannerProductFrame = Color(0xFF4D4C7D); // Purple frame border
+```
 
 ---
 
 ## Next Steps
 
-### Immediate (Banner Implementation - Remaining Steps):
-1. **Banner DTO + API** - Create BannerDto model and BannerApi service
-2. **UI Components** - Create PromoBanner, BannerBadge, DotIndicator
-3. **Integration** - Connect Browse screen to banner API
+### Immediate:
+1. **Skeleton Loader** - Replace loading spinner with shimmer skeleton
+2. **Floating Product Items** - Separate API call for product thumbnails on banner
+3. **Categories Section** - Add horizontal scrollable categories below banner
 
-### Plan File
-See `browse_banner_implementation_plan.md` in root folder for full implementation details.
-
-### Backend API Reference
-```
-GET /api/client/banners?Type=1&Language=1
-
-Response:
-{
-  "statusCode": 200,
-  "data": [
-    {
-      "id": 1,
-      "type": 1,
-      "title": "Summer Sale",
-      "subtitle": "SUMMER SALE IS LIVE",
-      "description": "Discover the hottest trends",
-      "redirectionRoute": "/deals/summer",
-      "imageUrls": ["url1", "url2"]
-    }
-  ]
-}
-```
+### Future:
+- Product grid implementation
+- Search functionality
+- Other screen content
 
 ---
 
@@ -305,6 +370,31 @@ flutter format lib/
 
 ---
 
+## Backend API Reference
+
+### Get Banners
+```
+GET /api/client/banners?Type=1&Language=1
+
+Response:
+{
+  "statusCode": 200,
+  "data": [
+    {
+      "id": 1,
+      "type": 1,
+      "title": "SUMMER SALE IS LIVE",
+      "subtitle": "Vibe Check Your Style",
+      "description": "Discover the hottest trends dropping daily",
+      "redirectionRoute": "/deals/summer",
+      "imageUrls": ["url1", "url2", "url3"]
+    }
+  ]
+}
+```
+
+---
+
 ## User Context
 
 - **Working Directory:** C:\Users\PC\Documents\GitHub\sooki-app
@@ -312,6 +402,28 @@ flutter format lib/
 - **Backend URL:** http://10.0.2.2:1010/api/
 - **Backend Repo:** C:\Users\PC\Documents\GitHub\sooki-backend
 - **Reference App:** C:\Users\PC\Documents\GitHub\virtual-mall-app
+- **Design Reference:** https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7
+
+---
+
+## Reusable Components
+
+- `AppLogo` - Animated logo with shopping bag and truck icons
+- `SooKiTextLogo` - Text-based "SooKI" logo with colored letters
+- `PulsingDots` - Loading indicator with 3 pulsing dots
+- `FloatingEmoji` - Animated floating emoji
+- `PrimaryButton` - Primary action button (filled purple)
+- `SecondaryButton` - Secondary action button (white with border)
+- `CustomTextField` - Text input field with label and validation
+- `CustomSearchBar` - Read-only search bar for header
+- `LanguageSelector` - Language dropdown (English, العربية, Français)
+- `ThemeToggleButton` - Light/dark mode toggle
+- `NotificationDotBadge` - Small dot indicator for notifications
+- `UserMenuDropdown` - Dropdown with Profile and Logout
+- `NotificationPanel` - Notification dropdown with empty state
+- `PromoBanner` - Promotional banner carousel ✅ NEW
+- `BannerBadge` - Yellow pill badge for promotional text ✅ NEW
+- `DotIndicator` - Page indicator dots ✅ NEW
 
 ---
 
@@ -320,11 +432,9 @@ flutter format lib/
 ### CLAUDE.md Protection
 **🔒 CRITICAL:** The `CLAUDE.md` file can ONLY be edited with explicit user permission.
 
-### Planning Workflow
-When planning features:
-1. Create plan file in root folder
-2. Ask clarification questions ONE BY ONE with options
-3. Wait for explicit approval before implementing
+### Enum Location Rule
+**ALL enums must be in `lib/enums/` directory** - no exceptions.
 
 ### Design Reference
-**Magic Patterns:** https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7
+Always check Magic Patterns design before implementing features:
+https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7

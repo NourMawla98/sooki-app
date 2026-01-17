@@ -102,4 +102,10 @@ class AppColors {
   // Notification Colors
   static const Color notificationUnread = accentRed;
   static const Color notificationRead = gray400;
+
+  // Banner Colors
+  static const Color bannerBackground = Color(0xFFF5E1D0); // Warm beige/peach
+  static const Color bannerBadgeYellow = Color(0xFFFFD93D); // Yellow badge
+  static const Color bannerTitleAccent = Color(0xFFFFD93D); // Yellow for "Your Style"
+  static const Color bannerProductFrame = Color(0xFF4D4C7D); // Purple frame border
 }

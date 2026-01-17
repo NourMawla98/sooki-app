@@ -64,6 +64,7 @@ This ensures theme consistency and allows global color changes with minimal fixe
 ### 3. File Organization
 ```
 lib/
+├── enums/                    # ALL app enums (e.g., app_language.dart, banner_type.dart)
 ├── ui/
 │   ├── screens/              # Feature screens
 │   └── reusable_components/  # Shared widgets
@@ -74,6 +75,13 @@ lib/
 ├── themes/                   # Colors, text styles, theme
 └── backend_integration/
 ```
+
+**CRITICAL: Enum Location Rule**
+**ALL enums must be placed in `lib/enums/` directory.**
+- ✅ **DO**: `lib/enums/app_language.dart`, `lib/enums/banner_type.dart`
+- ❌ **DON'T**: `lib/backend_integration/enums/`, `lib/models/enums/`, or any other location
+
+**Why**: Centralized enum location makes it easy to find and reuse enums across the app.
 
 ### 4. Routing (Named Routes Pattern)
 **ALWAYS use named routes with the centralized route generator.**
