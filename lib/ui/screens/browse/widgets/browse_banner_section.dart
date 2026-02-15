@@ -80,25 +80,146 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
   }
 }
 
-/// Loading state placeholder for the banner
-class _BannerLoadingState extends StatelessWidget {
+/// Shimmer skeleton loading state for the banner.
+///
+/// Mimics the real banner layout with animated shimmer placeholders
+/// for badge, title, description, and button.
+class _BannerLoadingState extends StatefulWidget {
   const _BannerLoadingState();
+
+  @override
+  State<_BannerLoadingState> createState() => _BannerLoadingStateState();
+}
+
+class _BannerLoadingStateState extends State<_BannerLoadingState>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 380,
-      decoration: const BoxDecoration(
-        color: AppColors.gray200,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+      height: 330,
+      decoration: BoxDecoration(
+        color: AppColors.primaryPurple.withValues(alpha: 0.15),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(36),
+          bottomRight: Radius.circular(36),
         ),
       ),
-      child: Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primaryPurple,
-          strokeWidth: 2,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return ShaderMask(
+            shaderCallback: (bounds) {
+              return LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  AppColors.gray300.withValues(alpha: 0.3),
+                  AppColors.gray200.withValues(alpha: 0.6),
+                  AppColors.gray300.withValues(alpha: 0.3),
+                ],
+                stops: [
+                  (_controller.value - 0.3).clamp(0.0, 1.0),
+                  _controller.value,
+                  (_controller.value + 0.3).clamp(0.0, 1.0),
+                ],
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.srcATop,
+            child: child!,
+          );
+        },
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Badge placeholder
+                Container(
+                  width: 160,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Title line 1
+                Container(
+                  width: 220,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Title line 2
+                Container(
+                  width: 180,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Description placeholder
+                Container(
+                  width: 240,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                // Button placeholder
+                Container(
+                  width: 120,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(360),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Dot indicators placeholder
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    3,
+                    (i) => Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -115,12 +236,12 @@ class _BannerErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 380,
-      decoration: const BoxDecoration(
-        color: AppColors.gray200,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(200),
-          bottomRight: Radius.circular(20),
+      height: 330,
+      decoration: BoxDecoration(
+        color: AppColors.primaryPurple.withValues(alpha: 0.08),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(36),
+          bottomRight: Radius.circular(36),
         ),
       ),
       child: Center(

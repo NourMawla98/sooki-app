@@ -1,78 +1,62 @@
 # Sooki App - Development Session Log
 
-**Last Updated:** January 17, 2026
+**Last Updated:** February 15, 2026
 
 ---
 
-## Session: January 17, 2026 (Continued)
+## Session: February 15, 2026
 
 ### What Was Accomplished
 
-#### 1. Banner Feature Implementation ✅
-Completed the promotional banner carousel for the Browse screen:
+#### 1. Banner Skeleton Loader Fix ✅
+- Fixed error state bug: `Radius.circular(200)` → `Radius.circular(20)` (lopsided blob)
+- Replaced ugly loading spinner with a proper **shimmer skeleton loader**
+- Skeleton matches real banner layout: badge placeholder, title lines, description, button, dot indicators
+- Uses `AnimationController` + `ShaderMask` gradient sweep (1.5s loop)
+- Fixed error state dimensions to match real banner (height 330, radius 36)
 
-**Components Created:**
-- `BannerDto` - Freezed model for banner API response
-- `BannerType` enum - Banner types for API requests (browsePage=1)
-- `BannerApi` - Injectable API service for fetching banners
-- `PromoBanner` - Main carousel component with auto-scroll
-- `BannerBadge` - Yellow pill badge for promotional text
-- `DotIndicator` - Page indicator dots with animation
-- `BrowseBannerSection` - Self-contained widget handling API and state
+#### 2. Flash Deals Section ✅ (All 3 Phases Complete)
+Implemented the flash deals section for the Browse screen with animations.
 
-**Key Features:**
-- Edge-to-edge layout with only bottom corners rounded
-- Background images carousel from `imageUrls` array
-- Auto-scroll every 4 seconds (when 2+ images)
-- Manual swipe support via PageView
-- Dot indicators for current image
-- Badge displays `title` field, large text displays `subtitle` field
-- Gradient overlay for text readability
-- "Shop Now" button with full pill shape (360 radius)
+**Phase 1 - Reusable Components:**
+- `FlashDealsTimer` - Purple pill countdown timer with animated lightning bolt (wiggle + scale) and flip-clock digit transitions
+- `FlashDealCard` - Compact product card (130px wide) with image, sale/original price, stock count
 
-#### 2. Language Management System ✅ (From Earlier)
-- `AppLanguage` enum - Language definitions (English=1, Arabic=2, French=3)
-- `LanguageService` - Singleton for language detection and caching
-- `LanguageInterceptor` - Auto-injects `Language` query param to ALL API calls
+**Phase 2 - Section Widget:**
+- `FlashDealsSection` - Red gradient container with title, timer, and horizontally scrollable product cards
+- Animations: section fade+slide entrance, title shimmer sweep, staggered card entrance from right
 
-#### 3. CLAUDE.md Updates
-- Added **Enum Location Rule** - All enums must be in `lib/enums/`
-- Updated file organization structure
+**Phase 3 - Integration:**
+- Added `FlashDealsSection` to `browse_screen.dart` below the banner
+
+#### 3. CLAUDE.md Updates ✅
+- Added **Phased Execution Rule** to Planning Workflow section
+- Plans must be divided into phases, executed one at a time with user approval between phases
+- Track progress in `{FEATURE}_EXECUTION.md`
 
 ### Code Changes Made
 
-**New Files (Phase 2 - Banner API):**
+**New Files:**
 ```
-lib/backend_integration/dtos/banner/banner_dto.dart
-lib/backend_integration/dtos/banner/banner_dto.freezed.dart (generated)
-lib/backend_integration/dtos/banner/banner_dto.g.dart (generated)
-lib/enums/banner_type.dart
-lib/backend_integration/apis/banner_api.dart
-```
-
-**New Files (Phase 3 - UI Components):**
-```
-lib/ui/reusable_components/banners/promo_banner.dart
-lib/ui/reusable_components/banners/banner_badge.dart
-lib/ui/reusable_components/indicators/dot_indicator.dart
-```
-
-**New Files (Phase 4 - Integration):**
-```
-lib/ui/screens/browse/widgets/browse_banner_section.dart
+lib/ui/reusable_components/timer/flash_deals_timer.dart
+lib/ui/reusable_components/product_card/flash_deal_card.dart
+lib/ui/screens/browse/widgets/flash_deals_section.dart
 ```
 
 **Modified Files:**
 ```
-lib/ui/screens/browse/browse_screen.dart - Integrated BrowseBannerSection
-lib/themes/app_colors.dart - Added banner colors
-CLAUDE.md - Added enum location rule
-browse_banner_implementation_plan.md - Added skeleton loader to future enhancements
+lib/ui/screens/browse/browse_screen.dart - Added FlashDealsSection
+lib/ui/screens/browse/widgets/browse_banner_section.dart - Shimmer skeleton + error state fix
+CLAUDE.md - Added phased execution rule
+```
+
+**Plan Files:**
+```
+flash_deals_implementation_plan.md - Feature plan
+flash_deals_execution.md - Execution tracker (all phases complete)
 ```
 
 ### Build Status
-- ✅ `flutter pub get` - Dependencies installed
-- ✅ `flutter pub run build_runner build` - Code generation complete
 - ✅ `flutter analyze` - No issues found
 
 ---
@@ -114,9 +98,10 @@ lib/
 │   │   ├── forgot_password/
 │   │   ├── main/                       # Main container with nav
 │   │   ├── browse/
-│   │   │   ├── browse_screen.dart      # ✅ With banner integration
+│   │   │   ├── browse_screen.dart      # ✅ Banner + Flash Deals
 │   │   │   └── widgets/
-│   │   │       └── browse_banner_section.dart  # ✅ Banner widget
+│   │   │       ├── browse_banner_section.dart  # ✅ With shimmer skeleton
+│   │   │       └── flash_deals_section.dart    # ✅ NEW
 │   │   ├── deals/                      # TODO: Implement
 │   │   ├── shopping/                   # TODO: Implement
 │   │   ├── hub/                        # TODO: Implement
@@ -131,20 +116,28 @@ lib/
 │   └── reusable_components/
 │       ├── app_logo/
 │       ├── badges/
-│       ├── banners/                    # ✅ NEW
+│       ├── banners/
 │       │   ├── promo_banner.dart       # Main carousel component
 │       │   └── banner_badge.dart       # Yellow pill badge
 │       ├── buttons/
+│       ├── category_tabs/
 │       ├── dropdowns/
-│       ├── indicators/                 # ✅ NEW
+│       ├── floating_emoji/
+│       ├── indicators/
 │       │   └── dot_indicator.dart      # Page indicator dots
 │       ├── input_fields/
 │       ├── menu/
+│       ├── menu_panel/
 │       ├── notification_panel/
-│       └── search_bar/
+│       ├── product_card/
+│       │   └── flash_deal_card.dart    # ✅ NEW
+│       ├── rating_stars/
+│       ├── search_bar/
+│       └── timer/
+│           └── flash_deals_timer.dart  # ✅ NEW
 ├── themes/
-│   ├── app_colors.dart                 # ✅ Added banner colors
-│   ├── app_text_styles.dart
+│   ├── app_colors.dart                 # Centralized colors (banner colors included)
+│   ├── app_text_styles.dart            # All text styles (timer, product styles included)
 │   ├── app_theme.dart
 │   └── themes.dart
 ├── routes/
@@ -153,10 +146,10 @@ lib/
 │   └── route_exports.dart
 ├── backend_integration/
 │   ├── apis/
-│   │   └── banner_api.dart             # ✅ NEW
+│   │   └── banner_api.dart
 │   ├── dtos/
 │   │   └── banner/
-│   │       ├── banner_dto.dart         # ✅ NEW
+│   │       ├── banner_dto.dart
 │   │       ├── banner_dto.freezed.dart
 │   │       └── banner_dto.g.dart
 │   ├── dio/
@@ -188,6 +181,12 @@ lib/
 - **Decision:** Badge = `title` field, Large text = `subtitle` field
 - **Rationale:** Matches the design where badge shows "SUMMER SALE IS LIVE" (title) and large text shows "Vibe Check Your Style" (subtitle)
 
+### Flash Deals Section
+- **Decision:** Mock data for now, API integration later
+- **Decision:** Timer uses real DateTime endTime (hardcoded 3 hours from now, backend later)
+- **Decision:** Horizontally scrollable product cards (per design reference)
+- **Decision:** Cards are simple: image + sale price + original price + stock count (no add to cart or favorites)
+
 ### Enum Location
 - **Decision:** All enums in `lib/enums/` directory
 - **Rationale:** Centralized location makes enums easy to find and reuse
@@ -195,6 +194,10 @@ lib/
 ### Language System
 - **Decision:** Global language injection via Dio interceptor
 - **Rationale:** All API calls need language param, interceptor ensures consistency
+
+### Phased Execution
+- **Decision:** Divide plans into phases, execute ONE phase at a time
+- **Rationale:** Better control, user approval between phases, tracked in execution files
 
 ### API Base URL
 - **Current:** `http://10.0.2.2:1010/api/`
@@ -245,9 +248,8 @@ class BannerApi {
 }
 ```
 
-### Screen Widget Pattern
+### Screen Widget Pattern (Self-contained with API)
 ```dart
-// Self-contained widget that handles its own API call
 class BrowseBannerSection extends StatefulWidget {
   @override
   State<BrowseBannerSection> createState() => _BrowseBannerSectionState();
@@ -265,8 +267,16 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
     _bannerApi = serviceLocator<BannerApi>();
     _loadBanners();
   }
-  // ... loading, error, success states
+  // ... loading (shimmer skeleton), error (retry), success states
 }
+```
+
+### Animation Patterns
+```dart
+// Shimmer skeleton: AnimationController + ShaderMask gradient sweep
+// Staggered entrance: Interval-based delays per item index
+// Digit flip: AnimatedSwitcher with SlideTransition + FadeTransition
+// Bolt wiggle: TweenSequence rotation + scale pulse
 ```
 
 ---
@@ -288,9 +298,11 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
 
 **Browse Screen:**
 - Promotional banner carousel ✅
-- Auto-scroll through images ✅
-- Manual swipe support ✅
-- Dot indicators ✅
+- Banner shimmer skeleton loader ✅
+- Banner error state with retry ✅
+- Flash deals section with animations ✅
+- Flash deals countdown timer ✅
+- Flash deals horizontal product cards ✅
 
 **Infrastructure:**
 - Theme system (light/dark)
@@ -301,10 +313,11 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
 ### ❌ What's NOT Implemented Yet
 
 **Browse Screen:**
-- [ ] Skeleton loader for banner (planned)
-- [ ] Product categories
+- [ ] Flash deals API integration (currently mock data)
+- [ ] Product categories horizontal tabs
+- [ ] New arrivals section
 - [ ] Product grid/list
-- [ ] Floating product items (separate API)
+- [ ] Floating product items on banner
 
 **Other Screens:**
 - [ ] Deals screen content
@@ -316,14 +329,15 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
 
 **Features:**
 - [ ] Search functionality
-- [ ] Product details
+- [ ] Product details page
 - [ ] Cart management
 - [ ] Checkout flow
 - [ ] User profile management
+- [ ] Favorites/wishlist
 
 ---
 
-## Banner Colors Added
+## Banner Colors
 
 ```dart
 // In app_colors.dart
@@ -338,12 +352,13 @@ static const Color bannerProductFrame = Color(0xFF4D4C7D); // Purple frame borde
 ## Next Steps
 
 ### Immediate:
-1. **Skeleton Loader** - Replace loading spinner with shimmer skeleton
-2. **Floating Product Items** - Separate API call for product thumbnails on banner
-3. **Categories Section** - Add horizontal scrollable categories below banner
+1. **Categories Section** - Horizontal scrollable category tabs below flash deals (per design)
+2. **New Arrivals Section** - Product grid with full ProductCard components
+3. **Flash Deals API** - Create backend endpoint and integrate
 
 ### Future:
-- Product grid implementation
+- Product details page
+- Floating product items on banner
 - Search functionality
 - Other screen content
 
@@ -408,22 +423,24 @@ Response:
 
 ## Reusable Components
 
-- `AppLogo` - Animated logo with shopping bag and truck icons
+- `AppLogo` - Animated logo with shopping bag and truck icons (3 sizes)
 - `SooKiTextLogo` - Text-based "SooKI" logo with colored letters
 - `PulsingDots` - Loading indicator with 3 pulsing dots
 - `FloatingEmoji` - Animated floating emoji
-- `PrimaryButton` - Primary action button (filled purple)
+- `PrimaryButton` - Primary action button (filled purple) with loading state
 - `SecondaryButton` - Secondary action button (white with border)
-- `CustomTextField` - Text input field with label and validation
+- `CustomTextField` - Text input field with label, validation, password toggle
 - `CustomSearchBar` - Read-only search bar for header
 - `LanguageSelector` - Language dropdown (English, العربية, Français)
 - `ThemeToggleButton` - Light/dark mode toggle
 - `NotificationDotBadge` - Small dot indicator for notifications
 - `UserMenuDropdown` - Dropdown with Profile and Logout
 - `NotificationPanel` - Notification dropdown with empty state
-- `PromoBanner` - Promotional banner carousel ✅ NEW
-- `BannerBadge` - Yellow pill badge for promotional text ✅ NEW
-- `DotIndicator` - Page indicator dots ✅ NEW
+- `PromoBanner` - Promotional banner carousel with auto-scroll
+- `BannerBadge` - Yellow pill badge for promotional text
+- `DotIndicator` - Page indicator dots with animation
+- `FlashDealsTimer` - Countdown timer pill with animated bolt + flip-clock digits ✅ NEW
+- `FlashDealCard` - Compact product card for flash deals ✅ NEW
 
 ---
 
@@ -434,6 +451,9 @@ Response:
 
 ### Enum Location Rule
 **ALL enums must be in `lib/enums/` directory** - no exceptions.
+
+### Phased Execution Rule
+Plans divided into phases, ONE phase at a time, user approval between phases. Track in `{FEATURE}_EXECUTION.md`.
 
 ### Design Reference
 Always check Magic Patterns design before implementing features:

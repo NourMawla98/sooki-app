@@ -130,11 +130,18 @@ lib/routes/
 - ❌ **DON'T**: Execute any implementation during planning
 - ✅ **DO**: Wait for explicit user approval before coding
 
+**CRITICAL - Phased Execution:**
+- **Divide plans into phases**, execute **ONE phase at a time**
+- After completing a phase, **wait for user approval** before starting the next phase
+- Track progress in `{FEATURE}_EXECUTION.md` alongside the plan file
+- Run `flutter analyze` after each phase to verify no issues
+
 **Example:**
 - User: "Plan the user profile feature"
 - You: Create `user_profile_plan.md` in root, then ask first clarifying question with options
 - Continue: Ask next question after receiving answer
 - Wait for: User says "Execute the plan" or "Proceed"
+- Execute: Phase 1 only → wait for approval → Phase 2 → wait → etc.
 
 ### 6. Best Practices
 - Use semantic naming (e.g., `AppColors.primaryPurple` not `Color(0xFF4D4C7D)`)

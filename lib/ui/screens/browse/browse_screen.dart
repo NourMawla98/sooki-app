@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'widgets/browse_banner_section.dart';
+import 'widgets/flash_deals_section.dart';
 
 class BrowseScreen extends StatelessWidget {
   const BrowseScreen({super.key});
@@ -14,6 +15,11 @@ class BrowseScreen extends StatelessWidget {
           children: [
             // Banner carousel (edge-to-edge, no top padding)
             BrowseBannerSection(),
+
+            SizedBox(height: 20),
+
+            // Flash deals section
+            FlashDealsSection(),
 
             SizedBox(height: 24),
 
