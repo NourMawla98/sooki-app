@@ -1,59 +1,38 @@
 # Sooki App - Development Session Log
 
-**Last Updated:** February 15, 2026
+**Last Updated:** February 23, 2026
 
 ---
 
-## Session: February 15, 2026
+## Session: February 23, 2026
 
 ### What Was Accomplished
 
-#### 1. Banner Skeleton Loader Fix ✅
-- Fixed error state bug: `Radius.circular(200)` → `Radius.circular(20)` (lopsided blob)
-- Replaced ugly loading spinner with a proper **shimmer skeleton loader**
-- Skeleton matches real banner layout: badge placeholder, title lines, description, button, dot indicators
-- Uses `AnimationController` + `ShaderMask` gradient sweep (1.5s loop)
-- Fixed error state dimensions to match real banner (height 330, radius 36)
+#### 1. Flash Deals Opacity Bug Fix ✅
+- **Bug:** Red error screen appeared briefly before flash deal cards loaded on the Browse page
+- **Root Cause:** `Curves.easeOutBack` overshoots past 1.0 (~1.05), but `Opacity` widget requires values strictly between 0.0 and 1.0. The overshoot caused an assertion error in debug mode.
+- **Fix:** Added `.clamp(0.0, 1.0)` to the opacity value in `flash_deals_section.dart` line 188. The `Transform.translate` offset still uses the raw value to preserve the spring/bounce effect.
+- **File:** `lib/ui/screens/browse/widgets/flash_deals_section.dart`
 
-#### 2. Flash Deals Section ✅ (All 3 Phases Complete)
-Implemented the flash deals section for the Browse screen with animations.
-
-**Phase 1 - Reusable Components:**
-- `FlashDealsTimer` - Purple pill countdown timer with animated lightning bolt (wiggle + scale) and flip-clock digit transitions
-- `FlashDealCard` - Compact product card (130px wide) with image, sale/original price, stock count
-
-**Phase 2 - Section Widget:**
-- `FlashDealsSection` - Red gradient container with title, timer, and horizontally scrollable product cards
-- Animations: section fade+slide entrance, title shimmer sweep, staggered card entrance from right
-
-**Phase 3 - Integration:**
-- Added `FlashDealsSection` to `browse_screen.dart` below the banner
-
-#### 3. CLAUDE.md Updates ✅
-- Added **Phased Execution Rule** to Planning Workflow section
-- Plans must be divided into phases, executed one at a time with user approval between phases
-- Track progress in `{FEATURE}_EXECUTION.md`
+#### 2. Categories + New Arrivals Plan Created ✅
+- Reviewed Magic Patterns design reference for browse page layout
+- Identified next sections to implement: **Category Pills** + **New Arrivals Section**
+- Created `categories_new_arrivals_plan.md` with 3-phase plan
+- **Decisions made:**
+  - Mock data for both categories and products (API integration later)
+  - Buttons (heart/favorite, add to cart) are visual only for now
+  - Categories: `[All, Dresses, Tops, Shoes, Accessories, Sale]`
 
 ### Code Changes Made
 
-**New Files:**
-```
-lib/ui/reusable_components/timer/flash_deals_timer.dart
-lib/ui/reusable_components/product_card/flash_deal_card.dart
-lib/ui/screens/browse/widgets/flash_deals_section.dart
-```
-
 **Modified Files:**
 ```
-lib/ui/screens/browse/browse_screen.dart - Added FlashDealsSection
-lib/ui/screens/browse/widgets/browse_banner_section.dart - Shimmer skeleton + error state fix
-CLAUDE.md - Added phased execution rule
+lib/ui/screens/browse/widgets/flash_deals_section.dart - Fixed opacity clamp bug
 ```
 
 **Plan Files:**
 ```
-flash_deals_implementation_plan.md - Feature plan
-flash_deals_execution.md - Execution tracker (all phases complete)
+categories_new_arrivals_plan.md - Feature plan for categories + new arrivals (approved)
 ```
 
 ### Build Status
@@ -64,7 +43,7 @@ flash_deals_execution.md - Execution tracker (all phases complete)
 ## Project Overview
 
 ### Tech Stack
-- **Framework:** Flutter 3.10.4+
+- **Framework:** Flutter 3.38.5 (Dart 3.10.4)
 - **Language:** Dart
 - **Architecture:** Clean Architecture
 - **DI:** get_it + injectable
@@ -96,17 +75,16 @@ lib/
 │   │   ├── sign_in/
 │   │   ├── sign_up/
 │   │   ├── forgot_password/
-│   │   ├── main/                       # Main container with nav
+│   │   ├── main/                       # Main container with IndexedStack nav
 │   │   ├── browse/
 │   │   │   ├── browse_screen.dart      # ✅ Banner + Flash Deals
 │   │   │   └── widgets/
 │   │   │       ├── browse_banner_section.dart  # ✅ With shimmer skeleton
-│   │   │       └── flash_deals_section.dart    # ✅ NEW
-│   │   ├── deals/                      # TODO: Implement
-│   │   ├── shopping/                   # TODO: Implement
-│   │   ├── hub/                        # TODO: Implement
-│   │   ├── loyalty/                    # TODO: Implement
-│   │   ├── cart/                       # TODO: Implement
+│   │   │       └── flash_deals_section.dart    # ✅ With opacity fix
+│   │   ├── deals/                      # Placeholder only
+│   │   ├── shopping/                   # Placeholder only
+│   │   ├── loyalty/                    # Placeholder only
+│   │   ├── cart/                       # Placeholder only
 │   │   └── profile/                    # TODO: Implement
 │   ├── nav_bar/
 │   │   ├── custom_bottom_nav_bar.dart
@@ -120,7 +98,7 @@ lib/
 │       │   ├── promo_banner.dart       # Main carousel component
 │       │   └── banner_badge.dart       # Yellow pill badge
 │       ├── buttons/
-│       ├── category_tabs/
+│       ├── category_tabs/              # Empty - next to implement
 │       ├── dropdowns/
 │       ├── floating_emoji/
 │       ├── indicators/
@@ -130,14 +108,14 @@ lib/
 │       ├── menu_panel/
 │       ├── notification_panel/
 │       ├── product_card/
-│       │   └── flash_deal_card.dart    # ✅ NEW
-│       ├── rating_stars/
+│       │   └── flash_deal_card.dart    # Compact flash deal card
+│       ├── rating_stars/               # Empty - next to implement
 │       ├── search_bar/
 │       └── timer/
-│           └── flash_deals_timer.dart  # ✅ NEW
+│           └── flash_deals_timer.dart  # Countdown timer with animations
 ├── themes/
-│   ├── app_colors.dart                 # Centralized colors (banner colors included)
-│   ├── app_text_styles.dart            # All text styles (timer, product styles included)
+│   ├── app_colors.dart                 # Centralized colors
+│   ├── app_text_styles.dart            # All text styles
 │   ├── app_theme.dart
 │   └── themes.dart
 ├── routes/
@@ -174,30 +152,35 @@ lib/
 
 ### Banner Component Design
 - **Decision:** Carousel scrolls through `imageUrls` within a single banner (not between banners)
-- **Rationale:** Each banner has multiple background images that auto-cycle
 - **Pattern:** PageView for image carousel, content overlay stays fixed
 
 ### Text Field Mapping
 - **Decision:** Badge = `title` field, Large text = `subtitle` field
-- **Rationale:** Matches the design where badge shows "SUMMER SALE IS LIVE" (title) and large text shows "Vibe Check Your Style" (subtitle)
 
 ### Flash Deals Section
 - **Decision:** Mock data for now, API integration later
-- **Decision:** Timer uses real DateTime endTime (hardcoded 3 hours from now, backend later)
-- **Decision:** Horizontally scrollable product cards (per design reference)
-- **Decision:** Cards are simple: image + sale price + original price + stock count (no add to cart or favorites)
+- **Decision:** Timer uses real DateTime endTime (hardcoded 3 hours from now)
+- **Decision:** Horizontally scrollable product cards
+- **Decision:** Cards are simple: image + sale price + original price + stock count
+
+### Categories + New Arrivals (Planned)
+- **Decision:** Mock data for both categories and products
+- **Decision:** Buttons (heart, add to cart) are visual only - no logic
+- **Decision:** Categories: `[All, Dresses, Tops, Shoes, Accessories, Sale]`
+- **Decision:** 2-column product grid with full ProductCard components
+
+### Animation Safety
+- **Decision:** Always clamp opacity values when using curves that overshoot (easeOutBack, easeOutElastic, etc.)
+- **Lesson learned:** `Curves.easeOutBack` produces values > 1.0, which breaks `Opacity` widget assertions
 
 ### Enum Location
 - **Decision:** All enums in `lib/enums/` directory
-- **Rationale:** Centralized location makes enums easy to find and reuse
 
 ### Language System
 - **Decision:** Global language injection via Dio interceptor
-- **Rationale:** All API calls need language param, interceptor ensures consistency
 
 ### Phased Execution
-- **Decision:** Divide plans into phases, execute ONE phase at a time
-- **Rationale:** Better control, user approval between phases, tracked in execution files
+- **Decision:** Divide plans into phases, execute ONE phase at a time with user approval
 
 ### API Base URL
 - **Current:** `http://10.0.2.2:1010/api/`
@@ -250,11 +233,7 @@ class BannerApi {
 
 ### Screen Widget Pattern (Self-contained with API)
 ```dart
-class BrowseBannerSection extends StatefulWidget {
-  @override
-  State<BrowseBannerSection> createState() => _BrowseBannerSectionState();
-}
-
+class BrowseBannerSection extends StatefulWidget { ... }
 class _BrowseBannerSectionState extends State<BrowseBannerSection> {
   late final BannerApi _bannerApi;
   List<BannerDto>? _banners;
@@ -274,9 +253,10 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
 ### Animation Patterns
 ```dart
 // Shimmer skeleton: AnimationController + ShaderMask gradient sweep
-// Staggered entrance: Interval-based delays per item index
+// Staggered entrance: Interval-based delays per item index (CLAMP opacity!)
 // Digit flip: AnimatedSwitcher with SlideTransition + FadeTransition
 // Bolt wiggle: TweenSequence rotation + scale pulse
+// IMPORTANT: Always .clamp(0.0, 1.0) on opacity when using overshoot curves
 ```
 
 ---
@@ -292,37 +272,37 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
 - Forgot password screen
 
 **Navigation:**
-- Main screen container
-- Bottom navigation bar (5 tabs)
+- Main screen container (IndexedStack for tab persistence)
+- Bottom navigation bar (5 tabs: Browse, Deals, Shopping, Loyalty, Cart)
 - App header with notifications and menu
 
 **Browse Screen:**
-- Promotional banner carousel ✅
+- Promotional banner carousel (API-integrated) ✅
 - Banner shimmer skeleton loader ✅
 - Banner error state with retry ✅
 - Flash deals section with animations ✅
 - Flash deals countdown timer ✅
 - Flash deals horizontal product cards ✅
+- Flash deals opacity bug fixed ✅
 
 **Infrastructure:**
 - Theme system (light/dark)
 - Reusable components library
 - Language management system
 - Global API language injection
+- Dependency injection (get_it + injectable)
 
 ### ❌ What's NOT Implemented Yet
 
-**Browse Screen:**
+**Browse Screen (Next Up):**
+- [ ] Category pills horizontal tabs ← **NEXT (Phase 1)**
+- [ ] New Arrivals section with ProductCard ← **NEXT (Phase 2-3)**
 - [ ] Flash deals API integration (currently mock data)
-- [ ] Product categories horizontal tabs
-- [ ] New arrivals section
-- [ ] Product grid/list
 - [ ] Floating product items on banner
 
 **Other Screens:**
 - [ ] Deals screen content
 - [ ] Shopping screen content
-- [ ] Hub screen content
 - [ ] Loyalty screen content
 - [ ] Cart screen content
 - [ ] Profile screen content
@@ -337,28 +317,29 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
 
 ---
 
-## Banner Colors
-
-```dart
-// In app_colors.dart
-static const Color bannerBackground = Color(0xFFF5E1D0); // Warm beige/peach
-static const Color bannerBadgeYellow = Color(0xFFFFD93D); // Yellow badge
-static const Color bannerTitleAccent = Color(0xFFFFD93D); // Yellow for title accent
-static const Color bannerProductFrame = Color(0xFF4D4C7D); // Purple frame border
-```
-
----
-
 ## Next Steps
 
-### Immediate:
-1. **Categories Section** - Horizontal scrollable category tabs below flash deals (per design)
-2. **New Arrivals Section** - Product grid with full ProductCard components
-3. **Flash Deals API** - Create backend endpoint and integrate
+### Immediate - Categories + New Arrivals (Plan Ready, Awaiting "Execute")
 
-### Future:
+**Phase 1: Reusable Components**
+- `CategoryPillBar` - Horizontal scrollable category pills with selected/unselected states
+- `ProductCard` - Full product card (image, badges, heart, rating, name, price, add to cart button)
+- `StarRating` - 5-star rating row widget
+
+**Phase 2: New Arrivals Section Widget**
+- Title row ("New Arrivals" or category name + item count)
+- 2-column grid of ProductCards
+- Filters by selected category
+- Staggered entrance animation
+
+**Phase 3: Integration**
+- Add CategoryPillBar + NewArrivalsSection to browse_screen.dart
+- Convert BrowseScreen to StatefulWidget for category state management
+
+### After Categories + New Arrivals:
 - Product details page
 - Floating product items on banner
+- Flash deals API integration
 - Search functionality
 - Other screen content
 
@@ -431,7 +412,7 @@ Response:
 - `SecondaryButton` - Secondary action button (white with border)
 - `CustomTextField` - Text input field with label, validation, password toggle
 - `CustomSearchBar` - Read-only search bar for header
-- `LanguageSelector` - Language dropdown (English, العربية, Français)
+- `LanguageSelector` - Language dropdown (English, Arabic, French)
 - `ThemeToggleButton` - Light/dark mode toggle
 - `NotificationDotBadge` - Small dot indicator for notifications
 - `UserMenuDropdown` - Dropdown with Profile and Logout
@@ -439,15 +420,15 @@ Response:
 - `PromoBanner` - Promotional banner carousel with auto-scroll
 - `BannerBadge` - Yellow pill badge for promotional text
 - `DotIndicator` - Page indicator dots with animation
-- `FlashDealsTimer` - Countdown timer pill with animated bolt + flip-clock digits ✅ NEW
-- `FlashDealCard` - Compact product card for flash deals ✅ NEW
+- `FlashDealsTimer` - Countdown timer pill with animated bolt + flip-clock digits
+- `FlashDealCard` - Compact product card for flash deals
 
 ---
 
 ## Important Notes
 
 ### CLAUDE.md Protection
-**🔒 CRITICAL:** The `CLAUDE.md` file can ONLY be edited with explicit user permission.
+**CRITICAL:** The `CLAUDE.md` file can ONLY be edited with explicit user permission.
 
 ### Enum Location Rule
 **ALL enums must be in `lib/enums/` directory** - no exceptions.
@@ -455,6 +436,15 @@ Response:
 ### Phased Execution Rule
 Plans divided into phases, ONE phase at a time, user approval between phases. Track in `{FEATURE}_EXECUTION.md`.
 
+### Animation Opacity Safety
+**Always** use `.clamp(0.0, 1.0)` on opacity values when using curves that overshoot (easeOutBack, easeOutElastic, etc.).
+
 ### Design Reference
 Always check Magic Patterns design before implementing features:
 https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7
+
+### Browse Page Design Order (from Magic Patterns)
+1. Banner/Hero section ✅
+2. Flash Deals section ✅
+3. Category Pills (horizontal scrollable) ← NEXT
+4. New Arrivals section (2-col grid with ProductCard) ← NEXT

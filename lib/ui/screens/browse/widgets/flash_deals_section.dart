@@ -185,7 +185,7 @@ class _FlashDealsSectionState extends State<FlashDealsSection>
                         return Transform.translate(
                           offset: Offset(30 * (1 - progress), 0),
                           child: Opacity(
-                            opacity: progress,
+                            opacity: progress.clamp(0.0, 1.0),
                             child: FlashDealCard(
                               imageUrl: deal.imageUrl,
                               salePrice: deal.salePrice,
