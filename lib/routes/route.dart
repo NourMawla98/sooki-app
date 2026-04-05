@@ -10,6 +10,8 @@ import '../ui/screens/shopping/shopping_screen.dart';
 import '../ui/screens/sign_in/sign_in_screen.dart';
 import '../ui/screens/sign_up/sign_up_screen.dart';
 import '../ui/screens/splash/splash_screen.dart';
+import '../models/product.dart';
+import '../ui/screens/product_detail/product_detail_screen.dart';
 import 'route_constants.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -24,6 +26,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     shoppingScreenRoute: (_) => const ShoppingScreen(),
     loyaltyScreenRoute: (_) => const LoyaltyScreen(),
     cartScreenRoute: (_) => const CartScreen(),
+    productDetailScreenRoute: (_) {
+      final product = settings.arguments as Product;
+      return ProductDetailScreen(product: product);
+    },
   };
 
   return MaterialPageRoute(
