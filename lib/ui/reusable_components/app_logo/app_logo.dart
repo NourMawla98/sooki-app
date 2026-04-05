@@ -90,7 +90,7 @@ class AppLogo extends StatelessWidget {
 }
 
 class _AnimatedIconCircle extends StatefulWidget {
-  final IconData icon;
+  final FaIconData icon;
   final Color backgroundColor;
   final double iconSize;
   final double circleSize;

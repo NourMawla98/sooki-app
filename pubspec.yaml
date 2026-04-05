@@ -42,24 +42,24 @@ dependencies:
   fpdart: ^1.1.0
 
   # Dependency injection
-  get_it: ^7.6.0
+  get_it: ^9.2.1
   injectable: ^2.3.2
 
   # Immutable models and JSON serialization
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.8.1
 
   # Logging
   logger: ^2.0.2
 
   # Smart retry for API calls
-  dio_smart_retry: ^6.0.0
+  dio_smart_retry: ^7.0.1
 
   # Fonts
-  google_fonts: ^6.1.0
+  google_fonts: ^8.0.2
 
   # Icons
-  font_awesome_flutter: ^10.7.0
+  font_awesome_flutter: ^11.0.0
 
   # URL launcher
   url_launcher: ^6.2.5
@@ -80,7 +80,7 @@ dev_dependencies:
 
   # Code generation
   build_runner: ^2.4.7
-  freezed: ^2.4.6
+  freezed: ^3.2.5
   json_serializable: ^6.7.1
   injectable_generator: ^2.4.1
 

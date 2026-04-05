@@ -2,8 +2,14 @@
 
 **🔒 CRITICAL: This file (CLAUDE.md) can ONLY be edited with explicit permission from the user. Never edit this file unless the user specifically asks you to do so.**
 
-## Session Progress
-**IMPORTANT**: Check `.serena/memories/session_progress.md` at the start of each session to understand what was accomplished and pick up where we left off.
+## Session Progress & Memory
+**IMPORTANT**: When the user asks to "save progress" or "remember where we are", use the **memory plugin** (`C:\Users\PC\.claude\projects\C--Users-PC-Documents-GitHub-sooki-app\memory\`) to save detailed, thorough, and precise memory files. Include:
+- Exactly which phase/step was completed and which is next
+- Any files created or modified in the current session
+- Decisions made, blockers encountered, and context needed to resume
+- The current state of `flutter analyze` (pass/fail)
+
+When starting a new session, **always check MEMORY.md first** to understand what was accomplished and pick up exactly where we left off. Be thorough enough that no context is lost between sessions.
 
 ## Design Reference
 **Magic Patterns Design**: https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7

@@ -108,4 +108,38 @@ class AppColors {
   static const Color bannerBadgeYellow = Color(0xFFFFD93D); // Yellow badge
   static const Color bannerTitleAccent = Color(0xFFFFD93D); // Yellow for "Your Style"
   static const Color bannerProductFrame = Color(0xFF4D4C7D); // Purple frame border
+
+  // Verified product
+  static const Color verifiedGreen = Color(0xFF6BCB77);
+  static const Color verifiedGreenLight = Color(0xFFE8F5E9);
+  static const Color verifiedGreenBorder = Color(0xFF6BCB77);
+
+  // Discount
+  static const Color discountBadge = Color(0xFFFF6B6B);
+
+  // Deals page
+  static const Color dealsBannerDark = Color(0xFF1A1A2E);
+  static const Color dealsBannerAccent = Color(0xFFE94560);
+  static const Color freeShippingGreen = Color(0xFF00B894);
+  static const Color freeShippingGreenLight = Color(0xFF55EFC4);
+
+  // Loyalty
+  static const Color loyaltyPurple = Color(0xFF6C5CE7);
+  static const Color loyaltyPurpleLight = Color(0xFFA29BFE);
+  static const Color tierGold = Color(0xFFFFD700);
+  static const Color tierPlatinum = Color(0xFFE5E4E2);
+
+  // Reward card gradients
+  static const Color rewardGreen1 = Color(0xFF00B894);
+  static const Color rewardGreen2 = Color(0xFF55EFC4);
+  static const Color rewardYellow1 = Color(0xFFFDCB6E);
+  static const Color rewardYellow2 = Color(0xFFF6E58D);
+  static const Color rewardCoral1 = Color(0xFFFF7675);
+  static const Color rewardCoral2 = Color(0xFFFAB1A0);
+  static const Color rewardPurple1 = Color(0xFF6C5CE7);
+  static const Color rewardPurple2 = Color(0xFFA29BFE);
+
+  // Referral
+  static const Color referralGreen = Color(0xFF00B894);
+  static const Color referralGreenDark = Color(0xFF00A381);
 }

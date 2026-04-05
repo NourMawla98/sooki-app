@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
@@ -276,4 +277,57 @@ class AppTextStyles {
     color: AppColors.textTertiary,
     height: 1.4,
   );
+
+  // Section titles
+  static TextStyle get sectionTitle => GoogleFonts.poppins(
+        fontSize: 22,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textPrimary,
+      );
+
+  // Deal prices
+  static TextStyle get dealPrice => GoogleFonts.poppins(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: AppColors.accentRed,
+      );
+
+  static TextStyle get dealOriginalPrice => GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.gray400,
+        decoration: TextDecoration.lineThrough,
+      );
+
+  // Loyalty
+  static TextStyle get loyaltyPoints => GoogleFonts.poppins(
+        fontSize: 40,
+        fontWeight: FontWeight.w800,
+        color: AppColors.white,
+      );
+
+  static TextStyle get loyaltyLabel => GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.white,
+      );
+
+  static TextStyle get rewardTitle => GoogleFonts.poppins(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: AppColors.white,
+      );
+
+  static TextStyle get rewardDescription => GoogleFonts.poppins(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: AppColors.white,
+      );
+
+  // Verified badge
+  static TextStyle get verifiedBadge => GoogleFonts.poppins(
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+        color: AppColors.white,
+      );
 }
