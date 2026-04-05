@@ -3,7 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/cart_service.dart';
 import '../../services/language_service.dart';
+import '../../services/wishlist_service.dart';
 import '../dio/client/api_client.dart';
 import 'dependency_injection.config.dart';
 
@@ -41,6 +43,14 @@ Future<void> setupDependencyInjection({
   // Register pre-initialized dependencies
   serviceLocator.registerSingleton<SharedPreferences>(prefs);
   serviceLocator.registerSingleton<LanguageService>(languageService);
+
+  // Cart & Wishlist services
+  serviceLocator.registerSingleton<CartService>(
+    CartService(serviceLocator<SharedPreferences>()),
+  );
+  serviceLocator.registerSingleton<WishlistService>(
+    WishlistService(serviceLocator<SharedPreferences>()),
+  );
 
   // Register Dio client with language service
   serviceLocator.registerSingleton<Dio>(
