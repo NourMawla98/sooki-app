@@ -30,7 +30,7 @@ class CategoryPillBar extends StatelessWidget {
             onTap: () => onCategorySelected(category),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primaryPurple : AppColors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -38,6 +38,7 @@ class CategoryPillBar extends StatelessWidget {
                   color: isSelected ? AppColors.primaryPurple : AppColors.gray300,
                 ),
               ),
+              alignment: Alignment.center,
               child: Text(
                 category,
                 style: AppTextStyles.buttonSmall.copyWith(

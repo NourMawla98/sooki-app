@@ -16,14 +16,21 @@ const _defaultSizes = [
   SizeVariant(label: 'XL', isAvailable: false),
 ];
 
-// ─── Helper ──────────────────────────────────────────────────────────────────
+// ─── Image Paths ────────────────────────────────────────────────────────────
+// Bundled as local assets — emulator can't reach external HTTPS.
 
-List<String> _imageUrls(String id) => [
-      'https://picsum.photos/seed/$id/400/500',
-      'https://picsum.photos/seed/${id}_1/400/500',
-      'https://picsum.photos/seed/${id}_2/400/500',
-      'https://picsum.photos/seed/${id}_3/400/500',
-    ];
+const _imgSummerDress = 'assets/images/products/summer_dress.jpg';
+const _imgCasualTop = 'assets/images/products/casual_top.jpg';
+const _imgSneakers = 'assets/images/products/sneakers.jpg';
+const _imgHandbag = 'assets/images/products/handbag.jpg';
+const _imgFloralDress = 'assets/images/products/floral_dress.jpg';
+const _imgStripedTop = 'assets/images/products/striped_top.jpg';
+const _imgDenimJacket = 'assets/images/products/denim_jacket.jpg';
+const _imgSunglasses = 'assets/images/products/sunglasses.jpg';
+const _imgBackpack = 'assets/images/products/backpack.jpg';
+const _imgRunningShoes = 'assets/images/products/running_shoes.jpg';
+const _imgSmartWatch = 'assets/images/products/smart_watch.jpg';
+const _imgHeadphones = 'assets/images/products/headphones.jpg';
 
 // ─── Browse Products ─────────────────────────────────────────────────────────
 
@@ -38,8 +45,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 128,
     stockCount: 25,
     isNew: true,
-    imageUrls: _imageUrls('browse_1'),
-    thumbnailUrl: 'https://picsum.photos/seed/browse_1/400/500',
+    imageUrls: [_imgSummerDress],
+    thumbnailUrl: _imgSummerDress,
     colors: _defaultColors,
     sizes: _defaultSizes,
     description:
@@ -67,8 +74,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 89,
     stockCount: 40,
     isNew: true,
-    imageUrls: _imageUrls('browse_2'),
-    thumbnailUrl: 'https://picsum.photos/seed/browse_2/400/500',
+    imageUrls: [_imgCasualTop],
+    thumbnailUrl: _imgCasualTop,
     colors: _defaultColors,
     sizes: _defaultSizes,
     description:
@@ -96,8 +103,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 256,
     stockCount: 15,
     isNew: false,
-    imageUrls: _imageUrls('browse_3'),
-    thumbnailUrl: 'https://picsum.photos/seed/browse_3/400/500',
+    imageUrls: [_imgSneakers],
+    thumbnailUrl: _imgSneakers,
     colors: [
       const ColorVariant(name: 'White', hexCode: '#FFFFFF'),
       const ColorVariant(name: 'Black', hexCode: '#000000'),
@@ -135,8 +142,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 167,
     stockCount: 20,
     isNew: true,
-    imageUrls: _imageUrls('browse_4'),
-    thumbnailUrl: 'https://picsum.photos/seed/browse_4/400/500',
+    imageUrls: [_imgHandbag],
+    thumbnailUrl: _imgHandbag,
     colors: [
       const ColorVariant(name: 'Black', hexCode: '#000000'),
       const ColorVariant(name: 'Brown', hexCode: '#8B4513'),
@@ -173,8 +180,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 203,
     stockCount: 18,
     isNew: false,
-    imageUrls: _imageUrls('browse_5'),
-    thumbnailUrl: 'https://picsum.photos/seed/browse_5/400/500',
+    imageUrls: [_imgFloralDress],
+    thumbnailUrl: _imgFloralDress,
     colors: _defaultColors,
     sizes: _defaultSizes,
     description:
@@ -202,8 +209,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 95,
     stockCount: 35,
     isNew: true,
-    imageUrls: _imageUrls('browse_6'),
-    thumbnailUrl: 'https://picsum.photos/seed/browse_6/400/500',
+    imageUrls: [_imgStripedTop],
+    thumbnailUrl: _imgStripedTop,
     colors: [
       const ColorVariant(name: 'Navy/White', hexCode: '#1B1B3A'),
       const ColorVariant(name: 'Black/White', hexCode: '#000000'),
@@ -244,8 +251,8 @@ final List<Product> mockDealProducts = [
     reviewCount: 312,
     stockCount: 19,
     isVerified: false,
-    imageUrls: _imageUrls('deal_1'),
-    thumbnailUrl: 'https://picsum.photos/seed/deal_1/400/500',
+    imageUrls: [_imgDenimJacket],
+    thumbnailUrl: _imgDenimJacket,
     colors: [
       const ColorVariant(name: 'Classic Blue', hexCode: '#4169E1'),
       const ColorVariant(name: 'Dark Wash', hexCode: '#1B1B3A'),
@@ -280,8 +287,8 @@ final List<Product> mockDealProducts = [
     reviewCount: 189,
     stockCount: 8,
     isVerified: false,
-    imageUrls: _imageUrls('deal_2'),
-    thumbnailUrl: 'https://picsum.photos/seed/deal_2/400/500',
+    imageUrls: [_imgSunglasses],
+    thumbnailUrl: _imgSunglasses,
     colors: [
       const ColorVariant(name: 'Black', hexCode: '#000000'),
       const ColorVariant(name: 'Tortoise', hexCode: '#8B4513'),
@@ -319,8 +326,8 @@ final List<Product> mockDealProducts = [
     reviewCount: 234,
     stockCount: 12,
     isVerified: true,
-    imageUrls: _imageUrls('deal_3'),
-    thumbnailUrl: 'https://picsum.photos/seed/deal_3/400/500',
+    imageUrls: [_imgBackpack],
+    thumbnailUrl: _imgBackpack,
     colors: [
       const ColorVariant(name: 'Black', hexCode: '#000000'),
       const ColorVariant(name: 'Brown', hexCode: '#8B4513'),
@@ -357,8 +364,8 @@ final List<Product> mockDealProducts = [
     reviewCount: 445,
     stockCount: 31,
     isVerified: false,
-    imageUrls: _imageUrls('deal_4'),
-    thumbnailUrl: 'https://picsum.photos/seed/deal_4/400/500',
+    imageUrls: [_imgRunningShoes],
+    thumbnailUrl: _imgRunningShoes,
     colors: [
       const ColorVariant(name: 'Black/Red', hexCode: '#000000'),
       const ColorVariant(name: 'White/Blue', hexCode: '#FFFFFF'),
@@ -399,8 +406,8 @@ final List<Product> mockDealProducts = [
     reviewCount: 567,
     stockCount: 15,
     isVerified: true,
-    imageUrls: _imageUrls('deal_5'),
-    thumbnailUrl: 'https://picsum.photos/seed/deal_5/400/500',
+    imageUrls: [_imgSmartWatch],
+    thumbnailUrl: _imgSmartWatch,
     colors: [
       const ColorVariant(name: 'Space Black', hexCode: '#000000'),
       const ColorVariant(name: 'Silver', hexCode: '#C0C0C0'),
@@ -438,8 +445,8 @@ final List<Product> mockDealProducts = [
     reviewCount: 389,
     stockCount: 23,
     isVerified: true,
-    imageUrls: _imageUrls('deal_6'),
-    thumbnailUrl: 'https://picsum.photos/seed/deal_6/400/500',
+    imageUrls: [_imgHeadphones],
+    thumbnailUrl: _imgHeadphones,
     colors: [
       const ColorVariant(name: 'Black', hexCode: '#000000'),
       const ColorVariant(name: 'White', hexCode: '#FFFFFF'),
@@ -477,8 +484,8 @@ final List<Product> mockFlashDeals = [
     price: 14.0,
     originalPrice: 45.0,
     stockCount: 12,
-    imageUrls: ['https://picsum.photos/seed/flash_1/400/500'],
-    thumbnailUrl: 'https://picsum.photos/seed/flash_1/400/500',
+    imageUrls: [_imgSneakers],
+    thumbnailUrl: _imgSneakers,
   ),
   Product(
     id: 'flash_2',
@@ -488,8 +495,8 @@ final List<Product> mockFlashDeals = [
     price: 14.0,
     originalPrice: 45.0,
     stockCount: 12,
-    imageUrls: ['https://picsum.photos/seed/flash_2/400/500'],
-    thumbnailUrl: 'https://picsum.photos/seed/flash_2/400/500',
+    imageUrls: [_imgCasualTop],
+    thumbnailUrl: _imgCasualTop,
   ),
   Product(
     id: 'flash_3',
@@ -499,8 +506,8 @@ final List<Product> mockFlashDeals = [
     price: 14.0,
     originalPrice: 45.0,
     stockCount: 12,
-    imageUrls: ['https://picsum.photos/seed/flash_3/400/500'],
-    thumbnailUrl: 'https://picsum.photos/seed/flash_3/400/500',
+    imageUrls: [_imgHandbag],
+    thumbnailUrl: _imgHandbag,
   ),
   Product(
     id: 'flash_4',
@@ -510,8 +517,8 @@ final List<Product> mockFlashDeals = [
     price: 14.0,
     originalPrice: 45.0,
     stockCount: 12,
-    imageUrls: ['https://picsum.photos/seed/flash_4/400/500'],
-    thumbnailUrl: 'https://picsum.photos/seed/flash_4/400/500',
+    imageUrls: [_imgSummerDress],
+    thumbnailUrl: _imgSummerDress,
   ),
   Product(
     id: 'flash_5',
@@ -521,8 +528,8 @@ final List<Product> mockFlashDeals = [
     price: 14.0,
     originalPrice: 45.0,
     stockCount: 12,
-    imageUrls: ['https://picsum.photos/seed/flash_5/400/500'],
-    thumbnailUrl: 'https://picsum.photos/seed/flash_5/400/500',
+    imageUrls: [_imgSmartWatch],
+    thumbnailUrl: _imgSmartWatch,
   ),
 ];
 

@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../models/product.dart';
-import '../../../services/cart_service.dart';
 import '../../../services/wishlist_service.dart';
 import '../../../themes/themes.dart';
 import '../rating_stars/star_rating.dart';
@@ -27,10 +26,49 @@ class ProductCard extends StatelessWidget {
 
   static final _serviceLocator = GetIt.instance;
 
+  Widget _buildProductImage(String imageUrl) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _imagePlaceholder(),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: AppColors.gray200,
+            child: const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primaryPurple,
+              ),
+            ),
+          );
+        },
+      );
+    }
+    return Image.asset(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => _imagePlaceholder(),
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Container(
+      color: AppColors.gray200,
+      child: Center(
+        child: FaIcon(
+          FontAwesomeIcons.image,
+          color: AppColors.gray400,
+          size: 32,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final wishlistService = _serviceLocator<WishlistService>();
-    final cartService = _serviceLocator<CartService>();
 
     return GestureDetector(
       onTap: onTap,
@@ -56,7 +94,7 @@ class ProductCard extends StatelessWidget {
             _buildImageSection(wishlistService),
 
             // Info section
-            _buildInfoSection(context, cartService),
+            _buildInfoSection(),
           ],
         ),
       ),
@@ -75,33 +113,8 @@ class ProductCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Product image
-            Image.network(
-              product.thumbnailUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: AppColors.gray200,
-                child: Center(
-                  child: FaIcon(
-                    FontAwesomeIcons.image,
-                    color: AppColors.gray400,
-                    size: 32,
-                  ),
-                ),
-              ),
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  color: AppColors.gray200,
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primaryPurple,
-                    ),
-                  ),
-                );
-              },
-            ),
+            // Product image — supports both asset paths and network URLs
+            _buildProductImage(product.thumbnailUrl),
 
             // Top-left badge (discount takes priority over NEW)
             if (product.discountPercentage != null)
@@ -202,8 +215,8 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  /// Info section below the image: rating, name, price, stock, add-to-cart.
-  Widget _buildInfoSection(BuildContext context, CartService cartService) {
+  /// Info section below the image: rating, name, price, stock.
+  Widget _buildInfoSection() {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -261,36 +274,6 @@ class ProductCard extends StatelessWidget {
               style: AppTextStyles.productStock,
             ),
           ],
-          const SizedBox(height: 8),
-
-          // Add to Cart button
-          GestureDetector(
-            onTap: () {
-              cartService.addItem(product);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Added to cart!'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
-            },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.primaryPurple),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  'Add to Cart',
-                  style: AppTextStyles.buttonSmall.copyWith(
-                    color: AppColors.primaryPurple,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

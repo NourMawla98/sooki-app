@@ -84,7 +84,7 @@ class _NewArrivalsSectionState extends State<NewArrivalsSection>
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.58,
+                  childAspectRatio: 0.68,
                 ),
                 itemCount: widget.products.length,
                 itemBuilder: (context, index) {
