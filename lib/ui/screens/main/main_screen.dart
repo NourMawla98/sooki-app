@@ -18,12 +18,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0; // Default to Browse tab
 
-  final List<Widget> _pages = const [
-    BrowseScreen(),
-    DealsScreen(),
-    ShoppingScreen(),
-    LoyaltyScreen(),
-    CartScreen(),
+  late final List<Widget> _pages = [
+    const BrowseScreen(),
+    const DealsScreen(),
+    const ShoppingScreen(),
+    const LoyaltyScreen(),
+    CartScreen(onSwitchToBrowse: () => _onTabTapped(0)),
   ];
 
   void _onTabTapped(int index) {
