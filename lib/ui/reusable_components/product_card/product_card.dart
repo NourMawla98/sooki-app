@@ -217,64 +217,63 @@ class ProductCard extends StatelessWidget {
 
   /// Info section below the image: rating, name, price, stock.
   Widget _buildInfoSection() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Star rating
-          StarRating(rating: product.rating, size: 12, showValue: false),
-          const SizedBox(height: 6),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Star rating
+            StarRating(rating: product.rating, size: 12, showValue: false),
 
-          // Product name (with optional verified checkmark)
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  product.name,
-                  style: AppTextStyles.productName,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+            // Product name (with optional verified checkmark)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    product.name,
+                    style: AppTextStyles.productName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              if (product.isVerified) ...[
-                const SizedBox(width: 4),
-                const FaIcon(
-                  FontAwesomeIcons.circleCheck,
-                  size: 12,
-                  color: AppColors.verifiedGreen,
-                ),
+                if (product.isVerified) ...[
+                  const SizedBox(width: 4),
+                  const FaIcon(
+                    FontAwesomeIcons.circleCheck,
+                    size: 12,
+                    color: AppColors.verifiedGreen,
+                  ),
+                ],
               ],
-            ],
-          ),
-          const SizedBox(height: 6),
-
-          // Price row
-          Row(
-            children: [
-              Text(
-                '\$${product.price.toStringAsFixed(2)}',
-                style: AppTextStyles.productPrice,
-              ),
-              if (product.originalPrice != null) ...[
-                const SizedBox(width: 6),
-                Text(
-                  '\$${product.originalPrice!.toStringAsFixed(2)}',
-                  style: AppTextStyles.productOriginalPrice,
-                ),
-              ],
-            ],
-          ),
-
-          // Stock count
-          if (showStock && product.stockCount > 0) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${product.stockCount} left',
-              style: AppTextStyles.productStock,
             ),
+
+            // Price row
+            Row(
+              children: [
+                Text(
+                  '\$${product.price.toStringAsFixed(2)}',
+                  style: AppTextStyles.productPrice,
+                ),
+                if (product.originalPrice != null) ...[
+                  const SizedBox(width: 6),
+                  Text(
+                    '\$${product.originalPrice!.toStringAsFixed(2)}',
+                    style: AppTextStyles.productOriginalPrice,
+                  ),
+                ],
+              ],
+            ),
+
+            // Stock count
+            if (showStock && product.stockCount > 0)
+              Text(
+                '${product.stockCount} left',
+                style: AppTextStyles.productStock,
+              ),
           ],
-        ],
+        ),
       ),
     );
   }

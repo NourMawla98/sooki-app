@@ -60,7 +60,7 @@ class _DealsBannerSectionState extends State<DealsBannerSection> {
         bottomRight: Radius.circular(16),
       ),
       child: SizedBox(
-        height: 220,
+        height: 240,
         width: double.infinity,
         child: Stack(
           children: [
@@ -125,9 +125,10 @@ class _BannerPage extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Yellow pill badge — top-left aligned
             Align(
@@ -161,8 +162,6 @@ class _BannerPage extends StatelessWidget {
               ),
             ),
 
-            const Spacer(),
-
             // Large heading — centered
             Text(
               'MEGA DEALS',
@@ -171,8 +170,6 @@ class _BannerPage extends StatelessWidget {
                 letterSpacing: 2,
               ),
             ),
-
-            const Spacer(),
 
             // Flash deals timer — centered
             FlashDealsTimer(

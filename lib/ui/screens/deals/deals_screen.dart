@@ -15,7 +15,7 @@ class DealsScreen extends StatelessWidget {
           DealsBannerSection(),
           SizedBox(height: 16),
           FreeShippingBanner(),
-          SizedBox(height: 24),
+          SizedBox(height: 12),
           HotDealsSection(),
           SizedBox(height: 100),
         ],

@@ -45,7 +45,7 @@ class _HotDealsSectionState extends State<HotDealsSection> {
       children: [
         // Header row
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
               Text(
@@ -83,7 +83,7 @@ class _HotDealsSectionState extends State<HotDealsSection> {
         const SizedBox(height: 12),
         // Product grid
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
