@@ -144,9 +144,126 @@ class AppTheme {
     );
   }
 
-  /// Dark theme configuration (for future implementation)
+  /// Dark theme configuration
   static ThemeData get darkTheme {
-    // TODO: Implement dark theme when needed
-    return lightTheme;
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+
+      colorScheme: ColorScheme.dark(
+        primary: AppColors.lightPurple,
+        secondary: AppColors.accentRed,
+        tertiary: AppColors.accentGreen,
+        surface: const Color(0xFF1E1E2E),
+        error: AppColors.error,
+        onPrimary: AppColors.white,
+        onSecondary: AppColors.white,
+        onSurface: AppColors.white,
+        onError: AppColors.white,
+      ),
+
+      scaffoldBackgroundColor: const Color(0xFF121220),
+
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFF1E1E2E),
+        foregroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: false,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        titleTextStyle: AppTextStyles.heading3.copyWith(
+          color: AppColors.white,
+        ),
+      ),
+
+      textTheme: TextTheme(
+        displayLarge: AppTextStyles.heading1.copyWith(color: AppColors.white),
+        displayMedium: AppTextStyles.heading2.copyWith(color: AppColors.white),
+        displaySmall: AppTextStyles.heading3.copyWith(color: AppColors.white),
+        headlineMedium:
+            AppTextStyles.heading4.copyWith(color: AppColors.white),
+        bodyLarge: AppTextStyles.bodyLarge.copyWith(color: AppColors.white),
+        bodyMedium: AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
+        bodySmall: AppTextStyles.bodySmall.copyWith(color: AppColors.gray300),
+        labelLarge: AppTextStyles.buttonLarge,
+        labelMedium:
+            AppTextStyles.label.copyWith(color: AppColors.white),
+        labelSmall:
+            AppTextStyles.caption.copyWith(color: AppColors.gray300),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.lightPurple,
+          foregroundColor: AppColors.white,
+          elevation: 4,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: AppTextStyles.buttonMedium,
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF2A2A3E),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF3A3A4E)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF3A3A4E)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: AppColors.lightPurple,
+            width: 2,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+        hintStyle: AppTextStyles.inputHint.copyWith(color: AppColors.gray500),
+        labelStyle:
+            AppTextStyles.inputLabel.copyWith(color: AppColors.gray300),
+      ),
+
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1E1E2E),
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        margin: const EdgeInsets.all(8),
+      ),
+
+      iconTheme: const IconThemeData(
+        color: AppColors.lightPurple,
+        size: 24,
+      ),
+
+      dividerTheme: const DividerThemeData(
+        color: Color(0xFF2A2A3E),
+        thickness: 1,
+        space: 1,
+      ),
+
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: const Color(0xFF1E1E2E),
+        selectedItemColor: AppColors.accentRed,
+        unselectedItemColor: AppColors.gray400,
+        selectedLabelStyle: AppTextStyles.navLabelActive,
+        unselectedLabelStyle: AppTextStyles.navLabel,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+    );
   }
 }

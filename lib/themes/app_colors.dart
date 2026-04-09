@@ -142,4 +142,15 @@ class AppColors {
   // Referral
   static const Color referralGreen = Color(0xFF00B894);
   static const Color referralGreenDark = Color(0xFF00A381);
+
+  // Profile
+  static const Color profileCardPurple = Color(0xFF4D4C7D);
+  static const Color profileCardPurpleLight = Color(0xFF6B6AA3);
+  static const Color profileIconOrange = Color(0xFFFF6348);
+  static const Color profileIconGreen = Color(0xFF2ED573);
+  static const Color profileIconPink = Color(0xFFFF4757);
+  static const Color profileIconYellow = Color(0xFFFFA502);
+  static const Color profileIconTeal = Color(0xFF1E90FF);
+  static const Color profileIconGray = Color(0xFF747D8C);
+  static const Color profileIconHelpPink = Color(0xFFFF6B81);
 }

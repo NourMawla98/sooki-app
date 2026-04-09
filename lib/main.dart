@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'routes/route_exports.dart' as router;
 import 'services/language_service.dart';
+import 'services/theme_service.dart';
 import 'themes/themes.dart';
 import 'ui/reusable_components/app_logo/app_logo.dart';
 
@@ -30,12 +31,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sooki',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      onGenerateRoute: router.generateRoute,
-      initialRoute: router.splashScreenRoute,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          title: 'Sooki',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeService.instance.themeMode,
+          onGenerateRoute: router.generateRoute,
+          initialRoute: router.splashScreenRoute,
+        );
+      },
     );
   }
 }

@@ -49,8 +49,9 @@ class _BrowseBannerSectionState extends State<BrowseBannerSection> {
   }
 
   void _onShopNowPressed(String redirectionRoute) {
-    // TODO: Navigate to the redirection route
-    // Navigator.pushNamed(context, redirectionRoute);
+    if (redirectionRoute.isNotEmpty) {
+      Navigator.pushNamed(context, redirectionRoute);
+    }
   }
 
   @override
