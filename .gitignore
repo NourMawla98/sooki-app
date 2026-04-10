@@ -53,3 +53,4 @@ app.*.map.json
 *.md
 !CLAUDE.md
 !CLAUDE_SESSION.md
+/.superpowers
