@@ -113,7 +113,18 @@ lib/routes/
 
 **Why**: Centralized routing supports dynamic routes from backend, maintains clean architecture, and follows the virtual-mall-app pattern.
 
-### 5. Planning Workflow
+### 5. Design & Visual Workflow
+**NEVER use space / cosmic / galaxy / orbit / planets / stars / nebula imagery as a design reference, metaphor, or inspiration.** Not as a home-screen paradigm, not as a background, not as a brand aesthetic, not even as a throwaway mockup option. Do not propose it. Do not include it among A/B/C choices.
+
+**ALWAYS use the Visual Companion for any design, UI, or brainstorming work.**
+- Start the visual companion server (if not already running) and generate mockups/comparisons as HTML
+- After writing a mockup file, **give me the server URL** so I can open it in my own browser — do NOT render it in Playwright
+- Applies to: design brainstorming, layout comparisons, color/theme choices, component mockups, screen redesigns, side-by-side A/B/C options
+- Prefer visuals over text descriptions for anything that would be easier to understand by looking than reading
+
+**ALWAYS include previously-agreed-on sections when designing a new section.** When brainstorming section N, every mockup must render sections 0 through N-1 above it (using the variants/options already locked), so the full picture is visible. Never show a new section in isolation. Context stacks.
+
+### 6. Planning Workflow
 **When asked to plan a feature or implementation:**
 1. **IMMEDIATELY** create a markdown file in the **root folder** with an appropriate descriptive title (e.g., `feature_name_plan.md`)
 2. If you need clarifications:
