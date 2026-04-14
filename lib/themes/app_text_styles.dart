@@ -330,4 +330,50 @@ class AppTextStyles {
         fontWeight: FontWeight.w700,
         color: AppColors.white,
       );
+
+  // ─── Electric Aurora Text Styles ────────────────────────────────────────────
+  // Editorial serif — used in home Section 4 ("The Cover") and auth headings.
+  static TextStyle get editorialTitle => GoogleFonts.playfairDisplay(
+        fontSize: 28,
+        fontWeight: FontWeight.w900,
+        fontStyle: FontStyle.italic,
+        color: AppColors.white,
+        height: 1.15,
+      );
+
+  static TextStyle get editorialKicker => const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+        color: AppColors.auroraPink,
+        letterSpacing: 2.5,
+        height: 1.2,
+      );
+
+  // Monospace price/counter — used by floating price tags and aurora counters.
+  static const TextStyle auroraMonoPrice = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+    fontFamily: 'monospace',
+    height: 1.0,
+  );
+
+  // Small pill/chip label for aurora sections ("TONIGHT'S EDIT", "AI PICKED",
+  // splash tagline).
+  static const TextStyle auroraChipLabel = TextStyle(
+    fontSize: 9,
+    fontWeight: FontWeight.w800,
+    color: AppColors.white,
+    letterSpacing: 1.2,
+    height: 1.0,
+  );
+
+  // Aurora tagline — used on splash under the logo.
+  static TextStyle get auroraTagline => const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: AppColors.white,
+        letterSpacing: 3.0,
+        height: 1.4,
+      );
 }
