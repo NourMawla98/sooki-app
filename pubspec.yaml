@@ -38,6 +38,9 @@ dependencies:
   # HTTP client
   dio: ^5.4.0
 
+  # Internationalization / localization
+  easy_localization: ^3.0.7
+
   # Functional programming for error handling
   fpdart: ^1.1.0
 
@@ -97,6 +100,7 @@ flutter:
 
   assets:
     - assets/images/products/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
