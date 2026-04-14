@@ -153,4 +153,28 @@ class AppColors {
   static const Color profileIconTeal = Color(0xFF1E90FF);
   static const Color profileIconGray = Color(0xFF747D8C);
   static const Color profileIconHelpPink = Color(0xFFFF6B81);
+
+  // ─── Electric Aurora Design Tokens ──────────────────────────────────────────
+  // Shared by splash, auth, and home-screen Electric Aurora surfaces.
+  static const Color auroraDeepBase = Color(0xFF0A0A18);
+  static const Color auroraPink = Color(0xFFFF00C8);
+  static const Color auroraPurple = Color(0xFF7C3AED);
+  static const Color auroraElectricBlue = Color(0xFF0096FF);
+
+  // Soft glow variants (used for RadialGradient background blobs + glass borders)
+  static Color get auroraPinkGlow => auroraPink.withValues(alpha: 0.30);
+  static Color get auroraPinkGlowStrong => auroraPink.withValues(alpha: 0.45);
+  static Color get auroraPurpleGlow => auroraPurple.withValues(alpha: 0.30);
+  static Color get auroraBlueGlow => auroraElectricBlue.withValues(alpha: 0.30);
+  static Color get auroraGlass => black.withValues(alpha: 0.55);
+
+  // Signature aurora gradient (pink → purple → blue)
+  static const List<Color> auroraCartButtonGradient = [
+    auroraPink,
+    auroraPurple,
+    auroraElectricBlue,
+  ];
+
+  // Inverted Aurora (light theme base — NOT pure white)
+  static const Color auroraLightBase = Color(0xFFF8F8FC);
 }
