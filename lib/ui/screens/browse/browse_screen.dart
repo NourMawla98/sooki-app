@@ -1,36 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/mock_products.dart';
-import '../../../models/product.dart';
-import '../../reusable_components/category_tabs/category_pill_bar.dart';
-import 'widgets/browse_banner_section.dart';
-import 'widgets/flash_deals_section.dart';
-import 'widgets/new_arrivals_section.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/app_text_styles.dart';
+import 'widgets/editorial_cover.dart';
+import 'widgets/for_you_deck.dart';
+import 'widgets/live_ticker.dart';
+import 'widgets/rotating_smart_hero.dart';
+import 'widgets/trending_now_section.dart';
 
-class BrowseScreen extends StatefulWidget {
+class BrowseScreen extends StatelessWidget {
   const BrowseScreen({super.key});
-
-  @override
-  State<BrowseScreen> createState() => _BrowseScreenState();
-}
-
-class _BrowseScreenState extends State<BrowseScreen> {
-  String _selectedCategory = 'All';
-  final List<String> _categories = const [
-    'All',
-    'Dresses',
-    'Tops',
-    'Shoes',
-    'Accessories',
-    'Sale',
-  ];
-
-  List<Product> get _filteredProducts {
-    if (_selectedCategory == 'All') return mockBrowseProducts;
-    return mockBrowseProducts
-        .where((p) => p.category == _selectedCategory)
-        .toList();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,37 +18,56 @@ class _BrowseScreenState extends State<BrowseScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Banner carousel (edge-to-edge, no top padding)
-            const BrowseBannerSection(),
+            // Section 1 — Live announcement ticker
+            LiveTicker(),
 
-            const SizedBox(height: 20),
+            // Section 2 — Rotating aurora hero banner
+            RotatingSmartHero(),
 
-            // Flash deals section
-            const FlashDealsSection(),
+            // Section 3 — Trending Now (horizontal heat-glow card scroll)
+            TrendingNowSection(),
 
-            const SizedBox(height: 24),
+            // Section 4 — Editorial Cover (moody full-bleed editorial card)
+            EditorialCover(),
 
-            // Category filter pills
-            CategoryPillBar(
-              categories: _categories,
-              selectedCategory: _selectedCategory,
-              onCategorySelected: (category) {
-                setState(() => _selectedCategory = category);
-              },
-            ),
+            // Section 5 — For You Deck (auto-rotating AI-picked card)
+            ForYouDeck(),
 
-            const SizedBox(height: 16),
+            // ⚠️ TEMP preview of the For You skeleton — remove once approved.
+            _ForYouSkeletonPreview(),
 
-            // New arrivals product grid
-            NewArrivalsSection(
-              products: _filteredProducts,
-              selectedCategory: _selectedCategory,
-            ),
-
-            const SizedBox(height: 100), // bottom padding for nav bar
+            SizedBox(height: 100), // bottom padding for nav bar
           ],
         ),
       ),
+    );
+  }
+}
+
+/// ⚠️ TEMPORARY preview block — shows the For You deck skeleton below the
+/// real card. Delete this widget and its call-site once approved.
+class _ForYouSkeletonPreview extends StatelessWidget {
+  const _ForYouSkeletonPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+          child: Text(
+            'SKELETON LOADER SAMPLE',
+            style: AppTextStyles.captionSmall.copyWith(
+              color: AppColors.auroraPink,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2.0,
+            ),
+          ),
+        ),
+        const ForYouDeckSkeleton(),
+      ],
     );
   }
 }

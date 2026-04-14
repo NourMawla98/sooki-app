@@ -29,7 +29,7 @@ class AppLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('S', style: textStyle),
+        Text('S', style: _glow(textStyle, AppColors.auroraElectricBlue)),
         _AnimatedIconCircle(
           icon: FontAwesomeIcons.bagShopping,
           backgroundColor: AppColors.logoShoppingBag,
@@ -52,12 +52,21 @@ class AppLogo extends StatelessWidget {
           animationType: _AnimationType.downUp,
         ),
 
-        Text('K', style: textStyle),
+        Text('K', style: _glow(textStyle, AppColors.auroraPurple)),
 
-        Text('I', style: textStyle),
+        Text('I', style: _glow(textStyle, AppColors.auroraPink)),
       ],
     );
   }
+
+  /// Recolors a logo letter and adds a matching aurora glow.
+  TextStyle _glow(TextStyle base, Color color) => base.copyWith(
+        color: color,
+        shadows: [
+          Shadow(color: color.withValues(alpha: 0.7), blurRadius: 14),
+          Shadow(color: color.withValues(alpha: 0.4), blurRadius: 24),
+        ],
+      );
 
   _LogoConfig _getLogoConfig(LogoSize size) {
     switch (size) {
@@ -170,10 +179,9 @@ class _AnimatedIconCircleState extends State<_AnimatedIconCircle>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.shadowMedium,
-                  blurRadius: 8,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: widget.backgroundColor.withValues(alpha: 0.55),
+                  blurRadius: 12,
+                  spreadRadius: 1,
                 ),
               ],
             ),

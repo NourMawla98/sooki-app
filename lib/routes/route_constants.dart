@@ -32,3 +32,4 @@ const String privacyPolicyScreenRoute = 'privacy_policy';
 const String liveChatScreenRoute = 'live_chat';
 const String emailSupportScreenRoute = 'email_support';
 const String searchScreenRoute = 'search';
+const String itemDetailsScreenRoute = 'item_details';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_colors.dart';
+import 'app_fonts.dart';
 import 'app_text_styles.dart';
 
 /// Main theme configuration for the Sooki app
@@ -30,12 +31,12 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.backgroundLight,
 
       // App Bar Theme
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.white,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         centerTitle: false,
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
@@ -43,18 +44,21 @@ class AppTheme {
         titleTextStyle: AppTextStyles.heading3,
       ),
 
-      // Text Theme
-      textTheme: const TextTheme(
-        displayLarge: AppTextStyles.heading1,
-        displayMedium: AppTextStyles.heading2,
-        displaySmall: AppTextStyles.heading3,
-        headlineMedium: AppTextStyles.heading4,
-        bodyLarge: AppTextStyles.bodyLarge,
-        bodyMedium: AppTextStyles.bodyMedium,
-        bodySmall: AppTextStyles.bodySmall,
-        labelLarge: AppTextStyles.buttonLarge,
-        labelMedium: AppTextStyles.label,
-        labelSmall: AppTextStyles.caption,
+      // Text Theme — primary font applied via AppFonts so any Text widget
+      // that reads from Theme.of(context).textTheme inherits DM Sans.
+      textTheme: AppFonts.applyPrimary(
+        TextTheme(
+          displayLarge: AppTextStyles.heading1,
+          displayMedium: AppTextStyles.heading2,
+          displaySmall: AppTextStyles.heading3,
+          headlineMedium: AppTextStyles.heading4,
+          bodyLarge: AppTextStyles.bodyLarge,
+          bodyMedium: AppTextStyles.bodyMedium,
+          bodySmall: AppTextStyles.bodySmall,
+          labelLarge: AppTextStyles.buttonLarge,
+          labelMedium: AppTextStyles.label,
+          labelSmall: AppTextStyles.caption,
+        ),
       ),
 
       // Button Theme
@@ -179,20 +183,24 @@ class AppTheme {
         ),
       ),
 
-      textTheme: TextTheme(
-        displayLarge: AppTextStyles.heading1.copyWith(color: AppColors.white),
-        displayMedium: AppTextStyles.heading2.copyWith(color: AppColors.white),
-        displaySmall: AppTextStyles.heading3.copyWith(color: AppColors.white),
-        headlineMedium:
-            AppTextStyles.heading4.copyWith(color: AppColors.white),
-        bodyLarge: AppTextStyles.bodyLarge.copyWith(color: AppColors.white),
-        bodyMedium: AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
-        bodySmall: AppTextStyles.bodySmall.copyWith(color: AppColors.gray300),
-        labelLarge: AppTextStyles.buttonLarge,
-        labelMedium:
-            AppTextStyles.label.copyWith(color: AppColors.white),
-        labelSmall:
-            AppTextStyles.caption.copyWith(color: AppColors.gray300),
+      textTheme: AppFonts.applyPrimary(
+        TextTheme(
+          displayLarge:
+              AppTextStyles.heading1.copyWith(color: AppColors.white),
+          displayMedium:
+              AppTextStyles.heading2.copyWith(color: AppColors.white),
+          displaySmall:
+              AppTextStyles.heading3.copyWith(color: AppColors.white),
+          headlineMedium:
+              AppTextStyles.heading4.copyWith(color: AppColors.white),
+          bodyLarge: AppTextStyles.bodyLarge.copyWith(color: AppColors.white),
+          bodyMedium:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
+          bodySmall: AppTextStyles.bodySmall.copyWith(color: AppColors.gray300),
+          labelLarge: AppTextStyles.buttonLarge,
+          labelMedium: AppTextStyles.label.copyWith(color: AppColors.white),
+          labelSmall: AppTextStyles.caption.copyWith(color: AppColors.gray300),
+        ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(

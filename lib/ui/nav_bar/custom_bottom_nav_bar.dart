@@ -1,13 +1,20 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../themes/themes.dart';
-import 'widget/pulsing_shopping_button.dart';
-import 'widget/rainbow_bar.dart';
+import '../../services/theme_service.dart';
+import '../../themes/themes.dart';
+import '../reusable_components/aurora/aurora_bar_line.dart';
+import '../reusable_components/aurora/aurora_shopping_fab.dart';
 
+/// Bottom navigation bar with the Electric Aurora "Glow Bar" treatment:
+/// aurora glass background, animated 2px aurora gradient line on top, 5
+/// tabs (Browse / Deals / Shop-FAB / Loyalty / Cart), and a 60px circular
+/// aurora-gradient FAB centered above the bar.
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTap;
+  final ValueChanged<int> onTap;
 
   const CustomBottomNavBar({
     super.key,
@@ -17,137 +24,219 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.topCenter,
-      children: [
-        // Bottom navigation bar (wrapped for rounded corners with rainbow bar inside)
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowDark,
-                blurRadius: 10,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Rainbow bar inside navbar
-                const RainbowBar(),
-                Theme(
-                  data: ThemeData(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final barBg = isDark
+            ? AppColors.auroraDeepBase.withValues(alpha: 0.95)
+            : AppColors.white.withValues(alpha: 0.95);
+        final inactiveColor = isDark
+            ? AppColors.white
+            : AppColors.primaryPurple.withValues(alpha: 0.5);
+        final activeColor = AppColors.auroraElectricBlue;
+        final shadowColor = isDark
+            ? AppColors.black.withValues(alpha: 0.45)
+            : AppColors.black.withValues(alpha: 0.08);
+
+        return Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
+          children: [
+            // Glass bar — backdrop-blurred background with aurora line on top.
+            ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: barBg,
+                    boxShadow: [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 16,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
                   ),
-                  child: BottomNavigationBar(
-                    currentIndex: currentIndex == 2 ? 2 : currentIndex,
-                    onTap: (index) {
-                      if (index == 2) {
-                        return;
-                      }
-                      onTap(index);
-                    },
-                    type: BottomNavigationBarType.fixed,
-                    backgroundColor: Colors.transparent,
-                    selectedItemColor: AppColors.accentRed,
-                    unselectedItemColor: AppColors.textSecondary,
-                    selectedLabelStyle: AppTextStyles.navLabelActive,
-                    unselectedLabelStyle: AppTextStyles.navLabel,
-                    elevation: 0,
-                    showSelectedLabels: true,
-                    showUnselectedLabels: true,
-                    enableFeedback: true,
-                    items: [
-                      // Browse
-                      BottomNavigationBarItem(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(FontAwesomeIcons.solidHouse, size: 20),
-                        ),
-                        activeIcon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(FontAwesomeIcons.solidHouse, size: 20),
-                        ),
-                        label: 'Browse',
-                      ),
-                      // Deals
-                      BottomNavigationBarItem(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(FontAwesomeIcons.bolt, size: 20),
-                        ),
-                        activeIcon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(FontAwesomeIcons.bolt, size: 20),
-                        ),
-                        label: 'Deals',
-                      ),
-                      // Placeholder for middle button (Shopping)
-                      const BottomNavigationBarItem(
-                        icon: SizedBox(width: 48), // Empty space for FAB
-                        label: '',
-                      ),
-                      // Loyalty
-                      BottomNavigationBarItem(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(FontAwesomeIcons.gift, size: 20),
-                        ),
-                        activeIcon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(FontAwesomeIcons.gift, size: 20),
-                        ),
-                        label: 'Loyalty',
-                      ),
-                      // Cart
-                      BottomNavigationBarItem(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(
-                            FontAwesomeIcons.cartShopping,
-                            size: 20,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const AuroraBarLine(),
+                      SafeArea(
+                        top: false,
+                        child: SizedBox(
+                          height: 68,
+                          child: Row(
+                            children: [
+                              _NavTab(
+                                icon: FontAwesomeIcons.house,
+                                label: 'Browse',
+                                isActive: currentIndex == 0,
+                                activeColor: activeColor,
+                                inactiveColor: inactiveColor,
+                                isDark: isDark,
+                                onTap: () => onTap(0),
+                              ),
+                              _NavTab(
+                                icon: FontAwesomeIcons.bolt,
+                                label: 'Deals',
+                                isActive: currentIndex == 1,
+                                activeColor: activeColor,
+                                inactiveColor: inactiveColor,
+                                isDark: isDark,
+                                onTap: () => onTap(1),
+                              ),
+                              // Placeholder for the FAB.
+                              const Expanded(child: SizedBox.shrink()),
+                              _NavTab(
+                                icon: FontAwesomeIcons.gift,
+                                label: 'Loyalty',
+                                isActive: currentIndex == 3,
+                                activeColor: activeColor,
+                                inactiveColor: inactiveColor,
+                                isDark: isDark,
+                                onTap: () => onTap(3),
+                              ),
+                              _NavTab(
+                                icon: FontAwesomeIcons.cartShopping,
+                                label: 'Cart',
+                                isActive: currentIndex == 4,
+                                activeColor: activeColor,
+                                inactiveColor: inactiveColor,
+                                isDark: isDark,
+                                onTap: () => onTap(4),
+                              ),
+                            ],
                           ),
                         ),
-                        activeIcon: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: FaIcon(
-                            FontAwesomeIcons.cartShopping,
-                            size: 20,
-                          ),
-                        ),
-                        label: 'Cart',
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+            // Centered pulsing aurora FAB, overflowing above the bar.
+            Positioned(
+              top: -24,
+              child: AuroraShoppingFab(
+                isSelected: currentIndex == 2,
+                onTap: () => onTap(2),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 
-        // Pulsing shopping button positioned above nav bar
-        // 40% above rainbow bar, 60% below
-        Positioned(
-          top: -20,
-          child: PulsingShoppingButton(
-            isSelected: currentIndex == 2,
-            onTap: () => onTap(2),
-          ),
+class _NavTab extends StatefulWidget {
+  final FaIconData icon;
+  final String label;
+  final bool isActive;
+  final Color activeColor;
+  final Color inactiveColor;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _NavTab({
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  State<_NavTab> createState() => _NavTabState();
+}
+
+class _NavTabState extends State<_NavTab>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(
+    duration: const Duration(milliseconds: 1600),
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isActive) _pulse.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(covariant _NavTab old) {
+    super.didUpdateWidget(old);
+    if (widget.isActive && !_pulse.isAnimating) {
+      _pulse.forward(from: 0).then((_) => _pulse.repeat(reverse: true));
+    } else if (!widget.isActive && _pulse.isAnimating) {
+      _pulse.stop();
+      _pulse.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.isActive ? widget.activeColor : widget.inactiveColor;
+    return Expanded(
+      child: InkWell(
+        onTap: widget.onTap,
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: Colors.transparent,
+        child: AnimatedBuilder(
+          animation: _pulse,
+          builder: (context, _) {
+            final t = _pulse.value;
+            final baseAlpha = widget.isDark ? 0.35 : 0.20;
+            final peakAlpha = widget.isDark ? 0.75 : 0.45;
+            final alpha = baseAlpha + (peakAlpha - baseAlpha) * t;
+            final iconBlur = 6 + 8 * t;
+            final labelBlur = 4 + 6 * t;
+            final scale = 1 + 0.08 * t;
+            final glowShadow = Shadow(
+              color: widget.activeColor.withValues(alpha: alpha),
+              blurRadius: iconBlur,
+            );
+            final labelShadow = Shadow(
+              color: widget.activeColor.withValues(alpha: alpha * 0.9),
+              blurRadius: labelBlur,
+            );
+            return Transform.scale(
+              scale: widget.isActive ? scale : 1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FaIcon(
+                    widget.icon,
+                    size: 20,
+                    color: color,
+                    shadows: widget.isActive ? [glowShadow] : null,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.label,
+                    style: (widget.isActive
+                            ? AppTextStyles.navLabelActive
+                            : AppTextStyles.navLabel)
+                        .copyWith(
+                      color: color,
+                      shadows: widget.isActive ? [labelShadow] : null,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
-      ],
+      ),
     );
   }
 }

@@ -59,8 +59,10 @@ class AppColors {
   static const Color borderDark = gray300;
 
   // Logo Colors
-  static const Color logoShoppingBag = accentRed;
-  static const Color logoDeliveryTruck = accentGreen;
+  static const Color logoCoral = Color(0xFFFF5E8A);
+  static const Color logoTeal = Color(0xFF00D4C5);
+  static const Color logoShoppingBag = logoCoral;
+  static const Color logoDeliveryTruck = logoTeal;
   static const Color logoText = primaryPurple;
 
   // Gradient Colors
@@ -160,6 +162,7 @@ class AppColors {
   static const Color auroraPink = Color(0xFFFF00C8);
   static const Color auroraPurple = Color(0xFF7C3AED);
   static const Color auroraElectricBlue = Color(0xFF0096FF);
+  static const Color auroraElectricBlueLight = Color(0xFF2AB5FF);
 
   // Soft glow variants (used for RadialGradient background blobs + glass borders)
   static Color get auroraPinkGlow => auroraPink.withValues(alpha: 0.30);
@@ -167,6 +170,8 @@ class AppColors {
   static Color get auroraPurpleGlow => auroraPurple.withValues(alpha: 0.30);
   static Color get auroraBlueGlow => auroraElectricBlue.withValues(alpha: 0.30);
   static Color get auroraGlass => black.withValues(alpha: 0.55);
+  // Light-mode glass fill (semi-transparent white for aurora surfaces in light theme).
+  static Color get auroraLightGlass => white.withValues(alpha: 0.65);
 
   // Signature aurora gradient (pink → purple → blue)
   static const List<Color> auroraCartButtonGradient = [
@@ -177,4 +182,15 @@ class AppColors {
 
   // Inverted Aurora (light theme base — NOT pure white)
   static const Color auroraLightBase = Color(0xFFF8F8FC);
+
+  // Splash dim-aurora palette (softer than auroraDeepBase — used on splash
+  // gradient top/bottom; `splashDimViolet` is the mid stop for the tint).
+  static const Color splashDimBase = Color(0xFF12121F);
+  static const Color splashDimViolet = Color(0xFF1A1430);
+
+  // ─── Dark Theme Neutrals (for ThemedColors) ─────────────────────────────
+  static const Color darkBackground = Color(0xFF121220);
+  static const Color darkSurface = Color(0xFF1E1E2E);
+  static const Color darkElevatedSurface = Color(0xFF24243A);
+  static const Color darkBorder = Color(0xFF2A2A3E);
 }

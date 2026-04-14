@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../routes/route_constants.dart';
-import '../../../themes/themes.dart';
+import '../../../services/theme_service.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
+import '../../reusable_components/floating_emoji/floating_emoji.dart';
+import 'widgets/aurora_glow_blob.dart';
 import 'widgets/pulsing_dots.dart';
+
+const bool _kAutoNavigate = true;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,15 +22,15 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _slideAnimation;
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeAnimation;
+  late final Animation<double> _slideAnimation;
+  Timer? _navigateTimer;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize fade and slide animations
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -44,99 +50,127 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Start animations
     _fadeController.forward();
 
-    // Navigate to sign-up screen after 2 seconds
-    Timer(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, signUpScreenRoute);
-      }
-    });
+    if (_kAutoNavigate) {
+      _navigateTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, signUpScreenRoute);
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
+    _navigateTimer?.cancel();
     _fadeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.splashGradient,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final bgTop = isDark
+            ? AppColors.splashDimBase
+            : AppColors.auroraLightBase;
+        final bgMid = isDark
+            ? AppColors.splashDimViolet
+            : AppColors.auroraLightBase;
+        final taglineColor = isDark
+            ? AppColors.white
+            : AppColors.primaryPurple;
 
-          // Orange glow - top right
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.accentRed.withValues(alpha: 0.3),
-                    AppColors.accentRed.withValues(alpha: 0.1),
-                    Colors.transparent,
-                  ],
+        return Scaffold(
+          body: Stack(
+            children: [
+              // Soft dim-aurora gradient background (theme-aware).
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [bgTop, bgMid, bgTop],
+                  ),
                 ),
               ),
-            ),
-          ),
 
-          // Blue glow - bottom left
-          Positioned(
-            bottom: -100,
-            left: -100,
-            child: Container(
-              width: 350,
-              height: 350,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(
-                      0xFF4FC3F7,
-                    ).withValues(alpha: 0.4), // Light blue
-                    const Color(0xFF4FC3F7).withValues(alpha: 0.2),
-                    Colors.transparent,
-                  ],
-                ),
+              // Two quiet corner glows — violet top-right, blue bottom-left.
+              AuroraGlowBlob(
+                top: -100,
+                right: -100,
+                size: 280,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.12,
               ),
-            ),
+              AuroraGlowBlob(
+                bottom: -100,
+                left: -100,
+                size: 300,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.10,
+              ),
+
+          // Floating shopping emojis — same set as sign-in / sign-up.
+          const FloatingEmoji(
+            emoji: '🛍️',
+            size: 36,
+            opacity: 0.2,
+            top: 80,
+            left: 32,
+            floatDistance: 15.5,
+            rotationAngle: 7.7,
+            durationMs: 2200,
+          ),
+          const FloatingEmoji(
+            emoji: '❤️',
+            size: 30,
+            opacity: 0.2,
+            top: 160,
+            right: 48,
+            floatDistance: 14.6,
+            rotationAngle: -9.7,
+            durationMs: 2400,
+          ),
+          const FloatingEmoji(
+            emoji: '⭐',
+            size: 30,
+            opacity: 0.2,
+            bottom: 128,
+            right: 32,
+            floatDistance: 14.5,
+            rotationAngle: 14.5,
+            durationMs: 2100,
+          ),
+          const FloatingEmoji(
+            emoji: '🎁',
+            size: 36,
+            opacity: 0.2,
+            bottom: 80,
+            left: 48,
+            floatDistance: 18.5,
+            rotationAngle: -13.9,
+            durationMs: 2300,
           ),
 
-          // Main content
+          // Foreground content — logo, tagline, loading dots.
           SafeArea(
             child: Column(
               children: [
-                // Top spacer
                 const Spacer(flex: 2),
-
-                // Logo section with fade-in animation
                 FadeTransition(
                   opacity: _fadeAnimation,
-                  child: const AppLogo(size: LogoSize.large, isWhiteText: true),
+                  child: AppLogo(
+                    size: LogoSize.large,
+                    isWhiteText: isDark,
+                  ),
                 ),
-
                 const SizedBox(height: 24),
-
-                // Tagline with slide-up animation
                 AnimatedBuilder(
                   animation: _slideAnimation,
                   builder: (context, child) {
@@ -149,28 +183,23 @@ class _SplashScreenState extends State<SplashScreen>
                     );
                   },
                   child: Text(
-                    'Your Shopping Destination',
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.9),
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                    'YOUR SHOPPING DESTINATION',
+                    style: AppTextStyles.auroraTagline.copyWith(
+                      color: taglineColor,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
-
                 const SizedBox(height: 32),
-
-                // Pulsing dots loading indicator
                 const PulsingDots(),
-
-                // Bottom spacer
                 const Spacer(flex: 2),
               ],
             ),
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

@@ -1,348 +1,353 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
+import 'app_fonts.dart';
 
+/// Centralized text styles. Every style runs through [AppFonts] so the whole
+/// app shares a single source-of-truth font (DM Sans today — change
+/// [AppFonts.primary] to restyle everything).
+///
+/// Exceptions:
+/// - `editorialTitle` / `editorialKicker` — serif aurora accent via
+///   [AppFonts.editorial].
+/// - `auroraMonoPrice` / `timerDigits` — monospace for price/counter digits.
 class AppTextStyles {
   AppTextStyles._();
 
-  static const TextStyle logoLarge = TextStyle(
-    fontSize: 64,
-    fontWeight: FontWeight.w900,
-    color: AppColors.logoText,
-    height: 1.0,
-    letterSpacing: 1,
-    fontFamily: '',
-  );
+  // ─── Logo ───────────────────────────────────────────────────────────────
+  static TextStyle get logoLarge => AppFonts.primary(
+        fontSize: 72,
+        fontWeight: FontWeight.w900,
+        color: AppColors.logoText,
+        height: 1.0,
+        letterSpacing: 1,
+      );
 
-  static const TextStyle logoMedium = TextStyle(
-    fontSize: 40,
-    fontWeight: FontWeight.w900,
-    color: AppColors.logoText,
-    height: 1.0,
-    letterSpacing: 0.5,
-    fontFamily: '',
-  );
+  static TextStyle get logoMedium => AppFonts.primary(
+        fontSize: 46,
+        fontWeight: FontWeight.w900,
+        color: AppColors.logoText,
+        height: 1.0,
+        letterSpacing: 0.5,
+      );
 
-  static const TextStyle logoSmall = TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.w900,
-    color: AppColors.logoText,
-    height: 1.0,
-    letterSpacing: 0,
-    fontFamily: '',
-  );
+  static TextStyle get logoSmall => AppFonts.primary(
+        fontSize: 36,
+        fontWeight: FontWeight.w900,
+        color: AppColors.logoText,
+        height: 1.0,
+        letterSpacing: 0,
+      );
 
-  static const TextStyle logoWhiteLarge = TextStyle(
-    fontSize: 64,
-    fontWeight: FontWeight.w900,
-    color: AppColors.white,
-    height: 1.0,
-    letterSpacing: -1.5,
-    fontFamily: '',
-  );
+  static TextStyle get logoWhiteLarge => AppFonts.primary(
+        fontSize: 72,
+        fontWeight: FontWeight.w900,
+        color: AppColors.white,
+        height: 1.0,
+        letterSpacing: -1.5,
+      );
 
-  static const TextStyle logoWhiteMedium = TextStyle(
-    fontSize: 40,
-    fontWeight: FontWeight.w900,
-    color: AppColors.white,
-    height: 1.0,
-    letterSpacing: -0.5,
-    fontFamily: '',
-  );
+  static TextStyle get logoWhiteMedium => AppFonts.primary(
+        fontSize: 46,
+        fontWeight: FontWeight.w900,
+        color: AppColors.white,
+        height: 1.0,
+        letterSpacing: -0.5,
+      );
 
-  // Headings
-  static const TextStyle heading1 = TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.w900,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  // ─── Headings ───────────────────────────────────────────────────────────
+  static TextStyle get heading1 => AppFonts.primary(
+        fontSize: 34,
+        fontWeight: FontWeight.w900,
+        color: AppColors.textPrimary,
+        height: 1.2,
+      );
 
-  static const TextStyle heading2 = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.w900,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  static TextStyle get heading2 => AppFonts.primary(
+        fontSize: 26,
+        fontWeight: FontWeight.w900,
+        color: AppColors.textPrimary,
+        height: 1.2,
+      );
 
-  static const TextStyle heading3 = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  static TextStyle get heading3 => AppFonts.primary(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+        height: 1.3,
+      );
 
-  static const TextStyle heading4 = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  static TextStyle get heading4 => AppFonts.primary(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+        height: 1.3,
+      );
 
-  // Body Text
-  static const TextStyle bodyLarge = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
+  // ─── Body ───────────────────────────────────────────────────────────────
+  static TextStyle get bodyLarge => AppFonts.primary(
+        fontSize: 18,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textPrimary,
+        height: 1.5,
+      );
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
+  static TextStyle get bodyMedium => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textPrimary,
+        height: 1.5,
+      );
 
-  static const TextStyle bodySmall = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
-    height: 1.4,
-  );
+  static TextStyle get bodySmall => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      );
 
-  // Labels & Captions
-  static const TextStyle label = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  // ─── Labels & Captions ──────────────────────────────────────────────────
+  static TextStyle get label => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+        height: 1.4,
+      );
 
-  static const TextStyle caption = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-    height: 1.3,
-  );
+  static TextStyle get caption => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textSecondary,
+        height: 1.3,
+      );
 
-  static const TextStyle captionSmall = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-    height: 1.3,
-  );
+  static TextStyle get captionSmall => AppFonts.primary(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textSecondary,
+        height: 1.3,
+      );
 
-  // Buttons
-  static const TextStyle buttonLarge = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-    color: AppColors.white,
-    height: 1.2,
-  );
+  // ─── Buttons ────────────────────────────────────────────────────────────
+  static TextStyle get buttonLarge => AppFonts.primary(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppColors.white,
+        height: 1.2,
+      );
 
-  static const TextStyle buttonMedium = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.bold,
-    color: AppColors.white,
-    height: 1.2,
-  );
+  static TextStyle get buttonMedium => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.white,
+        height: 1.2,
+      );
 
-  static const TextStyle buttonSmall = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.bold,
-    color: AppColors.white,
-    height: 1.2,
-  );
+  static TextStyle get buttonSmall => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: AppColors.white,
+        height: 1.2,
+      );
 
-  // Product Card Styles
-  static const TextStyle productName = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  // ─── Product Card ───────────────────────────────────────────────────────
+  static TextStyle get productName => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+        height: 1.3,
+      );
 
-  static const TextStyle productPrice = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w900,
-    color: AppColors.accentRed,
-    height: 1.0,
-  );
+  static TextStyle get productPrice => AppFonts.primary(
+        fontSize: 18,
+        fontWeight: FontWeight.w900,
+        color: AppColors.accentRed,
+        height: 1.0,
+      );
 
-  static const TextStyle productOriginalPrice = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textTertiary,
-    decoration: TextDecoration.lineThrough,
-    height: 1.0,
-  );
+  static TextStyle get productOriginalPrice => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textTertiary,
+        decoration: TextDecoration.lineThrough,
+        height: 1.0,
+      );
 
-  static const TextStyle productStock = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-    height: 1.0,
-  );
+  static TextStyle get productStock => AppFonts.primary(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textSecondary,
+        height: 1.0,
+      );
 
-  // Badges
-  static const TextStyle badgeText = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w900,
-    color: AppColors.white,
-    height: 1.0,
-    letterSpacing: 0.5,
-  );
+  // ─── Badges ─────────────────────────────────────────────────────────────
+  static TextStyle get badgeText => AppFonts.primary(
+        fontSize: 12,
+        fontWeight: FontWeight.w900,
+        color: AppColors.white,
+        height: 1.0,
+        letterSpacing: 0.5,
+      );
 
-  static const TextStyle badgeTextSmall = TextStyle(
-    fontSize: 8,
-    fontWeight: FontWeight.w900,
-    color: AppColors.white,
-    height: 1.0,
-    letterSpacing: 0.5,
-  );
+  static TextStyle get badgeTextSmall => AppFonts.primary(
+        fontSize: 10,
+        fontWeight: FontWeight.w900,
+        color: AppColors.white,
+        height: 1.0,
+        letterSpacing: 0.5,
+      );
 
-  // Timer / Flash Sale
-  static const TextStyle timerLabel = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.bold,
-    color: AppColors.accentYellow,
-    height: 1.0,
-    letterSpacing: 1.5,
-  );
+  // ─── Timer / Flash Sale ─────────────────────────────────────────────────
+  static TextStyle get timerLabel => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: AppColors.accentYellow,
+        height: 1.0,
+        letterSpacing: 1.5,
+      );
 
+  // Monospace intentionally preserved — digit alignment.
   static const TextStyle timerDigits = TextStyle(
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.white,
     fontFamily: 'monospace',
     height: 1.0,
   );
 
-  // Notifications
-  static const TextStyle notificationText = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  // ─── Notifications ──────────────────────────────────────────────────────
+  static TextStyle get notificationText => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+        height: 1.3,
+      );
 
-  static const TextStyle notificationTime = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textTertiary,
-    height: 1.2,
-  );
+  static TextStyle get notificationTime => AppFonts.primary(
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textTertiary,
+        height: 1.2,
+      );
 
-  // Input Fields
-  static const TextStyle inputText = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  // ─── Input Fields ───────────────────────────────────────────────────────
+  static TextStyle get inputText => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textPrimary,
+        height: 1.4,
+      );
 
-  static const TextStyle inputLabel = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  static TextStyle get inputLabel => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+        height: 1.2,
+      );
 
-  static const TextStyle inputHint = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textTertiary,
-    height: 1.4,
-  );
+  static TextStyle get inputHint => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textTertiary,
+        height: 1.4,
+      );
 
-  // Navigation
-  static const TextStyle navLabel = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-    height: 1.2,
-  );
+  // ─── Navigation ─────────────────────────────────────────────────────────
+  static TextStyle get navLabel => AppFonts.primary(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textSecondary,
+        height: 1.2,
+      );
 
-  static const TextStyle navLabelActive = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.bold,
-    color: AppColors.accentRed,
-    height: 1.2,
-  );
+  static TextStyle get navLabelActive => AppFonts.primary(
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+        color: AppColors.accentRed,
+        height: 1.2,
+      );
 
-  // Rating
-  static const TextStyle ratingValue = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textSecondary,
-    height: 1.0,
-  );
+  // ─── Rating ─────────────────────────────────────────────────────────────
+  static TextStyle get ratingValue => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+        height: 1.0,
+      );
 
-  // Search
-  static const TextStyle searchPlaceholder = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textTertiary,
-    height: 1.4,
-  );
+  // ─── Search ─────────────────────────────────────────────────────────────
+  static TextStyle get searchPlaceholder => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: AppColors.textTertiary,
+        height: 1.4,
+      );
 
-  // Section titles
-  static TextStyle get sectionTitle => GoogleFonts.poppins(
-        fontSize: 22,
+  // ─── Section Titles ─────────────────────────────────────────────────────
+  static TextStyle get sectionTitle => AppFonts.primary(
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
       );
 
-  // Deal prices
-  static TextStyle get dealPrice => GoogleFonts.poppins(
-        fontSize: 18,
+  // ─── Deals ──────────────────────────────────────────────────────────────
+  static TextStyle get dealPrice => AppFonts.primary(
+        fontSize: 20,
         fontWeight: FontWeight.w700,
         color: AppColors.accentRed,
       );
 
-  static TextStyle get dealOriginalPrice => GoogleFonts.poppins(
-        fontSize: 14,
+  static TextStyle get dealOriginalPrice => AppFonts.primary(
+        fontSize: 16,
         fontWeight: FontWeight.w400,
         color: AppColors.gray400,
         decoration: TextDecoration.lineThrough,
       );
 
-  // Loyalty
-  static TextStyle get loyaltyPoints => GoogleFonts.poppins(
-        fontSize: 40,
+  // ─── Loyalty ────────────────────────────────────────────────────────────
+  static TextStyle get loyaltyPoints => AppFonts.primary(
+        fontSize: 44,
         fontWeight: FontWeight.w800,
         color: AppColors.white,
       );
 
-  static TextStyle get loyaltyLabel => GoogleFonts.poppins(
-        fontSize: 14,
+  static TextStyle get loyaltyLabel => AppFonts.primary(
+        fontSize: 16,
         fontWeight: FontWeight.w500,
         color: AppColors.white,
       );
 
-  static TextStyle get rewardTitle => GoogleFonts.poppins(
-        fontSize: 16,
+  static TextStyle get rewardTitle => AppFonts.primary(
+        fontSize: 18,
         fontWeight: FontWeight.w700,
         color: AppColors.white,
       );
 
-  static TextStyle get rewardDescription => GoogleFonts.poppins(
-        fontSize: 12,
+  static TextStyle get rewardDescription => AppFonts.primary(
+        fontSize: 14,
         fontWeight: FontWeight.w400,
         color: AppColors.white,
       );
 
-  // Verified badge
-  static TextStyle get verifiedBadge => GoogleFonts.poppins(
-        fontSize: 10,
+  // ─── Verified Badge ─────────────────────────────────────────────────────
+  static TextStyle get verifiedBadge => AppFonts.primary(
+        fontSize: 12,
         fontWeight: FontWeight.w700,
         color: AppColors.white,
       );
 
-  // ─── Electric Aurora Text Styles ────────────────────────────────────────────
-  // Editorial serif — used in home Section 4 ("The Cover") and auth headings.
-  static TextStyle get editorialTitle => GoogleFonts.playfairDisplay(
-        fontSize: 28,
+  // ─── Electric Aurora ────────────────────────────────────────────────────
+  /// Editorial serif — used in home Section 4 ("The Cover") and auth headings.
+  static TextStyle get editorialTitle => AppFonts.editorial(
+        fontSize: 32,
         fontWeight: FontWeight.w900,
         fontStyle: FontStyle.italic,
         color: AppColors.white,
         height: 1.15,
       );
 
-  static TextStyle get editorialKicker => const TextStyle(
-        fontSize: 10,
+  static TextStyle get editorialKicker => AppFonts.primary(
+        fontSize: 12,
         fontWeight: FontWeight.w700,
         color: AppColors.auroraPink,
         letterSpacing: 2.5,
@@ -351,7 +356,7 @@ class AppTextStyles {
 
   // Monospace price/counter — used by floating price tags and aurora counters.
   static const TextStyle auroraMonoPrice = TextStyle(
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w700,
     color: AppColors.white,
     fontFamily: 'monospace',
@@ -360,17 +365,17 @@ class AppTextStyles {
 
   // Small pill/chip label for aurora sections ("TONIGHT'S EDIT", "AI PICKED",
   // splash tagline).
-  static const TextStyle auroraChipLabel = TextStyle(
-    fontSize: 9,
-    fontWeight: FontWeight.w800,
-    color: AppColors.white,
-    letterSpacing: 1.2,
-    height: 1.0,
-  );
+  static TextStyle get auroraChipLabel => AppFonts.primary(
+        fontSize: 11,
+        fontWeight: FontWeight.w800,
+        color: AppColors.white,
+        letterSpacing: 1.2,
+        height: 1.0,
+      );
 
   // Aurora tagline — used on splash under the logo.
-  static TextStyle get auroraTagline => const TextStyle(
-        fontSize: 14,
+  static TextStyle get auroraTagline => AppFonts.primary(
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         color: AppColors.white,
         letterSpacing: 3.0,

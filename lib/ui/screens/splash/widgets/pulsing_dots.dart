@@ -12,36 +12,55 @@ class PulsingDots extends StatefulWidget {
 class _PulsingDotsState extends State<PulsingDots>
     with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
-  late List<Animation<double>> _animations;
+  late List<Animation<double>> _bounce;
+  late List<Animation<double>> _opacity;
+
+  Color _dotColor(int index) {
+    switch (index) {
+      case 0:
+        return AppColors.auroraElectricBlue;
+      case 1:
+        return AppColors.auroraPurple;
+      default:
+        return AppColors.auroraPink;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
 
-    // Create 3 controllers for 3 dots
     _controllers = List.generate(
       3,
-      (index) => AnimationController(
-        duration: const Duration(milliseconds: 600),
+      (_) => AnimationController(
+        duration: const Duration(milliseconds: 1000),
         vsync: this,
       ),
     );
 
-    // Create 3 animations
-    _animations = _controllers.map((controller) {
-      return Tween<double>(begin: 0.4, end: 1.0).animate(
-        CurvedAnimation(
-          parent: controller,
-          curve: Curves.easeInOut,
-        ),
+    _bounce = _controllers.map((controller) {
+      return TweenSequence<double>([
+        TweenSequenceItem(tween: Tween(begin: 0.0, end: -6.0), weight: 50),
+        TweenSequenceItem(tween: Tween(begin: -6.0, end: 0.0), weight: 50),
+      ]).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
       );
     }).toList();
 
-    // Start animations with delay for each dot
+    _opacity = _controllers.map((controller) {
+      return TweenSequence<double>([
+        TweenSequenceItem(tween: Tween(begin: 0.5, end: 1.0), weight: 50),
+        TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.5), weight: 50),
+      ]).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+      );
+    }).toList();
+
+    // Stagger each dot's start by 150ms to match the mockup.
     for (int i = 0; i < _controllers.length; i++) {
-      Future.delayed(Duration(milliseconds: i * 200), () {
+      Future.delayed(Duration(milliseconds: i * 150), () {
         if (mounted) {
-          _controllers[i].repeat(reverse: true);
+          _controllers[i].repeat();
         }
       });
     }
@@ -49,7 +68,7 @@ class _PulsingDotsState extends State<PulsingDots>
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
+    for (final controller in _controllers) {
       controller.dispose();
     }
     super.dispose();
@@ -61,23 +80,29 @@ class _PulsingDotsState extends State<PulsingDots>
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(3, (index) {
         return AnimatedBuilder(
-          animation: _animations[index],
+          animation: _controllers[index],
           builder: (context, child) {
-            return Opacity(
-              opacity: _animations[index].value,
-              child: Transform.scale(
-                scale: _animations[index].value,
+            return Transform.translate(
+              offset: Offset(0, _bounce[index].value),
+              child: Opacity(
+                opacity: _opacity[index].value,
                 child: child,
               ),
             );
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
-            width: 12,
-            height: 12,
+            width: 10,
+            height: 10,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: _dotColor(index),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: _dotColor(index).withValues(alpha: 0.5),
+                  blurRadius: 8,
+                ),
+              ],
             ),
           ),
         );
