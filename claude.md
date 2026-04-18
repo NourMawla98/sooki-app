@@ -49,6 +49,24 @@ This ensures theme consistency and allows global color changes with minimal fixe
 
 **Why**: Centralized themes allow global changes with minimal fixes. `withValues()` provides better precision and is the modern Flutter API.
 
+**CRITICAL: Both Themes Must Work**
+**Every component, screen, section, and widget you build MUST render correctly in BOTH light AND dark modes.** Before reporting any UI work as done, mentally walk through (or actually toggle) both themes and verify nothing is invisible, unreadable, or broken.
+
+- ❌ **DON'T** hardcode `AppColors.white` as text/fill/border on a surface that's white in light mode — it disappears
+- ❌ **DON'T** hardcode `AppColors.black` as text/fill/border on a surface that's dark in dark mode — same problem
+- ❌ **DON'T** ship UI without considering light mode just because you built it while looking at dark mode (or vice versa)
+- ✅ **DO** watch the theme via `ListenableBuilder(listenable: ThemeService.instance, …)` and branch on `ThemeService.instance.isDarkMode`
+- ✅ **DO** pair theme-dependent colors — if the text is theme-aware, the bg/border it sits on usually should be too
+- ✅ **DO** use brand tokens that read on both backgrounds (e.g., aurora accents `auroraPink`, `auroraElectricBlue`, `auroraPurple`, `primaryPurple`) when you want a color that just works
+
+**Common theme-aware pairings:**
+- Neutral text/icon accent: dark → `AppColors.white`, light → `AppColors.primaryPurple`
+- Glass fill: dark → `AppColors.white.withValues(alpha: 0.05)`, light → `AppColors.primaryPurple.withValues(alpha: 0.05)`
+- Glass border: dark → `AppColors.white.withValues(alpha: 0.10)`, light → `AppColors.primaryPurple.withValues(alpha: 0.18)`
+- Badge cutout (the ring that detaches a floating pill from its parent): dark → `AppColors.auroraDeepBase`, light → `AppColors.white`
+
+**Why**: Single-theme UI is a bug. A Quick Actions section that was white-on-white in light mode shipped because the dark-mode preview looked great and light mode was never checked. Catching this before hand-off saves a review cycle and a user headache.
+
 **CRITICAL: Icon Usage Rule**
 **ALWAYS use Font Awesome icons. NEVER use Material Icons.**
 - ✅ **DO**: Import `package:font_awesome_flutter/font_awesome_flutter.dart` and use `FaIcon(FontAwesomeIcons.iconName)`

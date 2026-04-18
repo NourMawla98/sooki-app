@@ -11,6 +11,8 @@ class AuroraPrimaryButton extends StatelessWidget {
   final bool isLoading;
   final bool isFullWidth;
   final double height;
+  final double borderRadius;
+  final TextStyle? textStyle;
 
   const AuroraPrimaryButton({
     super.key,
@@ -19,6 +21,8 @@ class AuroraPrimaryButton extends StatelessWidget {
     this.isLoading = false,
     this.isFullWidth = true,
     this.height = 56,
+    this.borderRadius = 12,
+    this.textStyle,
   });
 
   @override
@@ -28,7 +32,7 @@ class AuroraPrimaryButton extends StatelessWidget {
       height: height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadius),
           gradient: const LinearGradient(
             colors: AppColors.auroraCartButtonGradient,
             begin: Alignment.centerLeft,
@@ -45,7 +49,7 @@ class AuroraPrimaryButton extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(borderRadius),
             onTap: isLoading ? null : onPressed,
             child: Center(
               child: isLoading
@@ -58,7 +62,7 @@ class AuroraPrimaryButton extends StatelessWidget {
                             AlwaysStoppedAnimation<Color>(AppColors.white),
                       ),
                     )
-                  : Text(text, style: AppTextStyles.buttonLarge),
+                  : Text(text, style: textStyle ?? AppTextStyles.buttonLarge),
             ),
           ),
         ),

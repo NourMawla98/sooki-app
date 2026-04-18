@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/app_colors.dart';
-import '../../../themes/app_text_styles.dart';
+import 'widgets/categories_arrivals_section.dart';
 import 'widgets/editorial_cover.dart';
 import 'widgets/for_you_deck.dart';
 import 'widgets/live_ticker.dart';
+import 'widgets/quick_actions.dart';
 import 'widgets/rotating_smart_hero.dart';
 import 'widgets/trending_now_section.dart';
 
@@ -17,7 +17,7 @@ class BrowseScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: const [
             // Section 1 — Live announcement ticker
             LiveTicker(),
 
@@ -33,41 +33,16 @@ class BrowseScreen extends StatelessWidget {
             // Section 5 — For You Deck (auto-rotating AI-picked card)
             ForYouDeck(),
 
-            // ⚠️ TEMP preview of the For You skeleton — remove once approved.
-            _ForYouSkeletonPreview(),
+            // Section 6 — Quick Actions (icon bubbles row)
+            QuickActions(),
+
+            // Section 7 — Categories + New Arrivals (pills + 2-col grid)
+            CategoriesArrivalsSection(),
 
             SizedBox(height: 100), // bottom padding for nav bar
           ],
         ),
       ),
-    );
-  }
-}
-
-/// ⚠️ TEMPORARY preview block — shows the For You deck skeleton below the
-/// real card. Delete this widget and its call-site once approved.
-class _ForYouSkeletonPreview extends StatelessWidget {
-  const _ForYouSkeletonPreview();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-          child: Text(
-            'SKELETON LOADER SAMPLE',
-            style: AppTextStyles.captionSmall.copyWith(
-              color: AppColors.auroraPink,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 2.0,
-            ),
-          ),
-        ),
-        const ForYouDeckSkeleton(),
-      ],
     );
   }
 }
