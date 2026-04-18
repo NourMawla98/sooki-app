@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../data/mock_products.dart';
 import '../../../../models/product.dart';
@@ -8,11 +9,30 @@ import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
+/// Heat-badge rotation shown on [_TrendingCard], cycling by card position.
+/// Matches `.superpowers/brainstorm/891-1775991693/content/s03-heat-tags-fa.html`.
+class _HeatBadgeSpec {
+  final FaIconData icon;
+  final String label;
+  const _HeatBadgeSpec(this.icon, this.label);
+}
+
+const List<_HeatBadgeSpec> _heatBadges = [
+  _HeatBadgeSpec(FontAwesomeIcons.fire, 'ON FIRE'),
+  _HeatBadgeSpec(FontAwesomeIcons.bolt, 'VIRAL'),
+  _HeatBadgeSpec(FontAwesomeIcons.burst, 'HYPED'),
+  _HeatBadgeSpec(FontAwesomeIcons.rocket, 'SURGING'),
+  _HeatBadgeSpec(FontAwesomeIcons.gem, 'RARE'),
+  _HeatBadgeSpec(FontAwesomeIcons.arrowTrendUp, 'PEAK'),
+  _HeatBadgeSpec(FontAwesomeIcons.wandMagicSparkles, 'BUZZING'),
+];
+
 /// Section 3 — Trending Now.
 ///
 /// Horizontal scroll of heat-glow product cards. Each card shows a thumbnail,
-/// name, and price, with a pink aurora border + radial glow and a "🔥 HOT"
-/// badge. Uses the first 6 products from [mockBrowseProducts].
+/// name, price, and a rotating heat badge (ON FIRE · VIRAL · HYPED · SURGING
+/// · RARE · PEAK · BUZZING) cycling by card position. Uses the first 6
+/// products from [mockBrowseProducts].
 class TrendingNowSection extends StatelessWidget {
   final List<Product> products;
 
@@ -40,7 +60,10 @@ class TrendingNowSection extends StatelessWidget {
               padding: EdgeInsets.zero,
               itemCount: list.length,
               separatorBuilder: (_, _) => const SizedBox(width: 10),
-              itemBuilder: (context, i) => _TrendingCard(product: list[i]),
+              itemBuilder: (context, i) => _TrendingCard(
+                product: list[i],
+                heatIndex: i,
+              ),
             ),
           ),
         ],
@@ -73,8 +96,9 @@ class _SectionHeader extends StatelessWidget {
 
 class _TrendingCard extends StatelessWidget {
   final Product product;
+  final int heatIndex;
 
-  const _TrendingCard({required this.product});
+  const _TrendingCard({required this.product, required this.heatIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +106,16 @@ class _TrendingCard extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        // Heat-badge accent stays theme-specific — that's the "trending"
+        // signal. The card chrome matches the New Arrivals card so the two
+        // sections feel like part of the same family.
         final accent = isDark ? AppColors.auroraPink : AppColors.auroraPurple;
         final cardBg = isDark
-            ? AppColors.white.withValues(alpha: 0.05)
-            : AppColors.white;
+            ? AppColors.white.withValues(alpha: 0.04)
+            : AppColors.primaryPurple.withValues(alpha: 0.04);
+        final cardBorder = isDark
+            ? AppColors.white.withValues(alpha: 0.08)
+            : AppColors.primaryPurple.withValues(alpha: 0.15);
         final nameColor = isDark ? AppColors.white : AppColors.primaryPurple;
 
         return SizedBox(
@@ -110,16 +140,7 @@ class _TrendingCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: cardBg,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: accent.withValues(alpha: isDark ? 0.25 : 0.2),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accent.withValues(alpha: isDark ? 0.18 : 0.10),
-                          blurRadius: 12,
-                          offset: const Offset(-4, -4),
-                        ),
-                      ],
+                      border: Border.all(color: cardBorder),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +176,14 @@ class _TrendingCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(top: 6, right: 6, child: _HeatBadge(color: accent)),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: _HeatBadge(
+                  color: accent,
+                  spec: _heatBadges[heatIndex % _heatBadges.length],
+                ),
+              ),
             ],
           ),
         );
@@ -264,12 +292,13 @@ class TrendingCardSkeleton extends StatelessWidget {
 
 class _HeatBadge extends StatelessWidget {
   final Color color;
-  const _HeatBadge({required this.color});
+  final _HeatBadgeSpec spec;
+  const _HeatBadge({required this.color, required this.spec});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(6),
@@ -277,15 +306,22 @@ class _HeatBadge extends StatelessWidget {
           BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8),
         ],
       ),
-      child: Text(
-        '🔥 HOT',
-        style: AppTextStyles.captionSmall.copyWith(
-          color: AppColors.white,
-          fontSize: 8,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
-          height: 1.0,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FaIcon(spec.icon, size: 8, color: AppColors.white),
+          const SizedBox(width: 4),
+          Text(
+            spec.label,
+            style: AppTextStyles.captionSmall.copyWith(
+              color: AppColors.white,
+              fontSize: 8,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+              height: 1.0,
+            ),
+          ),
+        ],
       ),
     );
   }

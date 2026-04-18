@@ -1,33 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'widgets/points_card.dart';
-import 'widgets/stats_row.dart';
-import 'widgets/redeem_rewards.dart';
-import 'widgets/refer_and_earn.dart';
-import 'widgets/recent_activity.dart';
+import '../../reusable_components/coming_soon/coming_soon_screen.dart';
 
 class LoyaltyScreen extends StatelessWidget {
   const LoyaltyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PointsCard(),
-          SizedBox(height: 24),
-          StatsRow(),
-          SizedBox(height: 24),
-          RedeemRewards(),
-          SizedBox(height: 24),
-          ReferAndEarn(),
-          SizedBox(height: 24),
-          RecentActivity(),
-          SizedBox(height: 100),
-        ],
-      ),
+    return const ComingSoonScreen(
+      featureName: 'LOYALTY',
+      tagline: 'Rewards that actually reward you. Almost here.',
+      icon: FontAwesomeIcons.gift,
     );
   }
 }
