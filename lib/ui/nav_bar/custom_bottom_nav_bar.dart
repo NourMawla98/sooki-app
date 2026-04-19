@@ -6,12 +6,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/theme_service.dart';
 import '../../themes/themes.dart';
 import '../reusable_components/aurora/aurora_bar_line.dart';
-import '../reusable_components/aurora/aurora_shopping_fab.dart';
 
 /// Bottom navigation bar with the Electric Aurora "Glow Bar" treatment:
 /// aurora glass background, animated 2px aurora gradient line on top, 5
-/// tabs (Browse / Deals / Shop-FAB / Loyalty / Cart), and a 60px circular
-/// aurora-gradient FAB centered above the bar.
+/// slots (Browse / Deals / Shop-FAB-gap / Loyalty / Cart). The Shop FAB
+/// itself is rendered in the Scaffold's `floatingActionButton` slot with
+/// `FloatingActionButtonLocation.centerDocked` — the middle tab is a
+/// visual gap so the FAB can dock over it with full hit-test coverage.
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -39,91 +40,76 @@ class CustomBottomNavBar extends StatelessWidget {
             ? AppColors.black.withValues(alpha: 0.45)
             : AppColors.black.withValues(alpha: 0.08);
 
-        return Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.topCenter,
-          children: [
-            // Glass bar — backdrop-blurred background with aurora line on top.
-            ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: barBg,
-                    boxShadow: [
-                      BoxShadow(
-                        color: shadowColor,
-                        blurRadius: 16,
-                        offset: const Offset(0, -4),
-                      ),
-                    ],
+        return ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: barBg,
+                boxShadow: [
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const AuroraBarLine(),
-                      SafeArea(
-                        top: false,
-                        child: SizedBox(
-                          height: 68,
-                          child: Row(
-                            children: [
-                              _NavTab(
-                                icon: FontAwesomeIcons.house,
-                                label: 'Browse',
-                                isActive: currentIndex == 0,
-                                activeColor: activeColor,
-                                inactiveColor: inactiveColor,
-                                isDark: isDark,
-                                onTap: () => onTap(0),
-                              ),
-                              _NavTab(
-                                icon: FontAwesomeIcons.bolt,
-                                label: 'Deals',
-                                isActive: currentIndex == 1,
-                                activeColor: activeColor,
-                                inactiveColor: inactiveColor,
-                                isDark: isDark,
-                                onTap: () => onTap(1),
-                              ),
-                              // Placeholder for the FAB.
-                              const Expanded(child: SizedBox.shrink()),
-                              _NavTab(
-                                icon: FontAwesomeIcons.gift,
-                                label: 'Loyalty',
-                                isActive: currentIndex == 3,
-                                activeColor: activeColor,
-                                inactiveColor: inactiveColor,
-                                isDark: isDark,
-                                onTap: () => onTap(3),
-                              ),
-                              _NavTab(
-                                icon: FontAwesomeIcons.cartShopping,
-                                label: 'Cart',
-                                isActive: currentIndex == 4,
-                                activeColor: activeColor,
-                                inactiveColor: inactiveColor,
-                                isDark: isDark,
-                                onTap: () => onTap(4),
-                              ),
-                            ],
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const AuroraBarLine(),
+                  SafeArea(
+                    top: false,
+                    child: SizedBox(
+                      height: 68,
+                      child: Row(
+                        children: [
+                          _NavTab(
+                            icon: FontAwesomeIcons.house,
+                            label: 'Browse',
+                            isActive: currentIndex == 0,
+                            activeColor: activeColor,
+                            inactiveColor: inactiveColor,
+                            isDark: isDark,
+                            onTap: () => onTap(0),
                           ),
-                        ),
+                          _NavTab(
+                            icon: FontAwesomeIcons.bolt,
+                            label: 'Deals',
+                            isActive: currentIndex == 1,
+                            activeColor: activeColor,
+                            inactiveColor: inactiveColor,
+                            isDark: isDark,
+                            onTap: () => onTap(1),
+                          ),
+                          // Visual gap the docked Shop FAB sits over.
+                          const Expanded(child: SizedBox.shrink()),
+                          _NavTab(
+                            icon: FontAwesomeIcons.gift,
+                            label: 'Loyalty',
+                            isActive: currentIndex == 3,
+                            activeColor: activeColor,
+                            inactiveColor: inactiveColor,
+                            isDark: isDark,
+                            onTap: () => onTap(3),
+                          ),
+                          _NavTab(
+                            icon: FontAwesomeIcons.cartShopping,
+                            label: 'Cart',
+                            isActive: currentIndex == 4,
+                            activeColor: activeColor,
+                            inactiveColor: inactiveColor,
+                            isDark: isDark,
+                            onTap: () => onTap(4),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-            // Centered pulsing aurora FAB, overflowing above the bar.
-            Positioned(
-              top: -24,
-              child: AuroraShoppingFab(
-                isSelected: currentIndex == 2,
-                onTap: () => onTap(2),
-              ),
-            ),
-          ],
+          ),
         );
       },
     );

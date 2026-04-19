@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../header/app_header.dart';
 import '../../nav_bar/custom_bottom_nav_bar.dart';
+import '../../reusable_components/aurora/aurora_shopping_fab.dart';
 import '../browse/browse_screen.dart';
 import '../cart/cart_screen.dart';
 import '../deals/deals_screen.dart';
@@ -52,6 +53,15 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
       ),
+      // FAB lives in the Scaffold's slot (not nested inside the nav bar's
+      // Stack) so Flutter hit-tests its entire circle — including the half
+      // that overflows above the nav bar. Docking centers it on the nav
+      // bar's top edge.
+      floatingActionButton: AuroraShoppingFab(
+        isSelected: _currentIndex == 2,
+        onTap: () => _onTabTapped(2),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

@@ -10,6 +10,8 @@ abstract class Product with _$Product {
     required String name,
     required String brand,
     required String category,
+    String? subCategory,
+    String? detailedCategory,
     @Default('') String description,
     @Default([]) List<String> features,
     @Default({}) Map<String, String> specifications,
