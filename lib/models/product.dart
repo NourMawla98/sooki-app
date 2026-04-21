@@ -38,6 +38,9 @@ abstract class ColorVariant with _$ColorVariant {
   const factory ColorVariant({
     required String name,
     required String hexCode,
+    List<String>? hexCodes,
+    String? swatchAssetPath,
+    List<String>? imageUrls,
     @Default(true) bool isAvailable,
   }) = _ColorVariant;
 

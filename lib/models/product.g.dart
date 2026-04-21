@@ -74,6 +74,13 @@ _ColorVariant _$ColorVariantFromJson(Map<String, dynamic> json) =>
     _ColorVariant(
       name: json['name'] as String,
       hexCode: json['hexCode'] as String,
+      hexCodes: (json['hexCodes'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      swatchAssetPath: json['swatchAssetPath'] as String?,
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       isAvailable: json['isAvailable'] as bool? ?? true,
     );
 
@@ -81,6 +88,9 @@ Map<String, dynamic> _$ColorVariantToJson(_ColorVariant instance) =>
     <String, dynamic>{
       'name': instance.name,
       'hexCode': instance.hexCode,
+      'hexCodes': instance.hexCodes,
+      'swatchAssetPath': instance.swatchAssetPath,
+      'imageUrls': instance.imageUrls,
       'isAvailable': instance.isAvailable,
     };
 

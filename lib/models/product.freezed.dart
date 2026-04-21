@@ -368,7 +368,7 @@ as List<SizeVariant>,
 /// @nodoc
 mixin _$ColorVariant {
 
- String get name; String get hexCode; bool get isAvailable;
+ String get name; String get hexCode; List<String>? get hexCodes; String? get swatchAssetPath; List<String>? get imageUrls; bool get isAvailable;
 /// Create a copy of ColorVariant
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -381,16 +381,16 @@ $ColorVariantCopyWith<ColorVariant> get copyWith => _$ColorVariantCopyWithImpl<C
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ColorVariant&&(identical(other.name, name) || other.name == name)&&(identical(other.hexCode, hexCode) || other.hexCode == hexCode)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ColorVariant&&(identical(other.name, name) || other.name == name)&&(identical(other.hexCode, hexCode) || other.hexCode == hexCode)&&const DeepCollectionEquality().equals(other.hexCodes, hexCodes)&&(identical(other.swatchAssetPath, swatchAssetPath) || other.swatchAssetPath == swatchAssetPath)&&const DeepCollectionEquality().equals(other.imageUrls, imageUrls)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,hexCode,isAvailable);
+int get hashCode => Object.hash(runtimeType,name,hexCode,const DeepCollectionEquality().hash(hexCodes),swatchAssetPath,const DeepCollectionEquality().hash(imageUrls),isAvailable);
 
 @override
 String toString() {
-  return 'ColorVariant(name: $name, hexCode: $hexCode, isAvailable: $isAvailable)';
+  return 'ColorVariant(name: $name, hexCode: $hexCode, hexCodes: $hexCodes, swatchAssetPath: $swatchAssetPath, imageUrls: $imageUrls, isAvailable: $isAvailable)';
 }
 
 
@@ -401,7 +401,7 @@ abstract mixin class $ColorVariantCopyWith<$Res>  {
   factory $ColorVariantCopyWith(ColorVariant value, $Res Function(ColorVariant) _then) = _$ColorVariantCopyWithImpl;
 @useResult
 $Res call({
- String name, String hexCode, bool isAvailable
+ String name, String hexCode, List<String>? hexCodes, String? swatchAssetPath, List<String>? imageUrls, bool isAvailable
 });
 
 
@@ -418,11 +418,14 @@ class _$ColorVariantCopyWithImpl<$Res>
 
 /// Create a copy of ColorVariant
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? hexCode = null,Object? isAvailable = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? hexCode = null,Object? hexCodes = freezed,Object? swatchAssetPath = freezed,Object? imageUrls = freezed,Object? isAvailable = null,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,hexCode: null == hexCode ? _self.hexCode : hexCode // ignore: cast_nullable_to_non_nullable
-as String,isAvailable: null == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
+as String,hexCodes: freezed == hexCodes ? _self.hexCodes : hexCodes // ignore: cast_nullable_to_non_nullable
+as List<String>?,swatchAssetPath: freezed == swatchAssetPath ? _self.swatchAssetPath : swatchAssetPath // ignore: cast_nullable_to_non_nullable
+as String?,imageUrls: freezed == imageUrls ? _self.imageUrls : imageUrls // ignore: cast_nullable_to_non_nullable
+as List<String>?,isAvailable: null == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -508,10 +511,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String hexCode,  bool isAvailable)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String hexCode,  List<String>? hexCodes,  String? swatchAssetPath,  List<String>? imageUrls,  bool isAvailable)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ColorVariant() when $default != null:
-return $default(_that.name,_that.hexCode,_that.isAvailable);case _:
+return $default(_that.name,_that.hexCode,_that.hexCodes,_that.swatchAssetPath,_that.imageUrls,_that.isAvailable);case _:
   return orElse();
 
 }
@@ -529,10 +532,10 @@ return $default(_that.name,_that.hexCode,_that.isAvailable);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String hexCode,  bool isAvailable)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String hexCode,  List<String>? hexCodes,  String? swatchAssetPath,  List<String>? imageUrls,  bool isAvailable)  $default,) {final _that = this;
 switch (_that) {
 case _ColorVariant():
-return $default(_that.name,_that.hexCode,_that.isAvailable);case _:
+return $default(_that.name,_that.hexCode,_that.hexCodes,_that.swatchAssetPath,_that.imageUrls,_that.isAvailable);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -549,10 +552,10 @@ return $default(_that.name,_that.hexCode,_that.isAvailable);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String hexCode,  bool isAvailable)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String hexCode,  List<String>? hexCodes,  String? swatchAssetPath,  List<String>? imageUrls,  bool isAvailable)?  $default,) {final _that = this;
 switch (_that) {
 case _ColorVariant() when $default != null:
-return $default(_that.name,_that.hexCode,_that.isAvailable);case _:
+return $default(_that.name,_that.hexCode,_that.hexCodes,_that.swatchAssetPath,_that.imageUrls,_that.isAvailable);case _:
   return null;
 
 }
@@ -564,11 +567,30 @@ return $default(_that.name,_that.hexCode,_that.isAvailable);case _:
 @JsonSerializable()
 
 class _ColorVariant implements ColorVariant {
-  const _ColorVariant({required this.name, required this.hexCode, this.isAvailable = true});
+  const _ColorVariant({required this.name, required this.hexCode, final  List<String>? hexCodes, this.swatchAssetPath, final  List<String>? imageUrls, this.isAvailable = true}): _hexCodes = hexCodes,_imageUrls = imageUrls;
   factory _ColorVariant.fromJson(Map<String, dynamic> json) => _$ColorVariantFromJson(json);
 
 @override final  String name;
 @override final  String hexCode;
+ final  List<String>? _hexCodes;
+@override List<String>? get hexCodes {
+  final value = _hexCodes;
+  if (value == null) return null;
+  if (_hexCodes is EqualUnmodifiableListView) return _hexCodes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+@override final  String? swatchAssetPath;
+ final  List<String>? _imageUrls;
+@override List<String>? get imageUrls {
+  final value = _imageUrls;
+  if (value == null) return null;
+  if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 @override@JsonKey() final  bool isAvailable;
 
 /// Create a copy of ColorVariant
@@ -584,16 +606,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ColorVariant&&(identical(other.name, name) || other.name == name)&&(identical(other.hexCode, hexCode) || other.hexCode == hexCode)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ColorVariant&&(identical(other.name, name) || other.name == name)&&(identical(other.hexCode, hexCode) || other.hexCode == hexCode)&&const DeepCollectionEquality().equals(other._hexCodes, _hexCodes)&&(identical(other.swatchAssetPath, swatchAssetPath) || other.swatchAssetPath == swatchAssetPath)&&const DeepCollectionEquality().equals(other._imageUrls, _imageUrls)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,hexCode,isAvailable);
+int get hashCode => Object.hash(runtimeType,name,hexCode,const DeepCollectionEquality().hash(_hexCodes),swatchAssetPath,const DeepCollectionEquality().hash(_imageUrls),isAvailable);
 
 @override
 String toString() {
-  return 'ColorVariant(name: $name, hexCode: $hexCode, isAvailable: $isAvailable)';
+  return 'ColorVariant(name: $name, hexCode: $hexCode, hexCodes: $hexCodes, swatchAssetPath: $swatchAssetPath, imageUrls: $imageUrls, isAvailable: $isAvailable)';
 }
 
 
@@ -604,7 +626,7 @@ abstract mixin class _$ColorVariantCopyWith<$Res> implements $ColorVariantCopyWi
   factory _$ColorVariantCopyWith(_ColorVariant value, $Res Function(_ColorVariant) _then) = __$ColorVariantCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String hexCode, bool isAvailable
+ String name, String hexCode, List<String>? hexCodes, String? swatchAssetPath, List<String>? imageUrls, bool isAvailable
 });
 
 
@@ -621,11 +643,14 @@ class __$ColorVariantCopyWithImpl<$Res>
 
 /// Create a copy of ColorVariant
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? hexCode = null,Object? isAvailable = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? hexCode = null,Object? hexCodes = freezed,Object? swatchAssetPath = freezed,Object? imageUrls = freezed,Object? isAvailable = null,}) {
   return _then(_ColorVariant(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,hexCode: null == hexCode ? _self.hexCode : hexCode // ignore: cast_nullable_to_non_nullable
-as String,isAvailable: null == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
+as String,hexCodes: freezed == hexCodes ? _self._hexCodes : hexCodes // ignore: cast_nullable_to_non_nullable
+as List<String>?,swatchAssetPath: freezed == swatchAssetPath ? _self.swatchAssetPath : swatchAssetPath // ignore: cast_nullable_to_non_nullable
+as String?,imageUrls: freezed == imageUrls ? _self._imageUrls : imageUrls // ignore: cast_nullable_to_non_nullable
+as List<String>?,isAvailable: null == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

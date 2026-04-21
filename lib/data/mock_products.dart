@@ -1,12 +1,61 @@
 import '../models/product.dart';
 
+// ─── Color name → hex lookup ────────────────────────────────────────────────
+// Used by _colorVariantFromName to infer hex codes from human-readable names
+// (including multi-color names like "Navy/White" or "Black/Red/Grey").
+
+const Map<String, String> _hexByColorName = {
+  'black': '#000000',
+  'white': '#FFFFFF',
+  'navy': '#1B1B3A',
+  'red': '#FF6B6B',
+  'grey': '#808080',
+  'gray': '#808080',
+  'blue': '#4169E1',
+  'brown': '#8B4513',
+  'beige': '#F5F5DC',
+  'pink': '#FFB6C1',
+  'classic blue': '#4169E1',
+  'dark wash': '#1B1B3A',
+  'light wash': '#87CEEB',
+  'tortoise': '#8B4513',
+  'gold': '#FFD700',
+  'silver': '#C0C0C0',
+  'tan': '#D2B48C',
+  'burgundy': '#800020',
+  'green': '#2E8B57',
+  'orange': '#FFA500',
+  'space black': '#000000',
+  'rose gold': '#B76E79',
+};
+
+String _hexForPart(String part) =>
+    _hexByColorName[part.trim().toLowerCase()] ?? '#808080';
+
+ColorVariant _colorVariantFromName(
+  String name, {
+  bool isAvailable = true,
+  String? swatchAssetPath,
+  List<String>? imageUrls,
+}) {
+  final hexes = name.split('/').map(_hexForPart).toList();
+  return ColorVariant(
+    name: name,
+    hexCode: hexes.first,
+    hexCodes: hexes.length > 1 ? hexes : null,
+    swatchAssetPath: swatchAssetPath,
+    imageUrls: imageUrls,
+    isAvailable: isAvailable,
+  );
+}
+
 // ─── Color Variant Presets ───────────────────────────────────────────────────
 
-const _defaultColors = [
-  ColorVariant(name: 'Black', hexCode: '#000000'),
-  ColorVariant(name: 'White', hexCode: '#FFFFFF'),
-  ColorVariant(name: 'Navy', hexCode: '#1B1B3A'),
-  ColorVariant(name: 'Red', hexCode: '#FF6B6B', isAvailable: false),
+final _defaultColors = [
+  _colorVariantFromName('Black'),
+  _colorVariantFromName('White'),
+  _colorVariantFromName('Navy'),
+  _colorVariantFromName('Red', isAvailable: false),
 ];
 
 const _defaultSizes = [
@@ -47,9 +96,16 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 128,
     stockCount: 25,
     isNew: true,
-    imageUrls: [_imgSummerDress],
+    imageUrls: [_imgSummerDress, _imgFloralDress, _imgStripedTop],
     thumbnailUrl: _imgSummerDress,
-    colors: _defaultColors,
+    colors: [
+      _colorVariantFromName('Black',
+          imageUrls: [_imgSummerDress, _imgFloralDress]),
+      _colorVariantFromName('White',
+          imageUrls: [_imgCasualTop, _imgStripedTop]),
+      _colorVariantFromName('Navy', imageUrls: [_imgDenimJacket]),
+      _colorVariantFromName('Red', isAvailable: false),
+    ],
     sizes: _defaultSizes,
     description:
         'A lightweight summer dress perfect for warm days. Features a flattering A-line silhouette with a vibrant floral print.',
@@ -112,10 +168,10 @@ final List<Product> mockBrowseProducts = [
     imageUrls: [_imgSneakers],
     thumbnailUrl: _imgSneakers,
     colors: [
-      const ColorVariant(name: 'White', hexCode: '#FFFFFF'),
-      const ColorVariant(name: 'Black', hexCode: '#000000'),
-      const ColorVariant(name: 'Grey', hexCode: '#808080'),
-      const ColorVariant(name: 'Blue', hexCode: '#4169E1'),
+      _colorVariantFromName('White'),
+      _colorVariantFromName('Black'),
+      _colorVariantFromName('Grey'),
+      _colorVariantFromName('Blue'),
     ],
     sizes: const [
       SizeVariant(label: '7'),
@@ -153,10 +209,10 @@ final List<Product> mockBrowseProducts = [
     imageUrls: [_imgHandbag],
     thumbnailUrl: _imgHandbag,
     colors: [
-      const ColorVariant(name: 'Black', hexCode: '#000000'),
-      const ColorVariant(name: 'Brown', hexCode: '#8B4513'),
-      const ColorVariant(name: 'Beige', hexCode: '#F5F5DC'),
-      const ColorVariant(name: 'Pink', hexCode: '#FFB6C1', isAvailable: false),
+      _colorVariantFromName('Black'),
+      _colorVariantFromName('Brown'),
+      _colorVariantFromName('Beige'),
+      _colorVariantFromName('Pink', isAvailable: false),
     ],
     sizes: const [
       SizeVariant(label: 'S'),
@@ -224,11 +280,10 @@ final List<Product> mockBrowseProducts = [
     imageUrls: [_imgStripedTop],
     thumbnailUrl: _imgStripedTop,
     colors: [
-      const ColorVariant(name: 'Navy/White', hexCode: '#1B1B3A'),
-      const ColorVariant(name: 'Black/White', hexCode: '#000000'),
-      const ColorVariant(name: 'Red/White', hexCode: '#FF6B6B'),
-      const ColorVariant(name: 'Green/White', hexCode: '#2E8B57',
-          isAvailable: false),
+      _colorVariantFromName('Navy/White'),
+      _colorVariantFromName('Black/White'),
+      _colorVariantFromName('Red/White'),
+      _colorVariantFromName('Green/White', isAvailable: false),
     ],
     sizes: _defaultSizes,
     description:
@@ -267,10 +322,10 @@ final List<Product> mockDealProducts = [
     imageUrls: [_imgDenimJacket],
     thumbnailUrl: _imgDenimJacket,
     colors: [
-      const ColorVariant(name: 'Classic Blue', hexCode: '#4169E1'),
-      const ColorVariant(name: 'Dark Wash', hexCode: '#1B1B3A'),
-      const ColorVariant(name: 'Light Wash', hexCode: '#87CEEB'),
-      const ColorVariant(name: 'Black', hexCode: '#000000'),
+      _colorVariantFromName('Classic Blue'),
+      _colorVariantFromName('Dark Wash'),
+      _colorVariantFromName('Light Wash'),
+      _colorVariantFromName('Black'),
     ],
     sizes: _defaultSizes,
     description:
@@ -305,11 +360,10 @@ final List<Product> mockDealProducts = [
     imageUrls: [_imgSunglasses],
     thumbnailUrl: _imgSunglasses,
     colors: [
-      const ColorVariant(name: 'Black', hexCode: '#000000'),
-      const ColorVariant(name: 'Tortoise', hexCode: '#8B4513'),
-      const ColorVariant(name: 'Gold', hexCode: '#FFD700'),
-      const ColorVariant(name: 'Silver', hexCode: '#C0C0C0',
-          isAvailable: false),
+      _colorVariantFromName('Black'),
+      _colorVariantFromName('Tortoise'),
+      _colorVariantFromName('Gold'),
+      _colorVariantFromName('Silver', isAvailable: false),
     ],
     sizes: const [
       SizeVariant(label: 'Standard'),
@@ -346,10 +400,10 @@ final List<Product> mockDealProducts = [
     imageUrls: [_imgBackpack],
     thumbnailUrl: _imgBackpack,
     colors: [
-      const ColorVariant(name: 'Black', hexCode: '#000000'),
-      const ColorVariant(name: 'Brown', hexCode: '#8B4513'),
-      const ColorVariant(name: 'Tan', hexCode: '#D2B48C'),
-      const ColorVariant(name: 'Burgundy', hexCode: '#800020'),
+      _colorVariantFromName('Black'),
+      _colorVariantFromName('Brown'),
+      _colorVariantFromName('Tan'),
+      _colorVariantFromName('Burgundy'),
     ],
     sizes: const [
       SizeVariant(label: 'Standard'),
@@ -386,11 +440,10 @@ final List<Product> mockDealProducts = [
     imageUrls: [_imgRunningShoes],
     thumbnailUrl: _imgRunningShoes,
     colors: [
-      const ColorVariant(name: 'Black/Red', hexCode: '#000000'),
-      const ColorVariant(name: 'White/Blue', hexCode: '#FFFFFF'),
-      const ColorVariant(name: 'Grey/Green', hexCode: '#808080'),
-      const ColorVariant(name: 'Navy/Orange', hexCode: '#1B1B3A',
-          isAvailable: false),
+      _colorVariantFromName('Black/Red'),
+      _colorVariantFromName('White/Blue'),
+      _colorVariantFromName('Grey/Green'),
+      _colorVariantFromName('Navy/Orange', isAvailable: false),
     ],
     sizes: const [
       SizeVariant(label: '7'),
@@ -428,10 +481,10 @@ final List<Product> mockDealProducts = [
     imageUrls: [_imgSmartWatch],
     thumbnailUrl: _imgSmartWatch,
     colors: [
-      const ColorVariant(name: 'Space Black', hexCode: '#000000'),
-      const ColorVariant(name: 'Silver', hexCode: '#C0C0C0'),
-      const ColorVariant(name: 'Rose Gold', hexCode: '#B76E79'),
-      const ColorVariant(name: 'Blue', hexCode: '#4169E1'),
+      _colorVariantFromName('Space Black'),
+      _colorVariantFromName('Silver'),
+      _colorVariantFromName('Rose Gold'),
+      _colorVariantFromName('Blue'),
     ],
     sizes: const [
       SizeVariant(label: '40mm'),
@@ -467,10 +520,10 @@ final List<Product> mockDealProducts = [
     imageUrls: [_imgHeadphones],
     thumbnailUrl: _imgHeadphones,
     colors: [
-      const ColorVariant(name: 'Black', hexCode: '#000000'),
-      const ColorVariant(name: 'White', hexCode: '#FFFFFF'),
-      const ColorVariant(name: 'Navy', hexCode: '#1B1B3A'),
-      const ColorVariant(name: 'Red', hexCode: '#FF6B6B', isAvailable: false),
+      _colorVariantFromName('Black'),
+      _colorVariantFromName('White'),
+      _colorVariantFromName('Navy'),
+      _colorVariantFromName('Red', isAvailable: false),
     ],
     sizes: const [
       SizeVariant(label: 'One Size'),
@@ -492,103 +545,53 @@ final List<Product> mockDealProducts = [
   ),
 ];
 
-// ─── Flash Deals ─────────────────────────────────────────────────────────────
-
-final List<Product> mockFlashDeals = [
-  Product(
-    id: 'flash_1',
-    name: 'Sneakers',
-    brand: 'SooKi',
-    category: 'Sale',
-    price: 14.0,
-    originalPrice: 45.0,
-    stockCount: 12,
-    imageUrls: [_imgSneakers],
-    thumbnailUrl: _imgSneakers,
-  ),
-  Product(
-    id: 'flash_2',
-    name: 'Casual Top',
-    brand: 'SooKi',
-    category: 'Sale',
-    price: 14.0,
-    originalPrice: 45.0,
-    stockCount: 12,
-    imageUrls: [_imgCasualTop],
-    thumbnailUrl: _imgCasualTop,
-  ),
-  Product(
-    id: 'flash_3',
-    name: 'Handbag',
-    brand: 'SooKi',
-    category: 'Sale',
-    price: 14.0,
-    originalPrice: 45.0,
-    stockCount: 12,
-    imageUrls: [_imgHandbag],
-    thumbnailUrl: _imgHandbag,
-  ),
-  Product(
-    id: 'flash_4',
-    name: 'Summer Dress',
-    brand: 'SooKi',
-    category: 'Sale',
-    price: 14.0,
-    originalPrice: 45.0,
-    stockCount: 12,
-    imageUrls: [_imgSummerDress],
-    thumbnailUrl: _imgSummerDress,
-  ),
-  Product(
-    id: 'flash_5',
-    name: 'Watch',
-    brand: 'SooKi',
-    category: 'Sale',
-    price: 14.0,
-    originalPrice: 45.0,
-    stockCount: 12,
-    imageUrls: [_imgSmartWatch],
-    thumbnailUrl: _imgSmartWatch,
-  ),
-];
-
 // ─── Reviews ─────────────────────────────────────────────────────────────────
+// 38 mock reviews so the lazy-load-10-at-a-time pagination can be exercised
+// end-to-end before the real API lands.
 
-final List<Review> mockReviews = [
-  const Review(
-    userName: 'Sarah M.',
-    rating: 5.0,
-    text:
-        'Absolutely love this! Great quality and fits perfectly. The material feels premium and the color is exactly as shown.',
-    date: '2024-12-15',
-    isVerifiedPurchase: true,
-    helpfulCount: 24,
-  ),
-  const Review(
-    userName: 'Mike R.',
-    rating: 4.0,
-    text:
-        'Good product overall. Sizing runs a bit small so I recommend going one size up. Quality is decent for the price.',
-    date: '2024-12-10',
-    isVerifiedPurchase: true,
-    helpfulCount: 12,
-  ),
-  const Review(
-    userName: 'Emily K.',
-    rating: 5.0,
-    text:
-        'Beautiful design, exactly as shown in the pictures. Fast shipping and great packaging too!',
-    date: '2024-11-28',
-    isVerifiedPurchase: false,
-    helpfulCount: 8,
-  ),
-  const Review(
-    userName: 'James L.',
-    rating: 3.0,
-    text:
-        'Decent quality for the price. Nothing exceptional but does the job. Would consider buying again on sale.',
-    date: '2024-11-15',
-    isVerifiedPurchase: true,
-    helpfulCount: 3,
-  ),
+const _reviewerNames = [
+  'Sarah M.', 'Mike R.', 'Emily K.', 'James L.', 'Amira H.',
+  'David P.', 'Layla N.', 'Daniel S.', 'Noura Z.', 'Omar T.',
+  'Rachel G.', 'Kevin B.', 'Priya V.', 'Tom W.', 'Yasmin A.',
+  'Leo D.', 'Hana F.', 'Marco L.',
 ];
+
+const _reviewerTexts = [
+  'Absolutely love this! Great quality and fits perfectly.',
+  'Good product overall. Sizing runs a bit small, I recommend going one size up.',
+  'Beautiful design, exactly as shown in the pictures. Fast shipping too!',
+  'Decent quality for the price. Nothing exceptional but does the job.',
+  'Exceeded my expectations — the fabric feels premium and looks elegant.',
+  'Arrived earlier than promised. Packaging was thoughtful and sturdy.',
+  'Color is slightly different in person but I still like it a lot.',
+  'Fits true to size for me. Very comfortable for long wear.',
+  'Not bad, but I wish there were more color options available.',
+  'Solid five stars. Would definitely recommend to a friend.',
+  'Material wrinkles a bit, but the shape and cut are great.',
+  'Perfect for the office or a casual evening out — very versatile.',
+  'Customer support was responsive when I had a sizing question.',
+  'Stitching is neat and the hem lies flat. Well made.',
+  'Bought this as a gift and she loved it. Worth the price.',
+  'Photos don\'t fully capture the detail — it looks better in person.',
+  'A little tight around the shoulders but otherwise great.',
+  'Have washed it three times and it still looks brand new.',
+];
+
+const _reviewerDates = [
+  '2024-12-18', '2024-12-15', '2024-12-10', '2024-12-04',
+  '2024-11-28', '2024-11-22', '2024-11-15', '2024-11-08',
+  '2024-10-30', '2024-10-21', '2024-10-12', '2024-10-03',
+  '2024-09-25', '2024-09-17', '2024-09-09', '2024-08-30',
+];
+
+final List<Review> mockReviews = List.generate(38, (i) {
+  const ratings = [5.0, 4.5, 5.0, 4.0, 5.0, 4.0, 3.5, 5.0, 4.5, 4.0];
+  return Review(
+    userName: _reviewerNames[i % _reviewerNames.length],
+    rating: ratings[i % ratings.length],
+    text: _reviewerTexts[i % _reviewerTexts.length],
+    date: _reviewerDates[i % _reviewerDates.length],
+    isVerifiedPurchase: i % 4 != 3,
+    helpfulCount: (i * 7) % 33,
+  );
+});

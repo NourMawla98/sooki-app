@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../models/product.dart';
+import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';
 
@@ -12,109 +12,115 @@ class ProductInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final textColor = isDark ? AppColors.white : AppColors.primaryPurple;
+        final mutedColor =
+            (isDark ? AppColors.white : AppColors.primaryPurple)
+                .withValues(alpha: 0.65);
+        final strongMuted =
+            (isDark ? AppColors.white : AppColors.primaryPurple)
+                .withValues(alpha: 0.85);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${product.brand.toUpperCase()}  ·  ${product.category.toUpperCase()}',
+              style: AppFonts.primary(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: mutedColor,
+                letterSpacing: 1.4,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              product.name,
+              style: AppFonts.primary(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: textColor,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                StarRating(
+                  rating: product.rating,
+                  size: 13,
+                  showValue: false,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  product.rating.toStringAsFixed(1),
+                  style: AppFonts.primary(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: strongMuted,
+                    height: 1.1,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text('·',
+                    style: AppFonts.primary(fontSize: 12, color: mutedColor)),
+                const SizedBox(width: 6),
+                Text(
+                  '${product.reviewCount} reviews',
+                  style: AppFonts.primary(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: mutedColor,
+                    height: 1.1,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                _StockBadge(stockCount: product.stockCount),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _StockBadge extends StatelessWidget {
+  const _StockBadge({required this.stockCount});
+  final int stockCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, color) = switch (stockCount) {
+      <= 0 => ('Out of stock', AppColors.accentRed),
+      < 5 => ('Only $stockCount left', AppColors.accentYellow),
+      _ => ('In stock', AppColors.verifiedGreen),
+    };
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // Brand badge
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          width: 6,
+          height: 6,
           decoration: BoxDecoration(
-            color: AppColors.primaryPurple,
-            borderRadius: BorderRadius.circular(12),
+            shape: BoxShape.circle,
+            color: color,
           ),
-          child: Text(product.brand, style: AppTextStyles.badgeText),
         ),
-        const SizedBox(height: 8),
-
-        // Category
+        const SizedBox(width: 5),
         Text(
-          product.category,
-          style: AppTextStyles.bodySmall.copyWith(color: AppColors.gray400),
-        ),
-        const SizedBox(height: 4),
-
-        // Product name + verified badge
-        Row(
-          children: [
-            Expanded(
-              child: Text(product.name, style: AppTextStyles.heading2),
-            ),
-            if (product.isVerified) ...[
-              const SizedBox(width: 8),
-              const FaIcon(
-                FontAwesomeIcons.circleCheck,
-                size: 16,
-                color: AppColors.verifiedGreen,
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Star rating row
-        Row(
-          children: [
-            StarRating(rating: product.rating, size: 14, showValue: true),
-            const SizedBox(width: 8),
-            Text(
-              '(${product.reviewCount} reviews)',
-              style: AppTextStyles.bodySmall,
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        // Price row
-        Row(
-          children: [
-            Text(
-              '\$${product.price.toStringAsFixed(2)}',
-              style: AppTextStyles.dealPrice,
-            ),
-            if (product.originalPrice != null) ...[
-              const SizedBox(width: 8),
-              Text(
-                '\$${product.originalPrice!.toStringAsFixed(2)}',
-                style: AppTextStyles.dealOriginalPrice,
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.discountBadge,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '-${product.discountPercentage}%',
-                  style: AppTextStyles.badgeText,
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Stock row
-        Row(
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: product.stockCount > 10
-                    ? AppColors.accentGreen
-                    : product.stockCount > 0
-                        ? AppColors.accentYellow
-                        : AppColors.accentRed,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              '${product.stockCount} in stock',
-              style: AppTextStyles.bodySmall,
-            ),
-          ],
+          label,
+          style: AppFonts.primary(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: color,
+            height: 1.1,
+          ),
         ),
       ],
     );

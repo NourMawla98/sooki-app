@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../models/product.dart';
 import '../../../../services/cart_service.dart';
-import '../../../../services/wishlist_service.dart';
+import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
 
 class StickyBottomBar extends StatelessWidget {
@@ -21,92 +20,88 @@ class StickyBottomBar extends StatelessWidget {
     this.quantity = 1,
   });
 
+  bool get _requiresSize => product.sizes.isNotEmpty;
+  bool get _isEnabled => !_requiresSize || selectedSize != null;
+
   @override
   Widget build(BuildContext context) {
-    final wishlistService = GetIt.instance<WishlistService>();
-    final cartService = GetIt.instance<CartService>();
-    final isEnabled = selectedSize != null;
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final bg =
+            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+        final divider = isDark
+            ? AppColors.white.withValues(alpha: 0.08)
+            : AppColors.primaryPurple.withValues(alpha: 0.12);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+        return Container(
+          decoration: BoxDecoration(
+            color: bg,
+            border: Border(top: BorderSide(color: divider)),
           ),
-        ],
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        children: [
-          ListenableBuilder(
-            listenable: wishlistService,
-            builder: (context, _) {
-              final isWishlisted = wishlistService.isWishlisted(product.id);
-              return GestureDetector(
-                onTap: () => wishlistService.toggle(product.id),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.gray300,
-                      width: 1,
-                    ),
-                  ),
-                  child: Center(
-                    child: FaIcon(
-                      isWishlisted
-                          ? FontAwesomeIcons.solidHeart
-                          : FontAwesomeIcons.heart,
-                      color: isWishlisted
-                          ? AppColors.accentRed
-                          : AppColors.gray400,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: GestureDetector(
-              onTap: isEnabled
-                  ? () {
-                      cartService.addItem(
-                        product,
-                        color: selectedColor,
-                        size: selectedSize,
-                        quantity: quantity,
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Added to cart!')),
-                      );
-                    }
-                  : null,
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: GestureDetector(
+            onTap: _isEnabled ? () => _addToCart(context) : null,
+            behavior: HitTestBehavior.opaque,
+            child: Opacity(
+              opacity: _isEnabled ? 1.0 : 0.45,
               child: Container(
-                height: 48,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: isEnabled
-                      ? AppColors.primaryPurple
-                      : AppColors.gray300,
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.auroraPink,
+                      AppColors.auroraPurple,
+                      AppColors.auroraElectricBlue,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: _isEnabled
+                      ? [
+                          BoxShadow(
+                            color: AppColors.auroraPurple
+                                .withValues(alpha: 0.40),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Center(
                   child: Text(
-                    'Add to Cart',
-                    style: AppTextStyles.buttonLarge,
+                    _requiresSize && selectedSize == null
+                        ? 'SELECT A SIZE'
+                        : 'ADD TO CART',
+                    style: AppFonts.primary(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.white,
+                      letterSpacing: 2.0,
+                      height: 1.1,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        );
+      },
+    );
+  }
+
+  void _addToCart(BuildContext context) {
+    final cartService = GetIt.instance<CartService>();
+    cartService.addItem(
+      product,
+      color: selectedColor,
+      size: selectedSize,
+      quantity: quantity,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Added to cart!')),
     );
   }
 }
