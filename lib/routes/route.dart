@@ -27,7 +27,6 @@ import '../ui/screens/help_support/live_chat_screen.dart';
 import '../ui/screens/help_support/email_support_screen.dart';
 import '../ui/screens/image_viewer/image_viewer_screen.dart';
 import '../ui/screens/item_details/item_details_screen.dart';
-import '../ui/screens/search/search_screen.dart';
 import '../ui/screens/main/main_screen.dart';
 import '../ui/screens/shopping/shopping_screen.dart';
 import '../ui/screens/sign_in/sign_in_screen.dart';
@@ -85,7 +84,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     ),
     liveChatScreenRoute: (_) => const LiveChatScreen(),
     emailSupportScreenRoute: (_) => const EmailSupportScreen(),
-    searchScreenRoute: (_) => const SearchScreen(),
     productDetailScreenRoute: (_) {
       final product = settings.arguments as Product;
       return ProductDetailScreen(product: product);

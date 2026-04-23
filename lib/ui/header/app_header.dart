@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../routes/route_constants.dart';
 import '../../services/theme_service.dart';
 import '../../themes/app_colors.dart';
 import '../reusable_components/app_logo/app_logo.dart';
@@ -137,10 +136,7 @@ class _AppHeaderState extends State<AppHeader> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      CustomSearchBar(
-                        onTap: () =>
-                            Navigator.pushNamed(context, searchScreenRoute),
-                      ),
+                      const CustomSearchBar(),
                     ],
                   ),
                 ),
