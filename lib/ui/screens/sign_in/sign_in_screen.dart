@@ -1,18 +1,22 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
-import '../../../themes/themes.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/aurora/aurora_glass_card.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
-import '../../reusable_components/aurora/aurora_text_field.dart';
+import '../../reusable_components/aurora/aurora_secondary_button.dart';
 import '../../reusable_components/buttons/theme_toggle_button.dart';
 import '../../reusable_components/dropdowns/language_selector.dart';
 import '../../reusable_components/floating_emoji/floating_emoji.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../../screens/splash/widgets/aurora_glow_blob.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -38,11 +42,12 @@ class _SignInScreenState extends State<SignInScreen> {
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          Navigator.pushReplacementNamed(context, mainScreenRoute);
-        }
+      Future.delayed(const Duration(seconds: 2), () async {
+        if (!mounted) return;
+        await GetIt.instance<AuthService>().signIn();
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        Navigator.pushReplacementNamed(context, mainScreenRoute);
       });
     }
   }
@@ -56,7 +61,7 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _navigateToSignUp() {
-    Navigator.pop(context);
+    Navigator.pushReplacementNamed(context, signUpScreenRoute);
   }
 
   Future<void> _launchUrl(String url) async {
@@ -70,52 +75,20 @@ class _SignInScreenState extends State<SignInScreen> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bgTop =
-            isDark ? AppColors.splashDimBase : AppColors.auroraLightBase;
-        final bgMid = isDark
-            ? AppColors.splashDimViolet
-            : AppColors.auroraLightBase;
+        final bgColor =
+            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final headingColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
-        final subtitleColor = isDark
-            ? AppColors.white.withValues(alpha: 0.75)
-            : AppColors.gray600;
-        final forgotColor =
-            isDark ? AppColors.auroraPink : AppColors.auroraPurple;
-        final dividerTextColor = isDark
-            ? AppColors.white.withValues(alpha: 0.6)
-            : AppColors.gray500;
-        final guestBorderColor = isDark
-            ? AppColors.white.withValues(alpha: 0.20)
-            : AppColors.primaryPurple;
-        final guestTextColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
-        final guestFillColor = isDark
-            ? Colors.transparent
-            : AppColors.primaryPurple.withValues(alpha: 0.06);
-        final termsColor = isDark
-            ? AppColors.white.withValues(alpha: 0.7)
-            : AppColors.gray600;
-        final termsStrongColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
+            isDark ? AppColors.white : AppColors.auroraPurple;
 
         return Scaffold(
           body: Stack(
             children: [
-              // Soft dim-aurora gradient background (matches splash).
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [bgTop, bgMid, bgTop],
-                  ),
-                ),
+                color: bgColor,
               ),
 
-              // Two quiet corner glows — violet top-right, blue bottom-left.
               AuroraGlowBlob(
                 top: -100,
                 right: -100,
@@ -131,7 +104,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 intensity: isDark ? 0.18 : 0.08,
               ),
 
-              // Floating emojis (same positions as splash + sign-up).
               const FloatingEmoji(
                 emoji: '🛍️',
                 size: 36,
@@ -187,10 +159,9 @@ class _SignInScreenState extends State<SignInScreen> {
                               const SizedBox(height: 12),
 
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: const [
                                   LanguageSelector(),
-                                  SizedBox(width: 12),
                                   ThemeToggleButton(),
                                 ],
                               ),
@@ -206,166 +177,140 @@ class _SignInScreenState extends State<SignInScreen> {
 
                               Text(
                                 'Welcome Back!',
-                                style: AppTextStyles.heading1.copyWith(
-                                  color: headingColor,
-                                  fontSize: 30,
-                                ),
+                                style: AppTextStyles.dsH1.copyWith(
+                                    color: headingColor),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 8),
                               Text(
                                 'Log in to your account',
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: subtitleColor,
+                                style: AppTextStyles.dsBody.copyWith(
+                                  color: isDark
+                                      ? AppColors.mutedOnDark
+                                      : AppColors.auroraDeepBase,
                                 ),
                               ),
 
-                              const Spacer(),
+                              const Spacer(flex: 1),
 
-                      AuroraGlassCard(
-                        padding: const EdgeInsets.all(22),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AuroraTextField(
-                                label: 'Email',
-                                hintText: 'your@email.com',
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                prefixIcon: FaIcon(
-                                  FontAwesomeIcons.envelope,
-                                  color: isDark
-                                      ? AppColors.white.withValues(alpha: 0.5)
-                                      : AppColors.gray400,
-                                  size: 18,
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
-                                  }
-                                  if (!value.contains('@')) {
-                                    return 'Please enter a valid email';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              AuroraTextField(
-                                label: 'Password',
-                                hintText: '••••••••',
-                                controller: _passwordController,
-                                isPassword: true,
-                                prefixIcon: FaIcon(
-                                  FontAwesomeIcons.lock,
-                                  color: isDark
-                                      ? AppColors.white.withValues(alpha: 0.5)
-                                      : AppColors.gray400,
-                                  size: 18,
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your password';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'Password must be at least 6 characters';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: _handleForgotPassword,
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  child: Text(
-                                    'Forgot Password?',
-                                    style: AppTextStyles.bodyMedium.copyWith(
-                                      color: forgotColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 18),
-                              AuroraPrimaryButton(
-                                text: 'Log In',
-                                onPressed: _handleLogin,
-                                isLoading: _isLoading,
-                              ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 48,
-                                child: OutlinedButton(
-                                  onPressed: _handleContinueAsGuest,
-                                  style: OutlinedButton.styleFrom(
-                                    backgroundColor: guestFillColor,
-                                    side: BorderSide(
-                                        color: guestBorderColor, width: 1.5),
-                                    foregroundColor: guestTextColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Continue as Guest',
-                                    style: AppTextStyles.buttonMedium.copyWith(
-                                      color: guestTextColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Don't have an account? ",
-                                      style:
-                                          AppTextStyles.bodyMedium.copyWith(
-                                        color: dividerTextColor,
+                              AuroraGlassCard(
+                                padding: const EdgeInsets.all(22),
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      AuroraInputField(
+                                        label: 'Email',
+                                        hint: 'your@email.com',
+                                        controller: _emailController,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        prefixIcon:
+                                            FontAwesomeIcons.solidEnvelope,
+                                        textInputAction:
+                                            TextInputAction.next,
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.isEmpty) {
+                                            return 'Please enter your email';
+                                          }
+                                          if (!value.contains('@')) {
+                                            return 'Please enter a valid email';
+                                          }
+                                          return null;
+                                        },
                                       ),
-                                    ),
-                                    TextButton(
-                                      onPressed: _navigateToSignUp,
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: const Size(0, 0),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
+                                      const SizedBox(height: 16),
+                                      AuroraInputField(
+                                        label: 'Password',
+                                        hint: '••••••••',
+                                        controller: _passwordController,
+                                        isPassword: true,
+                                        prefixIcon: FontAwesomeIcons.lock,
+                                        textInputAction:
+                                            TextInputAction.done,
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.isEmpty) {
+                                            return 'Please enter your password';
+                                          }
+                                          if (value.length < 6) {
+                                            return 'Password must be at least 6 characters';
+                                          }
+                                          return null;
+                                        },
                                       ),
-                                      child: Text(
-                                        'Sign Up',
-                                        style: AppTextStyles.bodyMedium
-                                            .copyWith(
-                                          color: forgotColor,
-                                          fontWeight: FontWeight.bold,
+                                      const SizedBox(height: 10),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: GestureDetector(
+                                          onTap: _handleForgotPassword,
+                                          child: Text(
+                                            'Forgot Password?',
+                                            style: AppTextStyles.dsBody
+                                                .copyWith(
+                                              fontSize: 14,
+                                              color: AppColors.auroraPink,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 18),
+                                      AuroraPrimaryButton(
+                                        text: 'LOG IN',
+                                        onPressed: _handleLogin,
+                                        isLoading: _isLoading,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      AuroraSecondaryButton(
+                                        text: 'CONTINUE AS GUEST',
+                                        onPressed: _handleContinueAsGuest,
+                                        height: 48,
+                                      ),
+                                      const SizedBox(height: 14),
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "Don't have an account? ",
+                                              style: AppTextStyles.dsBody
+                                                  .copyWith(
+                                                      color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
+                                                      fontSize: 14),
+                                            ),
+                                            GestureDetector(
+                                              onTap: _navigateToSignUp,
+                                              child: Text(
+                                                'Sign Up',
+                                                style: AppTextStyles.dsBody
+                                                    .copyWith(
+                                                  fontSize: 14,
+                                                  color: AppColors.auroraPink,
+                                                  fontWeight: FontWeight.w700,
+                                                  decoration: TextDecoration.none,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
 
-                              const Spacer(),
+                              const Spacer(flex: 3),
 
                               RichText(
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: termsColor,
+                                  style: AppTextStyles.dsMuted.copyWith(
+                                    color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
+                                    fontSize: 12,
                                   ),
                                   children: [
                                     const TextSpan(
@@ -373,11 +318,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                             'By continuing, you agree to our '),
                                     TextSpan(
                                       text: 'Terms of Service',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: termsStrongColor,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: termsStrongColor,
+                                      style: AppTextStyles.dsMuted.copyWith(
+                                        fontSize: 12,
+                                        color: AppColors.auroraPink,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.none,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () =>
@@ -386,11 +331,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                     const TextSpan(text: ' and '),
                                     TextSpan(
                                       text: 'Privacy Policy',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: termsStrongColor,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: termsStrongColor,
+                                      style: AppTextStyles.dsMuted.copyWith(
+                                        fontSize: 12,
+                                        color: AppColors.auroraPink,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.none,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () =>

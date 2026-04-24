@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/address_service.dart';
+import '../../services/auth_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/language_service.dart';
 import '../../services/search_history_service.dart';
@@ -57,6 +59,14 @@ Future<void> setupDependencyInjection({
       SearchHistoryService(serviceLocator<SharedPreferences>());
   await searchHistory.load();
   serviceLocator.registerSingleton<SearchHistoryService>(searchHistory);
+
+  final addressService = AddressService(serviceLocator<SharedPreferences>());
+  await addressService.load();
+  serviceLocator.registerSingleton<AddressService>(addressService);
+
+  final authService = AuthService(serviceLocator<SharedPreferences>());
+  await authService.load();
+  serviceLocator.registerSingleton<AuthService>(authService);
 
   // Register Dio client with language service
   serviceLocator.registerSingleton<Dio>(

@@ -15,30 +15,32 @@ class ThemeToggleButton extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final fg =
-            isDark ? AppColors.white : AppColors.primaryPurple;
+        final iconColor = isDark
+            ? const Color(0xFFFBBF24) // sun → yellow
+            : AppColors.white;        // moon → white
         final bg = isDark
-            ? AppColors.white.withValues(alpha: 0.2)
-            : AppColors.primaryPurple.withValues(alpha: 0.08);
+            ? AppColors.white.withValues(alpha: 0.12)
+            : AppColors.auroraPurple.withValues(alpha: 0.72);
         final borderColor = isDark
-            ? AppColors.white.withValues(alpha: 0.3)
-            : AppColors.primaryPurple.withValues(alpha: 0.25);
+            ? AppColors.white.withValues(alpha: 0.18)
+            : AppColors.auroraPurple;
         return Container(
-          width: 40,
-          height: 40,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
             color: bg,
             shape: BoxShape.circle,
-            border: Border.all(color: borderColor, width: 1),
+            border: Border.all(color: borderColor, width: 1.5),
           ),
           child: IconButton(
             icon: FaIcon(
               isDark ? FontAwesomeIcons.solidSun : FontAwesomeIcons.solidMoon,
-              color: fg,
-              size: 18,
+              color: iconColor,
+              size: 15,
             ),
             onPressed: onPressed ?? () => ThemeService.instance.toggle(),
             padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
           ),
         );
       },

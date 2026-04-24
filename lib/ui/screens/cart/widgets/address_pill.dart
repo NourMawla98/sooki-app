@@ -1,0 +1,183 @@
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../../services/address_service.dart';
+import '../../../../services/theme_service.dart';
+import '../../../../themes/app_colors.dart';
+import '../../../../themes/app_text_styles.dart';
+import '_cart_surface_theme.dart';
+import 'address_picker_sheet.dart';
+
+/// A1 compact delivery-address pill. Tap anywhere on the row (or on CHANGE)
+/// to open the picker sheet with all saved addresses.
+class AddressPill extends StatelessWidget {
+  const AddressPill({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final addressService = GetIt.instance<AddressService>();
+
+    return ListenableBuilder(
+      listenable: Listenable.merge([addressService, ThemeService.instance]),
+      builder: (context, _) {
+        final c = CartSurfaceColors.of(
+          isDark: ThemeService.instance.isDarkMode,
+        );
+        final addr = addressService.selectedAddress;
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => showAddressPickerSheet(context),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: c.glassFill,
+              border: Border.all(color: c.glassBorder, width: 1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.auroraPurple.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: FaIcon(
+                    FontAwesomeIcons.locationDot,
+                    size: 12,
+                    color: AppColors.auroraPurple,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: addr == null
+                        ? [
+                            Text(
+                              'No delivery address',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: c.text,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text(
+                              'Tap to add one',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                fontSize: 10.5,
+                                color: c.textMute,
+                              ),
+                            ),
+                          ]
+                        : [
+                            _TitleLine(addr: addr, surfaceColors: c),
+                            const SizedBox(height: 1),
+                            Text(
+                              addr.line,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                fontSize: 10.5,
+                                color: c.textMute,
+                              ),
+                            ),
+                          ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: AppColors.auroraPurple.withValues(alpha: 0.50),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'CHANGE',
+                    style: AppTextStyles.caption.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.3,
+                      color: AppColors.auroraPurple,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TitleLine extends StatelessWidget {
+  final dynamic addr;
+  final CartSurfaceColors surfaceColors;
+
+  const _TitleLine({required this.addr, required this.surfaceColors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(
+          child: Text.rich(
+            TextSpan(
+              text: 'Deliver to · ',
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: surfaceColors.text,
+              ),
+              children: [
+                TextSpan(
+                  text: addr.label as String,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.auroraPurple,
+                  ),
+                ),
+              ],
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (addr.isDefault as bool) ...[
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            decoration: BoxDecoration(
+              color: AppColors.auroraElectricBlue.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              'DEFAULT',
+              style: AppTextStyles.caption.copyWith(
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+                color: AppColors.auroraElectricBlue,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}

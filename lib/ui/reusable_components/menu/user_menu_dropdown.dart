@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../enums/app_language.dart';
 import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/language_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
@@ -27,6 +28,37 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
   bool _showLanguagePicker = false;
   late final LanguageService _languageService =
       serviceLocator<LanguageService>();
+  late final AuthService _authService = serviceLocator<AuthService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _authService.addListener(_onAuthChanged);
+  }
+
+  @override
+  void dispose() {
+    _authService.removeListener(_onAuthChanged);
+    super.dispose();
+  }
+
+  void _onAuthChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _performSignOut(BuildContext dialogContext) async {
+    Navigator.pop(dialogContext);
+    await _authService.signOut();
+    if (!mounted) return;
+    widget.onClose();
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, signInScreenRoute);
+  }
+
+  void _goToSignIn() {
+    widget.onClose();
+    Navigator.pushNamed(context, signInScreenRoute);
+  }
 
   void _showLogoutDialog(BuildContext context) {
     showDialog<void>(
@@ -47,11 +79,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
             ),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              widget.onClose();
-              Navigator.pushReplacementNamed(context, signInScreenRoute);
-            },
+            onPressed: () => _performSignOut(ctx),
             child: Text(
               'Logout',
               style: AppTextStyles.bodyMedium.copyWith(
@@ -174,16 +202,29 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _Tile(
-                icon: FontAwesomeIcons.rightFromBracket,
-                label: 'Logout',
-                sub: 'Sign out',
-                accent: AppColors.auroraPink,
-                isDark: isDark,
-                subColor: AppColors.auroraPink.withValues(alpha: 0.75),
-                labelColor: AppColors.auroraPink,
-                onTap: () => _showLogoutDialog(ctx),
-              ),
+              child: _authService.isSignedIn
+                  ? _Tile(
+                      icon: FontAwesomeIcons.rightFromBracket,
+                      label: 'Logout',
+                      sub: 'Sign out',
+                      accent: AppColors.auroraPink,
+                      isDark: isDark,
+                      subColor:
+                          AppColors.auroraPink.withValues(alpha: 0.75),
+                      labelColor: AppColors.auroraPink,
+                      onTap: () => _showLogoutDialog(ctx),
+                    )
+                  : _Tile(
+                      icon: FontAwesomeIcons.rightToBracket,
+                      label: 'Log in',
+                      sub: 'Sign in',
+                      accent: AppColors.auroraElectricBlue,
+                      isDark: isDark,
+                      subColor: AppColors.auroraElectricBlue
+                          .withValues(alpha: 0.75),
+                      labelColor: AppColors.auroraElectricBlue,
+                      onTap: _goToSignIn,
+                    ),
             ),
           ],
         ),

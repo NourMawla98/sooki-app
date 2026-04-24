@@ -18,56 +18,57 @@ class LanguageSelector extends StatefulWidget {
 
 class _LanguageSelectorState extends State<LanguageSelector>
     with SingleTickerProviderStateMixin {
-  late final LanguageService _languageService = serviceLocator<LanguageService>();
+  late final LanguageService _languageService =
+      serviceLocator<LanguageService>();
   late AppLanguage _selected = _languageService.currentLanguage;
 
   bool _isOpen = false;
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+
+  static const _radius = 10.0;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 150),
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 140),
       vsync: this,
     );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
   }
 
   @override
   void dispose() {
-    _closeDropdown();
-    _animationController.dispose();
+    _closeDropdown(animate: false);
+    _animController.dispose();
     super.dispose();
   }
 
-  void _toggleDropdown() {
-    if (_isOpen) {
-      _closeDropdown();
-    } else {
-      _openDropdown();
-    }
-  }
+  void _toggleDropdown() => _isOpen ? _closeDropdown() : _openDropdown();
 
   void _openDropdown() {
     setState(() => _isOpen = true);
-    _animationController.forward();
-    _overlayEntry = _createOverlayEntry();
+    _animController.forward();
+    _overlayEntry = _buildOverlay();
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void _closeDropdown() {
+  void _closeDropdown({bool animate = true}) {
     if (!_isOpen) return;
-    _animationController.reverse().then((_) {
+    if (animate) {
+      _animController.reverse().then((_) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+        if (mounted) setState(() => _isOpen = false);
+      });
+    } else {
       _overlayEntry?.remove();
       _overlayEntry = null;
       if (mounted) setState(() => _isOpen = false);
-    });
+    }
   }
 
   Future<void> _applyLanguage(AppLanguage language) async {
@@ -78,80 +79,89 @@ class _LanguageSelectorState extends State<LanguageSelector>
     widget.onLanguageChanged?.call(language.displayName);
   }
 
-  OverlayEntry _createOverlayEntry() {
+  OverlayEntry _buildOverlay() {
     final renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;
+    final isDark = ThemeService.instance.isDarkMode;
+    final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
+    final border = isDark
+        ? AppColors.white.withValues(alpha: 0.22)
+        : AppColors.auroraPurple.withValues(alpha: 0.20);
+    final itemTextColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
 
     return OverlayEntry(
-      builder: (context) => GestureDetector(
+      builder: (_) => GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: _closeDropdown,
         child: Stack(
           children: [
             Positioned(
-              width: 140,
+              width: size.width,
               child: CompositedTransformFollower(
                 link: _layerLink,
                 showWhenUnlinked: false,
-                offset: Offset(-35, size.height + 5),
+                offset: Offset(0, size.height - 2),
                 child: FadeTransition(
-                  opacity: _fadeAnimation,
+                  opacity: _fadeAnim,
                   child: Material(
                     color: Colors.transparent,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: AppColors.primaryPurple
-                              .withValues(alpha: 0.15),
-                          width: 1,
+                        color: bg,
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(_radius),
+                        ),
+                        border: Border(
+                          left: BorderSide(color: border, width: 1.5),
+                          right: BorderSide(color: border, width: 1.5),
+                          bottom: BorderSide(color: border, width: 1.5),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            blurRadius: 24,
+                            color: AppColors.auroraPurple.withValues(alpha: 0.10),
+                            blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(_radius),
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: AppLanguage.values
-                              .asMap()
-                              .entries
-                              .map((entry) {
-                            final index = entry.key;
-                            final language = entry.value;
-                            final isSelected = language == _selected;
-                            final isLast =
-                                index == AppLanguage.values.length - 1;
-
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _DropdownItem(
-                                  language: language.displayName,
-                                  isSelected: isSelected,
-                                  onTap: () async {
-                                    _closeDropdown();
-                                    await _applyLanguage(language);
-                                  },
+                          children: [
+                            Container(height: 3, color: bg),
+                            ...AppLanguage.values.map((lang) {
+                            final isSelected = lang == _selected;
+                            return GestureDetector(
+                              onTap: () async {
+                                _closeDropdown();
+                                await _applyLanguage(lang);
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                color: bg,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 10,
                                 ),
-                                if (!isLast)
-                                  Divider(
-                                    height: 1,
-                                    thickness: 1,
-                                    indent: 12,
-                                    endIndent: 12,
-                                    color: AppColors.primaryPurple
-                                        .withValues(alpha: 0.06),
+                                child: Text(
+                                  lang.displayName,
+                                  style: AppTextStyles.dsBody.copyWith(
+                                    fontSize: 12,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.normal,
+                                    color: isSelected
+                                        ? AppColors.auroraPink
+                                        : itemTextColor,
                                   ),
-                              ],
+                                ),
+                              ),
                             );
-                          }).toList(),
+                          }),
+                          ],
                         ),
                       ),
                     ),
@@ -171,44 +181,56 @@ class _LanguageSelectorState extends State<LanguageSelector>
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final fg = isDark ? AppColors.white : AppColors.primaryPurple;
-        final bg = isDark
-            ? AppColors.white.withValues(alpha: 0.2)
-            : AppColors.primaryPurple.withValues(alpha: 0.08);
-        final borderColor = isDark
-            ? AppColors.white.withValues(alpha: 0.3)
-            : AppColors.primaryPurple.withValues(alpha: 0.25);
+        final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
+        final border = isDark
+            ? AppColors.white.withValues(alpha: 0.22)
+            : AppColors.auroraPurple.withValues(alpha: 0.20);
+        final textColor = isDark ? AppColors.white : AppColors.auroraPurple;
+
+        final decoration = _isOpen
+            ? BoxDecoration(
+                color: bg,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(_radius),
+                ),
+                border: Border(
+                  top: BorderSide(color: border, width: 1.5),
+                  left: BorderSide(color: border, width: 1.5),
+                  right: BorderSide(color: border, width: 1.5),
+                ),
+              )
+            : BoxDecoration(
+                color: bg,
+                borderRadius: BorderRadius.circular(_radius),
+                border: Border.all(color: border, width: 1.5),
+              );
+
         return CompositedTransformTarget(
           link: _layerLink,
-          child: Container(
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: borderColor, width: 1),
-            ),
-            child: InkWell(
-              onTap: _toggleDropdown,
-              borderRadius: BorderRadius.circular(20),
+          child: GestureDetector(
+            onTap: _toggleDropdown,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: decoration,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     _selected.displayName,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: fg,
+                    style: AppTextStyles.dsBody.copyWith(
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(width: 4),
                   AnimatedRotation(
                     turns: _isOpen ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 180),
                     child: FaIcon(
                       FontAwesomeIcons.chevronDown,
-                      color: fg,
-                      size: 14,
+                      color: textColor,
+                      size: 10,
                     ),
                   ),
                 ],
@@ -217,69 +239,6 @@ class _LanguageSelectorState extends State<LanguageSelector>
           ),
         );
       },
-    );
-  }
-}
-
-class _DropdownItem extends StatefulWidget {
-  final String language;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _DropdownItem({
-    required this.language,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  State<_DropdownItem> createState() => _DropdownItemState();
-}
-
-class _DropdownItemState extends State<_DropdownItem> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: InkWell(
-        onTap: widget.onTap,
-        onTapDown: (_) => setState(() => _isHovered = true),
-        onTapUp: (_) => setState(() => _isHovered = false),
-        onTapCancel: () => setState(() => _isHovered = false),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          color: widget.isSelected
-              ? AppColors.primaryPurple.withValues(alpha: 0.1)
-              : _isHovered
-              ? AppColors.primaryPurple.withValues(alpha: 0.04)
-              : Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.language,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: widget.isSelected
-                      ? AppColors.primaryPurple
-                      : AppColors.textPrimary,
-                  fontWeight: widget.isSelected
-                      ? FontWeight.w600
-                      : FontWeight.normal,
-                ),
-              ),
-              if (widget.isSelected)
-                FaIcon(
-                  FontAwesomeIcons.check,
-                  color: AppColors.primaryPurple,
-                  size: 16,
-                ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

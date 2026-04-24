@@ -35,8 +35,9 @@ class AuroraGlassCard extends StatelessWidget {
         final glowColor =
             (isDark ? AppColors.auroraPink : AppColors.auroraPurple)
                 .withValues(alpha: 0.18);
-        final fillColor =
-            isDark ? AppColors.auroraGlass : AppColors.auroraLightGlass;
+        final fillColor = isDark
+            ? AppColors.auroraGlass
+            : AppColors.white.withValues(alpha: 0.96);
 
         return ClipRRect(
           borderRadius: BorderRadius.circular(borderRadius),

@@ -20,7 +20,7 @@ class AuroraPrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.isFullWidth = true,
-    this.height = 56,
+    this.height = 52,
     this.borderRadius = 12,
     this.textStyle,
   });
@@ -62,7 +62,7 @@ class AuroraPrimaryButton extends StatelessWidget {
                             AlwaysStoppedAnimation<Color>(AppColors.white),
                       ),
                     )
-                  : Text(text, style: textStyle ?? AppTextStyles.buttonLarge),
+                  : Text(text, style: textStyle ?? AppTextStyles.dsCTA),
             ),
           ),
         ),

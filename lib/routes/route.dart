@@ -15,7 +15,7 @@ import '../ui/screens/settings/settings_screen.dart';
 import '../ui/screens/help_support/help_support_screen.dart';
 import '../ui/screens/orders/order_detail_screen.dart';
 import '../ui/screens/upcoming_deliveries/delivery_detail_screen.dart';
-import '../ui/screens/addresses/add_address_screen.dart';
+import '../ui/screens/address_form/address_form_screen.dart';
 import '../ui/screens/addresses/edit_address_screen.dart';
 import '../ui/screens/payment_methods/add_card_screen.dart';
 import '../ui/screens/settings/change_password_screen.dart';
@@ -65,7 +65,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       final delivery = settings.arguments as MockDeliveryDetail;
       return DeliveryDetailScreen(delivery: delivery);
     },
-    addAddressScreenRoute: (_) => const AddAddressScreen(),
+    addAddressScreenRoute: (_) => const AddressFormScreen(),
     editAddressScreenRoute: (_) {
       final address = settings.arguments as MockEditAddress;
       return EditAddressScreen(address: address);

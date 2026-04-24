@@ -39,13 +39,45 @@ class CartItem {
 
 class CartService extends ChangeNotifier {
   static const String _storageKey = 'sooki_cart';
+  static const String _promoKey = 'sooki_cart_promo';
+
+  /// Accepted promo codes and their percent-off values.
+  static const Map<String, double> _promoCatalog = {
+    'AURORA20': 0.20,
+  };
 
   final SharedPreferences _prefs;
   final List<CartItem> _items = [];
+  String? _promoCode;
 
   List<CartItem> get items => List.unmodifiable(_items);
   int get itemCount => _items.fold(0, (sum, item) => sum + item.quantity);
   bool get isEmpty => _items.isEmpty;
+  String? get promoCode => _promoCode;
+  bool get hasPromo => _promoCode != null;
+
+  /// Dollar amount discounted by the applied promo.
+  double get promoDiscount {
+    final pct = _promoCatalog[_promoCode];
+    if (pct == null) return 0.0;
+    return subtotal * pct;
+  }
+
+  /// Returns `true` if [code] is recognized and now applied.
+  bool applyPromo(String code) {
+    final normalized = code.trim().toUpperCase();
+    if (!_promoCatalog.containsKey(normalized)) return false;
+    _promoCode = normalized;
+    _prefs.setString(_promoKey, normalized);
+    notifyListeners();
+    return true;
+  }
+
+  void removePromo() {
+    _promoCode = null;
+    _prefs.remove(_promoKey);
+    notifyListeners();
+  }
 
   CartService(this._prefs) {
     _loadFromStorage();
@@ -99,9 +131,14 @@ class CartService extends ChangeNotifier {
 
   double get subtotal => _items.fold(0.0, (sum, item) => sum + item.totalPrice);
 
-  double get shippingCost => subtotal > 50.0 ? 0.0 : 5.99;
+  /// Flat shipping. Free-over-threshold was removed in the cart redesign —
+  /// shipping is a fixed $5.99 per order.
+  double get shippingCost => _items.isEmpty ? 0.0 : 5.99;
 
-  double get total => subtotal + shippingCost;
+  double get total {
+    final raw = subtotal + shippingCost - promoDiscount;
+    return raw < 0 ? 0 : raw;
+  }
 
   bool isInCart(String productId) => _items.any((item) => item.product.id == productId);
 
@@ -112,15 +149,26 @@ class CartService extends ChangeNotifier {
 
   void _loadFromStorage() {
     final stored = _prefs.getString(_storageKey);
-    if (stored == null) return;
+    if (stored != null) {
+      try {
+        final jsonList = jsonDecode(stored) as List<dynamic>;
+        _items.addAll(jsonList.map(
+          (json) => CartItem.fromJson(json as Map<String, dynamic>),
+        ));
+      } catch (e) {
+        _prefs.remove(_storageKey);
+      }
+    }
 
     try {
-      final jsonList = jsonDecode(stored) as List<dynamic>;
-      _items.addAll(jsonList.map(
-        (json) => CartItem.fromJson(json as Map<String, dynamic>),
-      ));
-    } catch (e) {
-      _prefs.remove(_storageKey);
+      final savedPromo = _prefs.getString(_promoKey);
+      if (savedPromo != null && _promoCatalog.containsKey(savedPromo)) {
+        _promoCode = savedPromo;
+      } else if (savedPromo != null) {
+        _prefs.remove(_promoKey);
+      }
+    } catch (_) {
+      _prefs.remove(_promoKey);
     }
   }
 

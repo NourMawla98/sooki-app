@@ -14,6 +14,80 @@ import 'app_fonts.dart';
 class AppTextStyles {
   AppTextStyles._();
 
+  // ─── Design System Canonical ────────────────────────────────────────────
+  // These styles encode the agreed aurora design system.
+  // Color variants (dark/light) are applied by callers via .copyWith().
+
+  /// H1 — 34px / w900 / auroraPurple. Use white override in dark mode.
+  static TextStyle get dsH1 => AppFonts.primary(
+        fontSize: 34,
+        fontWeight: FontWeight.w900,
+        color: AppColors.auroraPurple,
+        height: 1.2,
+      );
+
+  /// H2 base — 26px / w900 / white. Always render inside [AuroraGradientText].
+  static TextStyle get dsH2 => AppFonts.primary(
+        fontSize: 26,
+        fontWeight: FontWeight.w900,
+        color: AppColors.white,
+        height: 1.2,
+      );
+
+  /// Section / Pattern-B kicker label — 11px / w800 / auroraPink / ls 2.0.
+  /// Rendered UPPERCASE above an H2 in Pattern B titles.
+  static TextStyle get dsSectionLabel => AppFonts.primary(
+        fontSize: 11,
+        fontWeight: FontWeight.w800,
+        color: AppColors.auroraPink,
+        letterSpacing: 2.0,
+        height: 1.2,
+      );
+
+  /// Form field label — 11px / w800 / ls 1.8 / UPPERCASE / auroraPurple light.
+  /// Callers: apply .copyWith(color: white) in dark mode.
+  /// Apply .toUpperCase() to the label string at render time.
+  static TextStyle get dsFieldLabel => AppFonts.primary(
+        fontSize: 11,
+        fontWeight: FontWeight.w800,
+        color: AppColors.auroraPurple,
+        letterSpacing: 1.8,
+        height: 1.3,
+      );
+
+  /// Body — 16px / regular / auroraDeepBase. Use white override in dark mode.
+  static TextStyle get dsBody => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: AppColors.auroraDeepBase,
+        height: 1.5,
+      );
+
+  /// Bold body — 16px / w700 / auroraDeepBase. Use white override in dark mode.
+  static TextStyle get dsBodyBold => AppFonts.primary(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: AppColors.auroraDeepBase,
+        height: 1.5,
+      );
+
+  /// Muted — 14px / regular / auroraPurple@0.65. Use mutedOnDark override.
+  static TextStyle get dsMuted => AppFonts.primary(
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        color: AppColors.mutedOnLight,
+        height: 1.4,
+      );
+
+  /// CTA button text — 13px / w900 / white / ls 1.8.
+  static TextStyle get dsCTA => AppFonts.primary(
+        fontSize: 13,
+        fontWeight: FontWeight.w900,
+        color: AppColors.white,
+        letterSpacing: 1.8,
+        height: 1.2,
+      );
+
   // ─── Logo ───────────────────────────────────────────────────────────────
   static TextStyle get logoLarge => AppFonts.primary(
         fontSize: 72,

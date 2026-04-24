@@ -5,14 +5,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
-import '../../../themes/themes.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/aurora/aurora_glass_card.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
-import '../../reusable_components/aurora/aurora_text_field.dart';
+import '../../reusable_components/aurora/aurora_secondary_button.dart';
 import '../../reusable_components/buttons/theme_toggle_button.dart';
 import '../../reusable_components/dropdowns/language_selector.dart';
 import '../../reusable_components/floating_emoji/floating_emoji.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../../screens/splash/widgets/aurora_glow_blob.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -66,37 +68,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bgTop =
-            isDark ? AppColors.splashDimBase : AppColors.auroraLightBase;
-        final bgMid = isDark
-            ? AppColors.splashDimViolet
-            : AppColors.auroraLightBase;
+        final bgColor =
+            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final headingColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
-        final subtitleColor = isDark
-            ? AppColors.white.withValues(alpha: 0.75)
-            : AppColors.gray600;
-        final accentLinkColor =
-            isDark ? AppColors.auroraPink : AppColors.auroraPurple;
-        final dividerTextColor = isDark
-            ? AppColors.white.withValues(alpha: 0.6)
-            : AppColors.gray500;
-        final guestBorderColor = isDark
-            ? AppColors.white.withValues(alpha: 0.20)
-            : AppColors.primaryPurple;
-        final guestTextColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
-        final guestFillColor = isDark
-            ? Colors.transparent
-            : AppColors.primaryPurple.withValues(alpha: 0.06);
-        final termsColor = isDark
-            ? AppColors.white.withValues(alpha: 0.7)
-            : AppColors.gray600;
-        final termsStrongColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
-        final iconTint = isDark
-            ? AppColors.white.withValues(alpha: 0.5)
-            : AppColors.gray400;
+            isDark ? AppColors.white : AppColors.auroraPurple;
 
         return Scaffold(
           body: Stack(
@@ -104,13 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [bgTop, bgMid, bgTop],
-                  ),
-                ),
+                color: bgColor,
               ),
 
               AuroraGlowBlob(
@@ -183,10 +152,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const SizedBox(height: 12),
 
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: const [
                                   LanguageSelector(),
-                                  SizedBox(width: 12),
                                   ThemeToggleButton(),
                                 ],
                               ),
@@ -202,20 +170,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                               Text(
                                 'Welcome!',
-                                style: AppTextStyles.heading1.copyWith(
-                                  color: headingColor,
-                                  fontSize: 30,
-                                ),
+                                style: AppTextStyles.dsH1.copyWith(
+                                    color: headingColor),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 8),
                               Text(
                                 'Sign up to start shopping',
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: subtitleColor,
+                                style: AppTextStyles.dsBody.copyWith(
+                                  color: isDark
+                                      ? AppColors.mutedOnDark
+                                      : AppColors.auroraDeepBase,
                                 ),
                               ),
 
-                              const Spacer(),
+                              const Spacer(flex: 1),
 
                               AuroraGlassCard(
                                 padding: const EdgeInsets.all(22),
@@ -225,19 +193,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      AuroraTextField(
+                                      AuroraInputField(
                                         label: 'Email',
-                                        hintText: 'your@email.com',
+                                        hint: 'your@email.com',
                                         controller: _emailController,
                                         keyboardType:
                                             TextInputType.emailAddress,
-                                        prefixIcon: FaIcon(
-                                          FontAwesomeIcons.envelope,
-                                          color: iconTint,
-                                          size: 18,
-                                        ),
+                                        prefixIcon:
+                                            FontAwesomeIcons.solidEnvelope,
+                                        textInputAction:
+                                            TextInputAction.next,
                                         validator: (value) {
-                                          if (value == null || value.isEmpty) {
+                                          if (value == null ||
+                                              value.isEmpty) {
                                             return 'Please enter your email';
                                           }
                                           if (!value.contains('@')) {
@@ -247,18 +215,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         },
                                       ),
                                       const SizedBox(height: 16),
-                                      AuroraTextField(
+                                      AuroraInputField(
                                         label: 'Password',
-                                        hintText: '••••••••',
+                                        hint: '••••••••',
                                         controller: _passwordController,
                                         isPassword: true,
-                                        prefixIcon: FaIcon(
-                                          FontAwesomeIcons.lock,
-                                          color: iconTint,
-                                          size: 18,
-                                        ),
+                                        prefixIcon: FontAwesomeIcons.lock,
+                                        textInputAction:
+                                            TextInputAction.done,
                                         validator: (value) {
-                                          if (value == null || value.isEmpty) {
+                                          if (value == null ||
+                                              value.isEmpty) {
                                             return 'Please enter your password';
                                           }
                                           if (value.length < 6) {
@@ -269,36 +236,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       ),
                                       const SizedBox(height: 20),
                                       AuroraPrimaryButton(
-                                        text: 'Sign Up',
+                                        text: 'SIGN UP',
                                         onPressed: _handleSignUp,
                                         isLoading: _isLoading,
                                       ),
                                       const SizedBox(height: 12),
-                                      SizedBox(
-                                        width: double.infinity,
+                                      AuroraSecondaryButton(
+                                        text: 'CONTINUE AS GUEST',
+                                        onPressed: _handleContinueAsGuest,
                                         height: 48,
-                                        child: OutlinedButton(
-                                          onPressed: _handleContinueAsGuest,
-                                          style: OutlinedButton.styleFrom(
-                                            backgroundColor: guestFillColor,
-                                            side: BorderSide(
-                                                color: guestBorderColor,
-                                                width: 1.5),
-                                            foregroundColor: guestTextColor,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Continue as Guest',
-                                            style:
-                                                AppTextStyles.buttonMedium
-                                                    .copyWith(
-                                              color: guestTextColor,
-                                            ),
-                                          ),
-                                        ),
                                       ),
                                       const SizedBox(height: 14),
                                       Center(
@@ -308,26 +254,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           children: [
                                             Text(
                                               'Already have an account? ',
-                                              style: AppTextStyles.bodyMedium
+                                              style: AppTextStyles.dsBody
                                                   .copyWith(
-                                                color: dividerTextColor,
-                                              ),
+                                                      color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
+                                                      fontSize: 14),
                                             ),
-                                            TextButton(
-                                              onPressed: _navigateToSignIn,
-                                              style: TextButton.styleFrom(
-                                                padding: EdgeInsets.zero,
-                                                minimumSize: const Size(0, 0),
-                                                tapTargetSize:
-                                                    MaterialTapTargetSize
-                                                        .shrinkWrap,
-                                              ),
+                                            GestureDetector(
+                                              onTap: _navigateToSignIn,
                                               child: Text(
                                                 'Log In',
-                                                style: AppTextStyles.bodyMedium
+                                                style: AppTextStyles.dsBody
                                                     .copyWith(
-                                                  color: accentLinkColor,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                  color: AppColors.auroraPink,
+                                                  fontWeight: FontWeight.w700,
+                                                  decoration: TextDecoration.none,
                                                 ),
                                               ),
                                             ),
@@ -339,13 +280,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
 
-                              const Spacer(),
+                              const Spacer(flex: 3),
 
                               RichText(
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: termsColor,
+                                  style: AppTextStyles.dsMuted.copyWith(
+                                    color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
+                                    fontSize: 12,
                                   ),
                                   children: [
                                     const TextSpan(
@@ -353,11 +295,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             'By continuing, you agree to our '),
                                     TextSpan(
                                       text: 'Terms',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: termsStrongColor,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: termsStrongColor,
+                                      style: AppTextStyles.dsMuted.copyWith(
+                                        fontSize: 12,
+                                        color: AppColors.auroraPink,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.none,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () =>
@@ -366,11 +308,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     const TextSpan(text: ' & '),
                                     TextSpan(
                                       text: 'Privacy Policy',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: termsStrongColor,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: termsStrongColor,
+                                      style: AppTextStyles.dsMuted.copyWith(
+                                        fontSize: 12,
+                                        color: AppColors.auroraPink,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.none,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () =>
