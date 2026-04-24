@@ -234,7 +234,7 @@ class ProductCard extends StatelessWidget {
                   child: Text(
                     product.name,
                     style: AppTextStyles.productName,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
