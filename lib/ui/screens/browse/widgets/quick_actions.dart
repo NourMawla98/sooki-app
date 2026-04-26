@@ -26,10 +26,6 @@ class QuickActions extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        // On a light background the "white" neutral accent used for Reorder
-        // is invisible, so we swap in the primary purple brand token.
-        final neutralAccent =
-            isDark ? AppColors.white : AppColors.primaryPurple;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -71,7 +67,7 @@ class QuickActions extends StatelessWidget {
                     child: _Bubble(
                       icon: FontAwesomeIcons.rotate,
                       label: 'Reorder',
-                      accent: neutralAccent,
+                      accent: AppColors.verifiedGreen,
                       isDark: isDark,
                       anim: _BubbleAnim.slowRotate,
                       onTap: () => _showComingSoon(context, 'Reorder'),
@@ -147,7 +143,7 @@ class _BubbleState extends State<_Bubble>
     _pulse = AnimationController(
       vsync: this,
       duration: _durationFor(anim),
-    )..repeat(reverse: anim != _BubbleAnim.slowRotate);
+    )..repeat(reverse: anim != _BubbleAnim.slowRotate && anim != _BubbleAnim.breathe);
   }
 
   Duration _durationFor(_BubbleAnim anim) {
@@ -159,7 +155,7 @@ class _BubbleState extends State<_Bubble>
       case _BubbleAnim.slowRotate:
         return const Duration(milliseconds: 8000);
       case _BubbleAnim.breathe:
-        return const Duration(milliseconds: 3500);
+        return const Duration(milliseconds: 3000);
       case _BubbleAnim.none:
         return Duration.zero;
     }
@@ -174,8 +170,7 @@ class _BubbleState extends State<_Bubble>
   @override
   Widget build(BuildContext context) {
     const bubbleSize = 52.0;
-    final isDark = widget.isDark;
-    final labelColor = isDark ? AppColors.white : AppColors.primaryPurple;
+    final labelColor = widget.accent;
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -263,8 +258,14 @@ class _BubbleState extends State<_Bubble>
         return AnimatedBuilder(
           animation: _pulse!,
           builder: (context, child) {
-            final scale = 1 + 0.06 * Curves.easeInOut.transform(_pulse!.value);
-            return Transform.scale(scale: scale, child: child);
+            final angle = _pulse!.value * 2 * math.pi;
+            return Transform(
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(angle),
+              alignment: Alignment.center,
+              child: child,
+            );
           },
           child: iconWidget,
         );
