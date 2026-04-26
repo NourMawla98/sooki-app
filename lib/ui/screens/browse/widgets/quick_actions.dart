@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 
 /// Section 6 — Quick Actions. Four circular glass bubbles that shortcut to
 /// the user's most-used utilities (Track Order, Wishlist, Reorder, Recently
@@ -35,7 +36,13 @@ class QuickActions extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _SectionHeader(),
+              AuroraGradientText(
+                'Quick Actions',
+                style: AppTextStyles.heading3.copyWith(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                ),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -102,29 +109,6 @@ class QuickActions extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: AppColors.auroraCartButtonGradient,
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-      ).createShader(bounds),
-      blendMode: BlendMode.srcIn,
-      child: Text(
-        'Quick Actions',
-        style: AppTextStyles.heading3.copyWith(
-          color: AppColors.white,
-          fontWeight: FontWeight.w900,
-          fontSize: 20,
-        ),
-      ),
-    );
-  }
-}
 
 enum _BubbleAnim { none, pulseGlow, heartBeat, slowRotate, breathe }
 

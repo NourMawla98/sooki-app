@@ -5,6 +5,7 @@ import '../../../../models/product.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 import '../../../reusable_components/category_pill/aurora_category_pill.dart';
 import '../../../reusable_components/product_card/arrival_card.dart';
 
@@ -47,9 +48,15 @@ class _CategoriesArrivalsSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: _SectionHeader(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AuroraGradientText(
+              'New Arrivals',
+              style: AppTextStyles.heading3.copyWith(
+                fontWeight: FontWeight.w900,
+                fontSize: 20,
+              ),
+            ),
           ),
           const SizedBox(height: 14),
           _CategoryPillRow(
@@ -63,34 +70,6 @@ class _CategoriesArrivalsSectionState
             child: _ProductGrid(products: _filteredProducts),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Section title ────────────────────────────────────────────────────────────
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    // Aurora-gradient title matching Trending Now / For You / Quick Actions
-    // so all section titles read as a family.
-    return ShaderMask(
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: AppColors.auroraCartButtonGradient,
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-      ).createShader(bounds),
-      blendMode: BlendMode.srcIn,
-      child: Text(
-        'New Arrivals',
-        style: AppTextStyles.heading3.copyWith(
-          color: AppColors.white,
-          fontWeight: FontWeight.w900,
-          fontSize: 20,
-        ),
       ),
     );
   }

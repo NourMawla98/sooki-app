@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../data/mock_products.dart';
 import '../../../../models/product.dart';
@@ -7,24 +8,25 @@ import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
-/// Heat-badge rotation shown on [_TrendingCard], cycling by card position.
-/// Matches `.superpowers/brainstorm/891-1775991693/content/s03-heat-tags-fa.html`.
+/// Heat-badge spec: emoji, label, and per-badge glow color.
 class _HeatBadgeSpec {
-  final FaIconData icon;
+  final String emoji;
   final String label;
-  const _HeatBadgeSpec(this.icon, this.label);
+  final Color glowColor;
+  const _HeatBadgeSpec(this.emoji, this.label, this.glowColor);
 }
 
 const List<_HeatBadgeSpec> _heatBadges = [
-  _HeatBadgeSpec(FontAwesomeIcons.fire, 'ON FIRE'),
-  _HeatBadgeSpec(FontAwesomeIcons.bolt, 'VIRAL'),
-  _HeatBadgeSpec(FontAwesomeIcons.burst, 'HYPED'),
-  _HeatBadgeSpec(FontAwesomeIcons.rocket, 'SURGING'),
-  _HeatBadgeSpec(FontAwesomeIcons.gem, 'RARE'),
-  _HeatBadgeSpec(FontAwesomeIcons.arrowTrendUp, 'PEAK'),
-  _HeatBadgeSpec(FontAwesomeIcons.wandMagicSparkles, 'BUZZING'),
+  _HeatBadgeSpec('🔥', 'ON FIRE',  AppColors.auroraRed),
+  _HeatBadgeSpec('⚡', 'VIRAL',    AppColors.auroraPink),
+  _HeatBadgeSpec('💥', 'HYPED',    AppColors.auroraPurple),
+  _HeatBadgeSpec('🚀', 'SURGING',  AppColors.auroraElectricBlue),
+  _HeatBadgeSpec('💎', 'RARE',     AppColors.auroraPurple),
+  _HeatBadgeSpec('📈', 'PEAK',     AppColors.verifiedGreen),
+  _HeatBadgeSpec('✨', 'BUZZING',  AppColors.auroraPink),
 ];
 
 /// Section 3 — Trending Now.
@@ -50,7 +52,13 @@ class TrendingNowSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _SectionHeader(),
+          AuroraGradientText(
+            'Trending Now',
+            style: AppTextStyles.heading3.copyWith(
+              fontWeight: FontWeight.w900,
+              fontSize: 20,
+            ),
+          ),
           const SizedBox(height: 12),
           SizedBox(
             height: 170,
@@ -72,27 +80,6 @@ class TrendingNowSection extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: AppColors.auroraCartButtonGradient,
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-      ).createShader(bounds),
-      blendMode: BlendMode.srcIn,
-      child: Text(
-        'Trending Now',
-        style: AppTextStyles.heading3.copyWith(
-          color: AppColors.white,
-          fontWeight: FontWeight.w900,
-          fontSize: 20,
-        ),
-      ),
-    );
-  }
-}
 
 class _TrendingCard extends StatelessWidget {
   final Product product;
@@ -106,10 +93,6 @@ class _TrendingCard extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        // Heat-badge accent stays theme-specific — that's the "trending"
-        // signal. The card chrome matches the New Arrivals card so the two
-        // sections feel like part of the same family.
-        final accent = isDark ? AppColors.auroraPink : AppColors.auroraPurple;
         final cardBg = isDark
             ? AppColors.white.withValues(alpha: 0.04)
             : AppColors.primaryPurple.withValues(alpha: 0.04);
@@ -180,7 +163,6 @@ class _TrendingCard extends StatelessWidget {
                 top: 6,
                 right: 6,
                 child: _HeatBadge(
-                  color: accent,
                   spec: _heatBadges[heatIndex % _heatBadges.length],
                 ),
               ),
@@ -291,37 +273,45 @@ class TrendingCardSkeleton extends StatelessWidget {
 }
 
 class _HeatBadge extends StatelessWidget {
-  final Color color;
   final _HeatBadgeSpec spec;
-  const _HeatBadge({required this.color, required this.spec});
+  const _HeatBadge({required this.spec});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FaIcon(spec.icon, size: 8, color: AppColors.white),
-          const SizedBox(width: 4),
-          Text(
-            spec.label,
-            style: AppTextStyles.captionSmall.copyWith(
-              color: AppColors.white,
-              fontSize: 8,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.5,
-              height: 1.0,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: spec.glowColor.withValues(alpha: 0.70),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: spec.glowColor.withValues(alpha: 0.40),
             ),
           ),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                spec.emoji,
+                style: const TextStyle(fontSize: 10, height: 1.0),
+              ),
+              const SizedBox(width: 3),
+              Text(
+                spec.label,
+                style: AppTextStyles.captionSmall.copyWith(
+                  color: AppColors.white,
+                  fontSize: 8,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                  height: 1.0,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

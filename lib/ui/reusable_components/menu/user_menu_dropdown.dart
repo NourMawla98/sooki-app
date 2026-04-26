@@ -192,11 +192,9 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                 icon: isDark ? FontAwesomeIcons.moon : FontAwesomeIcons.sun,
                 label: 'Theme',
                 sub: themeValue,
-                accent: isDark
-                    ? AppColors.white
-                    : AppColors.primaryPurple,
+                accent: AppColors.verifiedGreen,
                 isDark: isDark,
-                subColor: isDark ? mutedOnTile : mutedOnTileLight,
+                subColor: AppColors.verifiedGreen.withValues(alpha: 0.75),
                 onTap: () => ThemeService.instance.toggle(),
               ),
             ),
@@ -209,20 +207,18 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                       sub: 'Sign out',
                       accent: AppColors.auroraPink,
                       isDark: isDark,
-                      subColor:
-                          AppColors.auroraPink.withValues(alpha: 0.75),
+                      subColor: AppColors.auroraPink.withValues(alpha: 0.75),
                       labelColor: AppColors.auroraPink,
                       onTap: () => _showLogoutDialog(ctx),
                     )
                   : _Tile(
                       icon: FontAwesomeIcons.rightToBracket,
                       label: 'Log in',
-                      sub: 'Sign in',
-                      accent: AppColors.auroraElectricBlue,
+                      sub: '',
+                      accent: AppColors.auroraPink,
                       isDark: isDark,
-                      subColor: AppColors.auroraElectricBlue
-                          .withValues(alpha: 0.75),
-                      labelColor: AppColors.auroraElectricBlue,
+                      subColor: AppColors.auroraPink.withValues(alpha: 0.75),
+                      labelColor: AppColors.auroraPink,
                       onTap: _goToSignIn,
                     ),
             ),
@@ -293,9 +289,9 @@ class _Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textOnTile =
         labelColor ?? (isDark ? AppColors.white : AppColors.primaryPurple);
-    final baseAlpha = isDark ? 0.20 : 0.14;
-    final fadeAlpha = isDark ? 0.05 : 0.02;
-    final borderAlpha = isDark ? 0.30 : 0.35;
+    final baseAlpha = isDark ? 0.28 : 0.22;
+    final fadeAlpha = isDark ? 0.08 : 0.06;
+    final borderAlpha = isDark ? 0.40 : 0.45;
 
     return Material(
       color: Colors.transparent,
