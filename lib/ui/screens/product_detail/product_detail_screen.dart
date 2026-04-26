@@ -142,8 +142,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ? FontAwesomeIcons.solidHeart
                                 : FontAwesomeIcons.heart,
                             isDark: isDark,
-                            activeColor:
-                                isWishlisted ? AppColors.accentRed : null,
+                            activeColor: AppColors.auroraRed,
                             onTap: () =>
                                 _wishlist.toggle(widget.product.id),
                           ),

@@ -516,21 +516,14 @@ class _HeartButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
+      child: SizedBox(
         width: 30,
         height: 30,
-        decoration: BoxDecoration(
-          color: AppColors.black.withValues(alpha: 0.55),
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: AppColors.white.withValues(alpha: 0.18),
-          ),
-        ),
         child: Center(
           child: FaIcon(
             isActive ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
-            size: 13,
-            color: isActive ? AppColors.auroraPink : AppColors.white,
+            size: 15,
+            color: AppColors.auroraRed,
           ),
         ),
       ),

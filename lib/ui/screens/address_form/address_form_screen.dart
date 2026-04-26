@@ -11,8 +11,9 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../cart/widgets/_cart_surface_theme.dart';
-import '../cart/widgets/cart_background.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 import 'widgets/_lebanon_areas.dart';
 import 'widgets/aurora_select.dart';
 import 'widgets/label_chooser.dart';
@@ -232,18 +233,33 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final bgColor =
+            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final c = CartSurfaceColors.of(isDark: isDark);
 
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: bgColor,
           resizeToAvoidBottomInset: true,
           body: Stack(
             children: [
-              const Positioned.fill(child: CartBackground()),
+              AuroraGlowBlob(
+                top: -80,
+                right: -80,
+                size: 260,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
+              ),
+              AuroraGlowBlob(
+                bottom: -80,
+                left: -80,
+                size: 280,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
+              ),
               SafeArea(
                 child: Column(
                   children: [
-                    _TopBar(surfaceColors: c, isDark: isDark),
+                    _TopBar(isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -259,20 +275,18 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             ),
                             if (_labelType == AddressLabelType.other) ...[
                               const SizedBox(height: 10),
-                              _AuroraField(
+                              AuroraInputField(
                                 controller: _customLabelController,
                                 hint: 'Custom label',
-                                surfaceColors: c,
                                 prefixIcon: FontAwesomeIcons.bookmark,
                                 onChanged: (_) => setState(() {}),
                               ),
                             ],
                             const SizedBox(height: 18),
                             _sectionLabel('PHONE'),
-                            _AuroraField(
+                            AuroraInputField(
                               controller: _phoneController,
                               hint: '+961 70 123 456',
-                              surfaceColors: c,
                               prefixIcon: FontAwesomeIcons.phone,
                               keyboardType: TextInputType.phone,
                               onChanged: (_) => setState(() {}),
@@ -307,19 +321,17 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             ),
                             const SizedBox(height: 14),
                             _sectionLabel('STREET'),
-                            _AuroraField(
+                            AuroraInputField(
                               controller: _streetController,
                               hint: 'Street name (optional)',
-                              surfaceColors: c,
                               prefixIcon: FontAwesomeIcons.road,
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 14),
                             _sectionLabel('BUILDING'),
-                            _AuroraField(
+                            AuroraInputField(
                               controller: _buildingController,
                               hint: 'Building name or number',
-                              surfaceColors: c,
                               prefixIcon: FontAwesomeIcons.building,
                               onChanged: (_) => setState(() {}),
                             ),
@@ -333,12 +345,10 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       _sectionLabel('FLOOR'),
-                                      _AuroraField(
+                                      AuroraInputField(
                                         controller: _floorController,
                                         hint: 'e.g. 3',
-                                        surfaceColors: c,
-                                        keyboardType:
-                                            TextInputType.number,
+                                        keyboardType: TextInputType.number,
                                         onChanged: (_) => setState(() {}),
                                       ),
                                     ],
@@ -351,10 +361,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       _sectionLabel('APARTMENT'),
-                                      _AuroraField(
+                                      AuroraInputField(
                                         controller: _aptController,
                                         hint: 'e.g. 3B',
-                                        surfaceColors: c,
                                         onChanged: (_) => setState(() {}),
                                       ),
                                     ],
@@ -364,11 +373,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             ),
                             const SizedBox(height: 14),
                             _sectionLabel('DIRECTIONS (OPTIONAL)'),
-                            _AuroraField(
+                            AuroraInputField(
                               controller: _instructionsController,
-                              hint:
-                                  'Landmark, gate code, delivery notes…',
-                              surfaceColors: c,
+                              hint: 'Landmark, gate code, delivery notes…',
                               prefixIcon: FontAwesomeIcons.noteSticky,
                               maxLines: 3,
                               onChanged: (_) => setState(() {}),
@@ -426,9 +433,17 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                     Container(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                       decoration: BoxDecoration(
-                        color: c.sheet,
+                        color: isDark
+                            ? AppColors.auroraDeepBase
+                            : AppColors.white,
                         border: Border(
-                          top: BorderSide(color: c.sheetTop, width: 1),
+                          top: BorderSide(
+                            color: isDark
+                                ? AppColors.white.withValues(alpha: 0.06)
+                                : AppColors.auroraPurple
+                                    .withValues(alpha: 0.12),
+                            width: 1,
+                          ),
                         ),
                       ),
                       child: Opacity(
@@ -554,10 +569,9 @@ class _IncludeLocationToggle extends StatelessWidget {
 
 // ─── Top bar ────────────────────────────────────────────────────────────
 class _TopBar extends StatelessWidget {
-  final CartSurfaceColors surfaceColors;
   final bool isDark;
 
-  const _TopBar({required this.surfaceColors, required this.isDark});
+  const _TopBar({required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -585,86 +599,6 @@ class _TopBar extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 color: iconColor,
                 letterSpacing: -0.2,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Aurora-styled text field ──────────────────────────────────────────
-class _AuroraField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-  final CartSurfaceColors surfaceColors;
-  final FaIconData? prefixIcon;
-  final TextInputType? keyboardType;
-  final int maxLines;
-  final ValueChanged<String>? onChanged;
-
-  const _AuroraField({
-    required this.controller,
-    required this.hint,
-    required this.surfaceColors,
-    this.prefixIcon,
-    this.keyboardType,
-    this.maxLines = 1,
-    this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: surfaceColors.chipFill,
-        border: Border.all(color: surfaceColors.chipBorder, width: 1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (prefixIcon != null) ...[
-            FaIcon(
-              prefixIcon!,
-              size: 14,
-              color: surfaceColors.textMute,
-            ),
-            const SizedBox(width: 10),
-          ],
-          Expanded(
-            child: TextField(
-              controller: controller,
-              keyboardType: keyboardType,
-              maxLines: maxLines,
-              minLines: 1,
-              onChanged: onChanged,
-              cursorColor: AppColors.auroraElectricBlue,
-              textAlignVertical: TextAlignVertical.center,
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: surfaceColors.text,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: AppTextStyles.bodyMedium.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: surfaceColors.textMute2,
-                ),
-                isCollapsed: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                filled: false,
-                fillColor: Colors.transparent,
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                focusedErrorBorder: InputBorder.none,
               ),
             ),
           ),

@@ -24,15 +24,12 @@ class StarRating extends StatelessWidget {
           FaIconData icon;
           Color color;
 
-          if (rating >= starValue) {
+          if (rating >= starValue - 0.25) {
             icon = FontAwesomeIcons.solidStar;
-            color = AppColors.accentYellow;
-          } else if (rating >= starValue - 0.5) {
-            icon = FontAwesomeIcons.starHalfStroke;
-            color = AppColors.accentYellow;
+            color = AppColors.auroraGold;
           } else {
-            icon = FontAwesomeIcons.star;
-            color = AppColors.gray300;
+            icon = FontAwesomeIcons.solidStar;
+            color = AppColors.auroraGold.withValues(alpha: 0.20);
           }
 
           return Padding(

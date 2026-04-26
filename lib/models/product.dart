@@ -25,6 +25,10 @@ abstract class Product with _$Product {
     @Default(0) int stockCount,
     @Default(false) bool isNew,
     @Default(false) bool isVerified,
+    @Default(false) bool isBrand,
+    @Default(false) bool isEditorsPick,
+    @Default(false) bool isPlatformExclusive,
+    @Default(false) bool isQualityChecked,
     @Default([]) List<ColorVariant> colors,
     @Default([]) List<SizeVariant> sizes,
   }) = _Product;

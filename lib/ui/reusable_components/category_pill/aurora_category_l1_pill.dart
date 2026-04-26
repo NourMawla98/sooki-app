@@ -14,12 +14,12 @@ import '../../../themes/app_text_styles.dart';
 ///
 /// Shared between the Browse screen's New Arrivals section and the Shopping
 /// screen's L1 row so both read as the same design family.
-class AuroraCategoryPill extends StatefulWidget {
+class AuroraCategoryL1Pill extends StatefulWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const AuroraCategoryPill({
+  const AuroraCategoryL1Pill({
     super.key,
     required this.label,
     required this.isSelected,
@@ -27,10 +27,10 @@ class AuroraCategoryPill extends StatefulWidget {
   });
 
   @override
-  State<AuroraCategoryPill> createState() => _AuroraCategoryPillState();
+  State<AuroraCategoryL1Pill> createState() => _AuroraCategoryL1PillState();
 }
 
-class _AuroraCategoryPillState extends State<AuroraCategoryPill>
+class _AuroraCategoryL1PillState extends State<AuroraCategoryL1Pill>
     with SingleTickerProviderStateMixin {
   late final AnimationController _rotator;
 
@@ -45,7 +45,7 @@ class _AuroraCategoryPillState extends State<AuroraCategoryPill>
   }
 
   @override
-  void didUpdateWidget(covariant AuroraCategoryPill old) {
+  void didUpdateWidget(covariant AuroraCategoryL1Pill old) {
     super.didUpdateWidget(old);
     if (widget.isSelected && !_rotator.isAnimating) {
       _rotator.repeat();

@@ -109,7 +109,7 @@ class WishlistScreen extends StatelessWidget {
                         icon: FaIcon(
                           FontAwesomeIcons.solidHeart,
                           size: 18,
-                          color: AppColors.accentRed,
+                          color: AppColors.auroraRed,
                         ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -18,6 +18,8 @@ class AppColors {
   static const Color black = Color(0xFF000000); // shadows / overlays only
   static const Color verifiedGreen = Color(0xFF6BCB77); // verified-seller badge ONLY
   static const Color auroraRed = Color(0xFFFF2D55); // error states ONLY
+  static const Color auroraGold = Color(0xFFF59E0B); // Editor's Pick tag
+  static const Color auroraTeal = Color(0xFF06B6D4); // Quality Checked tag
 
   /// Signature aurora gradient — pink → purple → blue. Every primary CTA,
   /// every shimmer, every gradient-masked text uses this.

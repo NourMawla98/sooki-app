@@ -34,6 +34,10 @@ _Product _$ProductFromJson(Map<String, dynamic> json) => _Product(
   stockCount: (json['stockCount'] as num?)?.toInt() ?? 0,
   isNew: json['isNew'] as bool? ?? false,
   isVerified: json['isVerified'] as bool? ?? false,
+  isBrand: json['isBrand'] as bool? ?? false,
+  isEditorsPick: json['isEditorsPick'] as bool? ?? false,
+  isPlatformExclusive: json['isPlatformExclusive'] as bool? ?? false,
+  isQualityChecked: json['isQualityChecked'] as bool? ?? false,
   colors:
       (json['colors'] as List<dynamic>?)
           ?.map((e) => ColorVariant.fromJson(e as Map<String, dynamic>))
@@ -66,6 +70,10 @@ Map<String, dynamic> _$ProductToJson(_Product instance) => <String, dynamic>{
   'stockCount': instance.stockCount,
   'isNew': instance.isNew,
   'isVerified': instance.isVerified,
+  'isBrand': instance.isBrand,
+  'isEditorsPick': instance.isEditorsPick,
+  'isPlatformExclusive': instance.isPlatformExclusive,
+  'isQualityChecked': instance.isQualityChecked,
   'colors': instance.colors,
   'sizes': instance.sizes,
 };

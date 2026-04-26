@@ -42,8 +42,8 @@ class _NotificationPanelState extends State<NotificationPanel> {
       isRead: false,
     ),
     _MockNotification(
-      icon: FontAwesomeIcons.heart,
-      iconColor: AppColors.accentRed,
+      icon: FontAwesomeIcons.solidHeart,
+      iconColor: AppColors.auroraRed,
       title: 'Your wishlist item is on sale!',
       time: '3h ago',
       isRead: true,

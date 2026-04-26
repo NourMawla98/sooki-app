@@ -10,17 +10,17 @@ import '../../../models/product.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
-import '../../reusable_components/category_pill/aurora_category_pill.dart';
+import '../../reusable_components/category_pill/aurora_category_l1_pill.dart';
 import '../../reusable_components/category_pill/l1_pill_row_skeleton.dart';
-import '../../reusable_components/product_card/arrival_card.dart';
+import '../../reusable_components/product_card/product_grid_card.dart';
 import 'widgets/filter_sheet.dart';
 import 'widgets/filter_state.dart';
 import 'widgets/sort_sheet.dart';
 
 /// Shopping screen — one-page browse with three differentiated taxonomy
-/// rows above a grid of [ArrivalCard]s.
+/// rows above a grid of [ProductGridCard]s.
 ///
-/// - **L1:** rotating neon-border pill (shared [AuroraCategoryPill]). A
+/// - **L1:** rotating neon-border pill (shared [AuroraCategoryL1Pill]). A
 ///   [L1PillRowSkeleton] stands in while the taxonomy is loading.
 /// - **L2:** text tab whose active label + 2.5px underline both sweep the
 ///   same aurora gradient in lock-step.
@@ -451,7 +451,7 @@ class _L1Row extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: labels.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (_, i) => AuroraCategoryPill(
+        itemBuilder: (_, i) => AuroraCategoryL1Pill(
           label: labels[i],
           isSelected: labels[i] == selected,
           onTap: () => onSelected(labels[i]),
@@ -1019,7 +1019,7 @@ class _ProductGrid extends StatelessWidget {
         childAspectRatio: 0.72,
       ),
       itemCount: products.length,
-      itemBuilder: (_, i) => ArrivalCard(product: products[i]),
+      itemBuilder: (_, i) => ProductGridCard(product: products[i]),
     );
   }
 }

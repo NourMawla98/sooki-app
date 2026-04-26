@@ -134,6 +134,7 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 89,
     stockCount: 40,
     isNew: true,
+    isBrand: true,
     imageUrls: [_imgCasualTop],
     thumbnailUrl: _imgCasualTop,
     colors: _defaultColors,
@@ -165,6 +166,7 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 256,
     stockCount: 15,
     isNew: false,
+    isVerified: true,
     imageUrls: [_imgSneakers],
     thumbnailUrl: _imgSneakers,
     colors: [
@@ -206,6 +208,7 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 167,
     stockCount: 20,
     isNew: true,
+    isEditorsPick: true,
     imageUrls: [_imgHandbag],
     thumbnailUrl: _imgHandbag,
     colors: [
@@ -246,6 +249,8 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 203,
     stockCount: 18,
     isNew: false,
+    isVerified: true,
+    isBrand: true,
     imageUrls: [_imgFloralDress],
     thumbnailUrl: _imgFloralDress,
     colors: _defaultColors,
@@ -277,6 +282,7 @@ final List<Product> mockBrowseProducts = [
     reviewCount: 95,
     stockCount: 35,
     isNew: true,
+    isPlatformExclusive: true,
     imageUrls: [_imgStripedTop],
     thumbnailUrl: _imgStripedTop,
     colors: [
@@ -319,6 +325,7 @@ final List<Product> mockDealProducts = [
     reviewCount: 312,
     stockCount: 19,
     isVerified: false,
+    isQualityChecked: true,
     imageUrls: [_imgDenimJacket],
     thumbnailUrl: _imgDenimJacket,
     colors: [
@@ -356,7 +363,8 @@ final List<Product> mockDealProducts = [
     rating: 4.7,
     reviewCount: 189,
     stockCount: 8,
-    isVerified: false,
+    isVerified: true,
+    isEditorsPick: true,
     imageUrls: [_imgSunglasses],
     thumbnailUrl: _imgSunglasses,
     colors: [
@@ -397,6 +405,7 @@ final List<Product> mockDealProducts = [
     reviewCount: 234,
     stockCount: 12,
     isVerified: true,
+    isBrand: true,
     imageUrls: [_imgBackpack],
     thumbnailUrl: _imgBackpack,
     colors: [
@@ -478,6 +487,7 @@ final List<Product> mockDealProducts = [
     reviewCount: 567,
     stockCount: 15,
     isVerified: true,
+    isPlatformExclusive: true,
     imageUrls: [_imgSmartWatch],
     thumbnailUrl: _imgSmartWatch,
     colors: [

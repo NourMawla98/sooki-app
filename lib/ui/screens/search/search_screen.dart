@@ -5,7 +5,7 @@ import '../../../data/mock_products.dart';
 import '../../../models/product.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/themes.dart';
-import '../../reusable_components/product_card/product_card.dart';
+import '../../reusable_components/product_card/product_grid_card.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, this.initialQuery});
@@ -130,10 +130,10 @@ class _SearchScreenState extends State<SearchScreen> {
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.68,
+        childAspectRatio: 0.72,
       ),
       itemCount: _matches.length,
-      itemBuilder: (_, i) => ProductCard(product: _matches[i]),
+      itemBuilder: (_, i) => ProductGridCard(product: _matches[i]),
     );
   }
 }

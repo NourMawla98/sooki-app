@@ -7,7 +7,7 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import 'color_swatch_type.dart';
 
-/// Circular color swatch. Matches [AuroraCategoryPill]'s selection treatment:
+/// Circular color swatch. Matches [AuroraCategoryL1Pill]'s selection treatment:
 /// - **Unselected:** 2px neutral border
 /// - **Selected:** 2px aurora-gradient border whose colors continuously sweep
 ///   around the perimeter (rotating [SweepGradient]).
