@@ -12,6 +12,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../../reusable_components/toggles/aurora_switch.dart';
 import '../cart/widgets/_cart_surface_theme.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 import 'widgets/_lebanon_areas.dart';
@@ -543,7 +544,7 @@ class _IncludeLocationToggle extends StatelessWidget {
                 ],
               ),
             ),
-            _AuroraSwitch(
+            AuroraSwitch(
               value: value,
               onChanged: onChanged,
               activeColor: AppColors.auroraElectricBlue,
@@ -688,7 +689,7 @@ class _DefaultToggle extends StatelessWidget {
                 ],
               ),
             ),
-            _AuroraSwitch(
+            AuroraSwitch(
               value: value,
               onChanged: onChanged,
               activeColor: AppColors.auroraPurple,
@@ -701,53 +702,3 @@ class _DefaultToggle extends StatelessWidget {
   }
 }
 
-class _AuroraSwitch extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  final Color activeColor;
-  final bool isDark;
-
-  const _AuroraSwitch({
-    required this.value,
-    required this.onChanged,
-    required this.activeColor,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final trackColor = value
-        ? activeColor
-        : (isDark
-            ? AppColors.white.withValues(alpha: 0.14)
-            : AppColors.auroraPurple.withValues(alpha: 0.14));
-
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeInOut,
-        width: 44,
-        height: 26,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(13),
-          color: trackColor,
-        ),
-        child: AnimatedAlign(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeInOut,
-          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.all(3),
-            width: 20,
-            height: 20,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.white,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

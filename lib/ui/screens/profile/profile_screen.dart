@@ -191,7 +191,7 @@ class _GuestHero extends StatelessWidget {
             children: [
               Expanded(
                 child: AuroraPrimaryButton(
-                  text: 'Sign In',
+                  text: 'Login',
                   height: 42,
                   borderRadius: 100,
                   onPressed: () =>
@@ -201,7 +201,7 @@ class _GuestHero extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: AuroraSecondaryButton(
-                  text: 'Create Account',
+                  text: 'Sign Up',
                   height: 42,
                   borderRadius: 100,
                   onPressed: () =>
