@@ -25,9 +25,11 @@ class _AuroraLoginGateDialog extends StatelessWidget {
     return ListenableBuilder(
       listenable: ThemeService.instance,
       builder: (context, _) {
-        final c = CartSurfaceColors.of(
-          isDark: ThemeService.instance.isDarkMode,
-        );
+        final isDark = ThemeService.instance.isDarkMode;
+        final c = CartSurfaceColors.of(isDark: isDark);
+        final sheetBg = isDark
+            ? AppColors.auroraDeepBase.withValues(alpha: 0.96)
+            : AppColors.auroraLightBase;
         return Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -35,14 +37,14 @@ class _AuroraLoginGateDialog extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
             decoration: BoxDecoration(
-              color: c.sheet,
+              color: sheetBg,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: c.sheetTop, width: 1),
+              border: Border.all(color: c.glassBorder, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.auroraPurple.withValues(alpha: 0.30),
+                  color: AppColors.auroraPurple
+                      .withValues(alpha: isDark ? 0.30 : 0.12),
                   blurRadius: 26,
-                  spreadRadius: 2,
                 ),
               ],
             ),
@@ -65,7 +67,7 @@ class _AuroraLoginGateDialog extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.auroraPurple.withValues(
-                              alpha: 0.40,
+                              alpha: isDark ? 0.40 : 0.20,
                             ),
                             blurRadius: 14,
                             offset: const Offset(0, 3),

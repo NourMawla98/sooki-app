@@ -130,7 +130,7 @@ class _SearchScreenState extends State<SearchScreen> {
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.70,
       ),
       itemCount: _matches.length,
       itemBuilder: (_, i) => ProductGridCard(product: _matches[i]),

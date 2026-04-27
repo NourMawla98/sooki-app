@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../services/toast_service.dart';
 import '../../../themes/themes.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/buttons/primary_button.dart';
@@ -41,22 +42,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           setState(() {
             _isLoading = false;
           });
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Password reset link sent to ${_emailController.text}',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.white,
-                ),
-              ),
-              backgroundColor: AppColors.primaryPurple,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          );
+          ToastService.instance.showSuccess('Reset link sent to ${_emailController.text}');
           // Navigate back to sign in screen after success
           Navigator.pop(context);
         }

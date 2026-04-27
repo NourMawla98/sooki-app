@@ -6,7 +6,7 @@ import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 
-const double _revealWidth = 72;
+const double _revealWidth = 56;
 const double _cardRadius = 12;
 
 /// Ultra-compact single-row cart item card.
@@ -102,36 +102,33 @@ class _CartItemCardState extends State<CartItemCard>
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(_cardRadius),
-            child: Stack(
-              children: [
-                _DeleteBehindCard(
-                  onTap: () {
-                    widget.onRemove();
-                  },
-                  isDark: isDark,
-                  revealed: _offset > 2,
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onHorizontalDragUpdate: _handleDragUpdate,
-                  onHorizontalDragEnd: _handleDragEnd,
-                  onTap: _offset > 0 ? _close : null,
-                  child: Transform.translate(
-                    offset: Offset(_offset, 0),
-                    child: _CardBody(
-                      item: widget.item,
-                      onQuantityChanged: widget.onQuantityChanged,
-                      onRemove: widget.onRemove,
-                      isDark: isDark,
-                    ),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(_cardRadius),
+          child: Stack(
+            children: [
+              _DeleteBehindCard(
+                onTap: () {
+                  widget.onRemove();
+                },
+                isDark: isDark,
+                revealed: _offset > 2,
+              ),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragUpdate: _handleDragUpdate,
+                onHorizontalDragEnd: _handleDragEnd,
+                onTap: _offset > 0 ? _close : null,
+                child: Transform.translate(
+                  offset: Offset(_offset, 0),
+                  child: _CardBody(
+                    item: widget.item,
+                    onQuantityChanged: widget.onQuantityChanged,
+                    onRemove: widget.onRemove,
+                    isDark: isDark,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -154,22 +151,22 @@ class _DeleteBehindCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: AnimatedOpacity(
-          opacity: revealed ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 120),
-          child: SizedBox(
-            width: _revealWidth,
-            child: Material(
-              color: AppColors.accentRed,
-              child: InkWell(
-                onTap: onTap,
+      child: AnimatedOpacity(
+        opacity: revealed ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 120),
+        child: Material(
+          color: AppColors.auroraRed,
+          child: InkWell(
+            onTap: onTap,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: _revealWidth,
                 child: Center(
                   child: FaIcon(
                     FontAwesomeIcons.trashCan,
                     color: AppColors.white,
-                    size: 18,
+                    size: 16,
                   ),
                 ),
               ),

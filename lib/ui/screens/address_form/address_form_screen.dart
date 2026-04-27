@@ -266,12 +266,11 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _sectionLabel('LABEL'),
+                            _sectionLabel('Label', isDark),
                             LabelChooser(
                               selected: _labelType,
                               onChanged: (t) =>
                                   setState(() => _labelType = t),
-                              surfaceColors: c,
                             ),
                             if (_labelType == AddressLabelType.other) ...[
                               const SizedBox(height: 10),
@@ -283,7 +282,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               ),
                             ],
                             const SizedBox(height: 18),
-                            _sectionLabel('PHONE'),
+                            _sectionLabel('Phone', isDark),
                             AuroraInputField(
                               controller: _phoneController,
                               hint: '+961 70 123 456',
@@ -292,21 +291,20 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 18),
-                            _sectionLabel('CITY'),
+                            _sectionLabel('City', isDark),
                             AuroraSelect(
                               value: _city,
                               hint: 'Pick your city',
                               sheetTitle: 'Select city',
                               options: lebanonCities,
                               prefixIcon: FontAwesomeIcons.city,
-                              surfaceColors: c,
                               onChanged: (v) => setState(() {
                                 _city = v;
                                 _area = null;
                               }),
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('AREA'),
+                            _sectionLabel('Area', isDark),
                             AuroraSelect(
                               value: _area,
                               hint: _city == null
@@ -315,12 +313,11 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               sheetTitle: 'Select area',
                               options: areasFor(_city),
                               prefixIcon: FontAwesomeIcons.map,
-                              surfaceColors: c,
                               enabled: _city != null,
                               onChanged: (v) => setState(() => _area = v),
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('STREET'),
+                            _sectionLabel('Street', isDark),
                             AuroraInputField(
                               controller: _streetController,
                               hint: 'Street name (optional)',
@@ -328,7 +325,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('BUILDING'),
+                            _sectionLabel('Building', isDark),
                             AuroraInputField(
                               controller: _buildingController,
                               hint: 'Building name or number',
@@ -344,7 +341,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      _sectionLabel('FLOOR'),
+                                      _sectionLabel('Floor', isDark),
                                       AuroraInputField(
                                         controller: _floorController,
                                         hint: 'e.g. 3',
@@ -360,7 +357,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      _sectionLabel('APARTMENT'),
+                                      _sectionLabel('Apartment', isDark),
                                       AuroraInputField(
                                         controller: _aptController,
                                         hint: 'e.g. 3B',
@@ -372,7 +369,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               ],
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('DIRECTIONS (OPTIONAL)'),
+                            _sectionLabel('Directions (optional)', isDark),
                             AuroraInputField(
                               controller: _instructionsController,
                               hint: 'Landmark, gate code, delivery notes…',
@@ -385,6 +382,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               value: _includeLocation,
                               onChanged: _onIncludeLocationToggled,
                               surfaceColors: c,
+                              isDark: isDark,
                             ),
                             if (_includeLocation) ...[
                               const SizedBox(height: 12),
@@ -423,6 +421,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               onChanged: (v) =>
                                   setState(() => _isDefault = v),
                               surfaceColors: c,
+                              isDark: isDark,
                             ),
                             const SizedBox(height: 20),
                           ],
@@ -468,16 +467,13 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
     );
   }
 
-  Widget _sectionLabel(String text) {
+  Widget _sectionLabel(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: AppTextStyles.label.copyWith(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.8,
-          color: AppColors.auroraPink,
+        style: AppTextStyles.dsFieldLabel.copyWith(
+          color: isDark ? AppColors.white : AppColors.auroraPurple,
         ),
       ),
     );
@@ -489,11 +485,13 @@ class _IncludeLocationToggle extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   final CartSurfaceColors surfaceColors;
+  final bool isDark;
 
   const _IncludeLocationToggle({
     required this.value,
     required this.onChanged,
     required this.surfaceColors,
+    required this.isDark,
   });
 
   @override
@@ -515,19 +513,10 @@ class _IncludeLocationToggle extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppColors.auroraElectricBlue.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(9),
-              ),
-              alignment: Alignment.center,
-              child: FaIcon(
-                FontAwesomeIcons.locationDot,
-                size: 14,
-                color: AppColors.auroraElectricBlue,
-              ),
+            FaIcon(
+              FontAwesomeIcons.locationDot,
+              size: 15,
+              color: AppColors.auroraElectricBlue,
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -554,11 +543,11 @@ class _IncludeLocationToggle extends StatelessWidget {
                 ],
               ),
             ),
-            Switch.adaptive(
+            _AuroraSwitch(
               value: value,
               onChanged: onChanged,
-              activeThumbColor: AppColors.white,
-              activeTrackColor: AppColors.auroraElectricBlue,
+              activeColor: AppColors.auroraElectricBlue,
+              isDark: isDark,
             ),
           ],
         ),
@@ -593,7 +582,7 @@ class _TopBar extends StatelessWidget {
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              'Add delivery address',
+              'Add a new address',
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -647,11 +636,13 @@ class _DefaultToggle extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   final CartSurfaceColors surfaceColors;
+  final bool isDark;
 
   const _DefaultToggle({
     required this.value,
     required this.onChanged,
     required this.surfaceColors,
+    required this.isDark,
   });
 
   @override
@@ -697,13 +688,64 @@ class _DefaultToggle extends StatelessWidget {
                 ],
               ),
             ),
-            Switch.adaptive(
+            _AuroraSwitch(
               value: value,
               onChanged: onChanged,
-              activeThumbColor: AppColors.white,
-              activeTrackColor: AppColors.auroraPurple,
+              activeColor: AppColors.auroraPurple,
+              isDark: isDark,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AuroraSwitch extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final Color activeColor;
+  final bool isDark;
+
+  const _AuroraSwitch({
+    required this.value,
+    required this.onChanged,
+    required this.activeColor,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final trackColor = value
+        ? activeColor
+        : (isDark
+            ? AppColors.white.withValues(alpha: 0.14)
+            : AppColors.auroraPurple.withValues(alpha: 0.14));
+
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeInOut,
+        width: 44,
+        height: 26,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(13),
+          color: trackColor,
+        ),
+        child: AnimatedAlign(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeInOut,
+          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            margin: const EdgeInsets.all(3),
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.white,
+            ),
+          ),
         ),
       ),
     );

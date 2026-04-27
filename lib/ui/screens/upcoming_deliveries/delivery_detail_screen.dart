@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/app_colors.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_text_styles.dart';
 
 class DeliveryDetailScreen extends StatelessWidget {
@@ -218,12 +219,7 @@ class DeliveryDetailScreen extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Carrier contact coming soon!'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
+                  ToastService.instance.showSuccess('Carrier contact coming soon');
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.phone,

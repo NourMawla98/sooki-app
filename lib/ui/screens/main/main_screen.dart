@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/toast_service.dart';
 import '../../header/app_header.dart';
 import '../../nav_bar/custom_bottom_nav_bar.dart';
 import '../../reusable_components/aurora/aurora_shopping_fab.dart';
@@ -26,6 +27,19 @@ class _MainScreenState extends State<MainScreen> {
     const LoyaltyScreen(),
     CartScreen(onSwitchToBrowse: () => _onTabTapped(0)),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Toasts on this screen must sit above the 68px nav bar.
+    ToastService.setBottomInset(68);
+  }
+
+  @override
+  void dispose() {
+    ToastService.setBottomInset(0);
+    super.dispose();
+  }
 
   void _onTabTapped(int index) {
     setState(() {

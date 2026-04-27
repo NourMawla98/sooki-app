@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../routes/route_constants.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../data/mock_products.dart';
@@ -112,12 +113,7 @@ class WishlistScreen extends StatelessWidget {
                           color: AppColors.auroraRed,
                         ),
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Removed from wishlist'),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
+                          ToastService.instance.showSuccess('Removed from wishlist');
                         },
                       ),
                       IconButton(
@@ -127,12 +123,7 @@ class WishlistScreen extends StatelessWidget {
                           color: AppColors.primaryPurple,
                         ),
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Added to cart'),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
+                          ToastService.instance.showSuccess('Added to cart');
                         },
                       ),
                     ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../themes/themes.dart';
+import '../../../../services/toast_service.dart';
 
 class ReferAndEarn extends StatelessWidget {
   const ReferAndEarn({super.key});
@@ -59,12 +60,7 @@ class ReferAndEarn extends StatelessWidget {
                     Clipboard.setData(
                       const ClipboardData(text: 'SOOKI2024'),
                     );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Referral code copied!'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    ToastService.instance.showSuccess('Referral code copied');
                   },
                   child: Text(
                     'Copy',

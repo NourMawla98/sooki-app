@@ -100,7 +100,6 @@ class _MapPickerCardState extends State<MapPickerCard> {
         if (widget.onSearchSubmitted != null) ...[
           _SearchField(
             controller: _searchController,
-            surfaceColors: c,
             loading: widget.searchLoading,
             onSubmitted: (q) => widget.onSearchSubmitted!(q),
           ),
@@ -196,7 +195,6 @@ class _MapPickerCardState extends State<MapPickerCard> {
                 child: _UseMyLocationFab(
                   loading: widget.locationLoading,
                   onTap: widget.onUseMyLocation,
-                  surfaceColors: c,
                 ),
               ),
             ],
@@ -284,94 +282,180 @@ class _MapAttribution extends StatelessWidget {
   }
 }
 
-class _SearchField extends StatelessWidget {
+class _SearchField extends StatefulWidget {
   final TextEditingController controller;
-  final CartSurfaceColors surfaceColors;
   final bool loading;
   final ValueChanged<String> onSubmitted;
 
   const _SearchField({
     required this.controller,
-    required this.surfaceColors,
     required this.loading,
     required this.onSubmitted,
   });
 
   @override
+  State<_SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends State<_SearchField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocus);
+    widget.controller.addListener(_onText);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocus);
+    widget.controller.removeListener(_onText);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocus() {
+    if (mounted) setState(() => _isFocused = _focusNode.hasFocus);
+  }
+
+  void _onText() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final c = surfaceColors;
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: c.chipFill,
-        border: Border.all(color: c.chipBorder, width: 1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          FaIcon(
-            FontAwesomeIcons.magnifyingGlass,
-            size: 13,
-            color: c.textMute,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
+        final hintColor =
+            isDark ? AppColors.mutedOnDark : AppColors.mutedOnLight;
+        final textColor =
+            isDark ? AppColors.white : AppColors.auroraDeepBase;
+
+        final textField = TextField(
+          controller: widget.controller,
+          focusNode: _focusNode,
+          textAlignVertical: TextAlignVertical.center,
+          onSubmitted: widget.onSubmitted,
+          cursorColor: AppColors.auroraElectricBlue,
+          textInputAction: TextInputAction.search,
+          style: AppTextStyles.dsBody.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+            height: 1.0,
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              textAlignVertical: TextAlignVertical.center,
-              onSubmitted: onSubmitted,
-              cursorColor: AppColors.auroraElectricBlue,
-              textInputAction: TextInputAction.search,
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: c.text,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Search a place, street, or area',
-                hintStyle: AppTextStyles.bodyMedium.copyWith(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: c.textMute2,
-                ),
-                isCollapsed: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                filled: false,
-                fillColor: Colors.transparent,
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                focusedErrorBorder: InputBorder.none,
-              ),
+          decoration: InputDecoration(
+            hintText: 'Search a place, street, or area',
+            hintStyle: AppTextStyles.dsBody.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: hintColor,
+              height: 1.0,
             ),
-          ),
-          if (loading)
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor:
-                    AlwaysStoppedAnimation(AppColors.auroraElectricBlue),
-              ),
-            )
-          else if (controller.text.isNotEmpty)
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                controller.clear();
-              },
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(left: 14, right: 10),
               child: FaIcon(
-                FontAwesomeIcons.xmark,
-                size: 12,
-                color: c.textMute2,
+                FontAwesomeIcons.magnifyingGlass,
+                size: 16,
+                color: iconColor,
               ),
             ),
-        ],
-      ),
+            prefixIconConstraints:
+                const BoxConstraints(minWidth: 0, minHeight: 0),
+            suffixIcon: widget.loading
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 14),
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(
+                            AppColors.auroraElectricBlue),
+                      ),
+                    ),
+                  )
+                : widget.controller.text.isNotEmpty
+                    ? GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => widget.controller.clear(),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 14),
+                          child: FaIcon(
+                            FontAwesomeIcons.xmark,
+                            size: 12,
+                            color: hintColor,
+                          ),
+                        ),
+                      )
+                    : null,
+            suffixIconConstraints:
+                const BoxConstraints(minWidth: 0, minHeight: 0),
+            filled: false,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            focusedErrorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+            isDense: true,
+          ),
+        );
+
+        if (_isFocused) {
+          final innerFill =
+              isDark ? AppColors.auroraDeepBase : AppColors.white;
+          return Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: AppColors.auroraGradient,
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.auroraPurple
+                      .withValues(alpha: isDark ? 0.55 : 0.30),
+                  blurRadius: 22,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(2),
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: innerFill,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: textField,
+            ),
+          );
+        }
+
+        final fill = isDark
+            ? AppColors.white.withValues(alpha: 0.04)
+            : AppColors.white;
+        final border = isDark
+            ? AppColors.white.withValues(alpha: 0.12)
+            : AppColors.auroraPurple.withValues(alpha: 0.28);
+        return Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: border, width: 1.5),
+          ),
+          child: textField,
+        );
+      },
     );
   }
 }
@@ -379,12 +463,10 @@ class _SearchField extends StatelessWidget {
 class _UseMyLocationFab extends StatelessWidget {
   final bool loading;
   final VoidCallback onTap;
-  final CartSurfaceColors surfaceColors;
 
   const _UseMyLocationFab({
     required this.loading,
     required this.onTap,
-    required this.surfaceColors,
   });
 
   @override
@@ -392,38 +474,22 @@ class _UseMyLocationFab extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: loading ? null : onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: AppColors.auroraCartButtonGradient,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.auroraPurple.withValues(alpha: 0.40),
-              blurRadius: 14,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
         child: loading
             ? const SizedBox(
-                width: 18,
-                height: 18,
+                width: 22,
+                height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(AppColors.white),
+                  valueColor:
+                      AlwaysStoppedAnimation(AppColors.auroraElectricBlue),
                 ),
               )
-            : FaIcon(
+            : const FaIcon(
                 FontAwesomeIcons.locationCrosshairs,
-                size: 16,
-                color: AppColors.white,
+                size: 24,
+                color: AppColors.auroraElectricBlue,
               ),
       ),
     );

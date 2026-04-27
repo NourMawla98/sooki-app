@@ -191,7 +191,7 @@ class _CategoriesArrivalsSectionState
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.70,
       ),
       itemCount: _products.length,
       itemBuilder: (_, i) => ProductGridCard(product: _products[i]),

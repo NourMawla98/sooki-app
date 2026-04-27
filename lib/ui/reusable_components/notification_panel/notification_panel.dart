@@ -1,276 +1,265 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../routes/route_constants.dart';
+import '../../../services/notification_service.dart';
+import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
+import '../../../themes/app_fonts.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Notification panel dropdown that appears below the notification icon
-/// Shows list of mock notifications
-class NotificationPanel extends StatefulWidget {
+class NotificationPanel extends StatelessWidget {
   final VoidCallback onClose;
 
-  const NotificationPanel({
-    super.key,
-    required this.onClose,
-  });
-
-  @override
-  State<NotificationPanel> createState() => _NotificationPanelState();
-}
-
-class _NotificationPanelState extends State<NotificationPanel> {
-  final List<_MockNotification> _notifications = [
-    _MockNotification(
-      icon: FontAwesomeIcons.truck,
-      iconColor: AppColors.profileIconGreen,
-      title: 'Your order #1234 has been shipped!',
-      time: '2m ago',
-      isRead: false,
-    ),
-    _MockNotification(
-      icon: FontAwesomeIcons.bolt,
-      iconColor: AppColors.profileIconYellow,
-      title: 'Flash sale starts in 1 hour',
-      time: '15m ago',
-      isRead: false,
-    ),
-    _MockNotification(
-      icon: FontAwesomeIcons.shirt,
-      iconColor: AppColors.primaryPurple,
-      title: 'New arrivals in Dresses category',
-      time: '1h ago',
-      isRead: false,
-    ),
-    _MockNotification(
-      icon: FontAwesomeIcons.solidHeart,
-      iconColor: AppColors.auroraRed,
-      title: 'Your wishlist item is on sale!',
-      time: '3h ago',
-      isRead: true,
-    ),
-    _MockNotification(
-      icon: FontAwesomeIcons.solidHandSpock,
-      iconColor: AppColors.profileIconTeal,
-      title: 'Welcome to SooKI!',
-      time: '1d ago',
-      isRead: true,
-    ),
-  ];
-
-  void _markAllAsRead() {
-    setState(() {
-      for (final n in _notifications) {
-        n.isRead = true;
-      }
-    });
-  }
+  const NotificationPanel({super.key, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
-    final unreadCount = _notifications.where((n) => !n.isRead).length;
+    return ListenableBuilder(
+      listenable: Listenable.merge([ThemeService.instance, NotificationService.instance]),
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final svc = NotificationService.instance;
+        final items = svc.items;
+        final unread = svc.unreadCount;
 
-    return Container(
-      width: 300,
-      constraints: const BoxConstraints(maxHeight: 420),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+        final fill = isDark
+            ? const Color(0xFF12122A)
+            : AppColors.white;
+        final border = isDark
+            ? AppColors.white.withValues(alpha: 0.08)
+            : AppColors.auroraPurple.withValues(alpha: 0.12);
+        final divider = isDark
+            ? AppColors.white.withValues(alpha: 0.06)
+            : AppColors.auroraPurple.withValues(alpha: 0.08);
+
+        return Container(
+          width: 308,
+          constraints: const BoxConstraints(maxHeight: 440),
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: border),
+            boxShadow: [
+              BoxShadow(
+                color: isDark
+                    ? AppColors.black.withValues(alpha: 0.50)
+                    : AppColors.auroraPurple.withValues(alpha: 0.12),
+                blurRadius: isDark ? 48 : 32,
+                offset: const Offset(0, 16),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Notifications',
-                      style: AppTextStyles.heading4.copyWith(
-                        color: AppColors.textPrimary,
+                // Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Notifications',
+                        style: AppTextStyles.heading4.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                        ),
                       ),
-                    ),
-                    if (unreadCount > 0) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.accentRed,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '$unreadCount',
-                          style: AppTextStyles.captionSmall.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.bold,
+                      if (unread > 0) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.auroraPink,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            '$unread',
+                            style: AppTextStyles.captionSmall.copyWith(
+                              color: AppColors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
+                      const Spacer(),
+                      if (unread > 0)
+                        GestureDetector(
+                          onTap: svc.markAllRead,
+                          child: Text(
+                            'Mark all read',
+                            style: AppTextStyles.captionSmall.copyWith(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? AppColors.white.withValues(alpha: 0.4)
+                                  : AppColors.auroraPurple,
+                            ),
+                          ),
+                        ),
                     ],
-                  ],
+                  ),
                 ),
-                TextButton(
-                  onPressed: unreadCount > 0 ? _markAllAsRead : null,
-                  child: Text(
-                    'Mark all',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: unreadCount > 0
-                          ? AppColors.primaryPurple
-                          : AppColors.gray400,
-                      fontWeight: FontWeight.w600,
+                Container(height: 1, color: divider),
+
+                // List
+                if (items.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 28),
+                    child: Text(
+                      'No notifications',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: isDark
+                            ? AppColors.white.withValues(alpha: 0.3)
+                            : AppColors.auroraPurple.withValues(alpha: 0.4),
+                        fontSize: 13,
+                      ),
+                    ),
+                  )
+                else
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: items.length,
+                      separatorBuilder: (_, _2) =>
+                          Container(height: 1, color: divider),
+                      itemBuilder: (context, i) =>
+                          _PanelRow(item: items[i], isDark: isDark, onClose: onClose),
+                    ),
+                  ),
+
+                Container(height: 1, color: divider),
+
+                // Footer — same style as "SEE ALL RESULTS" in search bar
+                GestureDetector(
+                  onTap: () {
+                    onClose();
+                    Navigator.of(context).pushNamed(notificationsScreenRoute);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    child: Center(
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: AppColors.auroraGradient,
+                        ).createShader(bounds),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'VIEW ALL NOTIFICATIONS',
+                              style: AppFonts.primary(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.white,
+                                letterSpacing: 1.3,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            const FaIcon(
+                              FontAwesomeIcons.arrowRight,
+                              size: 12,
+                              color: AppColors.white,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          Divider(height: 1, thickness: 1, color: AppColors.gray200),
-
-          // Notification list
-          Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: _notifications.length,
-              separatorBuilder: (context, index) => Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColors.gray100,
-              ),
-              itemBuilder: (context, index) {
-                final n = _notifications[index];
-                return InkWell(
-                  onTap: () {
-                    setState(() => n.isRead = true);
-                    widget.onClose();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    color: n.isRead
-                        ? AppColors.white
-                        : AppColors.primaryPurple.withValues(alpha: 0.04),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: n.iconColor.withValues(alpha: 0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: FaIcon(
-                              n.icon,
-                              size: 14,
-                              color: n.iconColor,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                n.title,
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  fontWeight: n.isRead
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
-                                  color: AppColors.textPrimary,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                n.time,
-                                style: AppTextStyles.captionSmall.copyWith(
-                                  color: AppColors.gray400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (!n.isRead)
-                          Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.only(top: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryPurple,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // View all
-          Divider(height: 1, thickness: 1, color: AppColors.gray200),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: widget.onClose,
-                style: TextButton.styleFrom(
-                  backgroundColor: AppColors.gray50,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  'View all notifications',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.primaryPurple,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class _MockNotification {
-  _MockNotification({
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.time,
-    required this.isRead,
-  });
+class _PanelRow extends StatelessWidget {
+  const _PanelRow({required this.item, required this.isDark, required this.onClose});
 
-  final FaIconData icon;
-  final Color iconColor;
-  final String title;
-  final String time;
-  bool isRead;
+  final AppNotification item;
+  final bool isDark;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final unreadBg = isDark
+        ? AppColors.auroraPurple.withValues(alpha: 0.06)
+        : AppColors.auroraPurple.withValues(alpha: 0.045);
+    final removeColor = isDark
+        ? AppColors.white.withValues(alpha: 0.35)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.45);
+
+    return GestureDetector(
+      onTap: () {
+        NotificationService.instance.markRead(item.id);
+        onClose();
+      },
+      child: Container(
+        color: item.isRead ? null : unreadBg,
+        padding: const EdgeInsets.fromLTRB(16, 11, 12, 11),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      fontSize: 13,
+                      fontWeight: item.isRead ? FontWeight.w500 : FontWeight.w700,
+                      color: item.isRead
+                          ? (isDark
+                              ? AppColors.white.withValues(alpha: 0.45)
+                              : AppColors.auroraDeepBase.withValues(alpha: 0.45))
+                          : (isDark ? AppColors.white : AppColors.auroraDeepBase),
+                      height: 1.35,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.time,
+                    style: AppTextStyles.captionSmall.copyWith(
+                      fontSize: 11,
+                      color: isDark
+                          ? AppColors.white.withValues(alpha: 0.3)
+                          : AppColors.auroraPurple.withValues(alpha: 0.45),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => NotificationService.instance.delete(item.id),
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                width: 22,
+                height: 22,
+                alignment: Alignment.center,
+                color: Colors.transparent,
+                child: FaIcon(
+                  FontAwesomeIcons.xmark,
+                  size: 10,
+                  color: removeColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

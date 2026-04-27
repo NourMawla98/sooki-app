@@ -1,45 +1,270 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
+import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../reusable_components/aurora/aurora_secondary_button.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 import 'widgets/profile_header_card.dart';
 import 'widgets/profile_menu_list.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  static final _auth = GetIt.instance<AuthService>();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
+    return ListenableBuilder(
+      listenable: Listenable.merge([ThemeService.instance, _auth]),
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final isLoggedIn = _auth.isSignedIn;
+
+        return Scaffold(
+          backgroundColor:
+              isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -80,
+                right: -80,
+                size: 260,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
+              ),
+              AuroraGlowBlob(
+                bottom: 80,
+                left: -80,
+                size: 280,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
+              ),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(isDark: isDark),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (isLoggedIn)
+                              const ProfileHeaderCard()
+                            else
+                              _GuestHero(isDark: isDark),
+                            ProfileMenuList(
+                                isDark: isDark, isLoggedIn: isLoggedIn),
+                            if (isLoggedIn) _SignOutRow(isDark: isDark),
+                            const SizedBox(height: 12),
+                            Center(
+                              child: Text(
+                                'Sooki v1.0.0',
+                                style: AppTextStyles.captionSmall.copyWith(
+                                  color: isDark
+                                      ? AppColors.white.withValues(alpha: 0.15)
+                                      : AppColors.auroraPurple
+                                          .withValues(alpha: 0.25),
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Profile',
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
+        );
+      },
+    );
+  }
+}
+
+class _TopBar extends StatelessWidget {
+  const _TopBar({required this.isDark});
+
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconColor =
+        isDark ? AppColors.white : AppColors.auroraPurple;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: FaIcon(
+              FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: iconColor,
+            ),
+            onPressed: () => Navigator.of(context).maybePop(),
           ),
-        ),
-        centerTitle: true,
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              'Profile',
+              style: AppTextStyles.heading3.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: iconColor,
+                letterSpacing: -0.2,
+              ),
+            ),
+          ),
+        ],
       ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
+    );
+  }
+}
+
+class _GuestHero extends StatelessWidget {
+  const _GuestHero({required this.isDark});
+
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+      child: Column(
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDark
+                  ? AppColors.white.withValues(alpha: 0.06)
+                  : AppColors.auroraPurple.withValues(alpha: 0.06),
+              border: Border.all(
+                color: isDark
+                    ? AppColors.white.withValues(alpha: 0.18)
+                    : AppColors.auroraPurple.withValues(alpha: 0.25),
+              ),
+            ),
+            child: Center(
+              child: FaIcon(
+                FontAwesomeIcons.user,
+                size: 24,
+                color: isDark
+                    ? AppColors.white.withValues(alpha: 0.3)
+                    : AppColors.auroraPurple.withValues(alpha: 0.4),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            "You're not signed in",
+            style: AppTextStyles.heading4.copyWith(
+              color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+              fontWeight: FontWeight.w800,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Sign in to access your orders, wishlist, addresses and loyalty points.',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: isDark
+                  ? AppColors.white.withValues(alpha: 0.4)
+                  : AppColors.auroraPurple.withValues(alpha: 0.55),
+              height: 1.5,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: AuroraPrimaryButton(
+                  text: 'Sign In',
+                  height: 42,
+                  borderRadius: 100,
+                  onPressed: () =>
+                      Navigator.pushNamed(context, signInScreenRoute),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: AuroraSecondaryButton(
+                  text: 'Create Account',
+                  height: 42,
+                  borderRadius: 100,
+                  onPressed: () =>
+                      Navigator.pushNamed(context, signUpScreenRoute),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+class _SignOutRow extends StatelessWidget {
+  const _SignOutRow({required this.isDark});
+
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = GetIt.instance<AuthService>();
+    return GestureDetector(
+      onTap: () => auth.signOut(),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.auroraRed.withValues(alpha: isDark ? 0.05 : 0.04),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.auroraRed
+                .withValues(alpha: isDark ? 0.18 : 0.15),
+          ),
+        ),
+        child: Row(
           children: [
-            ProfileHeaderCard(),
-            SizedBox(height: 24),
-            ProfileMenuList(),
-            SizedBox(height: 100),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.auroraRed
+                    .withValues(alpha: isDark ? 0.12 : 0.09),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.rightFromBracket,
+                  size: 15,
+                  color: AppColors.auroraRed,
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Text(
+              'Sign Out',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.auroraRed,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
           ],
         ),
       ),

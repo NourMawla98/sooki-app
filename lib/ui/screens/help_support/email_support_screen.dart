@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/app_colors.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_text_styles.dart';
 
 class EmailSupportScreen extends StatefulWidget {
@@ -170,12 +171,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
             // Attach files button
             OutlinedButton.icon(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('File attachment coming soon!'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
+                ToastService.instance.showSuccess('File attachment coming soon');
               },
               icon: FaIcon(
                 FontAwesomeIcons.paperclip,
@@ -206,12 +202,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Support ticket submitted! (mock)'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
+                  ToastService.instance.showSuccess('Support ticket submitted');
                   Navigator.pop(context);
                 },
                 icon: FaIcon(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../themes/themes.dart';
+import '../../../../services/toast_service.dart';
 
 class RedeemRewards extends StatelessWidget {
   const RedeemRewards({super.key});
@@ -63,12 +64,7 @@ class _RewardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Requires $points to redeem'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        ToastService.instance.showError('Requires $points points to redeem');
       },
       child: Container(
         padding: const EdgeInsets.all(16),

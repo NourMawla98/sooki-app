@@ -3,20 +3,22 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
+import '../../../../services/toast_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 
 /// Section 6 — Quick Actions. Four circular glass bubbles that shortcut to
-/// the user's most-used utilities (Track Order, Wishlist, Reorder, Recently
-/// Viewed). Rewards is intentionally omitted — it's already a bottom nav tab.
+/// the user's most-used utilities (Track Order, Wishlist, Reorder, Settings).
+/// Rewards is intentionally omitted — it's already a bottom nav tab.
 ///
 /// Each bubble has a distinct subtle animation tied to its meaning:
 ///   - Track: pulsing blue glow (live order)
 ///   - Wishlist: heart beat + badge bounce (unread price drops)
 ///   - Reorder: slow continuous rotation (matches the rotate icon)
-///   - Viewed: gentle breathing scale (time marching on)
+///   - Settings: vertical Y-axis twirl (gear flip)
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
@@ -75,12 +77,12 @@ class QuickActions extends StatelessWidget {
                   ),
                   Expanded(
                     child: _Bubble(
-                      icon: FontAwesomeIcons.clockRotateLeft,
-                      label: 'Viewed',
-                      accent: AppColors.auroraPurple,
+                      icon: FontAwesomeIcons.gear,
+                      label: 'Settings',
+                      accent: AppColors.auroraGold,
                       isDark: isDark,
                       anim: _BubbleAnim.breathe,
-                      onTap: () => _showComingSoon(context, 'Recently Viewed'),
+                      onTap: () => Navigator.pushNamed(context, settingsScreenRoute),
                     ),
                   ),
                 ],
@@ -93,15 +95,7 @@ class QuickActions extends StatelessWidget {
   }
 
   void _showComingSoon(BuildContext context, String action) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('$action · coming soon'),
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+    ToastService.instance.showSuccess('$action — coming soon');
   }
 }
 

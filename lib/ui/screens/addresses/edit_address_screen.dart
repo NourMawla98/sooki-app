@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/app_colors.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_text_styles.dart';
 
 class EditAddressScreen extends StatefulWidget {
@@ -108,12 +109,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       onPressed: () {
                         Navigator.pop(ctx);
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Address deleted! (mock)'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
+                        ToastService.instance.showSuccess('Address deleted');
                       },
                       child: Text(
                         'Delete',
@@ -272,12 +268,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Address updated! (mock)'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
+                  ToastService.instance.showSuccess('Address updated');
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(

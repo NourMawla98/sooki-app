@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/app_colors.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_text_styles.dart';
 
 class ReturnsExchangesScreen extends StatelessWidget {
@@ -133,12 +134,7 @@ class ReturnsExchangesScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Return initiation coming soon!'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
+                  ToastService.instance.showSuccess('Return initiation coming soon');
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.arrowRotateLeft,

@@ -3,66 +3,181 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../themes/app_colors.dart';
+import '../../../../themes/app_text_styles.dart';
 import 'profile_menu_item.dart';
 
 class ProfileMenuList extends StatelessWidget {
-  const ProfileMenuList({super.key});
+  const ProfileMenuList({
+    super.key,
+    required this.isDark,
+    required this.isLoggedIn,
+  });
+
+  final bool isDark;
+  final bool isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    final shoppingItems = [
+      ProfileMenuItem(
+        icon: FontAwesomeIcons.box,
+        iconBg: AppColors.auroraElectricBlue
+            .withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.auroraElectricBlue,
+        title: 'My Orders',
+        subtitle:
+            isLoggedIn ? 'Track and manage your orders' : 'Sign in to view',
+        badge: isLoggedIn ? '2' : null,
+        isDark: isDark,
+        onTap: () => Navigator.pushNamed(context, ordersScreenRoute),
+      ),
+      ProfileMenuItem(
+        icon: FontAwesomeIcons.truck,
+        iconBg: AppColors.auroraElectricBlue
+            .withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.auroraElectricBlue,
+        title: 'Upcoming Deliveries',
+        subtitle: isLoggedIn ? "See what's on the way" : 'Sign in to view',
+        isDark: isDark,
+        onTap: () =>
+            Navigator.pushNamed(context, upcomingDeliveriesScreenRoute),
+      ),
+      ProfileMenuItem(
+        icon: FontAwesomeIcons.heart,
+        iconBg: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.auroraPink,
+        title: 'Wishlist',
+        subtitle: isLoggedIn ? "Items you've saved" : 'Sign in to view',
+        isDark: isDark,
+        onTap: () => Navigator.pushNamed(context, wishlistScreenRoute),
+      ),
+    ];
+
+    final accountItems = [
+      if (isLoggedIn)
         ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconOrange,
-          icon: FontAwesomeIcons.box,
-          title: 'Orders',
-          subtitle: 'Track your orders',
-          onTap: () => Navigator.pushNamed(context, ordersScreenRoute),
-        ),
-        ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconGreen,
-          icon: FontAwesomeIcons.truck,
-          title: 'Upcoming Deliveries',
-          subtitle: "See what's on the way",
-          onTap: () =>
-              Navigator.pushNamed(context, upcomingDeliveriesScreenRoute),
-        ),
-        ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconPink,
-          icon: FontAwesomeIcons.heart,
-          title: 'Wishlist',
-          subtitle: 'Your saved items',
-          onTap: () => Navigator.pushNamed(context, wishlistScreenRoute),
-        ),
-        ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconYellow,
           icon: FontAwesomeIcons.locationDot,
+          iconBg:
+              AppColors.auroraGold.withValues(alpha: isDark ? 0.12 : 0.10),
+          iconColor: AppColors.auroraGold,
           title: 'Addresses',
-          subtitle: 'Manage shipping addresses',
+          subtitle: 'Manage saved locations',
+          isDark: isDark,
           onTap: () => Navigator.pushNamed(context, addressesScreenRoute),
         ),
-        ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconTeal,
-          icon: FontAwesomeIcons.creditCard,
-          title: 'Payment Methods',
-          subtitle: 'Manage your cards',
-          onTap: () => Navigator.pushNamed(context, paymentMethodsScreenRoute),
+      ProfileMenuItem(
+        icon: FontAwesomeIcons.gear,
+        iconBg:
+            AppColors.verifiedGreen.withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.verifiedGreen,
+        title: 'Settings',
+        subtitle: 'Preferences and security',
+        isDark: isDark,
+        onTap: () => Navigator.pushNamed(context, settingsScreenRoute),
+      ),
+      ProfileMenuItem(
+        icon: FontAwesomeIcons.circleQuestion,
+        iconBg:
+            AppColors.auroraPurple.withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.auroraPurple,
+        title: 'Help & Support',
+        subtitle: 'FAQs, contact us',
+        isDark: isDark,
+        onTap: () => Navigator.pushNamed(context, helpSupportScreenRoute),
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(label: 'Shopping', isDark: isDark),
+        _MenuGroup(
+          isDark: isDark,
+          locked: !isLoggedIn,
+          items: shoppingItems,
         ),
-        ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconGray,
-          icon: FontAwesomeIcons.gear,
-          title: 'Settings',
-          subtitle: 'Account preferences',
-          onTap: () => Navigator.pushNamed(context, settingsScreenRoute),
+        _SectionHeader(
+          label: isLoggedIn ? 'Account' : 'General',
+          isDark: isDark,
         ),
-        ProfileMenuItem(
-          iconBackgroundColor: AppColors.profileIconHelpPink,
-          icon: FontAwesomeIcons.circleQuestion,
-          title: 'Help & Support',
-          subtitle: 'Get assistance',
-          onTap: () => Navigator.pushNamed(context, helpSupportScreenRoute),
-        ),
+        _MenuGroup(isDark: isDark, items: accountItems),
       ],
     );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.label, required this.isDark});
+
+  final String label;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTextStyles.dsSectionLabel.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.3)
+              : AppColors.auroraPurple.withValues(alpha: 0.4),
+          letterSpacing: 1.6,
+        ),
+      ),
+    );
+  }
+}
+
+class _MenuGroup extends StatelessWidget {
+  const _MenuGroup({
+    required this.isDark,
+    required this.items,
+    this.locked = false,
+  });
+
+  final bool isDark;
+  final List<Widget> items;
+  final bool locked;
+
+  @override
+  Widget build(BuildContext context) {
+    final divider = Divider(
+      height: 1,
+      thickness: 1,
+      indent: 16,
+      endIndent: 16,
+      color: isDark
+          ? AppColors.white.withValues(alpha: 0.05)
+          : AppColors.auroraPurple.withValues(alpha: 0.07),
+    );
+
+    final group = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.white.withValues(alpha: 0.03)
+            : AppColors.auroraPurple.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.07)
+              : AppColors.auroraPurple.withValues(alpha: 0.10),
+        ),
+      ),
+      child: Column(
+        children: [
+          for (int i = 0; i < items.length; i++) ...[
+            items[i],
+            if (i < items.length - 1) divider,
+          ],
+        ],
+      ),
+    );
+
+    if (locked) {
+      return IgnorePointer(child: Opacity(opacity: 0.3, child: group));
+    }
+    return group;
   }
 }

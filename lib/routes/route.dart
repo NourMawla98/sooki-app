@@ -27,6 +27,7 @@ import '../ui/screens/help_support/live_chat_screen.dart';
 import '../ui/screens/help_support/email_support_screen.dart';
 import '../ui/screens/image_viewer/image_viewer_screen.dart';
 import '../ui/screens/item_details/item_details_screen.dart';
+import '../ui/screens/notifications/notifications_screen.dart';
 import '../ui/screens/search/search_screen.dart';
 import '../ui/screens/main/main_screen.dart';
 import '../ui/screens/shopping/shopping_screen.dart';
@@ -50,6 +51,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     loyaltyScreenRoute: (_) => const LoyaltyScreen(),
     cartScreenRoute: (_) => const CartScreen(),
     profileScreenRoute: (_) => const ProfileScreen(),
+    notificationsScreenRoute: (_) => const NotificationsScreen(),
     ordersScreenRoute: (_) => const OrdersScreen(),
     upcomingDeliveriesScreenRoute: (_) => const UpcomingDeliveriesScreen(),
     wishlistScreenRoute: (_) => const WishlistScreen(),

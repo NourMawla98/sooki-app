@@ -146,7 +146,9 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
             onTap: widget.onTap,
             onChanged: widget.onChanged,
             textInputAction: widget.textInputAction,
-            textAlignVertical: TextAlignVertical.center,
+            textAlignVertical: widget.maxLines > 1
+                ? TextAlignVertical.top
+                : TextAlignVertical.center,
             style: AppTextStyles.dsBody.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -162,14 +164,27 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
                 height: 1.0,
               ),
               prefixIcon: widget.prefixIcon != null
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 14, right: 10),
-                      child: FaIcon(
-                        widget.prefixIcon!,
-                        size: 16,
-                        color: iconColor,
-                      ),
-                    )
+                  ? widget.maxLines > 1
+                      ? Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 14, right: 10, top: 14),
+                            child: FaIcon(
+                              widget.prefixIcon!,
+                              size: 16,
+                              color: iconColor,
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(left: 14, right: 10),
+                          child: FaIcon(
+                            widget.prefixIcon!,
+                            size: 16,
+                            color: iconColor,
+                          ),
+                        )
                   : null,
               prefixIconConstraints:
                   const BoxConstraints(minWidth: 0, minHeight: 0),

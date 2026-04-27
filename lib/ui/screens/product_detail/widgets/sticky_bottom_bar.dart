@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../../models/product.dart';
 import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
+import '../../../../services/toast_service.dart';
 import '../../../../themes/themes.dart';
 
 class StickyBottomBar extends StatelessWidget {
@@ -42,7 +43,7 @@ class StickyBottomBar extends StatelessWidget {
           ),
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
           child: GestureDetector(
-            onTap: _isEnabled ? () => _addToCart(context) : null,
+            onTap: _isEnabled ? () => _addToCart() : null,
             behavior: HitTestBehavior.opaque,
             child: Opacity(
               opacity: _isEnabled ? 1.0 : 0.45,
@@ -92,7 +93,7 @@ class StickyBottomBar extends StatelessWidget {
     );
   }
 
-  void _addToCart(BuildContext context) {
+  void _addToCart() {
     final cartService = GetIt.instance<CartService>();
     cartService.addItem(
       product,
@@ -100,8 +101,6 @@ class StickyBottomBar extends StatelessWidget {
       size: selectedSize,
       quantity: quantity,
     );
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Added to cart!')),
-    );
+    ToastService.instance.showSuccess('${product.name} added to cart');
   }
 }

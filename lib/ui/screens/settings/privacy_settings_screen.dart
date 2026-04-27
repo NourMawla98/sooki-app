@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/app_colors.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_text_styles.dart';
 
 class PrivacySettingsScreen extends StatefulWidget {
@@ -192,12 +193,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$title — coming soon!'),
-              duration: const Duration(seconds: 1),
-            ),
-          );
+          ToastService.instance.showSuccess('$title — coming soon');
         },
         child: Padding(
           padding: const EdgeInsets.all(16),

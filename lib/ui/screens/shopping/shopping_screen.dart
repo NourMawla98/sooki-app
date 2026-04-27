@@ -308,7 +308,7 @@ class _GridLoadingStub extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.70,
       ),
       itemCount: 4,
       itemBuilder: (_, _) => ListenableBuilder(
@@ -1016,7 +1016,7 @@ class _ProductGrid extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.70,
       ),
       itemCount: products.length,
       itemBuilder: (_, i) => ProductGridCard(product: products[i]),

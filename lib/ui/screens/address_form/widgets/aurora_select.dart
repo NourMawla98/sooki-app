@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
-import '../../cart/widgets/_cart_surface_theme.dart';
 
-/// Aurora-styled select field. Looks like an input; taps to open a bottom
-/// sheet list of options. `value` renders in the brand text color;
+/// Aurora-styled select field. Looks like an [AuroraInputField]; taps to open
+/// a bottom sheet list of options. `value` renders in the brand text color;
 /// `hint` renders muted when value is null.
 class AuroraSelect extends StatelessWidget {
   final String? value;
@@ -14,7 +14,6 @@ class AuroraSelect extends StatelessWidget {
   final List<String> options;
   final ValueChanged<String> onChanged;
   final FaIconData? prefixIcon;
-  final CartSurfaceColors surfaceColors;
   final bool enabled;
   final String sheetTitle;
 
@@ -24,13 +23,12 @@ class AuroraSelect extends StatelessWidget {
     required this.hint,
     required this.options,
     required this.onChanged,
-    required this.surfaceColors,
     required this.sheetTitle,
     this.prefixIcon,
     this.enabled = true,
   });
 
-  Future<void> _open(BuildContext context) async {
+  Future<void> _open(BuildContext context, bool isDark) async {
     if (!enabled || options.isEmpty) return;
     final picked = await showModalBottomSheet<String>(
       context: context,
@@ -40,7 +38,7 @@ class AuroraSelect extends StatelessWidget {
         title: sheetTitle,
         options: options,
         selected: value,
-        surfaceColors: surfaceColors,
+        isDark: isDark,
       ),
     );
     if (picked != null) onChanged(picked);
@@ -48,51 +46,66 @@ class AuroraSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = surfaceColors;
-    final hasValue = value != null && value!.isNotEmpty;
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final hasValue = value != null && value!.isNotEmpty;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _open(context),
-      child: Opacity(
-        opacity: enabled ? 1.0 : 0.5,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
-          decoration: BoxDecoration(
-            color: c.chipFill,
-            border: Border.all(color: c.chipBorder, width: 1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              if (prefixIcon != null) ...[
-                FaIcon(
-                  prefixIcon!,
-                  size: 14,
-                  color: c.textMute,
-                ),
-                const SizedBox(width: 10),
-              ],
-              Expanded(
-                child: Text(
-                  hasValue ? value! : hint,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontSize: 14,
-                    fontWeight:
-                        hasValue ? FontWeight.w600 : FontWeight.w500,
-                    color: hasValue ? c.text : c.textMute2,
+        final fill = isDark
+            ? AppColors.white.withValues(alpha: 0.04)
+            : AppColors.white;
+        final border = isDark
+            ? AppColors.white.withValues(alpha: 0.12)
+            : AppColors.auroraPurple.withValues(alpha: 0.28);
+        final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
+        final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final hintColor = isDark ? AppColors.mutedOnDark : AppColors.mutedOnLight;
+        final chevronColor = isDark
+            ? AppColors.white.withValues(alpha: 0.35)
+            : AppColors.auroraDeepBase.withValues(alpha: 0.45);
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => _open(context, isDark),
+          child: Opacity(
+            opacity: enabled ? 1.0 : 0.5,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              decoration: BoxDecoration(
+                color: fill,
+                border: Border.all(color: border, width: 1.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  if (prefixIcon != null) ...[
+                    FaIcon(prefixIcon!, size: 16, color: iconColor),
+                    const SizedBox(width: 10),
+                  ],
+                  Expanded(
+                    child: Text(
+                      hasValue ? value! : hint,
+                      style: AppTextStyles.dsBody.copyWith(
+                        fontSize: 14,
+                        fontWeight:
+                            hasValue ? FontWeight.w600 : FontWeight.normal,
+                        color: hasValue ? textColor : hintColor,
+                        height: 1.0,
+                      ),
+                    ),
                   ),
-                ),
+                  FaIcon(
+                    FontAwesomeIcons.chevronDown,
+                    size: 12,
+                    color: chevronColor,
+                  ),
+                ],
               ),
-              FaIcon(
-                FontAwesomeIcons.chevronDown,
-                size: 12,
-                color: c.textMute2,
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -101,18 +114,31 @@ class _OptionsSheet extends StatelessWidget {
   final String title;
   final List<String> options;
   final String? selected;
-  final CartSurfaceColors surfaceColors;
+  final bool isDark;
 
   const _OptionsSheet({
     required this.title,
     required this.options,
     required this.selected,
-    required this.surfaceColors,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final c = surfaceColors;
+    final sheetBg = isDark
+        ? AppColors.auroraDeepBase.withValues(alpha: 0.96)
+        : AppColors.white.withValues(alpha: 0.96);
+    final topBorder = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.auroraPurple.withValues(alpha: 0.12);
+    final handleColor = isDark
+        ? AppColors.white.withValues(alpha: 0.22)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.30);
+    final dividerColor = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.08);
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+
     return DraggableScrollableSheet(
       initialChildSize: 0.55,
       minChildSize: 0.35,
@@ -120,9 +146,9 @@ class _OptionsSheet extends StatelessWidget {
       expand: false,
       builder: (context, scrollController) => Container(
         decoration: BoxDecoration(
-          color: c.sheet,
+          color: sheetBg,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          border: Border(top: BorderSide(color: c.sheetTop, width: 1)),
+          border: Border(top: BorderSide(color: topBorder, width: 1)),
         ),
         child: Column(
           children: [
@@ -136,19 +162,16 @@ class _OptionsSheet extends StatelessWidget {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: c.textMute3,
+                        color: handleColor,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    title.toUpperCase(),
-                    style: AppTextStyles.label.copyWith(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 2,
-                      color: AppColors.auroraPink,
+                    title,
+                    style: AppTextStyles.dsFieldLabel.copyWith(
+                      color: isDark ? AppColors.white : AppColors.auroraPurple,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -163,7 +186,7 @@ class _OptionsSheet extends StatelessWidget {
                 separatorBuilder: (_, i) => Divider(
                   height: 1,
                   thickness: 1,
-                  color: c.divider,
+                  color: dividerColor,
                 ),
                 itemBuilder: (context, i) {
                   final opt = options[i];
@@ -172,8 +195,7 @@ class _OptionsSheet extends StatelessWidget {
                     behavior: HitTestBehavior.opaque,
                     onTap: () => Navigator.of(context).pop(opt),
                     child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       child: Row(
                         children: [
                           Expanded(
@@ -186,7 +208,7 @@ class _OptionsSheet extends StatelessWidget {
                                     : FontWeight.w600,
                                 color: isSelected
                                     ? AppColors.auroraPurple
-                                    : c.text,
+                                    : textColor,
                               ),
                             ),
                           ),

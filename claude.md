@@ -67,5 +67,15 @@ When asked to plan a feature:
 ### 8. Skill usage (token discipline)
 Don't invoke skills for simple questions, small edits, or status checks. Only invoke superpowers skills for: feature planning, real debugging sessions, completion verification before merging, or when I explicitly ask. This overrides the "1% match → must invoke" rule from `using-superpowers`.
 
-### 9. General
+### 9. Screen layout structure (CRITICAL)
+Every new screen must follow the address form pattern — not a standard `AppBar` + plain `Scaffold`:
+- **No `AppBar`**. Use a custom `_TopBar` widget inside the body: `IconButton(arrowLeft)` + `Text` in a `Row` with `Padding(fromLTRB(4, 4, 16, 8))`. Icon/title color: `white` dark / `auroraPurple` light.
+- **Background**: `Scaffold(backgroundColor: isDark ? auroraDeepBase : auroraLightBase)`.
+- **Glow blobs**: wrap body in a `Stack` and place two `AuroraGlowBlob` decorations — one top-right (`auroraPurple`), one bottom-left (`auroraElectricBlue`). Intensity: dark `0.18–0.20`, light `0.08–0.10`.
+- **SafeArea**: wrap the `Column(_TopBar + Expanded(SingleChildScrollView))` in `SafeArea` inside the `Stack`.
+- **No glass card for hero/header areas**: content sits directly on the background. Glass cards (`border + fill`) are only for grouped list sections (menu groups, form fields), never the top hero/avatar area.
+
+Reference implementation: `lib/ui/screens/address_form/address_form_screen.dart`.
+
+### 10. General
 - Semantic naming. Follow existing patterns. Keep widgets focused and composable. Extract repeated patterns into reusables.

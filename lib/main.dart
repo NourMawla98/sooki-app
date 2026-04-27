@@ -7,6 +7,7 @@ import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
 import 'services/language_service.dart';
 import 'services/theme_service.dart';
+import 'services/toast_service.dart';
 import 'themes/themes.dart';
 
 Future<void> main() async {
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Sooki',
           debugShowCheckedModeBanner: false,
+          navigatorKey: ToastService.navigatorKey,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeService.instance.themeMode,

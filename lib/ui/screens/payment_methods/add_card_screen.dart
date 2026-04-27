@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/app_colors.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_text_styles.dart';
 
 class AddCardScreen extends StatefulWidget {
@@ -227,12 +228,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Card added! (mock)'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
+                  ToastService.instance.showSuccess('Card added');
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(

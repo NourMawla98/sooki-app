@@ -7,74 +7,99 @@ import '../../../../themes/app_text_styles.dart';
 class ProfileMenuItem extends StatelessWidget {
   const ProfileMenuItem({
     super.key,
-    required this.iconBackgroundColor,
     required this.icon,
-    this.iconColor = AppColors.white,
+    required this.iconBg,
+    required this.iconColor,
     required this.title,
     required this.subtitle,
+    required this.isDark,
     required this.onTap,
+    this.badge,
   });
 
-  final Color iconBackgroundColor;
   final FaIconData icon;
+  final Color iconBg;
   final Color iconColor;
   final String title;
   final String subtitle;
+  final bool isDark;
   final VoidCallback onTap;
+  final String? badge;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: FaIcon(icon, size: 15, color: iconColor),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color:
+                          isDark ? AppColors.white : AppColors.auroraDeepBase,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.captionSmall.copyWith(
+                      color: isDark
+                          ? AppColors.white.withValues(alpha: 0.35)
+                          : AppColors.auroraPurple.withValues(alpha: 0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (badge != null) ...[
               Container(
-                width: 48,
-                height: 48,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
-                  color: iconBackgroundColor,
-                  shape: BoxShape.circle,
+                  color: AppColors.auroraPink,
+                  borderRadius: BorderRadius.circular(100),
                 ),
-                child: Center(
-                  child: FaIcon(icon, size: 20, color: iconColor),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  badge!,
+                  style: AppTextStyles.captionSmall.copyWith(
+                    color: AppColors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
-              FaIcon(
-                FontAwesomeIcons.chevronRight,
-                size: 16,
-                color: AppColors.gray400,
-              ),
+              const SizedBox(width: 8),
             ],
-          ),
+            FaIcon(
+              FontAwesomeIcons.chevronRight,
+              size: 12,
+              color: isDark
+                  ? AppColors.white.withValues(alpha: 0.2)
+                  : AppColors.auroraPurple.withValues(alpha: 0.25),
+            ),
+          ],
         ),
       ),
     );
