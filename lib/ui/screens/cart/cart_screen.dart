@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../services/cart_service.dart';
+import '../../../services/toast_service.dart';
+import '../../../themes/app_colors.dart';
+import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import 'widgets/address_pill.dart';
 import 'widgets/aurora_login_gate_dialog.dart';
 import 'widgets/cart_background.dart';
@@ -40,9 +44,21 @@ class CartScreen extends StatelessWidget {
                                 newQty,
                               );
                             },
-                            onRemove: () {
-                              cartService.removeItem(item.product.id);
-                            },
+                            onRemove: () => showAuroraConfirmSheet(
+                              context,
+                              title: 'Remove item?',
+                              subtitle: item.product.name,
+                              icon: FontAwesomeIcons.trashCan,
+                              iconColor: AppColors.auroraRed,
+                              confirmLabel: 'Remove',
+                              confirmColor: AppColors.auroraRed,
+                              onConfirm: () {
+                                cartService.removeItem(item.product.id);
+                                ToastService.instance.showSuccess(
+                                  '${item.product.name} removed from cart',
+                                );
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(height: 4),
