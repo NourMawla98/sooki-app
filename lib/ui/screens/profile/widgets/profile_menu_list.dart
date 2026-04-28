@@ -31,17 +31,6 @@ class ProfileMenuList extends StatelessWidget {
         isDark: isDark,
         onTap: () => Navigator.pushNamed(context, ordersScreenRoute),
       ),
-      ProfileMenuItem(
-        icon: FontAwesomeIcons.truck,
-        iconBg: AppColors.auroraElectricBlue
-            .withValues(alpha: isDark ? 0.12 : 0.10),
-        iconColor: AppColors.auroraElectricBlue,
-        title: 'Upcoming Deliveries',
-        subtitle: isLoggedIn ? "See what's on the way" : 'Sign in to view',
-        isDark: isDark,
-        onTap: () =>
-            Navigator.pushNamed(context, upcomingDeliveriesScreenRoute),
-      ),
     ];
 
     final wishlistItem = ProfileMenuItem(

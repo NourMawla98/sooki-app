@@ -7,14 +7,12 @@ import '../ui/screens/forgot_password/forgot_password_screen.dart';
 import '../ui/screens/loyalty/loyalty_screen.dart';
 import '../ui/screens/profile/profile_screen.dart';
 import '../ui/screens/orders/orders_screen.dart';
-import '../ui/screens/upcoming_deliveries/upcoming_deliveries_screen.dart';
 import '../ui/screens/wishlist/wishlist_screen.dart';
 import '../ui/screens/addresses/addresses_screen.dart';
 import '../ui/screens/payment_methods/payment_methods_screen.dart';
 import '../ui/screens/settings/settings_screen.dart';
 import '../ui/screens/help_support/help_support_screen.dart';
 import '../ui/screens/orders/order_detail_screen.dart';
-import '../ui/screens/upcoming_deliveries/delivery_detail_screen.dart';
 import '../ui/screens/address_form/address_form_screen.dart';
 import '../ui/screens/addresses/edit_address_screen.dart';
 import '../ui/screens/payment_methods/add_card_screen.dart';
@@ -62,7 +60,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     },
     ordersScreenRoute: (_) => const OrdersScreen(),
-    upcomingDeliveriesScreenRoute: (_) => const UpcomingDeliveriesScreen(),
     wishlistScreenRoute: (_) => const WishlistScreen(),
     addressesScreenRoute: (_) => const AddressesScreen(),
     paymentMethodsScreenRoute: (_) => const PaymentMethodsScreen(),
@@ -71,10 +68,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     orderDetailScreenRoute: (_) {
       final order = settings.arguments as MockOrderDetail;
       return OrderDetailScreen(order: order);
-    },
-    deliveryDetailScreenRoute: (_) {
-      final delivery = settings.arguments as MockDeliveryDetail;
-      return DeliveryDetailScreen(delivery: delivery);
     },
     addAddressScreenRoute: (_) => const AddressFormScreen(),
     editAddressScreenRoute: (_) {

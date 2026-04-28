@@ -150,17 +150,6 @@ class _HeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         child: Stack(
           children: [
-            // Subtle glow blob inside hero card
-            Positioned(
-              top: -50, right: -50,
-              child: Container(
-                width: 180, height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: order.statusColor.withValues(alpha: isDark ? 0.18 : 0.10),
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -198,14 +187,15 @@ class _HeroCard extends StatelessWidget {
                       _StatusPill(status: order.status, color: order.statusColor),
                     ],
                   ),
-                  // Divider
-                  Container(
-                    height: 1,
-                    margin: const EdgeInsets.symmetric(vertical: 14),
-                    color: dividerColor,
-                  ),
-                  // Horizontal step tracker
-                  _HorizontalTracker(filledCount: hFilledCount, isDark: isDark),
+                  // Divider + tracker — hidden for cancelled orders
+                  if (order.status != 'Cancelled') ...[
+                    Container(
+                      height: 1,
+                      margin: const EdgeInsets.symmetric(vertical: 14),
+                      color: dividerColor,
+                    ),
+                    _HorizontalTracker(filledCount: hFilledCount, isDark: isDark),
+                  ],
                 ],
               ),
             ),
@@ -254,110 +244,114 @@ class _HorizontalTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(_kHSteps.length, (i) {
-        final isFilled = i < filledCount;
-        final isCurrent = i == filledCount - 1 && filledCount < _kHSteps.length;
-        final isLast = i == _kHSteps.length - 1;
-        final dotColor = isFilled
-            ? null // gradient applied below
-            : isDark
-                ? AppColors.white.withValues(alpha: 0.06)
-                : AppColors.auroraPurple.withValues(alpha: 0.06);
-        final labelStyle = AppTextStyles.dsMuted.copyWith(
-          fontSize: 9,
-          fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w700,
-          color: isFilled
-              ? (isDark
-                  ? AppColors.white.withValues(alpha: 0.75)
-                  : AppColors.auroraDeepBase.withValues(alpha: 0.65))
-              : (isDark
-                  ? AppColors.white.withValues(alpha: 0.28)
-                  : AppColors.auroraDeepBase.withValues(alpha: 0.28)),
-        );
+    // Single row: [step, Expanded(line), step, Expanded(line), step, Expanded(line), step]
+    // Each step is a Stack — the circle sits at the top, the line runs through it at
+    // vertical center (top: 13), and the label floats below via Positioned so it doesn't
+    // affect row height. The row height is fixed to 28 (dot only); labels are painted
+    // outside bounds with clipBehavior: Clip.none on the outer Stack.
+    return SizedBox(
+      height: 48,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(2 * _kHSteps.length - 1, (idx) {
+          if (idx.isEven) return _buildStep(idx ~/ 2);
+          return Expanded(child: _buildLine(idx ~/ 2));
+        }),
+      ),
+    );
+  }
 
-        return Expanded(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        // Dot
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isFilled ? null : dotColor,
-                            gradient: isFilled
-                                ? const LinearGradient(
-                                    colors: AppColors.auroraGradient,
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  )
-                                : null,
-                            border: isFilled
-                                ? null
-                                : Border.all(
-                                    color: isDark
-                                        ? AppColors.white.withValues(alpha: 0.10)
-                                        : AppColors.auroraPurple.withValues(alpha: 0.14),
-                                  ),
-                            boxShadow: isCurrent
-                                ? [
-                                    BoxShadow(
-                                      color: AppColors.auroraPink.withValues(alpha: 0.45),
-                                      blurRadius: 10,
-                                      spreadRadius: 1,
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          child: isFilled
-                              ? Center(
-                                  child: FaIcon(
-                                    i == filledCount - 1 && !isCurrent
-                                        ? FontAwesomeIcons.check
-                                        : _hStepIcon(i),
-                                    size: 11,
-                                    color: AppColors.white,
-                                  ),
-                                )
-                              : null,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(_kHSteps[i], style: labelStyle),
-                      ],
+  Widget _buildStep(int i) {
+    final isFilled = i < filledCount;
+    final labelColor = isFilled
+        ? (isDark
+            ? AppColors.white.withValues(alpha: 0.75)
+            : AppColors.auroraDeepBase.withValues(alpha: 0.65))
+        : (isDark
+            ? AppColors.white.withValues(alpha: 0.28)
+            : AppColors.auroraDeepBase.withValues(alpha: 0.28));
+    final iconColor = isFilled
+        ? AppColors.white
+        : isDark
+            ? AppColors.white.withValues(alpha: 0.22)
+            : AppColors.auroraPurple.withValues(alpha: 0.22);
+
+    // Stack with overflow allowed: circle is the layout child (28×28),
+    // label is Positioned below it so it paints outside without affecting row height.
+    return SizedBox(
+      width: 28,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isFilled
+                  ? null
+                  : isDark
+                      ? AppColors.white.withValues(alpha: 0.06)
+                      : AppColors.auroraPurple.withValues(alpha: 0.06),
+              gradient: isFilled
+                  ? const LinearGradient(
+                      colors: AppColors.auroraGradient,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              border: isFilled
+                  ? null
+                  : Border.all(
+                      color: isDark
+                          ? AppColors.white.withValues(alpha: 0.10)
+                          : AppColors.auroraPurple.withValues(alpha: 0.14),
                     ),
-                  ),
-                  if (!isLast)
-                    Expanded(
-                      child: Container(
-                        height: 2,
-                        margin: const EdgeInsets.only(bottom: 18),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(1),
-                          gradient: isFilled && i < filledCount - 1
-                              ? const LinearGradient(
-                                  colors: [AppColors.auroraPurple, AppColors.auroraElectricBlue],
-                                )
-                              : null,
-                          color: (!isFilled || i >= filledCount - 1)
-                              ? (isDark
-                                  ? AppColors.white.withValues(alpha: 0.07)
-                                  : AppColors.auroraPurple.withValues(alpha: 0.10))
-                              : null,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
+            ),
+            child: Center(
+              child: FaIcon(_hStepIcon(i), size: 11, color: iconColor),
+            ),
           ),
-        );
-      }),
+          Positioned(
+            top: 33,
+            left: -40,
+            right: -40,
+            child: Text(
+              _kHSteps[i],
+              style: AppTextStyles.dsMuted.copyWith(
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                color: labelColor,
+              ),
+              textAlign: TextAlign.center,
+              softWrap: false,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLine(int i) {
+    // Line is filled when BOTH endpoints are filled (i.e. step i AND step i+1 are done)
+    final lineFilled = i < filledCount - 1;
+    return Container(
+      height: 2,
+      margin: const EdgeInsets.only(top: 13), // center on 28px dot
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(1),
+        gradient: lineFilled
+            ? const LinearGradient(
+                colors: [AppColors.auroraPurple, AppColors.auroraElectricBlue],
+              )
+            : null,
+        color: lineFilled
+            ? null
+            : isDark
+                ? AppColors.white.withValues(alpha: 0.07)
+                : AppColors.auroraPurple.withValues(alpha: 0.10),
+      ),
     );
   }
 
@@ -366,7 +360,7 @@ class _HorizontalTracker extends StatelessWidget {
       case 0: return FontAwesomeIcons.check;
       case 1: return FontAwesomeIcons.gear;
       case 2: return FontAwesomeIcons.truck;
-      default: return FontAwesomeIcons.boxOpen;
+      default: return FontAwesomeIcons.circleCheck;
     }
   }
 }
