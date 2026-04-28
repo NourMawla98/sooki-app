@@ -110,7 +110,7 @@ class WishlistScreen extends StatelessWidget {
                         icon: FaIcon(
                           FontAwesomeIcons.solidHeart,
                           size: 18,
-                          color: AppColors.auroraRed,
+                          color: AppColors.auroraPink,
                         ),
                         onPressed: () {
                           ToastService.instance.showSuccess('Removed from wishlist');

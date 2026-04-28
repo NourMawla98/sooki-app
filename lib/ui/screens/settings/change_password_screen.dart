@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../themes/app_colors.dart';
+import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
+import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -13,179 +17,196 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  bool _showCurrent = false;
-  bool _showNew = false;
-  bool _showConfirm = false;
+  final _formKey = GlobalKey<FormState>();
+  final _currentCtrl = TextEditingController();
+  final _newCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _currentCtrl.dispose();
+    _newCtrl.dispose();
+    _confirmCtrl.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _loading = true);
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ToastService.instance.showSuccess('Password updated successfully');
+      Navigator.pop(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Change Password',
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Security icon
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.primaryPurple.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        return Scaffold(
+          backgroundColor:
+              isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -80,
+                right: -80,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
               ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryPurple.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: FaIcon(
-                        FontAwesomeIcons.lock,
-                        size: 28,
-                        color: AppColors.primaryPurple,
+              AuroraGlowBlob(
+                bottom: -80,
+                left: -80,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
+              ),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(isDark: isDark),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _SectionLabel(
+                                label: 'Current password',
+                                isDark: isDark,
+                              ),
+                              const SizedBox(height: 8),
+                              AuroraInputField(
+                                controller: _currentCtrl,
+                                hint: 'Enter current password',
+                                isPassword: true,
+                                prefixIcon: FontAwesomeIcons.lock,
+                                textInputAction: TextInputAction.next,
+                                validator: (v) => (v == null || v.isEmpty)
+                                    ? 'Required'
+                                    : null,
+                              ),
+                              const SizedBox(height: 20),
+                              _SectionLabel(
+                                label: 'New password',
+                                isDark: isDark,
+                              ),
+                              const SizedBox(height: 8),
+                              AuroraInputField(
+                                controller: _newCtrl,
+                                hint: 'Enter new password',
+                                isPassword: true,
+                                prefixIcon: FontAwesomeIcons.lockOpen,
+                                textInputAction: TextInputAction.next,
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) {
+                                    return 'Required';
+                                  }
+                                  if (v.length < 8) {
+                                    return 'At least 8 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              _SectionLabel(
+                                label: 'Confirm new password',
+                                isDark: isDark,
+                              ),
+                              const SizedBox(height: 8),
+                              AuroraInputField(
+                                controller: _confirmCtrl,
+                                hint: 'Re-enter new password',
+                                isPassword: true,
+                                prefixIcon: FontAwesomeIcons.lockOpen,
+                                textInputAction: TextInputAction.done,
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) {
+                                    return 'Required';
+                                  }
+                                  if (v != _newCtrl.text) {
+                                    return 'Passwords do not match';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 32),
+                              AuroraPrimaryButton(
+                                text: 'Update Password',
+                                onPressed: _submit,
+                                isLoading: _loading,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Create a strong password',
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Use at least 8 characters with a mix of letters, numbers, and symbols.',
-                    style: AppTextStyles.bodySmall,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            _buildPasswordField(
-              label: 'Current Password',
-              hint: 'Enter current password',
-              isVisible: _showCurrent,
-              onToggle: () => setState(() => _showCurrent = !_showCurrent),
-            ),
-            const SizedBox(height: 16),
-            _buildPasswordField(
-              label: 'New Password',
-              hint: 'Enter new password',
-              isVisible: _showNew,
-              onToggle: () => setState(() => _showNew = !_showNew),
-            ),
-            const SizedBox(height: 16),
-            _buildPasswordField(
-              label: 'Confirm New Password',
-              hint: 'Re-enter new password',
-              isVisible: _showConfirm,
-              onToggle: () => setState(() => _showConfirm = !_showConfirm),
-            ),
-            const SizedBox(height: 32),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  ToastService.instance.showSuccess('Password updated');
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryPurple,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Update Password',
-                  style: AppTextStyles.buttonLarge,
+                  ],
                 ),
               ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final bool isDark;
+  const _TopBar({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Change Password',
+            style: AppTextStyles.heading3.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: color,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildPasswordField({
-    required String label,
-    required String hint,
-    required bool isVisible,
-    required VoidCallback onToggle,
-  }) {
-    return TextFormField(
-      obscureText: !isVisible,
-      style: AppTextStyles.bodyMedium,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        labelStyle: AppTextStyles.bodySmall,
-        hintStyle: AppTextStyles.inputHint,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.all(12),
-          child: FaIcon(
-            FontAwesomeIcons.lock,
-            size: 16,
-            color: AppColors.gray400,
-          ),
-        ),
-        suffixIcon: IconButton(
-          icon: FaIcon(
-            isVisible ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye,
-            size: 16,
-            color: AppColors.gray400,
-          ),
-          onPressed: onToggle,
-        ),
-        filled: true,
-        fillColor: AppColors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gray200),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gray200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.primaryPurple,
-            width: 2,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+// ─── Section label ────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  final bool isDark;
+  const _SectionLabel({required this.label, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 2),
+      child: Text(
+        label,
+        style: AppTextStyles.dsFieldLabel.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.55)
+              : AppColors.auroraPurple,
         ),
       ),
     );

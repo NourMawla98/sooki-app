@@ -547,7 +547,6 @@ class _IncludeLocationToggle extends StatelessWidget {
             AuroraSwitch(
               value: value,
               onChanged: onChanged,
-              activeColor: AppColors.auroraElectricBlue,
               isDark: isDark,
             ),
           ],
@@ -692,7 +691,6 @@ class _DefaultToggle extends StatelessWidget {
             AuroraSwitch(
               value: value,
               onChanged: onChanged,
-              activeColor: AppColors.auroraPurple,
               isDark: isDark,
             ),
           ],

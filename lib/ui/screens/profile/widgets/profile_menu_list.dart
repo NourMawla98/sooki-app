@@ -18,7 +18,7 @@ class ProfileMenuList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shoppingItems = [
+    final ordersItems = [
       ProfileMenuItem(
         icon: FontAwesomeIcons.box,
         iconBg: AppColors.auroraElectricBlue
@@ -42,24 +42,25 @@ class ProfileMenuList extends StatelessWidget {
         onTap: () =>
             Navigator.pushNamed(context, upcomingDeliveriesScreenRoute),
       ),
-      ProfileMenuItem(
-        icon: FontAwesomeIcons.heart,
-        iconBg: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.10),
-        iconColor: AppColors.auroraPink,
-        title: 'Wishlist',
-        subtitle: isLoggedIn ? "Items you've saved" : 'Sign in to view',
-        isDark: isDark,
-        onTap: () => Navigator.pushNamed(context, wishlistScreenRoute),
-      ),
     ];
+
+    final wishlistItem = ProfileMenuItem(
+      icon: FontAwesomeIcons.heart,
+      iconBg: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.10),
+      iconColor: AppColors.auroraPink,
+      title: 'Wishlist',
+      subtitle: "Items you've saved",
+      isDark: isDark,
+      onTap: () => Navigator.pushNamed(context, wishlistScreenRoute),
+    );
 
     final accountItems = [
       if (isLoggedIn)
         ProfileMenuItem(
           icon: FontAwesomeIcons.locationDot,
           iconBg:
-              AppColors.auroraGold.withValues(alpha: isDark ? 0.12 : 0.10),
-          iconColor: AppColors.auroraGold,
+              AppColors.auroraPurple.withValues(alpha: isDark ? 0.12 : 0.10),
+          iconColor: AppColors.auroraPurple,
           title: 'Addresses',
           subtitle: 'Manage saved locations',
           isDark: isDark,
@@ -68,8 +69,8 @@ class ProfileMenuList extends StatelessWidget {
       ProfileMenuItem(
         icon: FontAwesomeIcons.gear,
         iconBg:
-            AppColors.verifiedGreen.withValues(alpha: isDark ? 0.12 : 0.10),
-        iconColor: AppColors.verifiedGreen,
+            AppColors.auroraPurple.withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.auroraPurple,
         title: 'Settings',
         subtitle: 'Preferences and security',
         isDark: isDark,
@@ -94,8 +95,10 @@ class ProfileMenuList extends StatelessWidget {
         _MenuGroup(
           isDark: isDark,
           locked: !isLoggedIn,
-          items: shoppingItems,
+          items: ordersItems,
         ),
+        _SectionHeader(label: 'Wishlist', isDark: isDark),
+        _MenuGroup(isDark: isDark, items: [wishlistItem]),
         _SectionHeader(
           label: isLoggedIn ? 'Account' : 'General',
           isDark: isDark,

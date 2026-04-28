@@ -28,6 +28,8 @@ import '../ui/screens/help_support/email_support_screen.dart';
 import '../ui/screens/image_viewer/image_viewer_screen.dart';
 import '../ui/screens/item_details/item_details_screen.dart';
 import '../ui/screens/notifications/notifications_screen.dart';
+import '../ui/screens/edit_profile/edit_profile_screen.dart';
+import '../ui/screens/order_success/order_success_screen.dart';
 import '../ui/screens/search/search_screen.dart';
 import '../ui/screens/main/main_screen.dart';
 import '../ui/screens/shopping/shopping_screen.dart';
@@ -52,6 +54,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     cartScreenRoute: (_) => const CartScreen(),
     profileScreenRoute: (_) => const ProfileScreen(),
     notificationsScreenRoute: (_) => const NotificationsScreen(),
+    editProfileScreenRoute: (_) => const EditProfileScreen(),
+    orderSuccessScreenRoute: (_) {
+      final args = settings.arguments;
+      return OrderSuccessScreen(
+        args: args is OrderSuccessArgs ? args : const OrderSuccessArgs(),
+      );
+    },
     ordersScreenRoute: (_) => const OrdersScreen(),
     upcomingDeliveriesScreenRoute: (_) => const UpcomingDeliveriesScreen(),
     wishlistScreenRoute: (_) => const WishlistScreen(),

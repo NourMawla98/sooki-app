@@ -3,32 +3,43 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../services/address_service.dart';
+import '../../../../services/auth_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '_cart_surface_theme.dart';
 import 'address_picker_sheet.dart';
+import 'aurora_login_gate_dialog.dart';
 
 /// A1 compact delivery-address pill. Tap anywhere on the row (or on CHANGE)
 /// to open the picker sheet with all saved addresses.
+/// When the user is not signed in the pill is visually dimmed and tapping
+/// shows the login gate instead of the address picker.
 class AddressPill extends StatelessWidget {
   const AddressPill({super.key});
 
   @override
   Widget build(BuildContext context) {
     final addressService = GetIt.instance<AddressService>();
+    final authService = GetIt.instance<AuthService>();
 
     return ListenableBuilder(
-      listenable: Listenable.merge([addressService, ThemeService.instance]),
+      listenable: Listenable.merge(
+          [addressService, authService, ThemeService.instance]),
       builder: (context, _) {
         final c = CartSurfaceColors.of(
           isDark: ThemeService.instance.isDarkMode,
         );
         final addr = addressService.selectedAddress;
+        final isLoggedIn = authService.isSignedIn;
 
-        return GestureDetector(
+        return Opacity(
+          opacity: isLoggedIn ? 1.0 : 0.45,
+          child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => showAddressPickerSheet(context),
+          onTap: () => isLoggedIn
+              ? showAddressPickerSheet(context)
+              : showAuroraLoginGate(context),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
@@ -118,6 +129,7 @@ class AddressPill extends StatelessWidget {
               ],
             ),
           ),
+        ),
         );
       },
     );

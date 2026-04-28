@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/cart_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
@@ -28,7 +30,7 @@ class CartScreen extends StatelessWidget {
       listenable: cartService,
       builder: (context, _) {
         final Widget content = cartService.isEmpty
-            ? CartEmptyState(onBrowse: () => onSwitchToBrowse?.call())
+            ? const CartEmptyState()
             : Column(
                 children: [
                   Expanded(
@@ -89,6 +91,11 @@ class CartScreen extends StatelessWidget {
   }
 
   void _showCheckoutGate(BuildContext context) {
-    showAuroraLoginGate(context);
+    final isLoggedIn = GetIt.instance<AuthService>().isSignedIn;
+    if (isLoggedIn) {
+      Navigator.pushNamed(context, orderSuccessScreenRoute);
+    } else {
+      showAuroraLoginGate(context);
+    }
   }
 }

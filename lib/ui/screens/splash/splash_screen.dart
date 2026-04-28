@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:get_it/get_it.dart';
+
 import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -54,9 +57,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (_kAutoNavigate) {
       _navigateTimer = Timer(const Duration(seconds: 2), () {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, signUpScreenRoute);
-        }
+        if (!mounted) return;
+        final isLoggedIn = GetIt.instance<AuthService>().isSignedIn;
+        Navigator.pushReplacementNamed(
+          context,
+          isLoggedIn ? mainScreenRoute : signUpScreenRoute,
+        );
       });
     }
   }

@@ -8,6 +8,7 @@ import '../../services/auth_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/language_service.dart';
 import '../../services/search_history_service.dart';
+import '../../services/user_profile_service.dart';
 import '../../services/wishlist_service.dart';
 import '../dio/client/api_client.dart';
 import 'dependency_injection.config.dart';
@@ -67,6 +68,11 @@ Future<void> setupDependencyInjection({
   final authService = AuthService(serviceLocator<SharedPreferences>());
   await authService.load();
   serviceLocator.registerSingleton<AuthService>(authService);
+
+  final userProfileService =
+      UserProfileService(serviceLocator<SharedPreferences>());
+  await userProfileService.load();
+  serviceLocator.registerSingleton<UserProfileService>(userProfileService);
 
   // Register Dio client with language service
   serviceLocator.registerSingleton<Dio>(

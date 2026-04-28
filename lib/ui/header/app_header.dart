@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../services/notification_service.dart';
 import '../../services/theme_service.dart';
 import '../../themes/app_colors.dart';
 import '../reusable_components/app_logo/app_logo.dart';
@@ -22,7 +23,8 @@ class AppHeader extends StatefulWidget {
 }
 
 class _AppHeaderState extends State<AppHeader> {
-  final bool _hasUnreadNotifications = true;
+  bool get _hasUnreadNotifications =>
+      NotificationService.instance.unreadCount > 0;
   OverlayEntry? _overlay;
   final GlobalKey _notificationButtonKey = GlobalKey();
   final GlobalKey _menuButtonKey = GlobalKey();
@@ -86,7 +88,8 @@ class _AppHeaderState extends State<AppHeader> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge(
+          [ThemeService.instance, NotificationService.instance]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bg = isDark

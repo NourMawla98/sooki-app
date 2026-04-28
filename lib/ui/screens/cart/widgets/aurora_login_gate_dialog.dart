@@ -6,19 +6,19 @@ import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
-import '_cart_surface_theme.dart';
 
-/// Aurora-styled login gate shown when a guest taps `Proceed to checkout`.
+/// Aurora login gate — bottom sheet, consistent with [showAuroraConfirmSheet].
 Future<void> showAuroraLoginGate(BuildContext context) {
-  return showDialog<void>(
+  return showModalBottomSheet<void>(
     context: context,
-    barrierColor: AppColors.black.withValues(alpha: 0.55),
-    builder: (_) => const _AuroraLoginGateDialog(),
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (_) => const _AuroraLoginGateSheet(),
   );
 }
 
-class _AuroraLoginGateDialog extends StatelessWidget {
-  const _AuroraLoginGateDialog();
+class _AuroraLoginGateSheet extends StatelessWidget {
+  const _AuroraLoginGateSheet();
 
   @override
   Widget build(BuildContext context) {
@@ -26,153 +26,143 @@ class _AuroraLoginGateDialog extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final c = CartSurfaceColors.of(isDark: isDark);
-        final sheetBg = isDark
-            ? AppColors.auroraDeepBase.withValues(alpha: 0.96)
-            : AppColors.auroraLightBase;
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
-            decoration: BoxDecoration(
-              color: sheetBg,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: c.glassBorder, width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.auroraPurple
-                      .withValues(alpha: isDark ? 0.30 : 0.12),
-                  blurRadius: 26,
+        final fill = isDark ? const Color(0xFF12122A) : AppColors.white;
+        final border = isDark
+            ? AppColors.white.withValues(alpha: 0.08)
+            : AppColors.auroraPurple.withValues(alpha: 0.12);
+        final textColor =
+            isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final subColor = isDark
+            ? AppColors.white.withValues(alpha: 0.45)
+            : AppColors.auroraDeepBase.withValues(alpha: 0.50);
+
+        return Container(
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: border),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag handle
+              const SizedBox(height: 12),
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppColors.white.withValues(alpha: 0.15)
+                        : AppColors.auroraPurple.withValues(alpha: 0.20),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: AppColors.auroraCartButtonGradient,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.auroraPurple.withValues(
-                              alpha: isDark ? 0.40 : 0.20,
-                            ),
-                            blurRadius: 14,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: FaIcon(
-                        FontAwesomeIcons.lock,
-                        size: 15,
-                        color: AppColors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'ONE MORE STEP',
-                            style: AppTextStyles.label.copyWith(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 2,
-                              color: AppColors.auroraPink,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Log in to checkout',
-                            style: AppTextStyles.heading3.copyWith(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              color: c.text,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                        ],
-                      ),
+              ),
+              const SizedBox(height: 20),
+
+              // Lock icon
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: AppColors.auroraGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.auroraPurple.withValues(
+                          alpha: isDark ? 0.40 : 0.20),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
-                Text(
-                  'We keep your bag while you sign in. Your cart and wishlist '
-                  'stay where they are.',
+                alignment: Alignment.center,
+                child: const FaIcon(
+                  FontAwesomeIcons.lock,
+                  size: 17,
+                  color: AppColors.white,
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Label
+              Text(
+                'ONE MORE STEP',
+                style: AppTextStyles.dsSectionLabel.copyWith(
+                  color: AppColors.auroraPink,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              // Title
+              Text(
+                'Log in to checkout',
+                style: AppTextStyles.heading3.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: textColor,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Body
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  'We keep your bag while you sign in. Your cart and wishlist stay where they are.',
+                  textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontSize: 13,
-                    color: c.textMute,
-                    height: 1.4,
+                    color: subColor,
+                    height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 20),
-                AuroraPrimaryButton(
+              ),
+              const SizedBox(height: 24),
+
+              // LOG IN button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: AuroraPrimaryButton(
                   text: 'LOG IN',
-                  height: 46,
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pushNamed(signInScreenRoute);
                   },
                 ),
-                const SizedBox(height: 10),
-                _GhostButton(
-                  label: 'Continue shopping',
-                  textColor: c.textMute,
-                  onTap: () => Navigator.of(context).pop(),
+              ),
+              const SizedBox(height: 10),
+
+              // Continue shopping
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  height: 44,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Continue shopping',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: subColor,
+                    ),
+                  ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
         );
       },
-    );
-  }
-}
-
-class _GhostButton extends StatelessWidget {
-  final String label;
-  final Color textColor;
-  final VoidCallback onTap;
-
-  const _GhostButton({
-    required this.label,
-    required this.textColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        height: 40,
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: AppTextStyles.buttonMedium.copyWith(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: textColor,
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
+import '../../../../services/user_profile_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 
@@ -11,47 +14,104 @@ class ProfileHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge([
+        ThemeService.instance,
+        GetIt.instance<UserProfileService>(),
+      ]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final profile = GetIt.instance<UserProfileService>();
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
           child: Column(
             children: [
-              // Gradient ring avatar
-              Container(
-                width: 80,
-                height: 80,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: AppColors.auroraGradient,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                padding: const EdgeInsets.all(2.5),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color:
-                        isDark ? AppColors.auroraDeepBase : AppColors.white,
-                  ),
-                  child: Center(
-                    child: FaIcon(
-                      FontAwesomeIcons.user,
-                      size: 28,
-                      color: isDark
-                          ? AppColors.white.withValues(alpha: 0.85)
-                          : AppColors.auroraPurple,
+              // Avatar with edit button
+              Stack(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: AppColors.auroraGradient,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(2.5),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            isDark ? AppColors.auroraDeepBase : AppColors.white,
+                      ),
+                      child: Center(
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: AppColors.auroraGradient,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(
+                            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                          ),
+                          blendMode: BlendMode.srcIn,
+                          child: Text(
+                            profile.initials,
+                            style: AppTextStyles.dsCTA.copyWith(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+
+                  // Edit badge
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                          context, editProfileScreenRoute),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: AppColors.auroraGradient,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          border: Border.all(
+                            color: isDark
+                                ? AppColors.auroraDeepBase
+                                : AppColors.white,
+                            width: 2,
+                          ),
+                        ),
+                        child: const Center(
+                          child: FaIcon(
+                            FontAwesomeIcons.pen,
+                            size: 9,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+
               const SizedBox(height: 12),
+
               Text(
-                'Nour Mawla',
+                profile.name,
                 style: AppTextStyles.heading3.copyWith(
                   color: isDark ? AppColors.white : AppColors.auroraDeepBase,
                   fontWeight: FontWeight.w800,
@@ -60,7 +120,7 @@ class ProfileHeaderCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'nour@example.com',
+                profile.email,
                 style: AppTextStyles.bodySmall.copyWith(
                   color: isDark
                       ? AppColors.white.withValues(alpha: 0.45)
@@ -69,6 +129,7 @@ class ProfileHeaderCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+
               // Stats row
               Container(
                 decoration: BoxDecoration(
@@ -87,11 +148,9 @@ class ProfileHeaderCard extends StatelessWidget {
                     children: [
                       _StatCell(value: '12', label: 'Orders', isDark: isDark),
                       _VerticalDivider(isDark: isDark),
-                      _StatCell(
-                          value: '3', label: 'Wishlist', isDark: isDark),
+                      _StatCell(value: '3', label: 'Wishlist', isDark: isDark),
                       _VerticalDivider(isDark: isDark),
-                      _StatCell(
-                          value: '840', label: 'Points', isDark: isDark),
+                      _StatCell(value: '840', label: 'Points', isDark: isDark),
                     ],
                   ),
                 ),

@@ -326,7 +326,7 @@ class _HeartButton extends StatelessWidget {
               child: FaIcon(
                 active ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
                 size: 15,
-                color: AppColors.auroraRed,
+                color: AppColors.auroraPink,
               ),
             ),
           ),

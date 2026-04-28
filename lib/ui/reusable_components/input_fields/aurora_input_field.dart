@@ -213,8 +213,9 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
               errorBorder: InputBorder.none,
               focusedErrorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              // Suppress built-in error text — we render our own below
-              errorStyle: const TextStyle(fontSize: 0, height: 0),
+              // Zero-height error widget — suppresses Flutter's built-in
+              // error space entirely. We render our own error text below.
+              error: const SizedBox.shrink(),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: widget.prefixIcon != null ? 0 : 14,
                 vertical: 12,

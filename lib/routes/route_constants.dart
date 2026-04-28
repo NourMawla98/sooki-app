@@ -35,3 +35,5 @@ const String searchScreenRoute = 'search';
 const String itemDetailsScreenRoute = 'item_details';
 const String imageViewerScreenRoute = 'image_viewer';
 const String notificationsScreenRoute = 'notifications';
+const String orderSuccessScreenRoute = 'order_success';
+const String editProfileScreenRoute = 'edit_profile';

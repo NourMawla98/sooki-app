@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../routes/route_constants.dart';
-import '../../../services/toast_service.dart';
+import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
+import '../../reusable_components/toggles/aurora_switch.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,153 +19,424 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _pushNotifications = true;
   bool _emailNotifications = false;
-  bool _smsNotifications = true;
-  bool _darkMode = false;
-  String _selectedLanguage = 'English';
+  String _language = 'English';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        return Scaffold(
+          backgroundColor:
+              isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -80,
+                right: -80,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
+              ),
+              AuroraGlowBlob(
+                bottom: -80,
+                left: -80,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
+              ),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(isDark: isDark),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _GroupLabel(label: 'Appearance', isDark: isDark),
+                            _GroupCard(
+                              isDark: isDark,
+                              children: [
+                                _ToggleRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.auroraPurple.withValues(
+                                      alpha: isDark ? 0.15 : 0.10),
+                                  iconColor: AppColors.auroraPurple,
+                                  icon: FontAwesomeIcons.moon,
+                                  title: 'Dark Mode',
+                                  subtitle: 'Switch to dark theme',
+                                  value: isDark,
+                                  onChanged: (_) =>
+                                      ThemeService.instance.toggle(),
+                                ),
+                                _Divider(isDark: isDark),
+                                _ChevronRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.auroraPurple.withValues(
+                                      alpha: isDark ? 0.15 : 0.10),
+                                  iconColor: AppColors.auroraPurple,
+                                  icon: FontAwesomeIcons.globe,
+                                  title: 'Language',
+                                  subtitle: _language,
+                                  onTap: () => _showLanguagePicker(isDark),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _GroupLabel(label: 'Notifications', isDark: isDark),
+                            _GroupCard(
+                              isDark: isDark,
+                              children: [
+                                _ToggleRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.auroraGold.withValues(
+                                      alpha: isDark ? 0.15 : 0.12),
+                                  iconColor: AppColors.auroraGold,
+                                  icon: FontAwesomeIcons.bell,
+                                  title: 'Push Notifications',
+                                  subtitle: 'Order updates & offers',
+                                  value: _pushNotifications,
+                                  onChanged: (v) =>
+                                      setState(() => _pushNotifications = v),
+                                ),
+                                _Divider(isDark: isDark),
+                                _ToggleRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.auroraElectricBlue
+                                      .withValues(
+                                          alpha: isDark ? 0.15 : 0.10),
+                                  iconColor: AppColors.auroraElectricBlue,
+                                  icon: FontAwesomeIcons.envelope,
+                                  title: 'Email Notifications',
+                                  subtitle: 'Receipts & newsletters',
+                                  value: _emailNotifications,
+                                  onChanged: (v) =>
+                                      setState(() => _emailNotifications = v),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _GroupLabel(label: 'Account', isDark: isDark),
+                            _GroupCard(
+                              isDark: isDark,
+                              children: [
+                                _ChevronRow(
+                                  isDark: isDark,
+                                  iconBg: const Color(0xFFFB923C).withValues(
+                                      alpha: isDark ? 0.15 : 0.12),
+                                  iconColor: const Color(0xFFFB923C),
+                                  icon: FontAwesomeIcons.lock,
+                                  title: 'Change Password',
+                                  subtitle: 'Update your password',
+                                  onTap: () => Navigator.pushNamed(
+                                      context, changePasswordScreenRoute),
+                                ),
+                                _Divider(isDark: isDark),
+                                _ChevronRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.auroraRed.withValues(
+                                      alpha: isDark ? 0.12 : 0.10),
+                                  iconColor: AppColors.auroraRed,
+                                  icon: FontAwesomeIcons.trashCan,
+                                  title: 'Delete Account',
+                                  subtitle: 'Permanently delete your data',
+                                  isDestructive: true,
+                                  onTap: () => showAuroraConfirmSheet(
+                                    context,
+                                    title: 'Delete Account',
+                                    subtitle:
+                                        'This action is permanent and cannot be undone.',
+                                    icon: FontAwesomeIcons.trashCan,
+                                    iconColor: AppColors.auroraRed,
+                                    confirmLabel: 'Delete',
+                                    confirmColor: AppColors.auroraRed,
+                                    onConfirm: () {},
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 32),
+                            Center(
+                              child: Text(
+                                'Sooki v1.0.0',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: isDark
+                                      ? AppColors.white.withValues(alpha: 0.18)
+                                      : AppColors.auroraPurple
+                                          .withValues(alpha: 0.28),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Settings',
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle('Notifications'),
-            const SizedBox(height: 8),
-            _buildToggleTile(
-              icon: FontAwesomeIcons.bell,
-              iconColor: AppColors.profileIconYellow,
-              title: 'Push Notifications',
-              subtitle: 'Receive push notifications',
-              value: _pushNotifications,
-              onChanged: (v) => setState(() => _pushNotifications = v),
-            ),
-            _buildToggleTile(
-              icon: FontAwesomeIcons.envelope,
-              iconColor: AppColors.profileIconTeal,
-              title: 'Email Notifications',
-              subtitle: 'Receive order updates via email',
-              value: _emailNotifications,
-              onChanged: (v) => setState(() => _emailNotifications = v),
-            ),
-            _buildToggleTile(
-              icon: FontAwesomeIcons.commentSms,
-              iconColor: AppColors.profileIconGreen,
-              title: 'SMS Notifications',
-              subtitle: 'Receive delivery alerts via SMS',
-              value: _smsNotifications,
-              onChanged: (v) => setState(() => _smsNotifications = v),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Appearance'),
-            const SizedBox(height: 8),
-            _buildToggleTile(
-              icon: FontAwesomeIcons.moon,
-              iconColor: AppColors.profileIconGray,
-              title: 'Dark Mode',
-              subtitle: 'Switch to dark theme',
-              value: _darkMode,
-              onChanged: (v) => setState(() => _darkMode = v),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Language'),
-            const SizedBox(height: 8),
-            _buildLanguageTile(),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Account'),
-            const SizedBox(height: 8),
-            _buildActionTile(
-              icon: FontAwesomeIcons.lock,
-              iconColor: AppColors.profileIconOrange,
-              title: 'Change Password',
-              subtitle: 'Update your password',
-              onTap: () => Navigator.pushNamed(
-                  context, changePasswordScreenRoute),
-            ),
-            _buildActionTile(
-              icon: FontAwesomeIcons.shield,
-              iconColor: AppColors.profileIconGreen,
-              title: 'Privacy',
-              subtitle: 'Manage your data and privacy',
-              onTap: () => Navigator.pushNamed(
-                  context, privacySettingsScreenRoute),
-            ),
-            _buildActionTile(
-              icon: FontAwesomeIcons.trashCan,
-              iconColor: AppColors.accentRed,
-              title: 'Delete Account',
-              subtitle: 'Permanently delete your account',
-              onTap: () => _showDeleteAccountDialog(),
-            ),
-            const SizedBox(height: 100),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  void _showLanguagePicker(bool isDark) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _LanguageSheet(
+        isDark: isDark,
+        selected: _language,
+        onSelect: (lang) {
+          setState(() => _language = lang);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+}
+
+// ─── Top bar ─────────────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final bool isDark;
+  const _TopBar({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final iconColor =
+        isDark ? AppColors.white : AppColors.auroraPurple;
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: iconColor),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Settings',
+            style: AppTextStyles.heading3.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: iconColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Section label ────────────────────────────────────────────────────────────
+
+class _GroupLabel extends StatelessWidget {
+  final String label;
+  final bool isDark;
+  const _GroupLabel({required this.label, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
       child: Text(
-        title,
-        style: AppTextStyles.label.copyWith(
-          color: AppColors.gray500,
-          letterSpacing: 0.5,
+        label.toUpperCase(),
+        style: AppTextStyles.dsSectionLabel.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.28)
+              : AppColors.auroraPurple.withValues(alpha: 0.45),
+          letterSpacing: 1.8,
         ),
       ),
     );
   }
+}
 
-  Widget _buildToggleTile({
-    required FaIconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
+// ─── Glass group card ─────────────────────────────────────────────────────────
+
+class _GroupCard extends StatelessWidget {
+  final bool isDark;
+  final List<Widget> children;
+  const _GroupCard({required this.isDark, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: isDark
+            ? AppColors.white.withValues(alpha: 0.03)
+            : AppColors.auroraPurple.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.07)
+              : AppColors.auroraPurple.withValues(alpha: 0.10),
+        ),
       ),
+      child: Column(children: children),
+    );
+  }
+}
+
+// ─── Divider ──────────────────────────────────────────────────────────────────
+
+class _Divider extends StatelessWidget {
+  final bool isDark;
+  const _Divider({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      indent: 16,
+      endIndent: 16,
+      color: isDark
+          ? AppColors.white.withValues(alpha: 0.05)
+          : AppColors.auroraPurple.withValues(alpha: 0.07),
+    );
+  }
+}
+
+// ─── Toggle row ───────────────────────────────────────────────────────────────
+
+class _ToggleRow extends StatelessWidget {
+  final bool isDark;
+  final Color iconBg;
+  final Color iconColor;
+  final FaIconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _ToggleRow({
+    required this.isDark,
+    required this.iconBg,
+    required this.iconColor,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(child: FaIcon(icon, size: 15, color: iconColor)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.caption.copyWith(
+                    color: isDark
+                        ? AppColors.white.withValues(alpha: 0.40)
+                        : AppColors.auroraDeepBase.withValues(alpha: 0.45),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AuroraSwitch(
+            value: value,
+            onChanged: onChanged,
+            isDark: isDark,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Chevron row ─────────────────────────────────────────────────────────────
+
+class _ChevronRow extends StatelessWidget {
+  final bool isDark;
+  final Color iconBg;
+  final Color iconColor;
+  final FaIconData icon;
+  final String title;
+  final String subtitle;
+  final bool isDestructive;
+  final VoidCallback onTap;
+
+  const _ChevronRow({
+    required this.isDark,
+    required this.iconBg,
+    required this.iconColor,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final titleColor = isDestructive
+        ? AppColors.auroraRed
+        : isDark
+            ? AppColors.white
+            : AppColors.auroraDeepBase;
+    final subtitleColor = isDestructive
+        ? AppColors.auroraRed.withValues(alpha: 0.55)
+        : isDark
+            ? AppColors.white.withValues(alpha: 0.40)
+            : AppColors.auroraDeepBase.withValues(alpha: 0.45);
+    final chevronColor = isDestructive
+        ? AppColors.auroraRed.withValues(alpha: 0.40)
+        : isDark
+            ? AppColors.white.withValues(alpha: 0.25)
+            : AppColors.auroraPurple.withValues(alpha: 0.35);
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
+                color: iconBg,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(
-                child: FaIcon(icon, size: 16, color: iconColor),
-              ),
+              child: Center(child: FaIcon(icon, size: 15, color: iconColor)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -172,203 +446,161 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Text(
                     title,
                     style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.bold,
+                      color: titleColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
                     ),
                   ),
-                  Text(subtitle, style: AppTextStyles.bodySmall),
+                  const SizedBox(height: 1),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.caption.copyWith(
+                      color: subtitleColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Switch(
-              value: value,
-              onChanged: onChanged,
-              activeTrackColor: AppColors.primaryPurple,
-              activeThumbColor: AppColors.white,
-            ),
+            FaIcon(FontAwesomeIcons.chevronRight, size: 12, color: chevronColor),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildLanguageTile() {
+// ─── Language picker sheet ────────────────────────────────────────────────────
+
+class _LanguageSheet extends StatelessWidget {
+  final bool isDark;
+  final String selected;
+  final ValueChanged<String> onSelect;
+
+  static const _options = ['English', 'العربية', 'Français'];
+
+  const _LanguageSheet({
+    required this.isDark,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = isDark
+        ? const Color(0xFF12122A)
+        : AppColors.white;
+    final borderColor = isDark
+        ? AppColors.white.withValues(alpha: 0.08)
+        : AppColors.auroraPurple.withValues(alpha: 0.16);
+    final titleColor =
+        isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final mutedColor = isDark
+        ? AppColors.white.withValues(alpha: 0.40)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.45);
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: bg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border.all(color: borderColor),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
               decoration: BoxDecoration(
-                color: AppColors.primaryPurple.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: FaIcon(
-                  FontAwesomeIcons.globe,
-                  size: 16,
-                  color: AppColors.primaryPurple,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Language',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Choose your preferred language',
-                    style: AppTextStyles.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-            DropdownButton<String>(
-              value: _selectedLanguage,
-              underline: const SizedBox.shrink(),
-              icon: FaIcon(
-                FontAwesomeIcons.chevronDown,
-                size: 12,
-                color: AppColors.gray400,
-              ),
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.primaryPurple,
-                fontWeight: FontWeight.w600,
-              ),
-              items: ['English', 'العربية', 'Français']
-                  .map(
-                    (lang) => DropdownMenuItem(
-                      value: lang,
-                      child: Text(lang),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (v) {
-                if (v != null) setState(() => _selectedLanguage = v);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionTile({
-    required FaIconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: FaIcon(icon, size: 16, color: iconColor),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(subtitle, style: AppTextStyles.bodySmall),
-                  ],
-                ),
-              ),
-              FaIcon(
-                FontAwesomeIcons.chevronRight,
-                size: 14,
-                color: AppColors.gray400,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            FaIcon(
-              FontAwesomeIcons.triangleExclamation,
-              size: 20,
-              color: AppColors.accentRed,
-            ),
-            const SizedBox(width: 10),
-            Text('Delete Account', style: AppTextStyles.heading4),
-          ],
-        ),
-        content: Text(
-          'This action is permanent and cannot be undone. All your data, orders, and loyalty points will be lost.',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Cancel',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.gray500,
+                color: isDark
+                    ? AppColors.white.withValues(alpha: 0.15)
+                    : AppColors.auroraPurple.withValues(alpha: 0.20),
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              ToastService.instance.showSuccess('Account deletion requested');
-            },
-            child: Text(
-              'Delete',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.accentRed,
-                fontWeight: FontWeight.bold,
-              ),
+          const SizedBox(height: 16),
+          Text(
+            'Language',
+            style: AppTextStyles.heading3.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: titleColor,
+            ),
+          ),
+          Text(
+            'Choose your preferred language',
+            style: AppTextStyles.caption.copyWith(
+              color: mutedColor,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ..._options.map(
+            (lang) => _LanguageOption(
+              isDark: isDark,
+              label: lang,
+              isSelected: lang == selected,
+              onTap: () => onSelect(lang),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LanguageOption extends StatelessWidget {
+  final bool isDark;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _LanguageOption({
+    required this.isDark,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final labelColor = isSelected
+        ? AppColors.auroraPurple
+        : isDark
+            ? AppColors.white
+            : AppColors.auroraDeepBase;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: labelColor,
+                  fontWeight:
+                      isSelected ? FontWeight.w700 : FontWeight.w500,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+            if (isSelected)
+              FaIcon(
+                FontAwesomeIcons.solidCircleCheck,
+                size: 16,
+                color: AppColors.auroraPurple,
+              ),
+          ],
+        ),
       ),
     );
   }

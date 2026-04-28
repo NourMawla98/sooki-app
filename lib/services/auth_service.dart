@@ -17,7 +17,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> load() async {
     try {
-      _isSignedIn = _prefs.getBool(_signedInKey) ?? false;
+      _isSignedIn = _prefs.getBool(_signedInKey) ?? true;
     } catch (_) {
       await _prefs.remove(_signedInKey);
       _isSignedIn = false;
