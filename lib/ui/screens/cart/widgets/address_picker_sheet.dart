@@ -11,11 +11,14 @@ import '../../../reusable_components/aurora/aurora_primary_button.dart';
 import '_cart_surface_theme.dart';
 
 Future<void> showAddressPickerSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+  return showDialog<void>(
     context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (_) => const _AddressPickerSheet(),
+    barrierDismissible: true,
+    builder: (_) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: const _AddressPickerSheet(),
+    ),
   );
 }
 
@@ -34,38 +37,24 @@ class _AddressPickerSheet extends StatelessWidget {
         final addresses = addressService.addresses;
         final selectedId = addressService.selectedId;
 
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) => Container(
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
+          child: Container(
             decoration: BoxDecoration(
               color: c.sheet,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(22),
-              ),
-              border: Border(top: BorderSide(color: c.sheetTop, width: 1)),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: c.sheetTop, width: 1),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 4),
+                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: c.textMute3,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
                       Text(
                         'CHOOSE ADDRESS',
                         style: AppTextStyles.label.copyWith(
@@ -88,9 +77,9 @@ class _AddressPickerSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
+                Flexible(
                   child: ListView(
-                    controller: scrollController,
+                    shrinkWrap: true,
                     padding: const EdgeInsets.fromLTRB(18, 4, 18, 12),
                     children: [
                       ...addresses.map(

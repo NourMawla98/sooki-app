@@ -16,10 +16,13 @@ Future<void> showAuroraConfirmSheet(
   String cancelLabel = 'Cancel',
   required VoidCallback onConfirm,
 }) {
-  return showModalBottomSheet<void>(
+  return showGeneralDialog<void>(
     context: context,
-    backgroundColor: Colors.transparent,
-    builder: (_) => _AuroraConfirmSheet(
+    barrierDismissible: true,
+    barrierLabel: 'Dismiss',
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 260),
+    pageBuilder: (_, __, ___) => _AuroraConfirmSheet(
       title: title,
       subtitle: subtitle,
       icon: icon,
@@ -29,6 +32,27 @@ Future<void> showAuroraConfirmSheet(
       cancelLabel: cancelLabel,
       onConfirm: onConfirm,
     ),
+    transitionBuilder: (_, anim, __, child) {
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.12),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOutCubic));
+      return FadeTransition(
+        opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
+        child: SlideTransition(
+          position: slide,
+          child: Material(
+            color: Colors.transparent,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      );
+    },
   );
 }
 
@@ -66,7 +90,6 @@ class _AuroraConfirmSheet extends StatelessWidget {
         : AppColors.auroraDeepBase.withValues(alpha: 0.5);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 24),
       decoration: BoxDecoration(
         color: fill,
         borderRadius: BorderRadius.circular(20),

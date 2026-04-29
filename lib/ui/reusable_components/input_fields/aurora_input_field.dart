@@ -14,6 +14,7 @@ import '../../../themes/app_text_styles.dart';
 /// (fontSize 0) so there is never double error text.
 class AuroraInputField extends StatefulWidget {
   final String? label;
+  final bool required;
   final String? hint;
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -33,6 +34,7 @@ class AuroraInputField extends StatefulWidget {
   const AuroraInputField({
     super.key,
     this.label,
+    this.required = false,
     this.hint,
     this.controller,
     this.focusNode,
@@ -213,9 +215,10 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
               errorBorder: InputBorder.none,
               focusedErrorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              // Zero-height error widget — suppresses Flutter's built-in
+              // Zero-height error style — suppresses Flutter's built-in
               // error space entirely. We render our own error text below.
-              error: const SizedBox.shrink(),
+              // (Cannot use error: widget + errorText simultaneously.)
+              errorStyle: const TextStyle(height: 0, fontSize: 0),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: widget.prefixIcon != null ? 0 : 14,
                 vertical: 12,
@@ -312,10 +315,21 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (widget.label != null) ...[
-              Text(
-                widget.label!,
-                style: AppTextStyles.dsFieldLabel
-                    .copyWith(color: labelAndIconColor),
+              RichText(
+                text: TextSpan(
+                  text: widget.label!,
+                  style: AppTextStyles.dsFieldLabel.copyWith(color: labelAndIconColor),
+                  children: widget.required
+                      ? [
+                          TextSpan(
+                            text: ' *',
+                            style: AppTextStyles.dsFieldLabel.copyWith(
+                              color: AppColors.auroraPink,
+                            ),
+                          ),
+                        ]
+                      : null,
+                ),
               ),
               const SizedBox(height: 6),
             ],

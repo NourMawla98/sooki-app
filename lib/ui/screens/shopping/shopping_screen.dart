@@ -211,16 +211,19 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 
   Future<void> _openFilterSheet() async {
-    final result = await showModalBottomSheet<FilterState>(
+    final result = await showDialog<FilterState>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => FilterSheet(
-        initial: _filterState,
-        priceMin: _priceMin,
-        priceMax: _priceMax,
-        availableColors: _availableColors,
-        availableSizes: _availableSizes,
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: FilterSheet(
+          initial: _filterState,
+          priceMin: _priceMin,
+          priceMax: _priceMax,
+          availableColors: _availableColors,
+          availableSizes: _availableSizes,
+        ),
       ),
     );
     if (result != null && mounted) {
@@ -229,10 +232,14 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 
   Future<void> _openSortSheet() async {
-    final result = await showModalBottomSheet<SortOption>(
+    final result = await showDialog<SortOption>(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => SortSheet(current: _sortOption),
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: SortSheet(current: _sortOption),
+      ),
     );
     if (result != null && mounted) {
       setState(() => _sortOption = result);

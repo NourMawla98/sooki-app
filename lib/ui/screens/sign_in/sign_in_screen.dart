@@ -30,12 +30,47 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailFocusNode = FocusNode();
   bool _isLoading = false;
+  bool _canLogin = false;
+  String? _emailError;
+
+  static final _emailRegex =
+      RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onFieldsChanged);
+    _emailController.addListener(_onEmailChange);
+    _passwordController.addListener(_onFieldsChanged);
+    _emailFocusNode.addListener(_onEmailBlur);
+  }
+
+  void _onFieldsChanged() {
+    final canLogin = _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+    if (canLogin != _canLogin) setState(() => _canLogin = canLogin);
+  }
+
+  void _onEmailBlur() {
+    if (!_emailFocusNode.hasFocus && _emailController.text.isNotEmpty) {
+      final invalid = !_emailRegex.hasMatch(_emailController.text);
+      setState(() => _emailError = invalid ? 'Enter a valid email address' : null);
+    }
+  }
+
+  void _onEmailChange() {
+    if (_emailError != null && _emailRegex.hasMatch(_emailController.text)) {
+      setState(() => _emailError = null);
+    }
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -202,8 +237,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                     children: [
                                       AuroraInputField(
                                         label: 'Email',
+                                        required: true,
                                         hint: 'your@email.com',
                                         controller: _emailController,
+                                        focusNode: _emailFocusNode,
+                                        errorText: _emailError,
                                         keyboardType:
                                             TextInputType.emailAddress,
                                         prefixIcon:
@@ -215,7 +253,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                               value.isEmpty) {
                                             return 'Please enter your email';
                                           }
-                                          if (!value.contains('@')) {
+                                          if (!RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
                                             return 'Please enter a valid email';
                                           }
                                           return null;
@@ -224,6 +262,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       const SizedBox(height: 16),
                                       AuroraInputField(
                                         label: 'Password',
+                                        required: true,
                                         hint: '••••••••',
                                         controller: _passwordController,
                                         isPassword: true,
@@ -231,12 +270,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                         textInputAction:
                                             TextInputAction.done,
                                         validator: (value) {
-                                          if (value == null ||
-                                              value.isEmpty) {
-                                            return 'Please enter your password';
-                                          }
-                                          if (value.length < 6) {
-                                            return 'Password must be at least 6 characters';
+                                          if ((value?.length ?? 0) < 6) {
+                                            return 'Minimum 6 characters';
                                           }
                                           return null;
                                         },
@@ -259,13 +294,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ),
                                       const SizedBox(height: 18),
                                       AuroraPrimaryButton(
-                                        text: 'LOG IN',
-                                        onPressed: _handleLogin,
+                                        text: 'Login',
+                                        onPressed: _canLogin ? _handleLogin : null,
                                         isLoading: _isLoading,
                                       ),
                                       const SizedBox(height: 12),
                                       AuroraSecondaryButton(
-                                        text: 'CONTINUE AS GUEST',
+                                        text: 'Continue as guest',
                                         onPressed: _handleContinueAsGuest,
                                         height: 48,
                                       ),

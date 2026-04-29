@@ -9,6 +9,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../../reusable_components/input_fields/aurora_phone_field.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -218,11 +219,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               _SectionLabel(
                                   label: 'Phone Number', isDark: isDark),
                               const SizedBox(height: 8),
-                              AuroraInputField(
+                              AuroraPhoneField(
                                 controller: _phoneCtrl,
-                                hint: '+961 xx xxx xxx',
-                                keyboardType: TextInputType.phone,
-                                prefixIcon: FontAwesomeIcons.phone,
                               ),
 
                               const SizedBox(height: 36),

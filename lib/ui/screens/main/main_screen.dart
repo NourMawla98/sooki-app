@@ -56,9 +56,17 @@ class _MainScreenState extends State<MainScreen> {
           const AppHeader(),
           // Page content below header
           Expanded(
-            child: IndexedStack(
-              index: _currentIndex,
-              children: _pages,
+            child: Stack(
+              children: [
+                for (int i = 0; i < _pages.length; i++)
+                  Offstage(
+                    offstage: i != _currentIndex,
+                    child: IgnorePointer(
+                      ignoring: i != _currentIndex,
+                      child: _pages[i],
+                    ),
+                  ),
+              ],
             ),
           ),
         ],

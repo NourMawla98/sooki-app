@@ -32,11 +32,14 @@ class SizeGuideSheet extends StatefulWidget {
   final String? selectedLabel;
 
   static Future<void> show(BuildContext context, {String? selectedLabel}) {
-    return showModalBottomSheet<void>(
+    return showDialog<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => SizeGuideSheet(selectedLabel: selectedLabel),
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: SizeGuideSheet(selectedLabel: selectedLabel),
+      ),
     );
   }
 
@@ -73,37 +76,18 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
         final divider = isDark
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.primaryPurple.withValues(alpha: 0.12);
-        final handle = isDark
-            ? AppColors.white.withValues(alpha: 0.22)
-            : AppColors.primaryPurple.withValues(alpha: 0.30);
-
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+        return Container(
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: cellBorder),
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
-              border: Border(top: BorderSide(color: cellBorder)),
-            ),
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.85,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 10),
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: handle,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.80,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
                 const SizedBox(height: 14),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -187,7 +171,6 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
                 ),
               ],
             ),
-          ),
         );
       },
     );

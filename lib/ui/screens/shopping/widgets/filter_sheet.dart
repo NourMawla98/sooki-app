@@ -98,9 +98,6 @@ class _FilterSheetState extends State<FilterSheet> {
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
-        final handle = isDark
-            ? AppColors.white.withValues(alpha: 0.35)
-            : AppColors.primaryPurple.withValues(alpha: 0.35);
         final primaryText =
             isDark ? AppColors.white : AppColors.primaryPurple;
         final resetEnabled = _activeCount > 0;
@@ -117,23 +114,11 @@ class _FilterSheetState extends State<FilterSheet> {
           constraints: BoxConstraints(maxHeight: maxHeight),
           decoration: BoxDecoration(
             color: bg,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 10),
-              Center(
-                child: Container(
-                  width: 44,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: handle,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
               const SizedBox(height: 14),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

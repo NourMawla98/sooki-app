@@ -19,32 +19,17 @@ class SortSheet extends StatelessWidget {
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
-        final handle = isDark
-            ? AppColors.white.withValues(alpha: 0.35)
-            : AppColors.primaryPurple.withValues(alpha: 0.35);
 
         return Container(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
           decoration: BoxDecoration(
             color: bg,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 44,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: handle,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: ShaderMask(

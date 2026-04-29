@@ -67,6 +67,9 @@ dependencies:
   # URL launcher
   url_launcher: ^6.2.5
 
+  # Country code picker modal
+  country_picker: ^2.0.26
+
   # Local storage
   shared_preferences: ^2.2.2
 

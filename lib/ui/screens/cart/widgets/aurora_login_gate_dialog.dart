@@ -7,13 +7,15 @@ import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
 
-/// Aurora login gate — bottom sheet, consistent with [showAuroraConfirmSheet].
 Future<void> showAuroraLoginGate(BuildContext context) {
-  return showModalBottomSheet<void>(
+  return showDialog<void>(
     context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (_) => const _AuroraLoginGateSheet(),
+    barrierDismissible: true,
+    builder: (_) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: const _AuroraLoginGateSheet(),
+    ),
   );
 }
 
@@ -37,7 +39,6 @@ class _AuroraLoginGateSheet extends StatelessWidget {
             : AppColors.auroraDeepBase.withValues(alpha: 0.50);
 
         return Container(
-          margin: const EdgeInsets.fromLTRB(12, 0, 12, 24),
           decoration: BoxDecoration(
             color: fill,
             borderRadius: BorderRadius.circular(20),
@@ -46,20 +47,6 @@ class _AuroraLoginGateSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Drag handle
-              const SizedBox(height: 12),
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? AppColors.white.withValues(alpha: 0.15)
-                        : AppColors.auroraPurple.withValues(alpha: 0.20),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
               const SizedBox(height: 20),
 
               // Lock icon

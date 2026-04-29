@@ -8,11 +8,14 @@ import '../../../../themes/app_text_styles.dart';
 import '_cart_surface_theme.dart';
 
 Future<void> showPromoSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+  return showDialog<void>(
     context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (_) => const _PromoSheet(),
+    barrierDismissible: true,
+    builder: (_) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: const _PromoSheet(),
+    ),
   );
 }
 
@@ -58,27 +61,14 @@ class _PromoSheetState extends State<_PromoSheet> {
           child: Container(
             decoration: BoxDecoration(
               color: c.sheet,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(22),
-              ),
-              border: Border(top: BorderSide(color: c.sheetTop, width: 1)),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: c.sheetTop, width: 1),
             ),
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
+            padding: const EdgeInsets.fromLTRB(18, 20, 18, 28),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: c.textMute3,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
                 Text(
                   'PROMO CODE',
                   style: AppTextStyles.label.copyWith(

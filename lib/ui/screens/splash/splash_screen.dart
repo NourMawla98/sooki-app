@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
         final isLoggedIn = GetIt.instance<AuthService>().isSignedIn;
         Navigator.pushReplacementNamed(
           context,
-          isLoggedIn ? mainScreenRoute : signUpScreenRoute,
+          isLoggedIn ? mainScreenRoute : signInScreenRoute,
         );
       });
     }
@@ -84,7 +84,10 @@ class _SplashScreenState extends State<SplashScreen>
             ? AppColors.splashDimBase
             : AppColors.auroraLightBase;
         final bgMid = isDark
-            ? AppColors.splashDimViolet
+            ? Color.alphaBlend(
+                AppColors.auroraPurple.withValues(alpha: 0.38),
+                AppColors.auroraDeepBase,
+              )
             : AppColors.auroraLightBase;
         final taglineColor = isDark
             ? AppColors.white

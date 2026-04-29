@@ -12,6 +12,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../../reusable_components/input_fields/aurora_phone_field.dart';
 import '../../reusable_components/toggles/aurora_switch.dart';
 import '../cart/widgets/_cart_surface_theme.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
@@ -284,11 +285,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             ],
                             const SizedBox(height: 18),
                             _sectionLabel('Phone', isDark),
-                            AuroraInputField(
+                            AuroraPhoneField(
                               controller: _phoneController,
-                              hint: '+961 70 123 456',
-                              prefixIcon: FontAwesomeIcons.phone,
-                              keyboardType: TextInputType.phone,
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 18),

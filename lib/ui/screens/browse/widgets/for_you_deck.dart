@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../data/mock_home_data.dart';
+import '../../../../data/mock_products.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
@@ -120,7 +121,8 @@ class _ForYouDeckState extends State<ForYouDeck>
   }
 
   void _onTapCard() {
-    Navigator.pushNamed(context, itemDetailsScreenRoute);
+    final product = mockBrowseProducts[_index % mockBrowseProducts.length];
+    Navigator.pushNamed(context, itemDetailsScreenRoute, arguments: product);
   }
 
   void _onHorizontalDragStart(DragStartDetails _) {

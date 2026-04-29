@@ -24,7 +24,6 @@ const List<_HeatBadgeSpec> _heatBadges = [
   _HeatBadgeSpec('⚡', 'VIRAL',    AppColors.auroraPink),
   _HeatBadgeSpec('💥', 'HYPED',    AppColors.auroraPurple),
   _HeatBadgeSpec('🚀', 'SURGING',  AppColors.auroraElectricBlue),
-  _HeatBadgeSpec('💎', 'RARE',     AppColors.auroraPurple),
   _HeatBadgeSpec('📈', 'PEAK',     AppColors.verifiedGreen),
   _HeatBadgeSpec('✨', 'BUZZING',  AppColors.auroraPink),
 ];

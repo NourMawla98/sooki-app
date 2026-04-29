@@ -11,6 +11,7 @@ import '../../../services/language_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../dialogs/aurora_confirm_sheet.dart';
 
 /// Aurora glass user menu rendered as a 2×2 grid of tinted tiles. Items:
 /// Profile (blue tint) · Language (purple tint) · Theme (neutral) ·
@@ -61,35 +62,16 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
   }
 
   void _showLogoutDialog(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Logout', style: AppTextStyles.heading3),
-        content: Text(
-          'Are you sure you want to logout?',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Cancel',
-              style:
-                  AppTextStyles.bodyMedium.copyWith(color: AppColors.gray600),
-            ),
-          ),
-          TextButton(
-            onPressed: () => _performSignOut(ctx),
-            child: Text(
-              'Logout',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.auroraPink,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
+    showAuroraConfirmSheet(
+      context,
+      title: 'Logout',
+      subtitle: 'Are you sure you want to logout?',
+      icon: FontAwesomeIcons.rightFromBracket,
+      iconColor: AppColors.auroraPink,
+      confirmLabel: 'Logout',
+      confirmColor: AppColors.auroraPink,
+      cancelLabel: 'Cancel',
+      onConfirm: () => _performSignOut(context),
     );
   }
 
@@ -209,7 +191,10 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                       isDark: isDark,
                       subColor: AppColors.auroraPink.withValues(alpha: 0.75),
                       labelColor: AppColors.auroraPink,
-                      onTap: () => _showLogoutDialog(ctx),
+                      onTap: () {
+                        widget.onClose();
+                        _showLogoutDialog(ctx);
+                      },
                     )
                   : _Tile(
                       icon: FontAwesomeIcons.rightToBracket,

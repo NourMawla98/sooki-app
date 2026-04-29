@@ -6,13 +6,14 @@ import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/cart_service.dart';
 import '../../../services/toast_service.dart';
+import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import 'widgets/address_pill.dart';
 import 'widgets/aurora_login_gate_dialog.dart';
 import 'widgets/cart_background.dart';
 import 'widgets/cart_empty_state.dart';
-import 'widgets/cart_item_card.dart';
+import '../../reusable_components/cart_item_card.dart';
 import 'widgets/cart_summary.dart';
 import 'widgets/cash_on_delivery_pill.dart';
 import 'widgets/promo_row.dart';
@@ -27,8 +28,9 @@ class CartScreen extends StatelessWidget {
     final cartService = GetIt.instance<CartService>();
 
     return ListenableBuilder(
-      listenable: cartService,
+      listenable: Listenable.merge([cartService, ThemeService.instance]),
       builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
         final Widget content = cartService.isEmpty
             ? const CartEmptyState()
             : Column(
@@ -80,8 +82,14 @@ class CartScreen extends StatelessWidget {
                 ],
               );
 
+        final bgColor =
+            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+
         return Stack(
           children: [
+            // Solid opaque layer — always drawn first so nothing bleeds through
+            // from screens behind this one in the tab stack.
+            Positioned.fill(child: ColoredBox(color: bgColor)),
             const Positioned.fill(child: CartBackground()),
             Positioned.fill(child: content),
           ],

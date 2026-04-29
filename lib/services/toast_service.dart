@@ -189,7 +189,8 @@ class _AuroraToastWidgetState extends State<_AuroraToastWidget>
                       ),
                     ),
                     // Dark overlay depletes right→left as timer runs
-                    Positioned.fill(
+                    IgnorePointer(
+                      child: Positioned.fill(
                       child: AnimatedBuilder(
                         animation: _progressCtrl,
                         builder: (context2, child2) => Align(
@@ -202,7 +203,7 @@ class _AuroraToastWidgetState extends State<_AuroraToastWidget>
                           ),
                         ),
                       ),
-                    ),
+                    )),
                   ],
                 ),
               ),

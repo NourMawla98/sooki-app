@@ -135,14 +135,16 @@ const _mockOrders = [
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  const OrdersScreen({super.key, this.initialFilter});
+
+  final OrderStatus? initialFilter;
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  OrderStatus? _filter; // null = Active (processing + shipped)
+  late OrderStatus? _filter = widget.initialFilter; // null = Active (processing + shipped)
 
   List<_Order> get _filtered {
     if (_filter == null) {

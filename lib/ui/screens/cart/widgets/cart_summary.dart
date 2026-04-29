@@ -5,6 +5,7 @@ import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../reusable_components/aurora/aurora_primary_button.dart';
 import '_cart_surface_theme.dart';
 
 class CartSummary extends StatelessWidget {
@@ -90,7 +91,18 @@ class CartSummary extends StatelessWidget {
                         surfaceColors: c,
                       ),
                       const SizedBox(height: 12),
-                      _CheckoutCta(onTap: onCheckout),
+                      AuroraPrimaryButton(
+                        text: 'PROCEED TO CHECKOUT',
+                        onPressed: onCheckout,
+                        height: 40,
+                        borderRadius: 10,
+                        textStyle: AppTextStyles.buttonMedium.copyWith(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.4,
+                          color: AppColors.white,
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       _TrustRow(surfaceColors: c),
                     ],
@@ -304,135 +316,6 @@ class _DashedDivider extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-// ─── Aurora gradient checkout CTA with shimmer ──────────────────────────
-class _CheckoutCta extends StatefulWidget {
-  final VoidCallback onTap;
-
-  const _CheckoutCta({required this.onTap});
-
-  @override
-  State<_CheckoutCta> createState() => _CheckoutCtaState();
-}
-
-class _CheckoutCtaState extends State<_CheckoutCta>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _shimmer;
-
-  @override
-  void initState() {
-    super.initState();
-    _shimmer = AnimationController(
-      duration: const Duration(milliseconds: 2600),
-      vsync: this,
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _shimmer.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: widget.onTap,
-      child: Container(
-        height: 40,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: AppColors.auroraCartButtonGradient,
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.auroraPurple.withValues(alpha: 0.28),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: AppColors.auroraPink.withValues(alpha: 0.16),
-              blurRadius: 14,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Stack(
-            children: [
-              AnimatedBuilder(
-                animation: _shimmer,
-                builder: (context, _) {
-                  // Shimmer sweeps left-to-right across the button.
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final t = _shimmer.value;
-                      final width = constraints.maxWidth * 0.4;
-                      final travel = constraints.maxWidth + width;
-                      final x = (t * travel) - width;
-                      return Positioned(
-                        left: x,
-                        top: 0,
-                        bottom: 0,
-                        width: width,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                Colors.transparent,
-                                AppColors.white.withValues(alpha: 0.30),
-                                Colors.transparent,
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.lock,
-                      size: 9,
-                      color: AppColors.white,
-                    ),
-                    const SizedBox(width: 7),
-                    Text(
-                      'PROCEED TO CHECKOUT',
-                      style: AppTextStyles.buttonMedium.copyWith(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.4,
-                        color: AppColors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 7),
-                    FaIcon(
-                      FontAwesomeIcons.arrowRight,
-                      size: 9,
-                      color: AppColors.white,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

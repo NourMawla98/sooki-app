@@ -6,6 +6,7 @@ import '../ui/screens/deals/deals_screen.dart';
 import '../ui/screens/forgot_password/forgot_password_screen.dart';
 import '../ui/screens/loyalty/loyalty_screen.dart';
 import '../ui/screens/profile/profile_screen.dart';
+import '../enums/order_status.dart';
 import '../ui/screens/orders/orders_screen.dart';
 import '../ui/screens/wishlist/wishlist_screen.dart';
 import '../ui/screens/addresses/addresses_screen.dart';
@@ -24,9 +25,9 @@ import '../ui/screens/help_support/legal_page_screen.dart';
 import '../ui/screens/help_support/live_chat_screen.dart';
 import '../ui/screens/help_support/email_support_screen.dart';
 import '../ui/screens/image_viewer/image_viewer_screen.dart';
-import '../ui/screens/item_details/item_details_screen.dart';
 import '../ui/screens/notifications/notifications_screen.dart';
 import '../ui/screens/edit_profile/edit_profile_screen.dart';
+import '../ui/screens/email_verification/email_verification_screen.dart';
 import '../ui/screens/order_success/order_success_screen.dart';
 import '../ui/screens/search/search_screen.dart';
 import '../ui/screens/main/main_screen.dart';
@@ -53,13 +54,19 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     profileScreenRoute: (_) => const ProfileScreen(),
     notificationsScreenRoute: (_) => const NotificationsScreen(),
     editProfileScreenRoute: (_) => const EditProfileScreen(),
+    emailVerificationScreenRoute: (_) {
+      final email = settings.arguments as String? ?? '';
+      return EmailVerificationScreen(email: email);
+    },
     orderSuccessScreenRoute: (_) {
       final args = settings.arguments;
       return OrderSuccessScreen(
         args: args is OrderSuccessArgs ? args : const OrderSuccessArgs(),
       );
     },
-    ordersScreenRoute: (_) => const OrdersScreen(),
+    ordersScreenRoute: (_) => OrdersScreen(
+      initialFilter: settings.arguments is OrderStatus ? settings.arguments as OrderStatus : null,
+    ),
     wishlistScreenRoute: (_) => const WishlistScreen(),
     addressesScreenRoute: (_) => const AddressesScreen(),
     paymentMethodsScreenRoute: (_) => const PaymentMethodsScreen(),
@@ -99,11 +106,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return ProductDetailScreen(product: product);
     },
     itemDetailsScreenRoute: (_) {
-      final product = settings.arguments as Product?;
-      if (product != null) {
-        return ProductDetailScreen(product: product);
-      }
-      return const ItemDetailsScreen();
+      final product = settings.arguments as Product;
+      return ProductDetailScreen(product: product);
     },
     imageViewerScreenRoute: (_) {
       final args = settings.arguments as ImageViewerArgs;

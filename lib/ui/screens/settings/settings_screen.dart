@@ -186,17 +186,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showLanguagePicker(bool isDark) {
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => _LanguageSheet(
-        isDark: isDark,
-        selected: _language,
-        onSelect: (lang) {
-          setState(() => _language = lang);
-          Navigator.pop(context);
-        },
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: _LanguageSheet(
+          isDark: isDark,
+          selected: _language,
+          onSelect: (lang) {
+            setState(() => _language = lang);
+            Navigator.pop(context);
+          },
+        ),
       ),
     );
   }
@@ -503,27 +506,14 @@ class _LanguageSheet extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: borderColor),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? AppColors.white.withValues(alpha: 0.15)
-                    : AppColors.auroraPurple.withValues(alpha: 0.20),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
           Text(
             'Language',
             style: AppTextStyles.heading3.copyWith(

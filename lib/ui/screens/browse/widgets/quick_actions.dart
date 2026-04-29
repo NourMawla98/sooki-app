@@ -2,13 +2,16 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../../enums/order_status.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../services/auth_service.dart';
 import '../../../../services/theme_service.dart';
-import '../../../../services/toast_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
+import '../../cart/widgets/aurora_login_gate_dialog.dart';
 
 /// Section 6 — Quick Actions. Four circular glass bubbles that shortcut to
 /// the user's most-used utilities (Track Order, Wishlist, Reorder, Settings).
@@ -51,7 +54,7 @@ class QuickActions extends StatelessWidget {
                       accent: AppColors.auroraElectricBlue,
                       isDark: isDark,
                       anim: _BubbleAnim.pulseGlow,
-                      onTap: () => _showComingSoon(context, 'Track Order'),
+                      onTap: () => _openOrders(context),
                     ),
                   ),
                   Expanded(
@@ -62,7 +65,7 @@ class QuickActions extends StatelessWidget {
                       isDark: isDark,
                       badgeCount: 3,
                       anim: _BubbleAnim.heartBeat,
-                      onTap: () => _showComingSoon(context, 'Wishlist'),
+                      onTap: () => Navigator.pushNamed(context, wishlistScreenRoute),
                     ),
                   ),
                   Expanded(
@@ -72,7 +75,7 @@ class QuickActions extends StatelessWidget {
                       accent: AppColors.verifiedGreen,
                       isDark: isDark,
                       anim: _BubbleAnim.slowRotate,
-                      onTap: () => _showComingSoon(context, 'Reorder'),
+                      onTap: () => _openOrders(context, filter: OrderStatus.delivered),
                     ),
                   ),
                   Expanded(
@@ -94,8 +97,13 @@ class QuickActions extends StatelessWidget {
     );
   }
 
-  void _showComingSoon(BuildContext context, String action) {
-    ToastService.instance.showSuccess('$action — coming soon');
+  void _openOrders(BuildContext context, {OrderStatus? filter}) {
+    final isLoggedIn = GetIt.instance<AuthService>().isSignedIn;
+    if (!isLoggedIn) {
+      showAuroraLoginGate(context);
+      return;
+    }
+    Navigator.pushNamed(context, ordersScreenRoute, arguments: filter);
   }
 }
 

@@ -7,7 +7,7 @@ import '../../../themes/app_text_styles.dart';
 /// Used on aurora surfaces in place of the flat [PrimaryButton].
 class AuroraPrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final bool isFullWidth;
   final double height;
@@ -17,7 +17,7 @@ class AuroraPrimaryButton extends StatelessWidget {
   const AuroraPrimaryButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.isLoading = false,
     this.isFullWidth = true,
     this.height = 52,
@@ -27,7 +27,10 @@ class AuroraPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    final isDisabled = onPressed == null && !isLoading;
+    return Opacity(
+      opacity: isDisabled ? 0.45 : 1.0,
+      child: SizedBox(
       width: isFullWidth ? double.infinity : null,
       height: height,
       child: DecoratedBox(
@@ -38,7 +41,7 @@ class AuroraPrimaryButton extends StatelessWidget {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          boxShadow: [
+          boxShadow: isDisabled ? [] : [
             BoxShadow(
               color: AppColors.auroraPink.withValues(alpha: 0.35),
               blurRadius: 18,
@@ -50,7 +53,7 @@ class AuroraPrimaryButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(borderRadius),
-            onTap: isLoading ? null : onPressed,
+            onTap: (isLoading || isDisabled) ? null : onPressed,
             child: Center(
               child: isLoading
                   ? const SizedBox(
@@ -66,6 +69,7 @@ class AuroraPrimaryButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

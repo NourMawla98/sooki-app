@@ -30,15 +30,18 @@ class AuroraSelect extends StatelessWidget {
 
   Future<void> _open(BuildContext context, bool isDark) async {
     if (!enabled || options.isEmpty) return;
-    final picked = await showModalBottomSheet<String>(
+    final picked = await showDialog<String>(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => _OptionsSheet(
-        title: sheetTitle,
-        options: options,
-        selected: value,
-        isDark: isDark,
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: _OptionsSheet(
+          title: sheetTitle,
+          options: options,
+          selected: value,
+          isDark: isDark,
+        ),
       ),
     );
     if (picked != null) onChanged(picked);
@@ -131,43 +134,28 @@ class _OptionsSheet extends StatelessWidget {
     final topBorder = isDark
         ? AppColors.white.withValues(alpha: 0.06)
         : AppColors.auroraPurple.withValues(alpha: 0.12);
-    final handleColor = isDark
-        ? AppColors.white.withValues(alpha: 0.22)
-        : AppColors.auroraDeepBase.withValues(alpha: 0.30);
     final dividerColor = isDark
         ? AppColors.white.withValues(alpha: 0.06)
         : AppColors.auroraDeepBase.withValues(alpha: 0.08);
     final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.55,
-      minChildSize: 0.35,
-      maxChildSize: 0.9,
-      expand: false,
-      builder: (context, scrollController) => Container(
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.70,
+      ),
+      child: Container(
         decoration: BoxDecoration(
           color: sheetBg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          border: Border(top: BorderSide(color: topBorder, width: 1)),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: topBorder, width: 1),
         ),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 6),
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: handleColor,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
                   Text(
                     title,
                     style: AppTextStyles.dsFieldLabel.copyWith(
@@ -178,9 +166,8 @@ class _OptionsSheet extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
+            Flexible(
               child: ListView.separated(
-                controller: scrollController,
                 padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
                 itemCount: options.length,
                 separatorBuilder: (_, i) => Divider(
