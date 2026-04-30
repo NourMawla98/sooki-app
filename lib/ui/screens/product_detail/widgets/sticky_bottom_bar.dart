@@ -74,8 +74,8 @@ class StickyBottomBar extends StatelessWidget {
                 child: Center(
                   child: Text(
                     _requiresSize && selectedSize == null
-                        ? 'SELECT A SIZE'
-                        : 'ADD TO CART',
+                        ? 'Select a size'
+                        : 'Add to cart',
                     style: AppFonts.primary(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,

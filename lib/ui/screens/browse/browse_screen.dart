@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'widgets/categories_arrivals_section.dart';
-import 'widgets/editorial_cover.dart';
+// import 'widgets/editorial_cover.dart';
 import 'widgets/for_you_deck.dart';
 import 'widgets/live_ticker.dart';
 import 'widgets/quick_actions.dart';
@@ -35,7 +35,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             const LiveTicker(),
             const RotatingSmartHero(),
             const TrendingNowSection(),
-            const EditorialCover(),
+            // const EditorialCover(),
             const ForYouDeck(),
             const QuickActions(),
             CategoriesArrivalsSection(scrollController: _scrollController),
