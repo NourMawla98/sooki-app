@@ -51,31 +51,47 @@ class CartItemCard extends StatelessWidget {
             border: Border.all(color: border),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _Thumb(url: item.product.thumbnailUrl, isDark: isDark),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _Info(
-                  item: item,
-                  textColor: textColor,
-                  muteColor: muteColor,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _Thumb(url: item.product.thumbnailUrl, isDark: isDark),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _Info(
+                    item: item,
+                    textColor: textColor,
+                    muteColor: muteColor,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              _RightPanel(
-                quantity: item.quantity,
-                lineTotal: lineTotal,
-                discountPct: discountPct,
-                showDiscount: hasDiscount,
-                onQuantityChanged: onQuantityChanged,
-                onRemove: onRemove,
-                isDark: isDark,
-                textColor: textColor,
-                muteColor: muteColor,
-              ),
-            ],
+                const SizedBox(width: 8),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: onRemove,
+                      child: Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: FaIcon(FontAwesomeIcons.xmark,
+                            size: 11, color: muteColor),
+                      ),
+                    ),
+                    _RightBottom(
+                      quantity: item.quantity,
+                      lineTotal: lineTotal,
+                      discountPct: discountPct,
+                      showDiscount: hasDiscount,
+                      onQuantityChanged: onQuantityChanged,
+                      isDark: isDark,
+                      textColor: textColor,
+                      muteColor: muteColor,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -228,25 +244,23 @@ class _ColorDot extends StatelessWidget {
   }
 }
 
-// ─── Right panel: price, remove, stepper ─────────────────────────────────
-class _RightPanel extends StatelessWidget {
+// ─── Price + stepper, sits at the bottom of the right column ─────────────
+class _RightBottom extends StatelessWidget {
   final int quantity;
   final double lineTotal;
   final int discountPct;
   final bool showDiscount;
   final ValueChanged<int> onQuantityChanged;
-  final VoidCallback onRemove;
   final bool isDark;
   final Color textColor;
   final Color muteColor;
 
-  const _RightPanel({
+  const _RightBottom({
     required this.quantity,
     required this.lineTotal,
     required this.discountPct,
     required this.showDiscount,
     required this.onQuantityChanged,
-    required this.onRemove,
     required this.isDark,
     required this.textColor,
     required this.muteColor,
@@ -254,12 +268,13 @@ class _RightPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
+        Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             ShaderMask(
               shaderCallback: (rect) => const LinearGradient(
@@ -275,29 +290,20 @@ class _RightPanel extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 6),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: onRemove,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: FaIcon(FontAwesomeIcons.xmark, size: 11, color: muteColor),
+            if (showDiscount) ...[
+              const SizedBox(height: 2),
+              Text(
+                '−$discountPct%',
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.auroraPink,
+                ),
               ),
-            ),
+            ],
           ],
         ),
-        if (showDiscount) ...[
-          const SizedBox(height: 2),
-          Text(
-            '−$discountPct%',
-            style: AppTextStyles.caption.copyWith(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w800,
-              color: AppColors.auroraPink,
-            ),
-          ),
-        ],
-        const SizedBox(height: 8),
+        const SizedBox(width: 8),
         _Stepper(
           quantity: quantity,
           onChanged: onQuantityChanged,
@@ -372,6 +378,7 @@ class _Stepper extends StatelessWidget {
     );
   }
 }
+
 
 class _StepBtn extends StatelessWidget {
   final FaIconData icon;

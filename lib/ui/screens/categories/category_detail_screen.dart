@@ -10,7 +10,7 @@ import '../../../models/product.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
-import '../../reusable_components/buttons/aurora_glass_action_button.dart';
+import '../../reusable_components/bars/sort_filter_bar.dart';
 import '../../reusable_components/category_pill/aurora_detail_chip.dart';
 import '../../reusable_components/product_card/product_grid_card.dart';
 import '../shopping/widgets/filter_sheet.dart';
@@ -137,6 +137,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
     final result = await showModalBottomSheet<SortOption>(
       context: context,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (_) => SortSheet(current: _sortOption),
     );
     if (result != null && mounted) setState(() => _sortOption = result);
@@ -147,6 +148,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (_) => FilterSheet(
         initial: _filterState,
         priceMin: _priceMin,
@@ -396,42 +398,15 @@ class _StickyZone extends StatelessWidget {
                   onSelected: onDetailSelected,
                 ),
               ],
-              // Sort + Filter
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AuroraGlassActionButton(
-                        icon: FontAwesomeIcons.sliders,
-                        label: 'FILTER',
-                        badgeCount: filterCount,
-                        onTap: onFilter,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: AuroraGlassActionButton(
-                        icon: sortOption.icon,
-                        label: 'SORT · ${sortOption.buttonLabel}',
-                        onTap: onSort,
-                      ),
-                    ),
-                  ],
-                ),
+              // Sort + Filter + count
+              SortFilterBar(
+                sortOption: sortOption,
+                filterCount: filterCount,
+                productCount: productCount,
+                onFilter: onFilter,
+                onSort: onSort,
               ),
-              // Result count
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 9, 16, 10),
-                child: Text(
-                  '$productCount items',
-                  style: AppTextStyles.captionSmall.copyWith(
-                    color: mutedText,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+              const SizedBox(height: 10),
               // Divider
               Container(
                 height: 1,

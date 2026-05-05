@@ -139,7 +139,7 @@ class _AppHeaderState extends State<AppHeader> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      const CustomSearchBar(),
+                      const CustomSearchBar(readOnly: true),
                     ],
                   ),
                 ),

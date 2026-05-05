@@ -10,7 +10,7 @@ import '../../../models/product.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
-import '../../reusable_components/buttons/aurora_glass_action_button.dart';
+import '../../reusable_components/bars/sort_filter_bar.dart';
 import '../../reusable_components/category_pill/aurora_category_l1_pill.dart';
 import '../../reusable_components/category_pill/l1_pill_row_skeleton.dart';
 import '../../reusable_components/product_card/product_grid_card.dart';
@@ -221,6 +221,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (_) => FilterSheet(
         initial: _filterState,
         priceMin: _priceMin,
@@ -238,6 +239,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     final result = await showModalBottomSheet<SortOption>(
       context: context,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (_) => SortSheet(current: _sortOption),
     );
     if (result != null && mounted) {
@@ -411,11 +413,12 @@ class _LoadedBody extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 14),
-        _FilterSortRow(
+        SortFilterBar(
+          sortOption: currentSort,
           filterCount: filterCount,
-          currentSort: currentSort,
           onFilter: onFilter,
           onSort: onSort,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
         const SizedBox(height: 6),
         Padding(
@@ -879,49 +882,6 @@ class _L3ButtonState extends State<_L3Button>
             height: 1.0,
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ─── Filter + Sort row ───────────────────────────────────────────────────────
-
-class _FilterSortRow extends StatelessWidget {
-  final int filterCount;
-  final SortOption currentSort;
-  final VoidCallback onFilter;
-  final VoidCallback onSort;
-
-  const _FilterSortRow({
-    required this.filterCount,
-    required this.currentSort,
-    required this.onFilter,
-    required this.onSort,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: AuroraGlassActionButton(
-              icon: FontAwesomeIcons.sliders,
-              label: 'FILTER',
-              badgeCount: filterCount,
-              onTap: onFilter,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: AuroraGlassActionButton(
-              icon: currentSort.icon,
-              label: 'SORT \u00b7 ${currentSort.buttonLabel}',
-              onTap: onSort,
-            ),
-          ),
-        ],
       ),
     );
   }

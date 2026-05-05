@@ -43,6 +43,12 @@ class SearchHistoryService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> remove(String query) async {
+    _recents.removeWhere((e) => e.toLowerCase() == query.toLowerCase());
+    await _persist();
+    notifyListeners();
+  }
+
   Future<void> clearAll() async {
     _recents.clear();
     await _persist();

@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -10,22 +8,11 @@ import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
 import 'filter_state.dart';
 
-/// Bottom sheet that lets users narrow the Shopping grid. Maintains a
-/// local draft of [FilterState] and only commits it when the user taps
-/// the Apply button. Returns the committed state via `Navigator.pop`.
 class FilterSheet extends StatefulWidget {
-  /// The currently-applied filters, used to seed the draft.
   final FilterState initial;
-
-  /// Catalog-wide min/max prices. Defines the slider's extent and the
-  /// "no price filter" sentinel (when both handles sit on these bounds).
   final double priceMin;
   final double priceMax;
-
-  /// Distinct colour variants to render as swatches.
   final List<ColorVariant> availableColors;
-
-  /// Distinct size variants to render as chips.
   final List<SizeVariant> availableSizes;
 
   const FilterSheet({
@@ -49,47 +36,33 @@ class _FilterSheetState extends State<FilterSheet> {
         priceMax: widget.priceMax,
       );
 
-  void _resetAll() {
-    setState(() {
-      _draft = FilterState.initial(
-        priceMin: widget.priceMin,
-        priceMax: widget.priceMax,
-      );
-    });
-  }
+  void _resetAll() => setState(() {
+        _draft = FilterState.initial(
+          priceMin: widget.priceMin,
+          priceMax: widget.priceMax,
+        );
+      });
 
-  void _togglePrice(RangeValues value) {
-    setState(() => _draft = _draft.copyWith(priceRange: value));
-  }
+  void _togglePrice(RangeValues v) =>
+      setState(() => _draft = _draft.copyWith(priceRange: v));
 
   void _toggleColor(String name) {
     final next = {..._draft.colors};
-    if (next.contains(name)) {
-      next.remove(name);
-    } else {
-      next.add(name);
-    }
+    next.contains(name) ? next.remove(name) : next.add(name);
     setState(() => _draft = _draft.copyWith(colors: next));
   }
 
   void _toggleSize(String label) {
     final next = {..._draft.sizes};
-    if (next.contains(label)) {
-      next.remove(label);
-    } else {
-      next.add(label);
-    }
+    next.contains(label) ? next.remove(label) : next.add(label);
     setState(() => _draft = _draft.copyWith(sizes: next));
   }
 
-  void _setRating(int stars) {
-    // Tapping the currently-set rating clears it.
-    setState(() {
-      _draft = _draft.copyWith(
-        minRating: _draft.minRating == stars ? 0 : stars,
-      );
-    });
-  }
+  void _setRating(int stars) => setState(() {
+        _draft = _draft.copyWith(
+          minRating: _draft.minRating == stars ? 0 : stars,
+        );
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -98,20 +71,12 @@ class _FilterSheetState extends State<FilterSheet> {
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
-        final primaryText =
-            isDark ? AppColors.white : AppColors.primaryPurple;
         final resetEnabled = _activeCount > 0;
-        final resetColor = resetEnabled
-            ? AppColors.auroraPink
-            : (isDark
-                ? AppColors.white.withValues(alpha: 0.35)
-                : AppColors.primaryPurple.withValues(alpha: 0.35));
 
-        final mediaQuery = MediaQuery.of(context);
-        final maxHeight = mediaQuery.size.height * 0.88;
+        final mq = MediaQuery.of(context);
+        final maxScrollHeight = (mq.size.height - mq.viewPadding.top - mq.viewPadding.bottom) * 0.60;
 
-        return Container(
-          constraints: BoxConstraints(maxHeight: maxHeight),
+        return DecoratedBox(
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(24),
@@ -119,76 +84,83 @@ class _FilterSheetState extends State<FilterSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 14),
+            const SizedBox(height: 10),
+              // Header
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Expanded(
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: AppColors.auroraCartButtonGradient,
-                        ).createShader(bounds),
-                        blendMode: BlendMode.srcIn,
-                        child: Text(
-                          'Filters',
-                          style: AppTextStyles.heading3.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 22,
-                          ),
+                    ShaderMask(
+                      shaderCallback: (b) => const LinearGradient(
+                        colors: AppColors.auroraGradient,
+                      ).createShader(b),
+                      blendMode: BlendMode.srcIn,
+                      child: Text(
+                        'Filters',
+                        style: AppTextStyles.heading3.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 22,
                         ),
                       ),
                     ),
+                    const Spacer(),
                     GestureDetector(
                       onTap: resetEnabled ? _resetAll : null,
                       behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: resetEnabled
-                              ? AppColors.auroraPink.withValues(alpha: 0.10)
-                              : Colors.transparent,
-                          border: Border.all(
-                            color: resetColor,
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.arrowRotateLeft,
-                              size: 10,
-                              color: resetColor,
+                      child: Opacity(
+                        opacity: resetEnabled ? 1.0 : 0.35,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: AppColors.auroraGradient,
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
                             ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'RESET ALL',
-                              style: AppTextStyles.caption.copyWith(
-                                color: resetColor,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 11,
-                                letterSpacing: 1.0,
-                                height: 1.0,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(1.5),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: isDark ? AppColors.auroraDeepBase : AppColors.white,
+                                borderRadius: BorderRadius.circular(6.5),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                child: ShaderMask(
+                                  shaderCallback: (b) => const LinearGradient(
+                                    colors: AppColors.auroraGradient,
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ).createShader(b),
+                                  blendMode: BlendMode.srcIn,
+                                  child: Text(
+                                    'Reset all',
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.white,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 12,
+                                      letterSpacing: 0.5,
+                                      height: 1.0,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 4),
-              Flexible(
+              const SizedBox(height: 2),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxScrollHeight),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -197,29 +169,65 @@ class _FilterSheetState extends State<FilterSheet> {
                         min: widget.priceMin,
                         max: widget.priceMax,
                         current: _draft.priceRange,
-                        primaryText: primaryText,
                         isDark: isDark,
                         onChanged: _togglePrice,
                       ),
-                      const SizedBox(height: 22),
-                      _ColorDropdown(
-                        colors: widget.availableColors,
-                        selected: _draft.colors,
+                      const SizedBox(height: 14),
+                      _FilterDropdown(
+                        label: 'COLOR',
                         isDark: isDark,
-                        onTap: _toggleColor,
+                        preview: _ColorTriggerPreview(
+                          colors: widget.availableColors,
+                          selected: _draft.colors,
+                          isDark: isDark,
+                        ),
+                        children: [
+                          for (var i = 0;
+                              i < widget.availableColors.length;
+                              i++)
+                            _ColorItem(
+                              variant: widget.availableColors[i],
+                              isSelected: _draft.colors
+                                  .contains(widget.availableColors[i].name),
+                              isDark: isDark,
+                              isLast:
+                                  i == widget.availableColors.length - 1,
+                              onTap: () => _toggleColor(
+                                  widget.availableColors[i].name),
+                            ),
+                        ],
                       ),
-                      const SizedBox(height: 22),
-                      _SectionHeading('Size', isDark: isDark),
-                      const SizedBox(height: 8),
-                      _SizeSection(
-                        sizes: widget.availableSizes,
-                        selected: _draft.sizes,
+                      const SizedBox(height: 14),
+                      _FilterDropdown(
+                        label: 'SIZE',
                         isDark: isDark,
-                        onTap: _toggleSize,
+                        preview: _SizeTriggerPreview(
+                          sizes: widget.availableSizes,
+                          selected: _draft.sizes,
+                          isDark: isDark,
+                        ),
+                        children: [
+                          for (var i = 0;
+                              i < widget.availableSizes.length;
+                              i++)
+                            _SizeItem(
+                              variant: widget.availableSizes[i],
+                              isSelected: _draft.sizes.contains(
+                                  widget.availableSizes[i].label),
+                              isDark: isDark,
+                              isLast:
+                                  i == widget.availableSizes.length - 1,
+                              onTap: () => widget.availableSizes[i]
+                                      .isAvailable
+                                  ? _toggleSize(
+                                      widget.availableSizes[i].label)
+                                  : null,
+                            ),
+                        ],
                       ),
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 14),
                       _SectionHeading('Rating', isDark: isDark),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 8),
                       _RatingSection(
                         min: _draft.minRating,
                         isDark: isDark,
@@ -230,7 +238,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 20),
                 child: AuroraPrimaryButton(
                   text: 'APPLY',
                   height: 48,
@@ -245,7 +253,7 @@ class _FilterSheetState extends State<FilterSheet> {
   }
 }
 
-// ─── Shared bits ─────────────────────────────────────────────────────────────
+// ─── Section heading ──────────────────────────────────────────────────────────
 
 class _SectionHeading extends StatelessWidget {
   final String text;
@@ -254,12 +262,10 @@ class _SectionHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isDark ? AppColors.white : AppColors.primaryPurple;
     return Text(
       text,
       style: AppTextStyles.caption.copyWith(
-        color: color,
+        color: isDark ? AppColors.white : AppColors.primaryPurple,
         fontWeight: FontWeight.w800,
         fontSize: 12,
         letterSpacing: 1.2,
@@ -268,13 +274,12 @@ class _SectionHeading extends StatelessWidget {
   }
 }
 
-// ─── Price ───────────────────────────────────────────────────────────────────
+// ─── Price ────────────────────────────────────────────────────────────────────
 
 class _PriceSection extends StatelessWidget {
   final double min;
   final double max;
   final RangeValues current;
-  final Color primaryText;
   final bool isDark;
   final ValueChanged<RangeValues> onChanged;
 
@@ -282,7 +287,6 @@ class _PriceSection extends StatelessWidget {
     required this.min,
     required this.max,
     required this.current,
-    required this.primaryText,
     required this.isDark,
     required this.onChanged,
   });
@@ -295,66 +299,60 @@ class _PriceSection extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            _PriceChip(value: current.start, isDark: isDark),
-            const Spacer(),
-            _PriceChip(value: current.end, isDark: isDark),
-          ],
-        ),
-        SliderTheme(
-          data: SliderThemeData(
-            activeTrackColor: AppColors.auroraPink,
-            inactiveTrackColor: isDark
-                ? AppColors.white.withValues(alpha: 0.08)
-                : AppColors.primaryPurple.withValues(alpha: 0.12),
-            thumbColor: AppColors.white,
-            overlayColor: AppColors.auroraPink.withValues(alpha: 0.20),
-            rangeThumbShape: const RoundRangeSliderThumbShape(
-              enabledThumbRadius: 9,
-              elevation: 4,
+            _GradientPriceText(value: current.start),
+            Expanded(
+              child: SliderTheme(
+                data: SliderThemeData(
+                  activeTrackColor: AppColors.auroraPink,
+                  inactiveTrackColor: isDark
+                      ? AppColors.white.withValues(alpha: 0.08)
+                      : AppColors.primaryPurple.withValues(alpha: 0.12),
+                  thumbColor: AppColors.white,
+                  overlayColor:
+                      AppColors.auroraPink.withValues(alpha: 0.20),
+                  rangeThumbShape: const RoundRangeSliderThumbShape(
+                    enabledThumbRadius: 9,
+                    elevation: 4,
+                  ),
+                  rangeTrackShape:
+                      const RoundedRectRangeSliderTrackShape(),
+                  trackHeight: 3,
+                  showValueIndicator: ShowValueIndicator.never,
+                ),
+                child: RangeSlider(
+                  values: current,
+                  min: min,
+                  max: max,
+                  onChanged: onChanged,
+                ),
+              ),
             ),
-            rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
-            trackHeight: 3,
-            showValueIndicator: ShowValueIndicator.never,
-          ),
-          child: RangeSlider(
-            values: current,
-            min: min,
-            max: max,
-            onChanged: onChanged,
-          ),
+            _GradientPriceText(value: current.end),
+          ],
         ),
       ],
     );
   }
 }
 
-class _PriceChip extends StatelessWidget {
+class _GradientPriceText extends StatelessWidget {
   final double value;
-  final bool isDark;
-  const _PriceChip({required this.value, required this.isDark});
+  const _GradientPriceText({required this.value});
 
   @override
   Widget build(BuildContext context) {
-    final bg = isDark
-        ? AppColors.white.withValues(alpha: 0.05)
-        : AppColors.primaryPurple.withValues(alpha: 0.06);
-    final border = isDark
-        ? AppColors.white.withValues(alpha: 0.12)
-        : AppColors.primaryPurple.withValues(alpha: 0.18);
-    final textColor = isDark ? AppColors.white : AppColors.primaryPurple;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: border),
-      ),
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: AppColors.auroraGradient,
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      blendMode: BlendMode.srcIn,
       child: Text(
         '\$${value.toStringAsFixed(0)}',
         style: AppTextStyles.auroraMonoPrice.copyWith(
-          color: textColor,
-          fontSize: 12,
+          color: AppColors.white,
+          fontSize: 13,
           fontWeight: FontWeight.w800,
         ),
       ),
@@ -362,145 +360,211 @@ class _PriceChip extends StatelessWidget {
   }
 }
 
-// ─── Colour ──────────────────────────────────────────────────────────────────
+// ─── Cohesive dropdown ────────────────────────────────────────────────────────
 
-/// Collapsible "Color" filter. Header shows a preview of currently-selected
-/// swatches (up to 4 + overflow count); tapping toggles an animated
-/// expansion that reveals the full [_ColorSection] of swatches below.
-class _ColorDropdown extends StatefulWidget {
-  final List<ColorVariant> colors;
-  final Set<String> selected;
+class _FilterDropdown extends StatefulWidget {
+  final String label;
   final bool isDark;
-  final ValueChanged<String> onTap;
+  final Widget preview;
+  final List<Widget> children;
 
-  const _ColorDropdown({
-    required this.colors,
-    required this.selected,
+  const _FilterDropdown({
+    required this.label,
     required this.isDark,
-    required this.onTap,
+    required this.preview,
+    required this.children,
   });
 
   @override
-  State<_ColorDropdown> createState() => _ColorDropdownState();
+  State<_FilterDropdown> createState() => _FilterDropdownState();
 }
 
-class _ColorDropdownState extends State<_ColorDropdown> {
+class _FilterDropdownState extends State<_FilterDropdown> {
   bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
     final fill = widget.isDark
         ? AppColors.white.withValues(alpha: 0.04)
-        : AppColors.primaryPurple.withValues(alpha: 0.05);
-    final border = widget.isDark
+        : AppColors.auroraPurple.withValues(alpha: 0.04);
+    final borderColor = widget.isDark
         ? AppColors.white.withValues(alpha: 0.12)
-        : AppColors.primaryPurple.withValues(alpha: 0.18);
-    final textColor =
+        : AppColors.auroraPurple.withValues(alpha: 0.18);
+    final labelColor =
         widget.isDark ? AppColors.white : AppColors.primaryPurple;
-    final mutedText = textColor.withValues(alpha: 0.55);
+    final chevronColor = widget.isDark
+        ? AppColors.white.withValues(alpha: 0.40)
+        : AppColors.auroraPurple.withValues(alpha: 0.40);
 
-    final selectedVariants = widget.colors
-        .where((c) => widget.selected.contains(c.name))
-        .toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () => setState(() => _expanded = !_expanded),
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: border),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  'Color',
-                  style: AppTextStyles.caption.copyWith(
-                    color: textColor,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 12,
-                    letterSpacing: 1.2,
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: Container(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: borderColor),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Trigger row
+            GestureDetector(
+              onTap: () => setState(() => _expanded = !_expanded),
+              behavior: HitTestBehavior.opaque,
+              child: SizedBox(
+                height: 48,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      Text(
+                        widget.label,
+                        style: AppTextStyles.caption.copyWith(
+                          color: labelColor,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: widget.preview),
+                      AnimatedRotation(
+                        turns: _expanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        child: FaIcon(FontAwesomeIcons.chevronDown,
+                            size: 12, color: chevronColor),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: selectedVariants.isEmpty
-                      ? Text(
-                          'All colors',
-                          style: AppTextStyles.caption.copyWith(
-                            color: mutedText,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      : _SelectedColorPreview(variants: selectedVariants),
-                ),
-                AnimatedRotation(
-                  turns: _expanded ? 0.5 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: FaIcon(
-                    FontAwesomeIcons.chevronDown,
-                    size: 12,
-                    color: mutedText,
+              ),
+            ),
+            // Fixed-height scrollable panel — same container, separated by a divider.
+            // Capped at 220 px (~5 items); scrolls independently within that box.
+            if (_expanded) ...[
+              Container(height: 1, color: borderColor),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: widget.children,
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            ],
+          ],
         ),
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 220),
-          firstChild: const SizedBox(width: double.infinity),
-          secondChild: Padding(
-            padding: const EdgeInsets.only(top: 14),
-            child: _ColorSection(
-              colors: widget.colors,
-              selected: widget.selected,
-              onTap: widget.onTap,
-            ),
-          ),
-          crossFadeState: _expanded
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-        ),
-      ],
+      ),
     );
   }
 }
 
-class _SelectedColorPreview extends StatelessWidget {
-  final List<ColorVariant> variants;
-  const _SelectedColorPreview({required this.variants});
+// ─── Shared checkbox ─────────────────────────────────────────────────────────
 
-  static const _maxVisible = 4;
+class _CheckBox extends StatelessWidget {
+  final bool isChecked;
+  final bool isDark;
+  final bool disabled;
 
-  Color _parseHex(String hex) {
-    final cleaned = hex.replaceAll('#', '');
-    return Color(int.parse('FF$cleaned', radix: 16));
+  const _CheckBox({
+    required this.isChecked,
+    required this.isDark,
+    this.disabled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isChecked) {
+      return Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: AppColors.auroraGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: const Center(
+          child: FaIcon(FontAwesomeIcons.check,
+              size: 11, color: AppColors.white),
+        ),
+      );
+    }
+    final borderColor = disabled
+        ? (isDark
+            ? AppColors.white.withValues(alpha: 0.12)
+            : AppColors.primaryPurple.withValues(alpha: 0.12))
+        : (isDark
+            ? AppColors.white.withValues(alpha: 0.22)
+            : AppColors.primaryPurple.withValues(alpha: 0.25));
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: borderColor, width: 1.5),
+      ),
+    );
+  }
+}
+
+// ─── Color dropdown ───────────────────────────────────────────────────────────
+
+class _ColorTriggerPreview extends StatelessWidget {
+  final List<ColorVariant> colors;
+  final Set<String> selected;
+  final bool isDark;
+
+  const _ColorTriggerPreview({
+    required this.colors,
+    required this.selected,
+    required this.isDark,
+  });
+
+  Color _hex(String hex) {
+    final c = hex.replaceAll('#', '');
+    return Color(int.parse('FF$c', radix: 16));
   }
 
   @override
   Widget build(BuildContext context) {
-    final visible = variants.take(_maxVisible).toList();
-    final overflow = variants.length - visible.length;
+    final selectedVariants =
+        colors.where((c) => selected.contains(c.name)).toList();
+
+    if (selectedVariants.isEmpty) {
+      return Text(
+        'All colors',
+        style: AppTextStyles.caption.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.38)
+              : AppColors.primaryPurple.withValues(alpha: 0.45),
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    }
+
+    const maxDots = 4;
+    final visible = selectedVariants.take(maxDots).toList();
+    final overflow = selectedVariants.length - visible.length;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < visible.length; i++)
           Padding(
-            padding: EdgeInsets.only(left: i == 0 ? 0 : 6),
+            padding: EdgeInsets.only(left: i == 0 ? 0 : 5),
             child: Container(
-              width: 16,
-              height: 16,
+              width: 14,
+              height: 14,
               decoration: BoxDecoration(
-                color: _parseHex(visible[i].hexCode),
+                color: _hex(visible[i].hexCode),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: AppColors.white.withValues(alpha: 0.25),
@@ -511,7 +575,7 @@ class _SelectedColorPreview extends StatelessWidget {
           ),
         if (overflow > 0)
           Padding(
-            padding: const EdgeInsets.only(left: 6),
+            padding: const EdgeInsets.only(left: 5),
             child: Text(
               '+$overflow',
               style: AppTextStyles.captionSmall.copyWith(
@@ -526,284 +590,245 @@ class _SelectedColorPreview extends StatelessWidget {
   }
 }
 
-class _ColorSection extends StatelessWidget {
-  final List<ColorVariant> colors;
-  final Set<String> selected;
-  final ValueChanged<String> onTap;
-
-  const _ColorSection({
-    required this.colors,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 14,
-      runSpacing: 14,
-      children: [
-        for (final c in colors)
-          _ColorSwatch(
-            variant: c,
-            isSelected: selected.contains(c.name),
-            onTap: () => onTap(c.name),
-          ),
-      ],
-    );
-  }
-}
-
-class _ColorSwatch extends StatefulWidget {
+class _ColorItem extends StatelessWidget {
   final ColorVariant variant;
   final bool isSelected;
+  final bool isDark;
+  final bool isLast;
   final VoidCallback onTap;
 
-  const _ColorSwatch({
-    required this.variant,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  State<_ColorSwatch> createState() => _ColorSwatchState();
-}
-
-class _ColorSwatchState extends State<_ColorSwatch>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _rotator;
-
-  @override
-  void initState() {
-    super.initState();
-    _rotator = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    );
-    if (widget.isSelected) _rotator.repeat();
-  }
-
-  @override
-  void didUpdateWidget(covariant _ColorSwatch old) {
-    super.didUpdateWidget(old);
-    if (widget.isSelected && !_rotator.isAnimating) {
-      _rotator.repeat();
-    } else if (!widget.isSelected && _rotator.isAnimating) {
-      _rotator.stop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _rotator.dispose();
-    super.dispose();
-  }
-
-  Color _parseHex(String hex) {
-    final cleaned = hex.replaceAll('#', '');
-    return Color(int.parse('FF$cleaned', radix: 16));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final fill = _parseHex(widget.variant.hexCode);
-    const outerDiameter = 40.0;
-    const swatchDiameter = 32.0;
-
-    return GestureDetector(
-      onTap: widget.onTap,
-      behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: outerDiameter,
-        height: outerDiameter,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (widget.isSelected)
-              RepaintBoundary(
-                child: AnimatedBuilder(
-                  animation: _rotator,
-                  builder: (context, _) => SizedBox(
-                    width: outerDiameter,
-                    height: outerDiameter,
-                    child: CustomPaint(
-                      painter: _RotatingRingPainter(
-                        angle: _rotator.value * 2 * math.pi,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            Container(
-              width: swatchDiameter,
-              height: swatchDiameter,
-              decoration: BoxDecoration(
-                color: fill,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.20),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RotatingRingPainter extends CustomPainter {
-  final double angle;
-  static const double _strokeWidth = 2.5;
-
-  _RotatingRingPainter({required this.angle});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.shortestSide / 2 - _strokeWidth / 2;
-    final rect = Rect.fromCircle(center: center, radius: radius);
-
-    final shader = SweepGradient(
-      colors: const [
-        AppColors.auroraPink,
-        AppColors.auroraPurple,
-        AppColors.auroraElectricBlue,
-        AppColors.auroraPurple,
-        AppColors.auroraPink,
-      ],
-      stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
-      transform: GradientRotation(angle),
-    ).createShader(rect);
-
-    final paint = Paint()
-      ..shader = shader
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = _strokeWidth;
-    canvas.drawCircle(center, radius, paint);
-  }
-
-  @override
-  bool shouldRepaint(_RotatingRingPainter old) => old.angle != angle;
-}
-
-// ─── Size ────────────────────────────────────────────────────────────────────
-
-class _SizeSection extends StatelessWidget {
-  final List<SizeVariant> sizes;
-  final Set<String> selected;
-  final bool isDark;
-  final ValueChanged<String> onTap;
-
-  const _SizeSection({
-    required this.sizes,
-    required this.selected,
-    required this.isDark,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final s in sizes)
-          _SizeChip(
-            variant: s,
-            isSelected: selected.contains(s.label),
-            isDark: isDark,
-            onTap: () {
-              if (s.isAvailable) onTap(s.label);
-            },
-          ),
-      ],
-    );
-  }
-}
-
-class _SizeChip extends StatelessWidget {
-  final SizeVariant variant;
-  final bool isSelected;
-  final bool isDark;
-  final VoidCallback onTap;
-
-  const _SizeChip({
+  const _ColorItem({
     required this.variant,
     required this.isSelected,
     required this.isDark,
+    required this.isLast,
     required this.onTap,
   });
 
+  Color _hex(String hex) {
+    final c = hex.replaceAll('#', '');
+    return Color(int.parse('FF$c', radix: 16));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final mutedText = isDark
-        ? AppColors.white.withValues(alpha: 0.85)
-        : AppColors.primaryPurple.withValues(alpha: 0.90);
-    final mutedFill = isDark
-        ? AppColors.white.withValues(alpha: 0.05)
-        : AppColors.primaryPurple.withValues(alpha: 0.05);
-    final mutedBorder = isDark
-        ? AppColors.white.withValues(alpha: 0.15)
-        : AppColors.primaryPurple.withValues(alpha: 0.20);
-
-    final textColor = !variant.isAvailable
-        ? mutedText.withValues(alpha: 0.35)
-        : (isSelected ? AppColors.white : mutedText);
+    final dividerColor = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.auroraPurple.withValues(alpha: 0.08);
+    final nameColor = isSelected
+        ? (isDark ? AppColors.white : AppColors.auroraPurple)
+        : (isDark
+            ? AppColors.white.withValues(alpha: 0.85)
+            : AppColors.primaryPurple);
 
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 52),
-        height: 40,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        decoration: BoxDecoration(
-          gradient: isSelected && variant.isAvailable
-              ? const LinearGradient(
-                  colors: AppColors.auroraCartButtonGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          color: isSelected ? null : mutedFill,
-          border: Border.all(
-            color: isSelected && variant.isAvailable
-                ? Colors.transparent
-                : mutedBorder,
-          ),
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: isSelected && variant.isAvailable
-              ? [
-                  BoxShadow(
-                    color: AppColors.auroraPink.withValues(alpha: 0.30),
-                    blurRadius: 10,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            child: Row(
+              children: [
+                _CheckBox(isChecked: isSelected, isDark: isDark),
+                const SizedBox(width: 12),
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: _hex(variant.hexCode),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.white.withValues(alpha: 0.18)
+                          : AppColors.primaryPurple.withValues(alpha: 0.20),
+                    ),
                   ),
-                ]
-              : null,
-        ),
-        child: Text(
-          variant.label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.caption.copyWith(
-            color: textColor,
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.3,
-            decoration: variant.isAvailable
-                ? TextDecoration.none
-                : TextDecoration.lineThrough,
-            decorationColor: textColor,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  variant.name,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: nameColor,
+                    fontWeight:
+                        isSelected ? FontWeight.w700 : FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          if (!isLast) Container(height: 1, color: dividerColor),
+        ],
       ),
     );
   }
 }
 
-// ─── Rating ──────────────────────────────────────────────────────────────────
+// ─── Size dropdown ────────────────────────────────────────────────────────────
+
+class _SizeTriggerPreview extends StatelessWidget {
+  final List<SizeVariant> sizes;
+  final Set<String> selected;
+  final bool isDark;
+
+  const _SizeTriggerPreview({
+    required this.sizes,
+    required this.selected,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedLabels =
+        sizes.where((s) => selected.contains(s.label)).map((s) => s.label).toList();
+
+    if (selectedLabels.isEmpty) {
+      return Text(
+        'All sizes',
+        style: AppTextStyles.caption.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.38)
+              : AppColors.primaryPurple.withValues(alpha: 0.45),
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    }
+
+    final preview = selectedLabels.take(3).join(', ');
+    final overflow = selectedLabels.length - 3;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: AppColors.auroraGradient,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            '${selectedLabels.length}',
+            style: AppTextStyles.captionSmall.copyWith(
+              color: AppColors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          overflow > 0 ? '$preview +$overflow' : preview,
+          style: AppTextStyles.caption.copyWith(
+            color: isDark
+                ? AppColors.white.withValues(alpha: 0.75)
+                : AppColors.primaryPurple.withValues(alpha: 0.80),
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SizeItem extends StatelessWidget {
+  final SizeVariant variant;
+  final bool isSelected;
+  final bool isDark;
+  final bool isLast;
+  final VoidCallback? onTap;
+
+  const _SizeItem({
+    required this.variant,
+    required this.isSelected,
+    required this.isDark,
+    required this.isLast,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final dividerColor = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.auroraPurple.withValues(alpha: 0.08);
+    final isAvailable = variant.isAvailable;
+    final nameColor = !isAvailable
+        ? (isDark
+            ? AppColors.white.withValues(alpha: 0.28)
+            : AppColors.primaryPurple.withValues(alpha: 0.28))
+        : isSelected
+            ? (isDark ? AppColors.white : AppColors.auroraPurple)
+            : (isDark
+                ? AppColors.white.withValues(alpha: 0.85)
+                : AppColors.primaryPurple);
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            child: Row(
+              children: [
+                _CheckBox(
+                  isChecked: isSelected && isAvailable,
+                  isDark: isDark,
+                  disabled: !isAvailable,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    variant.label,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: nameColor,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w600,
+                      fontSize: 13,
+                      decoration: !isAvailable
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      decorationColor: nameColor,
+                    ),
+                  ),
+                ),
+                if (!isAvailable)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.auroraRed.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Out of stock',
+                      style: AppTextStyles.captionSmall.copyWith(
+                        color: AppColors.auroraRed,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (!isLast) Container(height: 1, color: dividerColor),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Rating ───────────────────────────────────────────────────────────────────
 
 class _RatingSection extends StatelessWidget {
   final int min;
@@ -882,4 +907,3 @@ class _StarButton extends StatelessWidget {
     );
   }
 }
-

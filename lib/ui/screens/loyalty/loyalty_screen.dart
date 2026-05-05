@@ -12,6 +12,7 @@ class LoyaltyScreen extends StatelessWidget {
       featureName: 'LOYALTY',
       tagline: 'Rewards that actually reward you. Almost here.',
       icon: FontAwesomeIcons.gift,
+      showBackButton: true,
     );
   }
 }

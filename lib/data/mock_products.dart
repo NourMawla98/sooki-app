@@ -27,6 +27,22 @@ const Map<String, String> _hexByColorName = {
   'orange': '#FFA500',
   'space black': '#000000',
   'rose gold': '#B76E79',
+  'lavender': '#E6E6FA',
+  'mint': '#98FF98',
+  'coral': '#FF6B6B',
+  'teal': '#008080',
+  'mustard': '#FFDB58',
+  'olive': '#808000',
+  'lilac': '#C8A2C8',
+  'camel': '#C19A6B',
+  'blush': '#FFB7C5',
+  'sage': '#BCB88A',
+  'cobalt': '#0047AB',
+  'rust': '#B7410E',
+  'cream': '#FFFDD0',
+  'charcoal': '#36454F',
+  'forest': '#228B22',
+  'plum': '#8E4585',
 };
 
 String _hexForPart(String part) =>
@@ -59,10 +75,27 @@ final _defaultColors = [
 ];
 
 const _defaultSizes = [
+  SizeVariant(label: 'XS'),
   SizeVariant(label: 'S'),
   SizeVariant(label: 'M'),
   SizeVariant(label: 'L'),
-  SizeVariant(label: 'XL', isAvailable: false),
+  SizeVariant(label: 'XL'),
+  SizeVariant(label: '2XL', isAvailable: false),
+  SizeVariant(label: '3XL', isAvailable: false),
+  SizeVariant(label: '4XL', isAvailable: false),
+];
+
+const _extendedSizes = [
+  SizeVariant(label: 'XS'),
+  SizeVariant(label: 'S'),
+  SizeVariant(label: 'M'),
+  SizeVariant(label: 'L'),
+  SizeVariant(label: 'XL'),
+  SizeVariant(label: '2XL'),
+  SizeVariant(label: '3XL', isAvailable: false),
+  SizeVariant(label: '4XL', isAvailable: false),
+  SizeVariant(label: '5XL', isAvailable: false),
+  SizeVariant(label: 'One Size'),
 ];
 
 // ─── Image Paths ────────────────────────────────────────────────────────────
@@ -99,14 +132,24 @@ final List<Product> mockBrowseProducts = [
     imageUrls: [_imgSummerDress, _imgFloralDress, _imgStripedTop],
     thumbnailUrl: _imgSummerDress,
     colors: [
-      _colorVariantFromName('Black',
-          imageUrls: [_imgSummerDress, _imgFloralDress]),
-      _colorVariantFromName('White',
-          imageUrls: [_imgCasualTop, _imgStripedTop]),
+      _colorVariantFromName('Black', imageUrls: [_imgSummerDress, _imgFloralDress]),
+      _colorVariantFromName('White', imageUrls: [_imgCasualTop, _imgStripedTop]),
       _colorVariantFromName('Navy', imageUrls: [_imgDenimJacket]),
       _colorVariantFromName('Red', isAvailable: false),
+      _colorVariantFromName('Lavender'),
+      _colorVariantFromName('Mint'),
+      _colorVariantFromName('Coral'),
+      _colorVariantFromName('Teal'),
+      _colorVariantFromName('Mustard'),
+      _colorVariantFromName('Olive'),
+      _colorVariantFromName('Lilac'),
+      _colorVariantFromName('Camel'),
+      _colorVariantFromName('Blush'),
+      _colorVariantFromName('Sage'),
+      _colorVariantFromName('Cobalt', isAvailable: false),
+      _colorVariantFromName('Rust', isAvailable: false),
     ],
-    sizes: _defaultSizes,
+    sizes: _extendedSizes,
     description:
         'A lightweight summer dress perfect for warm days. Features a flattering A-line silhouette with a vibrant floral print.',
     features: [

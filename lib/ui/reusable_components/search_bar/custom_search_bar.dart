@@ -11,11 +11,36 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_fonts.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Cohesive search component: at rest a full pill; when focused, the pill
-/// flattens its bottom corners and an overlay extends it downward into a
-/// results panel sharing the same background — one visual container.
+/// Cohesive search pill.
+///
+/// [readOnly] — renders a non-editable tappable pill that navigates to the
+/// search screen. Use this in the app header.
+///
+/// [autofocus] — immediately focuses the TextField when the widget mounts.
+/// Use this on the SearchScreen so the keyboard appears on entry.
 class CustomSearchBar extends StatefulWidget {
-  const CustomSearchBar({super.key});
+  const CustomSearchBar({
+    super.key,
+    this.readOnly = false,
+    this.autofocus = false,
+    this.showOverlay = true,
+    this.onSubmitted,
+    this.onChanged,
+  });
+
+  final bool readOnly;
+  final bool autofocus;
+
+  /// Whether to show the autocomplete overlay dropdown when focused.
+  /// Set to false on the SearchScreen — it manages its own results.
+  final bool showOverlay;
+
+  /// Called when the user submits a query (keyboard search action).
+  /// If null, the bar handles navigation internally.
+  final ValueChanged<String>? onSubmitted;
+
+  /// Called on every keystroke. Use on SearchScreen for live results.
+  final ValueChanged<String>? onChanged;
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
@@ -56,9 +81,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
   void _onFocusChange() {
     if (_focusNode.hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _focusNode.hasFocus) _showOverlay();
-      });
+      if (widget.showOverlay) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _focusNode.hasFocus) _showOverlay();
+        });
+      }
     } else {
       _removeOverlay();
     }
@@ -68,6 +95,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   void _onTextChange() {
     final q = _controller.text;
     setState(() => _query = q);
+    widget.onChanged?.call(q);
     final token = ++_debounceToken;
     Future.delayed(const Duration(milliseconds: _debounceMs), () {
       if (!mounted || token != _debounceToken) return;
@@ -144,6 +172,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       _dismissAndUnfocus();
       return;
     }
+    if (widget.onSubmitted != null) {
+      _dismissAndUnfocus();
+      widget.onSubmitted!(trimmed);
+      return;
+    }
     await _history.add(trimmed);
     if (!mounted) return;
     _dismissAndUnfocus();
@@ -162,7 +195,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       ? Color.lerp(AppColors.auroraDeepBase, AppColors.white, 0.08)!
       : Color.lerp(AppColors.white, AppColors.primaryPurple, 0.06)!;
 
-  Color _pillFill(bool isDark, bool focused) => _groupFill(isDark);
   Color _dropdownFill(bool isDark) => _groupFill(isDark);
 
   Widget _buildDropdownOverlay({
@@ -457,98 +489,144 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final focused = _focusNode.hasFocus;
 
-        final fill = _pillFill(isDark, focused);
-
-        final placeholder = isDark
-            ? AppColors.white.withValues(alpha: 0.45)
-            : AppColors.primaryPurple.withValues(alpha: 0.40);
-        final textColor = isDark ? AppColors.white : AppColors.primaryPurple;
-        final iconColor = focused
-            ? AppColors.auroraElectricBlue
-            : (isDark
-                ? AppColors.white.withValues(alpha: 0.50)
-                : AppColors.primaryPurple.withValues(alpha: 0.45));
-
-        // Pill corners: fully rounded at rest; flat bottom when focused so
-        // the dropdown can butt against it seamlessly.
-        final radius = focused
-            ? const BorderRadius.only(
-                topLeft: Radius.circular(22),
-                topRight: Radius.circular(22),
-              )
-            : BorderRadius.circular(22);
-
-        // Pill itself never carries the glow — when focused, the dropdown
-        // container below carries a single glow wrapping the whole group.
-        return Container(
-          key: _anchorKey,
-          height: 44,
-          decoration: BoxDecoration(
-            color: fill,
-            borderRadius: radius,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              FaIcon(
-                FontAwesomeIcons.magnifyingGlass,
-                size: 14,
-                color: iconColor,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: _submitQuery,
-                  cursorColor: AppColors.auroraElectricBlue,
-                  style: AppFonts.primary(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: textColor,
-                  ),
-                  decoration: InputDecoration(
-                    filled: false,
-                    fillColor: Colors.transparent,
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    focusedErrorBorder: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                    hintText: 'Search for products...',
-                    hintStyle: AppTextStyles.inputHint.copyWith(
-                      color: placeholder,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ),
-              if (focused && _query.isNotEmpty)
-                GestureDetector(
-                  onTap: () {
-                    _controller.clear();
-                    SystemChannels.textInput.invokeMethod('TextInput.show');
-                  },
-                  behavior: HitTestBehavior.opaque,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: FaIcon(
-                      FontAwesomeIcons.xmark,
-                      size: 13,
-                      color: placeholder,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
+        if (widget.readOnly) {
+          return _buildReadOnlyPill(isDark, context);
+        }
+        return _buildEditablePill(isDark);
       },
+    );
+  }
+
+  Widget _buildReadOnlyPill(bool isDark, BuildContext context) {
+    final fill = isDark
+        ? AppColors.white.withValues(alpha: 0.07)
+        : AppColors.white;
+    final border = isDark
+        ? AppColors.white.withValues(alpha: 0.18)
+        : AppColors.auroraPurple.withValues(alpha: 0.55);
+    final placeholder = isDark
+        ? AppColors.white.withValues(alpha: 0.45)
+        : AppColors.primaryPurple.withValues(alpha: 0.40);
+    final iconColor = isDark
+        ? AppColors.white.withValues(alpha: 0.50)
+        : AppColors.primaryPurple.withValues(alpha: 0.55);
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, searchScreenRoute),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: border, width: 1.5),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: Row(
+          children: [
+            FaIcon(FontAwesomeIcons.magnifyingGlass, size: 14, color: iconColor),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Search for products...',
+                style: AppFonts.primary(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: placeholder,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditablePill(bool isDark) {
+    final focused = _focusNode.hasFocus;
+
+    final fill = isDark
+        ? AppColors.white.withValues(alpha: 0.07)
+        : AppColors.white;
+    final borderColor = isDark
+        ? AppColors.white.withValues(alpha: 0.18)
+        : AppColors.auroraPurple.withValues(alpha: 0.55);
+    final placeholder = isDark
+        ? AppColors.white.withValues(alpha: 0.45)
+        : AppColors.primaryPurple.withValues(alpha: 0.40);
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final iconColor = isDark
+        ? AppColors.white.withValues(alpha: 0.50)
+        : AppColors.primaryPurple.withValues(alpha: 0.55);
+
+    const radius = BorderRadius.all(Radius.circular(22));
+    const List<BoxShadow> shadow = [];
+
+    return Container(
+      key: _anchorKey,
+      height: 44,
+      decoration: BoxDecoration(
+        color: fill,
+        borderRadius: radius,
+        border: Border.all(color: borderColor, width: 1.5),
+        boxShadow: shadow,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: Row(
+        children: [
+          FaIcon(FontAwesomeIcons.magnifyingGlass, size: 14, color: iconColor),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              autofocus: widget.autofocus,
+              textInputAction: TextInputAction.search,
+              onSubmitted: _submitQuery,
+              cursorColor: AppColors.auroraElectricBlue,
+              style: AppFonts.primary(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+              decoration: InputDecoration(
+                filled: false,
+                fillColor: Colors.transparent,
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+                hintText: 'Search for products...',
+                hintStyle: AppTextStyles.inputHint.copyWith(
+                  color: placeholder,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+          if (focused && _query.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                _controller.clear();
+                SystemChannels.textInput.invokeMethod('TextInput.show');
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: FaIcon(
+                  FontAwesomeIcons.xmark,
+                  size: 13,
+                  color: placeholder,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
