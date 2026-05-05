@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
-import '../../../themes/themes.dart';
+import '../../../themes/app_colors.dart';
+import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
-import '../../reusable_components/buttons/primary_button.dart';
+import '../../reusable_components/aurora/aurora_glass_card.dart';
+import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/buttons/theme_toggle_button.dart';
 import '../../reusable_components/dropdowns/language_selector.dart';
 import '../../reusable_components/floating_emoji/floating_emoji.dart';
-import '../../reusable_components/input_fields/custom_text_field.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -24,6 +28,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
   bool _isLoading = false;
 
+  static final _emailRegex =
+      RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -32,318 +39,256 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _handleSendResetLink() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // TODO: Implement actual forgot password logic
+      setState(() => _isLoading = true);
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-          ToastService.instance.showSuccess('Reset link sent to ${_emailController.text}');
-          // Navigate back to sign in screen after success
+          setState(() => _isLoading = false);
+          ToastService.instance
+              .showSuccess('Reset link sent to ${_emailController.text}');
           Navigator.pop(context);
         }
       });
     }
   }
 
-  void _navigateBackToSignIn() {
-    Navigator.pop(context);
-  }
-
   Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      // Handle error silently for now
-    }
+    final uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.splashGradient,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final bgColor =
+            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+        final headingColor =
+            isDark ? AppColors.white : AppColors.auroraPurple;
+        final subtitleColor =
+            isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase;
+
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -100,
+                right: -100,
+                size: 280,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
               ),
-            ),
-          ),
-
-          // Ombre gradient overlays
-          // Orange glow - top right
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.accentRed.withValues(alpha: 0.3),
-                    AppColors.accentRed.withValues(alpha: 0.1),
-                    Colors.transparent,
-                  ],
-                ),
+              AuroraGlowBlob(
+                bottom: -100,
+                left: -100,
+                size: 300,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
               ),
-            ),
-          ),
-
-          // Blue glow - bottom left
-          Positioned(
-            bottom: -100,
-            left: -100,
-            child: Container(
-              width: 350,
-              height: 350,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF4FC3F7).withValues(alpha: 0.4),
-                    const Color(0xFF4FC3F7).withValues(alpha: 0.2),
-                    Colors.transparent,
-                  ],
-                ),
+              const FloatingEmoji(
+                emoji: '🔑',
+                size: 36,
+                opacity: 0.2,
+                top: 80,
+                left: 32,
+                floatDistance: 15.5,
+                rotationAngle: 7.7,
+                durationMs: 2200,
               ),
-            ),
-          ),
-
-          // Floating emojis layer
-          const FloatingEmoji(
-            emoji: '🔑',
-            size: 36,
-            opacity: 0.2,
-            top: 80,
-            left: 32,
-            floatDistance: 15.5,
-            rotationAngle: 7.7,
-            durationMs: 2200,
-          ),
-          const FloatingEmoji(
-            emoji: '📧',
-            size: 30,
-            opacity: 0.2,
-            top: 160,
-            right: 48,
-            floatDistance: 14.6,
-            rotationAngle: -9.7,
-            durationMs: 2400,
-          ),
-          const FloatingEmoji(
-            emoji: '🔒',
-            size: 30,
-            opacity: 0.2,
-            bottom: 128,
-            right: 32,
-            floatDistance: 14.5,
-            rotationAngle: 14.5,
-            durationMs: 2100,
-          ),
-          const FloatingEmoji(
-            emoji: '✉️',
-            size: 36,
-            opacity: 0.2,
-            bottom: 80,
-            left: 48,
-            floatDistance: 18.5,
-            rotationAngle: -13.9,
-            durationMs: 2300,
-          ),
-
-          // Main content
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 24),
-
-                  // Language selector and theme toggle
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
-                      LanguageSelector(),
-                      SizedBox(width: 12),
-                      ThemeToggleButton(),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // Logo
-                  const AppLogo(
-                    size: LogoSize.medium,
-                    isWhiteText: true,
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Welcome text
-                  Text(
-                    'Forgot Password?',
-                    style: AppTextStyles.heading1.copyWith(
-                      color: AppColors.white,
-                      fontSize: 32,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    'Enter your email to receive a password reset link',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.9),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // White card container
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.shadowDark,
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Email field
-                          CustomTextField(
-                            label: 'Email',
-                            hintText: 'your@email.com',
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            prefixIcon: FaIcon(
-                              FontAwesomeIcons.envelope,
-                              color: AppColors.gray400,
-                              size: 20,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Send reset link button
-                          PrimaryButton(
-                            text: 'Send Reset Link',
-                            onPressed: _handleSendResetLink,
-                            isLoading: _isLoading,
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Back to log in link
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Remember your password? ',
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: AppColors.textSecondary,
+              const FloatingEmoji(
+                emoji: '📧',
+                size: 30,
+                opacity: 0.2,
+                top: 160,
+                right: 48,
+                floatDistance: 14.6,
+                rotationAngle: -9.7,
+                durationMs: 2400,
+              ),
+              const FloatingEmoji(
+                emoji: '🔒',
+                size: 30,
+                opacity: 0.2,
+                bottom: 128,
+                right: 32,
+                floatDistance: 14.5,
+                rotationAngle: 14.5,
+                durationMs: 2100,
+              ),
+              const FloatingEmoji(
+                emoji: '✉️',
+                size: 36,
+                opacity: 0.2,
+                bottom: 80,
+                left: 48,
+                floatDistance: 18.5,
+                rotationAngle: -13.9,
+                durationMs: 2300,
+              ),
+              SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  LanguageSelector(),
+                                  ThemeToggleButton(),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              AppLogo(
+                                size: LogoSize.medium,
+                                isWhiteText: isDark,
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                'Forgot Password?',
+                                style: AppTextStyles.dsH1
+                                    .copyWith(color: headingColor),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Enter your email to receive a reset link',
+                                style: AppTextStyles.dsBody
+                                    .copyWith(color: subtitleColor),
+                              ),
+                              const Spacer(flex: 1),
+                              AuroraGlassCard(
+                                padding: const EdgeInsets.all(22),
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      AuroraInputField(
+                                        label: 'Email',
+                                        required: true,
+                                        hint: 'your@email.com',
+                                        controller: _emailController,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        prefixIcon:
+                                            FontAwesomeIcons.solidEnvelope,
+                                        textInputAction: TextInputAction.done,
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.isEmpty) {
+                                            return 'Please enter your email';
+                                          }
+                                          if (!_emailRegex.hasMatch(value)) {
+                                            return 'Please enter a valid email';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 20),
+                                      AuroraPrimaryButton(
+                                        text: 'Send reset link',
+                                        onPressed: _handleSendResetLink,
+                                        isLoading: _isLoading,
+                                      ),
+                                      const SizedBox(height: 14),
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Remember your password? ',
+                                              style: AppTextStyles.dsBody
+                                                  .copyWith(
+                                                color: subtitleColor,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () =>
+                                                  Navigator.pop(context),
+                                              child: Text(
+                                                'Log In',
+                                                style: AppTextStyles.dsBody
+                                                    .copyWith(
+                                                  fontSize: 14,
+                                                  color: AppColors.auroraPink,
+                                                  fontWeight: FontWeight.w700,
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: _navigateBackToSignIn,
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              const Spacer(flex: 3),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: AppTextStyles.dsMuted.copyWith(
+                                    color: subtitleColor,
+                                    fontSize: 12,
                                   ),
-                                  child: Text(
-                                    'Log In',
-                                    style: AppTextStyles.bodyMedium.copyWith(
-                                      color: AppColors.primaryPurple,
-                                      fontWeight: FontWeight.bold,
+                                  children: [
+                                    const TextSpan(
+                                        text:
+                                            'By continuing, you agree to our '),
+                                    TextSpan(
+                                      text: 'Terms of Service',
+                                      style: AppTextStyles.dsMuted.copyWith(
+                                        fontSize: 12,
+                                        color: AppColors.auroraPink,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.none,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () =>
+                                            _launchUrl('https://google.com'),
                                     ),
-                                  ),
+                                    const TextSpan(text: ' and '),
+                                    TextSpan(
+                                      text: 'Privacy Policy',
+                                      style: AppTextStyles.dsMuted.copyWith(
+                                        fontSize: 12,
+                                        color: AppColors.auroraPink,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.none,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () =>
+                                            _launchUrl('https://google.com'),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Terms and privacy policy
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.white.withValues(alpha: 0.7),
-                      ),
-                      children: [
-                        const TextSpan(text: 'By continuing, you agree to our '),
-                        TextSpan(
-                          text: 'Terms of Service',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.white,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => _launchUrl('https://google.com'),
                         ),
-                        const TextSpan(text: ' and '),
-                        TextSpan(
-                          text: 'Privacy Policy',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.white,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => _launchUrl('https://google.com'),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-                ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

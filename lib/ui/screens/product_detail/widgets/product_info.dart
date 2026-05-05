@@ -28,7 +28,7 @@ class ProductInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${product.brand.toUpperCase()}  ·  ${product.category.toUpperCase()}',
+              product.category.toUpperCase(),
               style: AppFonts.primary(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,

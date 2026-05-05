@@ -10,6 +10,7 @@ import '../../../models/product.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../reusable_components/buttons/aurora_glass_action_button.dart';
 import '../../reusable_components/category_pill/aurora_category_l1_pill.dart';
 import '../../reusable_components/category_pill/l1_pill_row_skeleton.dart';
 import '../../reusable_components/product_card/product_grid_card.dart';
@@ -71,6 +72,11 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     priceMax: _priceMax,
   );
   SortOption _sortOption = SortOption.newest;
+
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
 
   // One-shot loading simulation so the skeleton appears on first mount.
   // TODO(backend): replace with the real taxonomy loading state once the
@@ -211,19 +217,16 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 
   Future<void> _openFilterSheet() async {
-    final result = await showDialog<FilterState>(
+    final result = await showModalBottomSheet<FilterState>(
       context: context,
-      barrierDismissible: true,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: FilterSheet(
-          initial: _filterState,
-          priceMin: _priceMin,
-          priceMax: _priceMax,
-          availableColors: _availableColors,
-          availableSizes: _availableSizes,
-        ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => FilterSheet(
+        initial: _filterState,
+        priceMin: _priceMin,
+        priceMax: _priceMax,
+        availableColors: _availableColors,
+        availableSizes: _availableSizes,
       ),
     );
     if (result != null && mounted) {
@@ -232,14 +235,10 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 
   Future<void> _openSortSheet() async {
-    final result = await showDialog<SortOption>(
+    final result = await showModalBottomSheet<SortOption>(
       context: context,
-      barrierDismissible: true,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: SortSheet(current: _sortOption),
-      ),
+      backgroundColor: Colors.transparent,
+      builder: (_) => SortSheet(current: _sortOption),
     );
     if (result != null && mounted) {
       setState(() => _sortOption = result);
@@ -272,6 +271,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                   onL3Selected: _onL3Selected,
                   onFilter: _openFilterSheet,
                   onSort: _openSortSheet,
+                  onRefresh: _refresh,
                 ),
         );
       },
@@ -358,6 +358,7 @@ class _LoadedBody extends StatelessWidget {
   final ValueChanged<String> onL3Selected;
   final VoidCallback onFilter;
   final VoidCallback onSort;
+  final Future<void> Function() onRefresh;
 
   const _LoadedBody({
     required this.selectedL1,
@@ -374,6 +375,7 @@ class _LoadedBody extends StatelessWidget {
     required this.onL3Selected,
     required this.onFilter,
     required this.onSort,
+    required this.onRefresh,
   });
 
   @override
@@ -412,7 +414,6 @@ class _LoadedBody extends StatelessWidget {
         _FilterSortRow(
           filterCount: filterCount,
           currentSort: currentSort,
-          isDark: isDark,
           onFilter: onFilter,
           onSort: onSort,
         ),
@@ -432,9 +433,16 @@ class _LoadedBody extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Expanded(
-          child: products.isEmpty
-              ? _EmptyState(isDark: isDark)
-              : _ProductGrid(products: products),
+          child: RefreshIndicator(
+            onRefresh: onRefresh,
+            color: AppColors.auroraPink,
+            child: products.isEmpty
+                ? SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: _EmptyState(isDark: isDark),
+                  )
+                : _ProductGrid(products: products),
+          ),
         ),
       ],
     );
@@ -881,14 +889,12 @@ class _L3ButtonState extends State<_L3Button>
 class _FilterSortRow extends StatelessWidget {
   final int filterCount;
   final SortOption currentSort;
-  final bool isDark;
   final VoidCallback onFilter;
   final VoidCallback onSort;
 
   const _FilterSortRow({
     required this.filterCount,
     required this.currentSort,
-    required this.isDark,
     required this.onFilter,
     required this.onSort,
   });
@@ -900,110 +906,22 @@ class _FilterSortRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _GlassButton(
+            child: AuroraGlassActionButton(
               icon: FontAwesomeIcons.sliders,
               label: 'FILTER',
-              isDark: isDark,
               badgeCount: filterCount,
               onTap: onFilter,
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: _GlassButton(
+            child: AuroraGlassActionButton(
               icon: currentSort.icon,
               label: 'SORT \u00b7 ${currentSort.buttonLabel}',
-              isDark: isDark,
               onTap: onSort,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _GlassButton extends StatelessWidget {
-  final FaIconData icon;
-  final String label;
-  final bool isDark;
-  final int badgeCount;
-  final VoidCallback onTap;
-
-  const _GlassButton({
-    required this.icon,
-    required this.label,
-    required this.isDark,
-    required this.onTap,
-    this.badgeCount = 0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final fill = isDark
-        ? AppColors.white.withValues(alpha: 0.04)
-        : AppColors.primaryPurple.withValues(alpha: 0.04);
-    final border = isDark
-        ? AppColors.white.withValues(alpha: 0.10)
-        : AppColors.primaryPurple.withValues(alpha: 0.18);
-    final fg = isDark ? AppColors.white : AppColors.primaryPurple;
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 42,
-        decoration: BoxDecoration(
-          color: fill,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: border),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FaIcon(icon, size: 13, color: fg),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: AppTextStyles.caption.copyWith(
-                    color: fg,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                    height: 1.0,
-                  ),
-                ),
-              ],
-            ),
-            if (badgeCount > 0)
-              Positioned(
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.auroraPink,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '$badgeCount',
-                    style: AppTextStyles.captionSmall.copyWith(
-                      color: AppColors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      height: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
       ),
     );
   }
@@ -1018,6 +936,7 @@ class _ProductGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

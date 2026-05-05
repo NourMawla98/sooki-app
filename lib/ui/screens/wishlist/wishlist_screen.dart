@@ -7,8 +7,18 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../data/mock_products.dart';
 
-class WishlistScreen extends StatelessWidget {
+class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
+
+  @override
+  State<WishlistScreen> createState() => _WishlistScreenState();
+}
+
+class _WishlistScreenState extends State<WishlistScreen> {
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +57,11 @@ class WishlistScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        color: AppColors.auroraPink,
+        child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
         itemCount: wishlistItems.length,
         itemBuilder: (context, index) {
@@ -134,6 +148,7 @@ class WishlistScreen extends StatelessWidget {
           ),
           );
         },
+        ),
       ),
     );
   }

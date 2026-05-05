@@ -1,197 +1,310 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 
 class ShippingInfoScreen extends StatelessWidget {
   const ShippingInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Shipping Information',
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildShippingOption(
-              icon: FontAwesomeIcons.truck,
-              iconColor: AppColors.profileIconGreen,
-              title: 'Standard Shipping',
-              duration: '5-7 business days',
-              price: 'FREE on orders over \$50',
-              details: 'Otherwise \$4.99',
-            ),
-            _buildShippingOption(
-              icon: FontAwesomeIcons.truckFast,
-              iconColor: AppColors.profileIconTeal,
-              title: 'Express Shipping',
-              duration: '2-3 business days',
-              price: '\$9.99',
-              details: 'Available for most items',
-            ),
-            _buildShippingOption(
-              icon: FontAwesomeIcons.bolt,
-              iconColor: AppColors.profileIconYellow,
-              title: 'Next Day Delivery',
-              duration: '1 business day',
-              price: '\$14.99',
-              details: 'Order before 2 PM',
-            ),
-            _buildShippingOption(
-              icon: FontAwesomeIcons.globe,
-              iconColor: AppColors.primaryPurple,
-              title: 'International Shipping',
-              duration: '10-14 business days',
-              price: 'From \$19.99',
-              details: 'Customs fees may apply',
-            ),
-            const SizedBox(height: 20),
-
-            _buildSectionTitle('Shipping Policy'),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(12),
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        return Scaffold(
+          backgroundColor: isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -80, right: -80,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildPolicyItem(
-                    'Orders are processed within 1-2 business days.',
-                  ),
-                  _buildPolicyItem(
-                    'Tracking information is emailed once your order ships.',
-                  ),
-                  _buildPolicyItem(
-                    'Free shipping is available on all domestic orders over \$50.',
-                  ),
-                  _buildPolicyItem(
-                    'P.O. Box deliveries are only available via Standard Shipping.',
-                  ),
-                  _buildPolicyItem(
-                    'Delivery times do not include weekends or holidays.',
-                  ),
-                ],
+              AuroraGlowBlob(
+                bottom: -80, left: -80,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
               ),
-            ),
-            const SizedBox(height: 100),
-          ],
-        ),
-      ),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(isDark: isDark),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _GroupLabel(label: 'Delivery', isDark: isDark),
+                            _GroupCard(
+                              isDark: isDark,
+                              children: [
+                                _InfoRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.verifiedGreen.withValues(alpha: isDark ? 0.13 : 0.10),
+                                  iconColor: AppColors.verifiedGreen,
+                                  icon: FontAwesomeIcons.clock,
+                                  title: 'Estimated Delivery',
+                                  subtitle: 'From order confirmation',
+                                  value: '2–5 days',
+                                ),
+                                _Divider(isDark: isDark),
+                                _InfoRow(
+                                  isDark: isDark,
+                                  iconBg: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.10),
+                                  iconColor: AppColors.auroraPink,
+                                  icon: FontAwesomeIcons.tag,
+                                  title: 'Delivery Fee',
+                                  subtitle: 'Flat rate per order',
+                                  value: '2 JD',
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _GroupLabel(label: 'Notes', isDark: isDark),
+                            _GroupCard(
+                              isDark: isDark,
+                              children: [
+                                _NoticeRow(
+                                  isDark: isDark,
+                                  text: 'Delivery times may vary during peak periods or public holidays. Our team will keep you updated via the app.',
+                                ),
+                                _Divider(isDark: isDark),
+                                _NoticeRow(
+                                  isDark: isDark,
+                                  text: 'Make sure your address is complete and accurate before placing an order to avoid delays.',
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
+}
 
-  Widget _buildShippingOption({
-    required FaIconData icon,
-    required Color iconColor,
-    required String title,
-    required String duration,
-    required String price,
-    required String details,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final bool isDark;
+  const _TopBar({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: FaIcon(icon, size: 20, color: iconColor),
-            ),
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            onPressed: () => Navigator.of(context).maybePop(),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(duration, style: AppTextStyles.bodySmall),
-                const SizedBox(height: 4),
-                Text(
-                  '$price · $details',
-                  style: AppTextStyles.captionSmall.copyWith(
-                    color: AppColors.primaryPurple,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+          const SizedBox(width: 4),
+          Text(
+            'Shipping Information',
+            style: AppTextStyles.heading3.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: color,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildSectionTitle(String title) {
+// ─── Section label ────────────────────────────────────────────────────────────
+
+class _GroupLabel extends StatelessWidget {
+  final String label;
+  final bool isDark;
+  const _GroupLabel({required this.label, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
       child: Text(
-        title,
-        style: AppTextStyles.label.copyWith(
-          color: AppColors.gray500,
-          letterSpacing: 0.5,
+        label.toUpperCase(),
+        style: AppTextStyles.dsSectionLabel.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.28)
+              : AppColors.auroraPurple.withValues(alpha: 0.45),
+          letterSpacing: 1.8,
         ),
       ),
     );
   }
+}
 
-  Widget _buildPolicyItem(String text) {
+// ─── Glass group card ─────────────────────────────────────────────────────────
+
+class _GroupCard extends StatelessWidget {
+  final bool isDark;
+  final List<Widget> children;
+  const _GroupCard({required this.isDark, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.white.withValues(alpha: 0.03)
+            : AppColors.auroraPurple.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.07)
+              : AppColors.auroraPurple.withValues(alpha: 0.10),
+        ),
+      ),
+      child: Column(children: children),
+    );
+  }
+}
+
+// ─── Divider ──────────────────────────────────────────────────────────────────
+
+class _Divider extends StatelessWidget {
+  final bool isDark;
+  const _Divider({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1, thickness: 1, indent: 14, endIndent: 14,
+      color: isDark
+          ? AppColors.white.withValues(alpha: 0.05)
+          : AppColors.auroraPurple.withValues(alpha: 0.07),
+    );
+  }
+}
+
+// ─── Info row (title + value) ─────────────────────────────────────────────────
+
+class _InfoRow extends StatelessWidget {
+  final bool isDark;
+  final Color iconBg;
+  final Color iconColor;
+  final FaIconData icon;
+  final String title;
+  final String subtitle;
+  final String value;
+
+  const _InfoRow({
+    required this.isDark,
+    required this.iconBg,
+    required this.iconColor,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(10)),
+            child: Center(child: FaIcon(icon, size: 13, color: iconColor)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.captionSmall.copyWith(
+                    color: isDark
+                        ? AppColors.white.withValues(alpha: 0.38)
+                        : AppColors.auroraPurple.withValues(alpha: 0.50),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: isDark
+                  ? AppColors.white.withValues(alpha: 0.60)
+                  : AppColors.auroraPurple.withValues(alpha: 0.70),
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Notice row ───────────────────────────────────────────────────────────────
+
+class _NoticeRow extends StatelessWidget {
+  final bool isDark;
+  final String text;
+  const _NoticeRow({required this.isDark, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.only(top: 1),
             child: FaIcon(
-              FontAwesomeIcons.circleCheck,
-              size: 14,
-              color: AppColors.accentGreen,
+              FontAwesomeIcons.circleInfo,
+              size: 13,
+              color: AppColors.auroraElectricBlue.withValues(alpha: isDark ? 0.55 : 0.65),
             ),
           ),
           const SizedBox(width: 10),
-          Expanded(child: Text(text, style: AppTextStyles.bodySmall)),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.captionSmall.copyWith(
+                color: isDark
+                    ? AppColors.white.withValues(alpha: 0.45)
+                    : AppColors.auroraDeepBase.withValues(alpha: 0.52),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                height: 1.6,
+              ),
+            ),
+          ),
         ],
       ),
     );

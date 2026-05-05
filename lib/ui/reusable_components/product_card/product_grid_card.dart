@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -123,6 +125,20 @@ class _ImageArea extends StatelessWidget {
               ),
             ),
           ),
+          // Bottom gradient overlay for trust pill legibility
+          Positioned(
+            bottom: 0, left: 0, right: 0,
+            child: Container(
+              height: 80,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [Color(0xB3000000), Colors.transparent],
+                ),
+              ),
+            ),
+          ),
           // Top-left: discount badge takes priority over NEW
           if (product.discountPercentage != null)
             Positioned(
@@ -174,13 +190,32 @@ class _InfoArea extends StatelessWidget {
         ? AppColors.white.withValues(alpha: 0.35)
         : AppColors.auroraPurple.withValues(alpha: 0.40);
 
+    final countColor = isDark
+        ? AppColors.white.withValues(alpha: 0.38)
+        : AppColors.auroraPurple.withValues(alpha: 0.42);
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 7, 8, 8),
+      padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          StarRating(rating: product.rating, size: 11, showValue: false),
+          Row(
+            children: [
+              StarRating(rating: product.rating, size: 11, showValue: false),
+              if (product.reviewCount > 0) ...[
+                const SizedBox(width: 3),
+                Text(
+                  '(${product.reviewCount})',
+                  style: AppTextStyles.caption.copyWith(
+                    color: countColor,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ],
+          ),
           const SizedBox(height: 3),
           Row(
             children: [
@@ -210,7 +245,7 @@ class _InfoArea extends StatelessWidget {
                 _formatPrice(product.price),
                 style: AppTextStyles.productPrice.copyWith(
                   color: priceColor,
-                  fontSize: 12,
+                  fontSize: 13,
                 ),
               ),
               if (product.originalPrice != null) ...[
@@ -319,14 +354,23 @@ class _HeartButton extends StatelessWidget {
         return GestureDetector(
           onTap: () => _wishlist.toggle(productId),
           behavior: HitTestBehavior.opaque,
-          child: SizedBox(
-            width: 28,
-            height: 28,
-            child: Center(
-              child: FaIcon(
-                active ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
-                size: 15,
-                color: AppColors.auroraPink,
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.black.withValues(alpha: 0.28),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: FaIcon(
+                    active ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
+                    size: 13,
+                    color: AppColors.auroraPink,
+                  ),
+                ),
               ),
             ),
           ),

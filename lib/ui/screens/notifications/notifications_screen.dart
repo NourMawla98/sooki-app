@@ -7,8 +7,18 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +50,20 @@ class NotificationsScreen extends StatelessWidget {
                   children: [
                     _TopBar(isDark: isDark, hasUnread: svc.unreadCount > 0),
                     Expanded(
-                      child: hasAny
-                          ? _NotificationList(
-                              isDark: isDark,
-                              today: today,
-                              earlier: earlier,
-                            )
-                          : _EmptyState(isDark: isDark),
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        color: AppColors.auroraPink,
+                        child: hasAny
+                            ? _NotificationList(
+                                isDark: isDark,
+                                today: today,
+                                earlier: earlier,
+                              )
+                            : SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: _EmptyState(isDark: isDark),
+                              ),
+                      ),
                     ),
                   ],
                 ),
@@ -124,6 +141,7 @@ class _NotificationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 32),
       children: [
         if (today.isNotEmpty) ...[

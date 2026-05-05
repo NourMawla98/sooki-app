@@ -18,12 +18,16 @@ class AuroraCategoryL1Pill extends StatefulWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  /// When true, the unselected state renders as a faded secondary-button style
+  /// (gradient border + surface fill at reduced opacity) instead of glass fill.
+  final bool disabledStyleWhenUnselected;
 
   const AuroraCategoryL1Pill({
     super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
+    this.disabledStyleWhenUnselected = false,
   });
 
   @override
@@ -68,14 +72,10 @@ class _AuroraCategoryL1PillState extends State<AuroraCategoryL1Pill>
         final isDark = ThemeService.instance.isDarkMode;
         final isSel = widget.isSelected;
 
-        final selectedTextColor =
-            isDark ? AppColors.white : AppColors.primaryPurple;
         final unselectedTextColor = isDark
             ? AppColors.white.withValues(alpha: 0.65)
             : AppColors.primaryPurple;
 
-        // Explicit height + alignment.center + height:1.0 on text = text is
-        // reliably centered both horizontally and vertically inside the pill.
         Widget buildContent({required Color color}) => Container(
               height: 32,
               alignment: Alignment.center,
@@ -92,6 +92,85 @@ class _AuroraCategoryL1PillState extends State<AuroraCategoryL1Pill>
               ),
             );
 
+        Widget buildGradientContent() => Container(
+              height: 32,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: AppColors.auroraGradient,
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ).createShader(
+                  Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                ),
+                blendMode: BlendMode.srcIn,
+                child: Text(
+                  widget.label,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3,
+                    height: 1.0,
+                  ),
+                ),
+              ),
+            );
+
+        if (!isSel && widget.disabledStyleWhenUnselected) {
+          return GestureDetector(
+            onTap: widget.onTap,
+            child: Opacity(
+              opacity: 0.42,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: AppColors.auroraGradient,
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(1.5),
+                  child: Container(
+                    height: 32,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 13),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? AppColors.auroraDeepBase
+                          : AppColors.white,
+                      borderRadius: BorderRadius.circular(4.5),
+                    ),
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: AppColors.auroraGradient,
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ).createShader(
+                        Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                      ),
+                      blendMode: BlendMode.srcIn,
+                      child: Text(
+                        widget.label,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.3,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
         return GestureDetector(
           onTap: widget.onTap,
           child: isSel
@@ -104,7 +183,7 @@ class _AuroraCategoryL1PillState extends State<AuroraCategoryL1Pill>
                       ),
                       child: child,
                     ),
-                    child: buildContent(color: selectedTextColor),
+                    child: buildGradientContent(),
                   ),
                 )
               : Container(

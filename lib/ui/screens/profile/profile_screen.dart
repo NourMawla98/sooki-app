@@ -13,10 +13,20 @@ import '../splash/widgets/aurora_glow_blob.dart';
 import 'widgets/profile_header_card.dart';
 import 'widgets/profile_menu_list.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   static final _auth = GetIt.instance<AuthService>();
+
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +60,11 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     _TopBar(isDark: isDark),
                     Expanded(
-                      child: SingleChildScrollView(
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        color: AppColors.auroraPink,
+                        child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.only(bottom: 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,6 +90,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ),
                           ],
+                        ),
                         ),
                       ),
                     ),

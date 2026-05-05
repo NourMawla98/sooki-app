@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'package:get_it/get_it.dart';
+
 import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -21,12 +24,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _emailNotifications = false;
   String _language = 'English';
 
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge([ThemeService.instance, GetIt.instance<AuthService>()]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final isSignedIn = GetIt.instance<AuthService>().isSignedIn;
         return Scaffold(
           backgroundColor:
               isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
@@ -49,7 +58,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     _TopBar(isDark: isDark),
                     Expanded(
-                      child: SingleChildScrollView(
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        color: AppColors.auroraPink,
+                        child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,46 +129,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                            _GroupLabel(label: 'Account', isDark: isDark),
-                            _GroupCard(
-                              isDark: isDark,
-                              children: [
-                                _ChevronRow(
-                                  isDark: isDark,
-                                  iconBg: const Color(0xFFFB923C).withValues(
-                                      alpha: isDark ? 0.15 : 0.12),
-                                  iconColor: const Color(0xFFFB923C),
-                                  icon: FontAwesomeIcons.lock,
-                                  title: 'Change Password',
-                                  subtitle: 'Update your password',
-                                  onTap: () => Navigator.pushNamed(
-                                      context, changePasswordScreenRoute),
-                                ),
-                                _Divider(isDark: isDark),
-                                _ChevronRow(
-                                  isDark: isDark,
-                                  iconBg: AppColors.auroraRed.withValues(
-                                      alpha: isDark ? 0.12 : 0.10),
-                                  iconColor: AppColors.auroraRed,
-                                  icon: FontAwesomeIcons.trashCan,
-                                  title: 'Delete Account',
-                                  subtitle: 'Permanently delete your data',
-                                  isDestructive: true,
-                                  onTap: () => showAuroraConfirmSheet(
-                                    context,
-                                    title: 'Delete Account',
-                                    subtitle:
-                                        'This action is permanent and cannot be undone.',
-                                    icon: FontAwesomeIcons.trashCan,
-                                    iconColor: AppColors.auroraRed,
-                                    confirmLabel: 'Delete',
-                                    confirmColor: AppColors.auroraRed,
-                                    onConfirm: () {},
+                            if (isSignedIn) ...[
+                              const SizedBox(height: 20),
+                              _GroupLabel(label: 'Account', isDark: isDark),
+                              _GroupCard(
+                                isDark: isDark,
+                                children: [
+                                  _ChevronRow(
+                                    isDark: isDark,
+                                    iconBg: const Color(0xFFFB923C).withValues(
+                                        alpha: isDark ? 0.15 : 0.12),
+                                    iconColor: const Color(0xFFFB923C),
+                                    icon: FontAwesomeIcons.lock,
+                                    title: 'Change Password',
+                                    subtitle: 'Update your password',
+                                    onTap: () => Navigator.pushNamed(
+                                        context, changePasswordScreenRoute),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  _Divider(isDark: isDark),
+                                  _ChevronRow(
+                                    isDark: isDark,
+                                    iconBg: AppColors.auroraRed.withValues(
+                                        alpha: isDark ? 0.12 : 0.10),
+                                    iconColor: AppColors.auroraRed,
+                                    icon: FontAwesomeIcons.trashCan,
+                                    title: 'Delete Account',
+                                    subtitle: 'Permanently delete your data',
+                                    isDestructive: true,
+                                    onTap: () => showAuroraConfirmSheet(
+                                      context,
+                                      title: 'Delete Account',
+                                      subtitle:
+                                          'This action is permanent and cannot be undone.',
+                                      icon: FontAwesomeIcons.trashCan,
+                                      iconColor: AppColors.auroraRed,
+                                      confirmLabel: 'Delete',
+                                      confirmColor: AppColors.auroraRed,
+                                      onConfirm: () {},
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                             const SizedBox(height: 32),
                             Center(
                               child: Text(
@@ -172,6 +187,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                           ],
+                        ),
                         ),
                       ),
                     ),

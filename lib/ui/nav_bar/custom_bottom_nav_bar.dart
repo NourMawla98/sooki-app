@@ -85,8 +85,8 @@ class CustomBottomNavBar extends StatelessWidget {
                           // Visual gap the docked Shop FAB sits over.
                           const Expanded(child: SizedBox.shrink()),
                           _NavTab(
-                            icon: FontAwesomeIcons.gift,
-                            label: 'Loyalty',
+                            icon: FontAwesomeIcons.gavel,
+                            label: 'Auction',
                             isActive: currentIndex == 3,
                             activeColor: activeColor,
                             inactiveColor: inactiveColor,

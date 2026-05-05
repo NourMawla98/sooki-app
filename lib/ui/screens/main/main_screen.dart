@@ -6,9 +6,9 @@ import '../../nav_bar/custom_bottom_nav_bar.dart';
 import '../../reusable_components/aurora/aurora_shopping_fab.dart';
 import '../browse/browse_screen.dart';
 import '../cart/cart_screen.dart';
+import '../categories/category_browse_screen.dart';
 import '../deals/deals_screen.dart';
-import '../loyalty/loyalty_screen.dart';
-import '../shopping/shopping_screen.dart';
+import '../auction/auction_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,8 +23,8 @@ class _MainScreenState extends State<MainScreen> {
   late final List<Widget> _pages = [
     const BrowseScreen(),
     const DealsScreen(),
-    const ShoppingScreen(),
-    const LoyaltyScreen(),
+    const CategoryBrowseScreen(),
+    const AuctionScreen(),
     CartScreen(onSwitchToBrowse: () => _onTabTapped(0)),
   ];
 

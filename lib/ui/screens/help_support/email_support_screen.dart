@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../themes/app_colors.dart';
+import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
+import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../reusable_components/aurora/aurora_selectable_chip.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 
 class EmailSupportScreen extends StatefulWidget {
   const EmailSupportScreen({super.key});
@@ -14,272 +19,210 @@ class EmailSupportScreen extends StatefulWidget {
 
 class _EmailSupportScreenState extends State<EmailSupportScreen> {
   String _selectedCategory = 'Order Issue';
+  final _subjectController = TextEditingController();
+  final _orderController = TextEditingController();
+  final _messageController = TextEditingController();
+
+  static const _categories = ['Order Issue', 'Payment', 'Account', 'Other'];
+
+  @override
+  void dispose() {
+    _subjectController.dispose();
+    _orderController.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_subjectController.text.trim().isEmpty) {
+      ToastService.instance.showError('Please enter a subject');
+      return;
+    }
+    if (_messageController.text.trim().isEmpty) {
+      ToastService.instance.showError('Please enter a message');
+      return;
+    }
+    ToastService.instance.showSuccess('Support ticket submitted');
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Email Support',
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Info card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.primaryPurple.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          backgroundColor: isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -80, right: -80,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
               ),
-              child: Row(
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.clock,
-                    size: 20,
-                    color: AppColors.primaryPurple,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Response within 24 hours',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+              AuroraGlowBlob(
+                bottom: -80, left: -80,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
+              ),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(isDark: isDark),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Response time notice
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppColors.auroraElectricBlue.withValues(alpha: 0.08)
+                                    : AppColors.auroraElectricBlue.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.auroraElectricBlue.withValues(alpha: isDark ? 0.18 : 0.14),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.clock,
+                                    size: 13,
+                                    color: AppColors.auroraElectricBlue.withValues(alpha: 0.70),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'We typically reply within a few hours during business days.',
+                                      style: AppTextStyles.captionSmall.copyWith(
+                                        color: isDark
+                                            ? AppColors.auroraElectricBlue.withValues(alpha: 0.80)
+                                            : AppColors.auroraElectricBlue,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            _SectionLabel(label: 'Category', isDark: isDark),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _categories
+                                  .map((cat) => AuroraSelectableChip(
+                                        label: cat,
+                                        isSelected: _selectedCategory == cat,
+                                        onTap: () => setState(() => _selectedCategory = cat),
+                                      ))
+                                  .toList(),
+                            ),
+                            const SizedBox(height: 24),
+
+                            _SectionLabel(label: 'Your Message', isDark: isDark),
+                            const SizedBox(height: 10),
+                            AuroraInputField(
+                              label: 'Subject',
+                              hint: 'Brief description of your issue',
+                              controller: _subjectController,
+                              prefixIcon: FontAwesomeIcons.pen,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: 12),
+                            AuroraInputField(
+                              label: 'Order Number (optional)',
+                              hint: '#ORD-XXXX',
+                              controller: _orderController,
+                              prefixIcon: FontAwesomeIcons.hashtag,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: 12),
+                            AuroraInputField(
+                              label: 'Message',
+                              hint: 'Describe your issue in detail...',
+                              controller: _messageController,
+                              maxLines: 6,
+                              textInputAction: TextInputAction.newline,
+                            ),
+                            const SizedBox(height: 28),
+
+                            AuroraPrimaryButton(
+                              text: 'Send Message',
+                              onPressed: _submit,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'We typically reply within a few hours during business days.',
-                          style: AppTextStyles.bodySmall,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            _buildSectionTitle('Category'),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                'Order Issue',
-                'Returns',
-                'Payment',
-                'Account',
-                'Other',
-              ].map((cat) {
-                final isSelected = _selectedCategory == cat;
-                return ChoiceChip(
-                  label: Text(cat),
-                  selected: isSelected,
-                  selectedColor: AppColors.primaryPurple,
-                  backgroundColor: AppColors.white,
-                  labelStyle: AppTextStyles.bodySmall.copyWith(
-                    color: isSelected
-                        ? AppColors.white
-                        : AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(
-                      color: isSelected
-                          ? AppColors.primaryPurple
-                          : AppColors.gray200,
-                    ),
-                  ),
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() => _selectedCategory = cat);
-                    }
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            _buildSectionTitle('Your Message'),
-            const SizedBox(height: 8),
-            _buildTextField(
-              label: 'Subject',
-              hint: 'Brief description of your issue',
-              icon: FontAwesomeIcons.pen,
-            ),
-            const SizedBox(height: 12),
-            _buildTextField(
-              label: 'Order Number (optional)',
-              hint: '#ORD-XXXX',
-              icon: FontAwesomeIcons.hashtag,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              maxLines: 6,
-              style: AppTextStyles.bodyMedium,
-              decoration: InputDecoration(
-                labelText: 'Message',
-                hintText: 'Describe your issue in detail...',
-                labelStyle: AppTextStyles.bodySmall,
-                hintStyle: AppTextStyles.inputHint,
-                alignLabelWithHint: true,
-                filled: true,
-                fillColor: AppColors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.gray200),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.gray200),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primaryPurple,
-                    width: 2,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Attach files button
-            OutlinedButton.icon(
-              onPressed: () {
-                ToastService.instance.showSuccess('File attachment coming soon');
-              },
-              icon: FaIcon(
-                FontAwesomeIcons.paperclip,
-                size: 14,
-                color: AppColors.primaryPurple,
-              ),
-              label: Text(
-                'Attach Files',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.primaryPurple,
-                  fontWeight: FontWeight.w600,
+                  ],
                 ),
               ),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.gray200),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  ToastService.instance.showSuccess('Support ticket submitted');
-                  Navigator.pop(context);
-                },
-                icon: FaIcon(
-                  FontAwesomeIcons.paperPlane,
-                  size: 16,
-                  color: AppColors.white,
-                ),
-                label: Text(
-                  'Send Message',
-                  style: AppTextStyles.buttonLarge,
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryPurple,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 100),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
+}
 
-  Widget _buildSectionTitle(String title) {
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final bool isDark;
+  const _TopBar({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? AppColors.white : AppColors.auroraPurple;
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Text(
-        title,
-        style: AppTextStyles.label.copyWith(
-          color: AppColors.gray500,
-          letterSpacing: 0.5,
-        ),
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Email Support',
+            style: AppTextStyles.heading3.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: color,
+            ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    required FaIconData icon,
-  }) {
-    return TextFormField(
-      style: AppTextStyles.bodyMedium,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        labelStyle: AppTextStyles.bodySmall,
-        hintStyle: AppTextStyles.inputHint,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.all(12),
-          child: FaIcon(icon, size: 16, color: AppColors.gray400),
-        ),
-        filled: true,
-        fillColor: AppColors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gray200),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gray200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.primaryPurple,
-            width: 2,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+// ─── Section label ────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  final bool isDark;
+  const _SectionLabel({required this.label, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label.toUpperCase(),
+      style: AppTextStyles.dsSectionLabel.copyWith(
+        color: isDark
+            ? AppColors.white.withValues(alpha: 0.28)
+            : AppColors.auroraPurple.withValues(alpha: 0.45),
+        letterSpacing: 1.8,
       ),
     );
   }

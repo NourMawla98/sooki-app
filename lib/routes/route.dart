@@ -14,21 +14,22 @@ import '../ui/screens/payment_methods/payment_methods_screen.dart';
 import '../ui/screens/settings/settings_screen.dart';
 import '../ui/screens/help_support/help_support_screen.dart';
 import '../ui/screens/orders/order_detail_screen.dart';
+import '../models/delivery_address.dart';
 import '../ui/screens/address_form/address_form_screen.dart';
-import '../ui/screens/addresses/edit_address_screen.dart';
 import '../ui/screens/payment_methods/add_card_screen.dart';
 import '../ui/screens/settings/change_password_screen.dart';
 import '../ui/screens/settings/privacy_settings_screen.dart';
 import '../ui/screens/help_support/shipping_info_screen.dart';
-import '../ui/screens/help_support/returns_exchanges_screen.dart';
 import '../ui/screens/help_support/legal_page_screen.dart';
-import '../ui/screens/help_support/live_chat_screen.dart';
 import '../ui/screens/help_support/email_support_screen.dart';
 import '../ui/screens/image_viewer/image_viewer_screen.dart';
 import '../ui/screens/notifications/notifications_screen.dart';
 import '../ui/screens/edit_profile/edit_profile_screen.dart';
 import '../ui/screens/email_verification/email_verification_screen.dart';
 import '../ui/screens/order_success/order_success_screen.dart';
+import '../ui/screens/categories/category_browse_screen.dart';
+import '../ui/screens/categories/category_detail_args.dart';
+import '../ui/screens/categories/category_detail_screen.dart';
 import '../ui/screens/search/search_screen.dart';
 import '../ui/screens/main/main_screen.dart';
 import '../ui/screens/shopping/shopping_screen.dart';
@@ -78,14 +79,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     },
     addAddressScreenRoute: (_) => const AddressFormScreen(),
     editAddressScreenRoute: (_) {
-      final address = settings.arguments as MockEditAddress;
-      return EditAddressScreen(address: address);
+      final address = settings.arguments as DeliveryAddress;
+      return AddressFormScreen(initialAddress: address);
     },
     addCardScreenRoute: (_) => const AddCardScreen(),
     changePasswordScreenRoute: (_) => const ChangePasswordScreen(),
     privacySettingsScreenRoute: (_) => const PrivacySettingsScreen(),
     shippingInfoScreenRoute: (_) => const ShippingInfoScreen(),
-    returnsExchangesScreenRoute: (_) => const ReturnsExchangesScreen(),
     termsConditionsScreenRoute: (_) => LegalPageScreen(
       title: 'Terms & Conditions',
       sections: LegalPageScreen.termsAndConditions,
@@ -94,7 +94,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       title: 'Privacy Policy',
       sections: LegalPageScreen.privacyPolicy,
     ),
-    liveChatScreenRoute: (_) => const LiveChatScreen(),
     emailSupportScreenRoute: (_) => const EmailSupportScreen(),
     searchScreenRoute: (_) {
       final args = settings.arguments;
@@ -112,6 +111,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     imageViewerScreenRoute: (_) {
       final args = settings.arguments as ImageViewerArgs;
       return ImageViewerScreen(args: args);
+    },
+    categoryBrowseScreenRoute: (_) => const CategoryBrowseScreen(),
+    categoryDetailScreenRoute: (_) {
+      final args = settings.arguments as CategoryDetailArgs;
+      return CategoryDetailScreen(args: args);
     },
   };
 

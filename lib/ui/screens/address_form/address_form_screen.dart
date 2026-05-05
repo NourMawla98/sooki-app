@@ -22,7 +22,9 @@ import 'widgets/label_chooser.dart';
 import 'widgets/map_picker_card.dart';
 
 class AddressFormScreen extends StatefulWidget {
-  const AddressFormScreen({super.key});
+  const AddressFormScreen({super.key, this.initialAddress});
+
+  final DeliveryAddress? initialAddress;
 
   @override
   State<AddressFormScreen> createState() => _AddressFormScreenState();
@@ -57,6 +59,38 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   double? _latitude;
   double? _longitude;
   bool _mapTouched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final a = widget.initialAddress;
+    if (a == null) return;
+    final label = a.label.toLowerCase();
+    if (label == 'home') {
+      _labelType = AddressLabelType.home;
+    } else if (label == 'office' || label == 'work') {
+      _labelType = AddressLabelType.office;
+    } else {
+      _labelType = AddressLabelType.other;
+      _customLabelController.text = a.label;
+    }
+    _phoneController.text = a.phone;
+    _streetController.text = a.street ?? '';
+    _buildingController.text = a.building ?? '';
+    _floorController.text = a.floor ?? '';
+    _aptController.text = a.apt ?? '';
+    _instructionsController.text = a.instructions ?? '';
+    _city = a.city;
+    _area = a.area;
+    _isDefault = a.isDefault;
+    if (a.latitude != null && a.longitude != null) {
+      _latitude = a.latitude;
+      _longitude = a.longitude;
+      _pinnedCenter = LatLng(a.latitude!, a.longitude!);
+      _includeLocation = true;
+      _mapTouched = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -192,7 +226,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   Future<void> _save() async {
     if (!_canSave) return;
     final service = GetIt.instance<AddressService>();
-    final id = 'addr-${DateTime.now().millisecondsSinceEpoch}';
+    final id = widget.initialAddress?.id ?? 'addr-${DateTime.now().millisecondsSinceEpoch}';
     final line = DeliveryAddress.composeLine(
       building: _buildingController.text,
       street: _streetController.text,

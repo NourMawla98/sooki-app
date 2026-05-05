@@ -31,6 +31,15 @@ class ProfileMenuList extends StatelessWidget {
         isDark: isDark,
         onTap: () => Navigator.pushNamed(context, ordersScreenRoute),
       ),
+      ProfileMenuItem(
+        icon: FontAwesomeIcons.gift,
+        iconBg: AppColors.auroraGold.withValues(alpha: isDark ? 0.12 : 0.10),
+        iconColor: AppColors.auroraGold,
+        title: 'Loyalty',
+        subtitle: 'Points, rewards & tiers',
+        isDark: isDark,
+        onTap: () => Navigator.pushNamed(context, loyaltyScreenRoute),
+      ),
     ];
 
     final wishlistItem = ProfileMenuItem(

@@ -146,6 +146,11 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen> {
   late OrderStatus? _filter = widget.initialFilter; // null = Active (processing + shipped)
 
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
+
   List<_Order> get _filtered {
     if (_filter == null) {
       return _mockOrders
@@ -262,9 +267,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
                     // List
                     Expanded(
-                      child: _filtered.isEmpty
-                          ? _EmptyState(isDark: isDark)
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        color: AppColors.auroraPink,
+                        child: _filtered.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: _EmptyState(isDark: isDark),
+                            )
                           : ListView.separated(
+                              physics: const AlwaysScrollableScrollPhysics(),
                               padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
                               itemCount: _filtered.length,
                               separatorBuilder: (context, index) =>
@@ -286,6 +298,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 );
                               },
                             ),
+                      ),
                     ),
                   ],
                 ),

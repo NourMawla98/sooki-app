@@ -36,17 +36,22 @@ const List<CategoryNode> mockTaxonomy = [
       CategoryNode('Flats'),
     ]),
     CategoryNode('Jackets'),
-    CategoryNode('Accessories', [
-      CategoryNode('Bags'),
-      CategoryNode('Jewelry'),
-      CategoryNode('Belts'),
+    CategoryNode('Bags', [
+      CategoryNode('Tote'),
+      CategoryNode('Crossbody'),
+      CategoryNode('Clutch'),
+    ]),
+    CategoryNode('Jewelry', [
+      CategoryNode('Necklaces'),
+      CategoryNode('Earrings'),
+      CategoryNode('Bracelets'),
     ]),
   ]),
   CategoryNode('Men', [
-    CategoryNode('Tops', [
-      CategoryNode('Shirts'),
-      CategoryNode('Tees'),
-      CategoryNode('Knitwear'),
+    CategoryNode('Shirts', [
+      CategoryNode('Casual'),
+      CategoryNode('Formal'),
+      CategoryNode('Polo'),
     ]),
     CategoryNode('Bottoms', [
       CategoryNode('Jeans'),
@@ -58,11 +63,73 @@ const List<CategoryNode> mockTaxonomy = [
       CategoryNode('Boots'),
       CategoryNode('Loafers'),
     ]),
-    CategoryNode('Accessories', [
-      CategoryNode('Watches'),
-      CategoryNode('Belts'),
-      CategoryNode('Wallets'),
+    CategoryNode('Outerwear', [
+      CategoryNode('Coats'),
+      CategoryNode('Jackets'),
+      CategoryNode('Vests'),
     ]),
+    CategoryNode('Watches', [
+      CategoryNode('Sport'),
+      CategoryNode('Dress'),
+      CategoryNode('Smart'),
+    ]),
+    CategoryNode('Wallets'),
+  ]),
+  CategoryNode('Beauty', [
+    CategoryNode('Makeup', [
+      CategoryNode('Foundation'),
+      CategoryNode('Lipstick'),
+      CategoryNode('Eyes'),
+    ]),
+    CategoryNode('Skincare', [
+      CategoryNode('Moisturiser'),
+      CategoryNode('Serum'),
+      CategoryNode('Cleanser'),
+    ]),
+    CategoryNode('Haircare', [
+      CategoryNode('Shampoo'),
+      CategoryNode('Conditioner'),
+      CategoryNode('Treatments'),
+    ]),
+    CategoryNode('Fragrance'),
+    CategoryNode('Nails'),
+    CategoryNode('Tools'),
+  ]),
+  CategoryNode('Home', [
+    CategoryNode('Living Room', [
+      CategoryNode('Sofas'),
+      CategoryNode('Tables'),
+      CategoryNode('Shelves'),
+    ]),
+    CategoryNode('Bedroom', [
+      CategoryNode('Bedding'),
+      CategoryNode('Pillows'),
+      CategoryNode('Curtains'),
+    ]),
+    CategoryNode('Kitchen', [
+      CategoryNode('Cookware'),
+      CategoryNode('Appliances'),
+      CategoryNode('Storage'),
+    ]),
+    CategoryNode('Decor'),
+    CategoryNode('Lighting'),
+    CategoryNode('Storage'),
+  ]),
+  CategoryNode('Kids', [
+    CategoryNode('Clothing', [
+      CategoryNode('Tops'),
+      CategoryNode('Bottoms'),
+      CategoryNode('Dresses'),
+    ]),
+    CategoryNode('Toys', [
+      CategoryNode('Educational'),
+      CategoryNode('Outdoor'),
+      CategoryNode('Creative'),
+    ]),
+    CategoryNode('Books'),
+    CategoryNode('Shoes'),
+    CategoryNode('Bags'),
+    CategoryNode('Accessories'),
   ]),
   CategoryNode('Electronics'),
   CategoryNode('Sale'),

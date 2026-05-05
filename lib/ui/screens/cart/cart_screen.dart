@@ -18,10 +18,20 @@ import 'widgets/cart_summary.dart';
 import 'widgets/cash_on_delivery_pill.dart';
 import 'widgets/promo_row.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   final VoidCallback? onSwitchToBrowse;
 
   const CartScreen({super.key, this.onSwitchToBrowse});
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +46,11 @@ class CartScreen extends StatelessWidget {
             : Column(
                 children: [
                   Expanded(
-                    child: ListView(
+                    child: RefreshIndicator(
+                      onRefresh: _refresh,
+                      color: AppColors.auroraPink,
+                      child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
                       children: [
                         ...cartService.items.map(
@@ -73,6 +87,7 @@ class CartScreen extends StatelessWidget {
                         const CashOnDeliveryPill(),
                         const SizedBox(height: 12),
                       ],
+                      ),
                     ),
                   ),
                   CartSummary(

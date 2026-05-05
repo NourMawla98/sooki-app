@@ -22,6 +22,11 @@ class OrderDetailScreen extends StatefulWidget {
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   int get _hFilledCount => widget.order.timelineStep.clamp(0, 4);
 
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
+
   bool get _canCancel =>
       widget.order.status == 'Processing' || widget.order.status == 'Shipped';
 
@@ -76,7 +81,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                     // Scrollable body
                     Expanded(
-                      child: SingleChildScrollView(
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        color: AppColors.auroraPink,
+                        child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(14, 0, 14, 32),
                         child: Column(
                           children: [
@@ -98,6 +107,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               _CancelButton(isDark: isDark),
                             ],
                           ],
+                        ),
                         ),
                       ),
                     ),

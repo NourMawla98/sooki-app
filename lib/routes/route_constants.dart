@@ -36,3 +36,5 @@ const String notificationsScreenRoute = 'notifications';
 const String orderSuccessScreenRoute = 'order_success';
 const String editProfileScreenRoute = 'edit_profile';
 const String emailVerificationScreenRoute = 'email_verification';
+const String categoryBrowseScreenRoute = 'category_browse';
+const String categoryDetailScreenRoute = 'category_detail';

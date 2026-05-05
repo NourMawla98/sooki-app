@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../splash/widgets/aurora_glow_blob.dart';
 
 class LegalPageScreen extends StatelessWidget {
   const LegalPageScreen({
@@ -16,163 +18,249 @@ class LegalPageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          title,
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primaryPurple.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        return Scaffold(
+          backgroundColor: isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              AuroraGlowBlob(
+                top: -80, right: -80,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.20 : 0.10,
               ),
-              child: Row(
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.circleInfo,
-                    size: 16,
-                    color: AppColors.primaryPurple,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Last updated: April 1, 2026',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.primaryPurple,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              AuroraGlowBlob(
+                bottom: -80, left: -80,
+                color: AppColors.auroraElectricBlue,
+                intensity: isDark ? 0.18 : 0.08,
               ),
-            ),
-            const SizedBox(height: 16),
-            ...sections.map(
-              (section) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              SafeArea(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      section.title,
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
+                    _TopBar(title: title, isDark: isDark),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Last updated notice
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppColors.auroraElectricBlue.withValues(alpha: 0.08)
+                                    : AppColors.auroraElectricBlue.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.auroraElectricBlue.withValues(alpha: isDark ? 0.18 : 0.14),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.circleInfo,
+                                    size: 13,
+                                    color: AppColors.auroraElectricBlue.withValues(alpha: 0.70),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Last updated: January 2025',
+                                    style: AppTextStyles.captionSmall.copyWith(
+                                      color: isDark
+                                          ? AppColors.auroraElectricBlue.withValues(alpha: 0.80)
+                                          : AppColors.auroraElectricBlue,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Sections
+                            for (final section in sections) ...[
+                              _GroupLabel(label: section.title, isDark: isDark),
+                              _GroupCard(
+                                isDark: isDark,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(14),
+                                  child: Text(
+                                    section.content,
+                                    style: AppTextStyles.captionSmall.copyWith(
+                                      color: isDark
+                                          ? AppColors.white.withValues(alpha: 0.52)
+                                          : AppColors.auroraDeepBase.withValues(alpha: 0.55),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.7,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(section.content, style: AppTextStyles.bodySmall),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 100),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  // Pre-built terms & conditions content
+  // ── Terms & Conditions content ───────────────────────────────────────────────
+
   static const termsAndConditions = [
     LegalSection(
-      title: '1. Acceptance of Terms',
-      content:
-          'By accessing and using the SooKI application, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use the app.',
+      title: 'Acceptance of Terms',
+      content: 'By using Sooki, you agree to these terms. Please read them carefully before placing any orders. If you do not agree with any part of these terms, you must not use the app.',
     ),
     LegalSection(
-      title: '2. User Accounts',
-      content:
-          'You are responsible for maintaining the confidentiality of your account credentials. You agree to accept responsibility for all activities that occur under your account. You must notify us immediately of any unauthorized use.',
+      title: 'Orders & Payments',
+      content: 'All orders are subject to product availability. We reserve the right to cancel any order that cannot be fulfilled. We currently support cash on delivery as the only payment method.',
     ),
     LegalSection(
-      title: '3. Product Listings',
-      content:
-          'We strive to display product information as accurately as possible. However, we do not guarantee that product descriptions, images, pricing, or other content is accurate, complete, or error-free. We reserve the right to correct any errors.',
+      title: 'Account',
+      content: 'You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized use of your account.',
     ),
     LegalSection(
-      title: '4. Pricing & Payment',
-      content:
-          'All prices are displayed in USD and are subject to change without notice. Payment is processed securely through our payment partners. We accept major credit cards and digital wallets.',
+      title: 'Order Cancellation',
+      content: 'Orders can only be cancelled while in the Processing stage. Once an order has been shipped, it can no longer be cancelled. Contact our support team via WhatsApp for assistance.',
     ),
     LegalSection(
-      title: '5. Shipping & Delivery',
-      content:
-          'Delivery times are estimates and may vary depending on location and shipping method. SooKI is not responsible for delays caused by carriers, customs, or weather conditions.',
+      title: 'Intellectual Property',
+      content: 'All content on the Sooki platform — including logos, images, and text — is the property of Sooki and may not be reproduced without written permission.',
     ),
     LegalSection(
-      title: '6. Intellectual Property',
-      content:
-          'All content, trademarks, and intellectual property on SooKI are owned by or licensed to SooKI Inc. You may not reproduce, distribute, or create derivative works without our prior written consent.',
+      title: 'Changes to Terms',
+      content: 'We may update these terms from time to time. Continued use of the app after changes constitutes acceptance of the new terms.',
     ),
   ];
 
-  // Pre-built privacy policy content
+  // ── Privacy Policy content ───────────────────────────────────────────────────
+
   static const privacyPolicy = [
     LegalSection(
-      title: '1. Information We Collect',
-      content:
-          'We collect information you provide directly (name, email, address, payment info), as well as usage data (browsing history, search queries, device information) to improve your shopping experience.',
+      title: 'Information We Collect',
+      content: 'We collect information you provide directly: your name, phone number, email address, and saved delivery addresses. We also collect order history to improve your shopping experience.',
     ),
     LegalSection(
-      title: '2. How We Use Your Information',
-      content:
-          'Your information is used to process orders, personalize your experience, send order updates, improve our services, and with your consent, send promotional communications.',
+      title: 'How We Use It',
+      content: 'Your information is used solely to process orders, send delivery updates, and improve our services. We do not sell your personal data to third parties.',
     ),
     LegalSection(
-      title: '3. Data Sharing',
-      content:
-          'We do not sell your personal data. We share data only with service providers (payment processing, shipping) who are bound by confidentiality agreements, and when required by law.',
+      title: 'Data Security',
+      content: 'We apply industry-standard security measures to protect your information. Access to personal data is strictly limited to authorized personnel.',
     ),
     LegalSection(
-      title: '4. Data Security',
-      content:
-          'We implement industry-standard encryption (SSL/TLS) and security measures to protect your data. Payment information is tokenized and never stored on our servers in plain text.',
+      title: 'Your Rights',
+      content: 'You may request access to, correction of, or deletion of your personal data at any time. You can also delete your account directly from Settings → Delete Account.',
     ),
     LegalSection(
-      title: '5. Your Rights',
-      content:
-          'You have the right to access, correct, or delete your personal data. You can opt out of marketing communications at any time. Contact privacy@sooki.com for data requests.',
-    ),
-    LegalSection(
-      title: '6. Cookies & Tracking',
-      content:
-          'We use cookies and similar technologies to enhance your experience, analyze usage patterns, and deliver personalized content. You can manage cookie preferences in your device settings.',
+      title: 'Changes to Policy',
+      content: 'We may update this policy from time to time. We will notify you of significant changes via the app. Continued use constitutes acceptance of the updated policy.',
     ),
   ];
 }
 
 class LegalSection {
-  const LegalSection({
-    required this.title,
-    required this.content,
-  });
-
+  const LegalSection({required this.title, required this.content});
   final String title;
   final String content;
+}
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final String title;
+  final bool isDark;
+  const _TopBar({required this.title, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.heading3.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: color,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Section label ────────────────────────────────────────────────────────────
+
+class _GroupLabel extends StatelessWidget {
+  final String label;
+  final bool isDark;
+  const _GroupLabel({required this.label, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTextStyles.dsSectionLabel.copyWith(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.28)
+              : AppColors.auroraPurple.withValues(alpha: 0.45),
+          letterSpacing: 1.8,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Glass group card ─────────────────────────────────────────────────────────
+
+class _GroupCard extends StatelessWidget {
+  final bool isDark;
+  final Widget child;
+  const _GroupCard({required this.isDark, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.white.withValues(alpha: 0.03)
+            : AppColors.auroraPurple.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? AppColors.white.withValues(alpha: 0.07)
+              : AppColors.auroraPurple.withValues(alpha: 0.10),
+        ),
+      ),
+      child: child,
+    );
+  }
 }

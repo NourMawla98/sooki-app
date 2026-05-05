@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../themes/app_colors.dart';
 import 'widgets/categories_arrivals_section.dart';
 // import 'widgets/editorial_cover.dart';
 import 'widgets/for_you_deck.dart';
@@ -24,10 +25,19 @@ class _BrowseScreenState extends State<BrowseScreen> {
     super.dispose();
   }
 
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        color: AppColors.auroraPink,
+        child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,6 +51,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             CategoriesArrivalsSection(scrollController: _scrollController),
             const SizedBox(height: 100),
           ],
+        ),
         ),
       ),
     );
