@@ -1,13 +1,13 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/form_validators.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
+import '../../reusable_components/auth/auth_legal_footer.dart';
 import '../../reusable_components/aurora/aurora_glass_card.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_secondary_button.dart';
@@ -26,12 +26,13 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey             = GlobalKey<FormState>();
-  final _emailController     = TextEditingController();
-  final _fullNameController  = TextEditingController();
-  final _phoneController     = TextEditingController();
-  final _passwordController  = TextEditingController();
-  final _confirmController   = TextEditingController();
+  final _formKey               = GlobalKey<FormState>();
+  final _emailController       = TextEditingController();
+  final _firstNameController   = TextEditingController();
+  final _lastNameController    = TextEditingController();
+  final _phoneController       = TextEditingController();
+  final _passwordController    = TextEditingController();
+  final _confirmController     = TextEditingController();
   final _emailFocusNode      = FocusNode();
   final _passwordFocusNode   = FocusNode();
   final _confirmFocusNode    = FocusNode();
@@ -43,14 +44,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _passwordError;
   String? _confirmError;
 
-  static final _emailRegex =
-      RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-
   @override
   void initState() {
     super.initState();
-    for (final c in [_emailController, _fullNameController, _phoneController,
-        _passwordController, _confirmController]) {
+    for (final c in [_emailController, _firstNameController, _lastNameController,
+        _phoneController, _passwordController, _confirmController]) {
       c.addListener(_onFieldsChanged);
     }
     _emailController.addListener(_onEmailChange);
@@ -62,7 +60,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _onFieldsChanged() {
     final allFilled = _emailController.text.isNotEmpty &&
-        _fullNameController.text.isNotEmpty &&
+        _firstNameController.text.isNotEmpty &&
+        _lastNameController.text.isNotEmpty &&
         _phoneController.text.isNotEmpty &&
         _passwordController.text.isNotEmpty &&
         _confirmController.text.isNotEmpty;
@@ -74,13 +73,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _onEmailBlur() {
     if (!_emailFocusNode.hasFocus && _emailController.text.isNotEmpty) {
-      final invalid = !_emailRegex.hasMatch(_emailController.text);
-      setState(() => _emailError = invalid ? 'Enter a valid email address' : null);
+      setState(() => _emailError =
+          !isValidEmail(_emailController.text) ? 'Enter a valid email address' : null);
     }
   }
 
   void _onEmailChange() {
-    if (_emailError != null && _emailRegex.hasMatch(_emailController.text)) {
+    if (_emailError != null && isValidEmail(_emailController.text)) {
       setState(() => _emailError = null);
     }
   }
@@ -128,7 +127,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void dispose() {
     _emailController.dispose();
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
@@ -158,8 +158,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Navigator.pushReplacementNamed(context, mainScreenRoute);
   void _navigateToSignIn() =>
       Navigator.pushNamed(context, signInScreenRoute);
-  Future<void> _launchUrl(String url) async =>
-      launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
 
   @override
   Widget build(BuildContext context) {
@@ -231,26 +229,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       keyboardType: TextInputType.emailAddress,
                                       prefixIcon: FontAwesomeIcons.solidEnvelope,
                                       textInputAction: TextInputAction.next,
-                                      validator: (v) {
-                                        if (v == null || v.isEmpty) return 'Please enter your email';
-                                        if (!RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$').hasMatch(v)) return 'Enter a valid email';
-                                        return null;
-                                      },
+                                      validator: validateEmail,
                                     ),
                                     const SizedBox(height: 14),
 
-                                    // ── Full Name ──
-                                    AuroraInputField(
-                                      label: 'Full Name', required: true,
-                                      hint: 'Jane Doe',
-                                      controller: _fullNameController,
-                                      keyboardType: TextInputType.name,
-                                      prefixIcon: FontAwesomeIcons.solidUser,
-                                      textInputAction: TextInputAction.next,
-                                      validator: (v) =>
-                                          (v == null || v.trim().isEmpty)
-                                              ? 'Required'
-                                              : null,
+                                    // ── First / Last name ──
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: AuroraInputField(
+                                            label: 'First name', required: true,
+                                            hint: 'Jane',
+                                            controller: _firstNameController,
+                                            keyboardType: TextInputType.name,
+                                            prefixIcon: FontAwesomeIcons.solidUser,
+                                            textInputAction: TextInputAction.next,
+                                            validator: (v) =>
+                                                (v == null || v.trim().isEmpty)
+                                                    ? 'Required'
+                                                    : null,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: AuroraInputField(
+                                            label: 'Last name', required: true,
+                                            hint: 'Doe',
+                                            controller: _lastNameController,
+                                            keyboardType: TextInputType.name,
+                                            prefixIcon: FontAwesomeIcons.solidUser,
+                                            textInputAction: TextInputAction.next,
+                                            validator: (v) =>
+                                                (v == null || v.trim().isEmpty)
+                                                    ? 'Required'
+                                                    : null,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 14),
 
@@ -346,37 +362,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             const Spacer(flex: 3),
 
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                style: AppTextStyles.dsMuted.copyWith(
-                                  color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
-                                  fontSize: 12,
-                                ),
-                                children: [
-                                  const TextSpan(text: 'By continuing, you agree to our '),
-                                  TextSpan(
-                                    text: 'Terms',
-                                    style: AppTextStyles.dsMuted.copyWith(
-                                      fontSize: 12, color: AppColors.auroraPink,
-                                      fontWeight: FontWeight.w700, decoration: TextDecoration.none,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () => _launchUrl('https://google.com'),
-                                  ),
-                                  const TextSpan(text: ' & '),
-                                  TextSpan(
-                                    text: 'Privacy Policy',
-                                    style: AppTextStyles.dsMuted.copyWith(
-                                      fontSize: 12, color: AppColors.auroraPink,
-                                      fontWeight: FontWeight.w700, decoration: TextDecoration.none,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () => _launchUrl('https://google.com'),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            const AuthLegalFooter(),
                             const SizedBox(height: 20),
                           ],
                         ),

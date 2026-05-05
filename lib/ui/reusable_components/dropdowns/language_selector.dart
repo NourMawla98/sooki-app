@@ -143,7 +143,7 @@ class _LanguageSelectorState extends State<LanguageSelector>
                                 width: double.infinity,
                                 color: bg,
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
+                                  horizontal: 18,
                                   vertical: 10,
                                 ),
                                 child: Text(
@@ -210,7 +210,7 @@ class _LanguageSelectorState extends State<LanguageSelector>
           child: GestureDetector(
             onTap: _toggleDropdown,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: decoration,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -223,7 +223,7 @@ class _LanguageSelectorState extends State<LanguageSelector>
                       color: textColor,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 12),
                   AnimatedRotation(
                     turns: _isOpen ? 0.5 : 0,
                     duration: const Duration(milliseconds: 180),

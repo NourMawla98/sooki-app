@@ -21,7 +21,8 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameCtrl;
+  late final TextEditingController _firstNameCtrl;
+  late final TextEditingController _lastNameCtrl;
   late final TextEditingController _emailCtrl;
   late final TextEditingController _phoneCtrl;
   bool _saving = false;
@@ -30,14 +31,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     final profile = GetIt.instance<UserProfileService>();
-    _nameCtrl = TextEditingController(text: profile.name);
-    _emailCtrl = TextEditingController(text: profile.email);
-    _phoneCtrl = TextEditingController(text: profile.phone);
+    _firstNameCtrl = TextEditingController(text: profile.firstName);
+    _lastNameCtrl  = TextEditingController(text: profile.lastName);
+    _emailCtrl     = TextEditingController(text: profile.email);
+    _phoneCtrl     = TextEditingController(text: profile.phone);
   }
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
+    _firstNameCtrl.dispose();
+    _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     super.dispose();
@@ -47,9 +50,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _saving = true);
     await GetIt.instance<UserProfileService>().save(
-      name: _nameCtrl.text.trim(),
-      email: _emailCtrl.text.trim(),
-      phone: _phoneCtrl.text.trim(),
+      firstName: _firstNameCtrl.text.trim(),
+      lastName:  _lastNameCtrl.text.trim(),
+      email:     _emailCtrl.text.trim(),
+      phone:     _phoneCtrl.text.trim(),
     );
     setState(() => _saving = false);
     if (mounted) {
@@ -186,16 +190,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                               const SizedBox(height: 32),
 
-                              _SectionLabel(label: 'Full Name', isDark: isDark),
-                              const SizedBox(height: 8),
-                              AuroraInputField(
-                                controller: _nameCtrl,
-                                hint: 'Your full name',
-                                prefixIcon: FontAwesomeIcons.user,
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Name is required'
-                                        : null,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _SectionLabel(label: 'First name', isDark: isDark),
+                                        const SizedBox(height: 8),
+                                        AuroraInputField(
+                                          controller: _firstNameCtrl,
+                                          hint: 'Jane',
+                                          prefixIcon: FontAwesomeIcons.user,
+                                          textInputAction: TextInputAction.next,
+                                          validator: (v) =>
+                                              (v == null || v.trim().isEmpty)
+                                                  ? 'Required'
+                                                  : null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _SectionLabel(label: 'Last name', isDark: isDark),
+                                        const SizedBox(height: 8),
+                                        AuroraInputField(
+                                          controller: _lastNameCtrl,
+                                          hint: 'Doe',
+                                          prefixIcon: FontAwesomeIcons.user,
+                                          textInputAction: TextInputAction.next,
+                                          validator: (v) =>
+                                              (v == null || v.trim().isEmpty)
+                                                  ? 'Required'
+                                                  : null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
 
                               const SizedBox(height: 20),

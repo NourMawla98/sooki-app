@@ -1,15 +1,16 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/form_validators.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
+import '../../reusable_components/auth/auth_legal_footer.dart';
 import '../../reusable_components/aurora/aurora_glass_card.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_secondary_button.dart';
@@ -35,9 +36,6 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _canLogin = false;
   String? _emailError;
 
-  static final _emailRegex =
-      RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-
   @override
   void initState() {
     super.initState();
@@ -55,13 +53,13 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _onEmailBlur() {
     if (!_emailFocusNode.hasFocus && _emailController.text.isNotEmpty) {
-      final invalid = !_emailRegex.hasMatch(_emailController.text);
-      setState(() => _emailError = invalid ? 'Enter a valid email address' : null);
+      setState(() => _emailError =
+          !isValidEmail(_emailController.text) ? 'Enter a valid email address' : null);
     }
   }
 
   void _onEmailChange() {
-    if (_emailError != null && _emailRegex.hasMatch(_emailController.text)) {
+    if (_emailError != null && isValidEmail(_emailController.text)) {
       setState(() => _emailError = null);
     }
   }
@@ -74,16 +72,24 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      Future.delayed(const Duration(seconds: 2), () async {
-        if (!mounted) return;
-        await GetIt.instance<AuthService>().signIn();
-        if (!mounted) return;
-        setState(() => _isLoading = false);
-        Navigator.pushReplacementNamed(context, mainScreenRoute);
-      });
+  Future<void> _handleLogin() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _isLoading = true);
+    try {
+      // TODO: POST /auth/login — replace with real API call
+      // final token = await ApiService.instance.login(
+      //   email: _emailController.text.trim(),
+      //   password: _passwordController.text,
+      // );
+      // await SecureStorage.saveToken(token);
+      await GetIt.instance<AuthService>().signIn();
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, mainScreenRoute);
+    } catch (e) {
+      if (!mounted) return;
+      ToastService.instance.showError('Login failed. Please check your credentials.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -97,11 +103,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _navigateToSignUp() {
     Navigator.pushReplacementNamed(context, signUpScreenRoute);
-  }
-
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -248,16 +249,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                             FontAwesomeIcons.solidEnvelope,
                                         textInputAction:
                                             TextInputAction.next,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.isEmpty) {
-                                            return 'Please enter your email';
-                                          }
-                                          if (!RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
-                                            return 'Please enter a valid email';
-                                          }
-                                          return null;
-                                        },
+                                        validator: validateEmail,
                                       ),
                                       const SizedBox(height: 16),
                                       AuroraInputField(
@@ -340,45 +332,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                               const Spacer(flex: 3),
 
-                              RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: AppTextStyles.dsMuted.copyWith(
-                                    color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
-                                    fontSize: 12,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                        text:
-                                            'By continuing, you agree to our '),
-                                    TextSpan(
-                                      text: 'Terms of Service',
-                                      style: AppTextStyles.dsMuted.copyWith(
-                                        fontSize: 12,
-                                        color: AppColors.auroraPink,
-                                        fontWeight: FontWeight.w700,
-                                        decoration: TextDecoration.none,
-                                      ),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () =>
-                                            _launchUrl('https://google.com'),
-                                    ),
-                                    const TextSpan(text: ' and '),
-                                    TextSpan(
-                                      text: 'Privacy Policy',
-                                      style: AppTextStyles.dsMuted.copyWith(
-                                        fontSize: 12,
-                                        color: AppColors.auroraPink,
-                                        fontWeight: FontWeight.w700,
-                                        decoration: TextDecoration.none,
-                                      ),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () =>
-                                            _launchUrl('https://google.com'),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              const AuthLegalFooter(),
 
                               const SizedBox(height: 20),
                             ],

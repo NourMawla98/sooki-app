@@ -1,13 +1,13 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/form_validators.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
+import '../../reusable_components/auth/auth_legal_footer.dart';
 import '../../reusable_components/aurora/aurora_glass_card.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/buttons/theme_toggle_button.dart';
@@ -28,32 +28,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
   bool _isLoading = false;
 
-  static final _emailRegex =
-      RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-
   @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
   }
 
-  void _handleSendResetLink() {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          ToastService.instance
-              .showSuccess('Reset link sent to ${_emailController.text}');
-          Navigator.pop(context);
-        }
-      });
+  Future<void> _handleSendResetLink() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _isLoading = true);
+    try {
+      // TODO: POST /auth/forgot-password
+      // await ApiService.instance.forgotPassword(email: _emailController.text.trim());
+      if (!mounted) return;
+      ToastService.instance.showSuccess('Reset link sent to ${_emailController.text.trim()}');
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ToastService.instance.showError('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -183,16 +178,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                         prefixIcon:
                                             FontAwesomeIcons.solidEnvelope,
                                         textInputAction: TextInputAction.done,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.isEmpty) {
-                                            return 'Please enter your email';
-                                          }
-                                          if (!_emailRegex.hasMatch(value)) {
-                                            return 'Please enter a valid email';
-                                          }
-                                          return null;
-                                        },
+                                        validator: validateEmail,
                                       ),
                                       const SizedBox(height: 20),
                                       AuroraPrimaryButton(
@@ -237,45 +223,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 ),
                               ),
                               const Spacer(flex: 3),
-                              RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: AppTextStyles.dsMuted.copyWith(
-                                    color: subtitleColor,
-                                    fontSize: 12,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                        text:
-                                            'By continuing, you agree to our '),
-                                    TextSpan(
-                                      text: 'Terms of Service',
-                                      style: AppTextStyles.dsMuted.copyWith(
-                                        fontSize: 12,
-                                        color: AppColors.auroraPink,
-                                        fontWeight: FontWeight.w700,
-                                        decoration: TextDecoration.none,
-                                      ),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () =>
-                                            _launchUrl('https://google.com'),
-                                    ),
-                                    const TextSpan(text: ' and '),
-                                    TextSpan(
-                                      text: 'Privacy Policy',
-                                      style: AppTextStyles.dsMuted.copyWith(
-                                        fontSize: 12,
-                                        color: AppColors.auroraPink,
-                                        fontWeight: FontWeight.w700,
-                                        decoration: TextDecoration.none,
-                                      ),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () =>
-                                            _launchUrl('https://google.com'),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              const AuthLegalFooter(),
                               const SizedBox(height: 20),
                             ],
                           ),

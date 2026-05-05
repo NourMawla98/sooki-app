@@ -7,12 +7,6 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Aurora-styled phone field with integrated country picker.
-///
-/// Focused state uses the same gradient-border pattern as [AuroraInputField].
-/// The [controller] stores only the local number digits; the selected country
-/// code is managed internally. Set [defaultCountryCode] to an ISO-3166-1
-/// alpha-2 code (e.g. 'LB', 'US') to override the default Lebanon preset.
 class AuroraPhoneField extends StatefulWidget {
   final String? label;
   final bool required;
@@ -41,12 +35,24 @@ class AuroraPhoneField extends StatefulWidget {
   State<AuroraPhoneField> createState() => _AuroraPhoneFieldState();
 }
 
-class _AuroraPhoneFieldState extends State<AuroraPhoneField> {
+class _AuroraPhoneFieldState extends State<AuroraPhoneField>
+    with SingleTickerProviderStateMixin {
   late Country _country;
   late FocusNode _focusNode;
   bool _ownsFocusNode = false;
   bool _isFocused = false;
   bool _hasText = false;
+
+  // Overlay picker
+  bool _pickerOpen = false;
+  OverlayEntry? _overlayEntry;
+  final LayerLink _layerLink = LayerLink();
+  final GlobalKey _fieldKey = GlobalKey();
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+  final TextEditingController _searchCtrl = TextEditingController();
+  late final List<Country> _allCountries;
+  List<Country> _filtered = [];
 
   @override
   void initState() {
@@ -57,10 +63,21 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField> {
     _focusNode.addListener(_onFocusChange);
     _hasText = widget.controller?.text.isNotEmpty ?? false;
     widget.controller?.addListener(_onTextChange);
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 140),
+      vsync: this,
+    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _allCountries = CountryService().getAll();
+    _filtered = _allCountries;
+    _searchCtrl.addListener(_onSearch);
   }
 
   @override
   void dispose() {
+    _closePicker(animate: false);
+    _animController.dispose();
+    _searchCtrl.dispose();
     _focusNode.removeListener(_onFocusChange);
     if (_ownsFocusNode) _focusNode.dispose();
     widget.controller?.removeListener(_onTextChange);
@@ -81,70 +98,237 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField> {
     }
   }
 
-  void _pickCountry(bool isDark) {
-    showCountryPicker(
-      context: context,
-      showPhoneCode: true,
-      countryListTheme: CountryListThemeData(
-        backgroundColor:
-            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(20)),
-        textStyle: AppTextStyles.dsBody.copyWith(
-          color: isDark ? AppColors.white : AppColors.auroraDeepBase,
-          fontSize: 14,
-        ),
-        searchTextStyle: AppTextStyles.dsBody.copyWith(
-          color: isDark ? AppColors.white : AppColors.auroraDeepBase,
-          fontSize: 14,
-        ),
-        inputDecoration: InputDecoration(
-          hintText: 'Search',
-          hintStyle: AppTextStyles.dsBody.copyWith(
-            color: isDark ? AppColors.mutedOnDark : AppColors.mutedOnLight,
-          ),
-          prefixIcon: FaIcon(
-            FontAwesomeIcons.magnifyingGlass,
-            size: 14,
-            color: isDark
-                ? AppColors.white.withValues(alpha: 0.4)
-                : AppColors.auroraPurple.withValues(alpha: 0.5),
-          ),
-          filled: true,
-          fillColor: isDark
-              ? AppColors.white.withValues(alpha: 0.06)
-              : AppColors.auroraPurple.withValues(alpha: 0.05),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: isDark
-                  ? AppColors.white.withValues(alpha: 0.10)
-                  : AppColors.auroraPurple.withValues(alpha: 0.18),
+  void _onSearch() {
+    final q = _searchCtrl.text.toLowerCase().trim();
+    _filtered = q.isEmpty
+        ? _allCountries
+        : _allCountries
+            .where((c) =>
+                c.name.toLowerCase().contains(q) ||
+                c.phoneCode.contains(q) ||
+                c.countryCode.toLowerCase().contains(q))
+            .toList();
+    _overlayEntry?.markNeedsBuild();
+  }
+
+  void _togglePicker() => _pickerOpen ? _closePicker() : _openPicker();
+
+  void _openPicker() {
+    _searchCtrl.clear();
+    _filtered = _allCountries;
+    setState(() => _pickerOpen = true);
+    _animController.forward();
+    final box = _fieldKey.currentContext!.findRenderObject() as RenderBox;
+    _overlayEntry = _buildOverlay(box.size.height);
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _closePicker({bool animate = true}) {
+    if (!_pickerOpen) return;
+    if (animate) {
+      _animController.reverse().then((_) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+        if (mounted) setState(() => _pickerOpen = false);
+      });
+    } else {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      if (mounted) setState(() => _pickerOpen = false);
+    }
+  }
+
+  OverlayEntry _buildOverlay(double fieldHeight) {
+    final isDark = ThemeService.instance.isDarkMode;
+    final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
+    final border = isDark
+        ? AppColors.white.withValues(alpha: 0.22)
+        : AppColors.auroraPurple.withValues(alpha: 0.20);
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final hintColor = isDark ? AppColors.mutedOnDark : AppColors.mutedOnLight;
+    final searchFill = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.auroraPurple.withValues(alpha: 0.05);
+    final dividerColor = isDark
+        ? AppColors.white.withValues(alpha: 0.10)
+        : AppColors.auroraPurple.withValues(alpha: 0.12);
+
+    return OverlayEntry(
+      builder: (_) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: _closePicker,
+        child: Stack(
+          children: [
+            Positioned(
+              width: 260,
+              child: CompositedTransformFollower(
+                link: _layerLink,
+                showWhenUnlinked: false,
+                offset: Offset(0, fieldHeight + 4),
+                child: FadeTransition(
+                  opacity: _fadeAnim,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        constraints: const BoxConstraints(maxHeight: 300),
+                        decoration: BoxDecoration(
+                          color: bg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: border, width: 1.5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.auroraPurple
+                                  .withValues(alpha: 0.12),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(11),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: TextField(
+                                  controller: _searchCtrl,
+                                  autofocus: true,
+                                  style: AppTextStyles.dsBody.copyWith(
+                                    fontSize: 13,
+                                    color: textColor,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Search country…',
+                                    hintStyle: AppTextStyles.dsBody.copyWith(
+                                      fontSize: 13,
+                                      color: hintColor,
+                                    ),
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: FaIcon(
+                                        FontAwesomeIcons.magnifyingGlass,
+                                        size: 12,
+                                        color: hintColor,
+                                      ),
+                                    ),
+                                    prefixIconConstraints:
+                                        const BoxConstraints(
+                                            minWidth: 36, minHeight: 36),
+                                    filled: true,
+                                    fillColor: searchFill,
+                                    contentPadding:
+                                        const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide:
+                                          BorderSide(color: border),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide:
+                                          BorderSide(color: border),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: AppColors.auroraPurple
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                              Container(height: 1, color: dividerColor),
+                              Flexible(
+                                child: ListView.builder(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  itemCount: _filtered.length,
+                                  itemBuilder: (_, i) {
+                                    final c = _filtered[i];
+                                    final isSelected =
+                                        c.countryCode == _country.countryCode;
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _country = c;
+                                          widget.controller?.clear();
+                                          widget.onChanged?.call('');
+                                        });
+                                        _closePicker();
+                                      },
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 14, vertical: 9),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              c.flagEmoji,
+                                              style: const TextStyle(
+                                                  fontSize: 16, height: 1),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                c.name,
+                                                maxLines: 1,
+                                                overflow:
+                                                    TextOverflow.ellipsis,
+                                                style: AppTextStyles.dsBody
+                                                    .copyWith(
+                                                  fontSize: 13,
+                                                  color: isSelected
+                                                      ? AppColors.auroraPink
+                                                      : textColor,
+                                                  fontWeight: isSelected
+                                                      ? FontWeight.w700
+                                                      : FontWeight.normal,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '+${c.phoneCode}',
+                                              style: AppTextStyles.dsBody
+                                                  .copyWith(
+                                                fontSize: 12,
+                                                color: isSelected
+                                                    ? AppColors.auroraPink
+                                                    : (isDark
+                                                        ? AppColors.white
+                                                            .withValues(
+                                                                alpha: 0.45)
+                                                        : AppColors.auroraPurple
+                                                            .withValues(
+                                                                alpha: 0.6)),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: isDark
-                  ? AppColors.white.withValues(alpha: 0.10)
-                  : AppColors.auroraPurple.withValues(alpha: 0.18),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: AppColors.auroraPurple.withValues(alpha: 0.5),
-            ),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          ],
         ),
       ),
-      onSelect: (c) => setState(() {
-        _country = c;
-        widget.controller?.clear();
-        widget.onChanged?.call('');
-      }),
     );
   }
 
@@ -175,73 +359,77 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () => _pickCountry(isDark),
+              onTap: _togglePicker,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _country.flagEmoji,
-                        style: const TextStyle(fontSize: 18, height: 1),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _country.flagEmoji,
+                      style: const TextStyle(fontSize: 18, height: 1),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '+${_country.phoneCode}',
+                      style: AppTextStyles.dsBody.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: textColor,
+                        height: 1,
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        '+${_country.phoneCode}',
-                        style: AppTextStyles.dsBody.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: textColor,
-                          height: 1,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      FaIcon(
+                    ),
+                    const SizedBox(width: 4),
+                    AnimatedRotation(
+                      turns: _pickerOpen ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 180),
+                      child: FaIcon(
                         FontAwesomeIcons.chevronDown,
                         size: 9,
                         color: chevronColor,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Container(width: 1, height: 22, color: dividerColor),
-              Expanded(
-                child: TextField(
-                  controller: widget.controller,
-                  focusNode: _focusNode,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: widget.textInputAction,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'[\d\s\-()+]')),
-                  ],
-                  onChanged: widget.onChanged,
-                  style: AppTextStyles.dsBody.copyWith(
+            ),
+            Container(width: 1, height: 22, color: dividerColor),
+            Expanded(
+              child: TextField(
+                controller: widget.controller,
+                focusNode: _focusNode,
+                keyboardType: TextInputType.phone,
+                textInputAction: widget.textInputAction,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d\s\-()+]')),
+                ],
+                onChanged: widget.onChanged,
+                style: AppTextStyles.dsBody.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                  height: 1.0,
+                ),
+                decoration: InputDecoration(
+                  hintText: _country.example,
+                  hintStyle: AppTextStyles.dsBody.copyWith(
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
+                    fontWeight: FontWeight.normal,
+                    color: hintColor,
                     height: 1.0,
                   ),
-                  decoration: InputDecoration(
-                    hintText: _country.example,
-                    hintStyle: AppTextStyles.dsBody.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      color: hintColor,
-                      height: 1.0,
-                    ),
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 12),
-                    isDense: true,
-                  ),
+                  filled: false,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  isDense: true,
                 ),
               ),
-            ],
+            ),
+          ],
         );
 
         final hasError = widget.errorText != null;
@@ -251,55 +439,67 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField> {
           final fieldFill = isDark
               ? AppColors.white.withValues(alpha: 0.04)
               : AppColors.white;
-          field = Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: fieldFill,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.auroraRed, width: 1.5),
+          field = CompositedTransformTarget(
+            link: _layerLink,
+            child: Container(
+              key: _fieldKey,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: fieldFill,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.auroraRed, width: 1.5),
+              ),
+              child: phoneRow,
             ),
-            child: phoneRow,
           );
         } else if (_isFocused) {
           final innerFill =
               isDark ? AppColors.auroraDeepBase : AppColors.white;
-          field = Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: AppColors.auroraGradient,
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.auroraPurple
-                      .withValues(alpha: isDark ? 0.55 : 0.30),
-                  blurRadius: 22,
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(2),
+          field = CompositedTransformTarget(
+            link: _layerLink,
             child: Container(
-              clipBehavior: Clip.antiAlias,
+              key: _fieldKey,
               decoration: BoxDecoration(
-                color: innerFill,
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: AppColors.auroraGradient,
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.auroraPurple
+                        .withValues(alpha: isDark ? 0.55 : 0.30),
+                    blurRadius: 22,
+                  ),
+                ],
               ),
-              child: phoneRow,
+              padding: const EdgeInsets.all(2),
+              child: Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: innerFill,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: phoneRow,
+              ),
             ),
           );
         } else {
           final fieldFill = isDark
               ? AppColors.white.withValues(alpha: 0.04)
               : AppColors.white;
-          field = Container(
-            decoration: BoxDecoration(
-              color: fieldFill,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderNormal, width: 1.5),
+          field = CompositedTransformTarget(
+            link: _layerLink,
+            child: Container(
+              key: _fieldKey,
+              decoration: BoxDecoration(
+                color: fieldFill,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: borderNormal, width: 1.5),
+              ),
+              child: phoneRow,
             ),
-            child: phoneRow,
           );
         }
 
@@ -311,8 +511,8 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField> {
               RichText(
                 text: TextSpan(
                   text: widget.label!,
-                  style: AppTextStyles.dsFieldLabel
-                      .copyWith(color: labelColor),
+                  style:
+                      AppTextStyles.dsFieldLabel.copyWith(color: labelColor),
                   children: widget.required
                       ? [
                           TextSpan(

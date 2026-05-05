@@ -46,41 +46,6 @@ class LegalPageScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Last updated notice
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? AppColors.auroraElectricBlue.withValues(alpha: 0.08)
-                                    : AppColors.auroraElectricBlue.withValues(alpha: 0.06),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: AppColors.auroraElectricBlue.withValues(alpha: isDark ? 0.18 : 0.14),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.circleInfo,
-                                    size: 13,
-                                    color: AppColors.auroraElectricBlue.withValues(alpha: 0.70),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    'Last updated: January 2025',
-                                    style: AppTextStyles.captionSmall.copyWith(
-                                      color: isDark
-                                          ? AppColors.auroraElectricBlue.withValues(alpha: 0.80)
-                                          : AppColors.auroraElectricBlue,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
                             // Sections
                             for (final section in sections) ...[
                               _GroupLabel(label: section.title, isDark: isDark),
