@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/auth_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
-import '../../../services/toast_service.dart';
+import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/form_validators.dart';
@@ -75,22 +76,31 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _handleLogin() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isLoading = true);
-    try {
-      // TODO: POST /auth/login — replace with real API call
-      // final token = await ApiService.instance.login(
-      //   email: _emailController.text.trim(),
-      //   password: _passwordController.text,
-      // );
-      // await SecureStorage.saveToken(token);
-      await GetIt.instance<AuthService>().signIn();
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, mainScreenRoute);
-    } catch (e) {
-      if (!mounted) return;
-      ToastService.instance.showError('Login failed. Please check your credentials.');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+
+    final result = await serviceLocator<AuthApi>().login(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    result.fold(
+      (_) => setState(() => _isLoading = false),
+      (data) async {
+        final accessToken = data['data']?['accessToken'] as String?;
+        final refreshToken = data['data']?['refreshToken'] as String?;
+        if (accessToken != null && refreshToken != null) {
+          await TokenService.instance.saveTokens(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          );
+        }
+        await serviceLocator<AuthService>().signIn();
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        Navigator.pushReplacementNamed(context, mainScreenRoute);
+      },
+    );
   }
 
   void _handleContinueAsGuest() {

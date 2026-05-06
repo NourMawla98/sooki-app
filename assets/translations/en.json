@@ -1,5 +1,10 @@
 {
   "common": {
     "app_name": "Sooki"
+  },
+  "error": {
+    "generic": "Something went wrong. Please try again.",
+    "no_internet": "No internet connection.",
+    "timeout": "Request timed out. Please try again."
   }
 }

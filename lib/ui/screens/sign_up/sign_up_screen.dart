@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/apis/auth_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
+import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/form_validators.dart';
@@ -39,6 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _isLoading  = false;
   bool _canSignUp  = false;
+  String _dialCode = '+961';
   String? _emailError;
   String? _phoneError;
   String? _passwordError;
@@ -138,20 +143,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _handleSignUp() {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          Navigator.pushReplacementNamed(
-            context,
-            emailVerificationScreenRoute,
-            arguments: _emailController.text.trim(),
+  Future<void> _handleSignUp() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final result = await serviceLocator<AuthApi>().register(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      phoneCountryCode: _dialCode,
+      phoneNumber: _phoneController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    result.fold(
+      (_) => setState(() => _isLoading = false),
+      (data) async {
+        final accessToken = data['accessToken'] as String?;
+        final refreshToken = data['refreshToken'] as String?;
+        if (accessToken != null && refreshToken != null) {
+          await TokenService.instance.saveTokens(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
           );
         }
-      });
-    }
+        final message = data['message'] as String?;
+        if (message != null) ToastService.instance.showSuccess(message);
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        Navigator.pushReplacementNamed(
+          context,
+          emailVerificationScreenRoute,
+          arguments: _emailController.text.trim(),
+        );
+      },
+    );
   }
 
   void _handleContinueAsGuest() =>
@@ -278,6 +307,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       errorText: _phoneError,
                                       onBlur: _onPhoneBlur,
                                       onChanged: _onPhoneChanged,
+                                      onCountryChanged: (dialCode) =>
+                                          _dialCode = dialCode,
                                       textInputAction: TextInputAction.next,
                                     ),
                                     const SizedBox(height: 14),

@@ -72,11 +72,12 @@ Future<void> setupDependencyInjection({
   await userProfileService.load();
   serviceLocator.registerSingleton<UserProfileService>(userProfileService);
 
-  // Register Dio client with language service
+  // Register Dio client with language + auth services
   serviceLocator.registerSingleton<Dio>(
     createApiClient(
       baseUrl: apiBaseUrl,
       languageService: languageService,
+      authService: serviceLocator<AuthService>(),
     ),
     instanceName: apiClientKey,
   );

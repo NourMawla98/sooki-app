@@ -1,5 +1,10 @@
 {
   "common": {
     "app_name": "Sooki"
+  },
+  "error": {
+    "generic": "Une erreur s'est produite. Veuillez réessayer.",
+    "no_internet": "Pas de connexion internet.",
+    "timeout": "La requête a expiré. Veuillez réessayer."
   }
 }

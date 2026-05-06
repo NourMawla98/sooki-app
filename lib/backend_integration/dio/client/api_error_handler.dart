@@ -1,72 +1,37 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-/// Centralized error handling for API requests
+/// Extracts a user-facing error message from a [DioException].
+///
+/// Used by [executeRequest] to populate the [ApiFailure] message.
+/// Toast display is handled globally by [ErrorInterceptor] — callers
+/// must not show an additional toast from this message.
 class ApiErrorHandler {
   const ApiErrorHandler._();
 
-  // User-friendly error messages
-  static const String defaultError = 'Something went wrong. Please try again.';
-  static const String sessionExpired =
-      'Your session has expired. Please sign in again.';
-  static const String connectionTimeout =
-      'Connection timed out. Please check your internet and try again.';
-  static const String networkError =
-      'Unable to connect. Please check your internet connection.';
-  static const String serverError = 'Server error. Please try again later.';
-
-  /// Extracts a user-friendly error message from any error object
   static String extractErrorMessage(Object error) {
-    // Handle string errors directly
     if (error is String) return error;
+    if (error is! DioException) return tr('error.generic');
 
-    // Handle Dio exceptions
-    if (error is! DioException) return defaultError;
+    if (error.error is SocketException) return tr('error.no_internet');
 
-    final dioException = error;
-
-    // Network/Socket errors
-    if (dioException.error is SocketException) return networkError;
-
-    // Timeout errors
     if ({
       DioExceptionType.sendTimeout,
       DioExceptionType.receiveTimeout,
       DioExceptionType.connectionTimeout,
       DioExceptionType.connectionError,
-    }.contains(dioException.type)) {
-      return connectionTimeout;
+    }.contains(error.type)) {
+      return tr('error.timeout');
     }
 
-    // Authentication errors
-    if (dioException.response?.statusCode == 401) return sessionExpired;
-
-    // Server errors (5xx)
-    if (dioException.response?.statusCode != null &&
-        dioException.response!.statusCode! >= 500) {
-      return serverError;
+    final data = error.response?.data;
+    if (data is Map<String, dynamic>) {
+      final msg = data['message'];
+      if (msg is String && msg.isNotEmpty) return msg;
     }
 
-    // Try to extract error message from response
-    try {
-      final responseData = dioException.response?.data;
-
-      // Check for ErrorMessage field (backend convention)
-      if (responseData is Map<String, dynamic> &&
-          responseData.containsKey('ErrorMessage')) {
-        return responseData['ErrorMessage'] as String;
-      }
-
-      // Check for message field (common convention)
-      if (responseData is Map<String, dynamic> &&
-          responseData.containsKey('message')) {
-        return responseData['message'] as String;
-      }
-
-      return defaultError;
-    } catch (_) {
-      return defaultError;
-    }
+    return tr('error.generic');
   }
 }

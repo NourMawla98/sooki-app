@@ -14,6 +14,7 @@ class AuroraPhoneField extends StatefulWidget {
   final FocusNode? focusNode;
   final String defaultCountryCode;
   final void Function(String)? onChanged;
+  final void Function(String dialCode)? onCountryChanged;
   final TextInputAction? textInputAction;
   final String? errorText;
   final VoidCallback? onBlur;
@@ -26,6 +27,7 @@ class AuroraPhoneField extends StatefulWidget {
     this.focusNode,
     this.defaultCountryCode = 'LB',
     this.onChanged,
+    this.onCountryChanged,
     this.textInputAction,
     this.errorText,
     this.onBlur,
@@ -260,6 +262,7 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField>
                                           widget.controller?.clear();
                                           widget.onChanged?.call('');
                                         });
+                                        widget.onCountryChanged?.call('+${c.phoneCode}');
                                         _closePicker();
                                       },
                                       child: Container(

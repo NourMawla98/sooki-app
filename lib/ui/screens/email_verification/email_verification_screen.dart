@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/apis/auth_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
@@ -26,6 +28,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   static const _cooldownSeconds = 60;
   int _secondsLeft = _cooldownSeconds;
   Timer? _timer;
+  bool _isResending = false;
 
   @override
   void initState() {
@@ -44,12 +47,26 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
   }
 
-  void _resend() {
-    if (_secondsLeft > 0) return;
-    setState(() => _secondsLeft = _cooldownSeconds);
-    _startTimer();
-    // TODO: replace with real API call; show showError on failure
-    ToastService.instance.showSuccess('Verification email resent');
+  Future<void> _resend() async {
+    if (_secondsLeft > 0 || _isResending) return;
+    setState(() => _isResending = true);
+
+    final result = await serviceLocator<AuthApi>().resendVerification(
+      email: widget.email,
+    );
+
+    if (!mounted) return;
+    setState(() => _isResending = false);
+
+    result.fold(
+      (_) {},
+      (data) {
+        final message = data['message'] as String?;
+        if (message != null) ToastService.instance.showSuccess(message);
+        setState(() => _secondsLeft = _cooldownSeconds);
+        _startTimer();
+      },
+    );
   }
 
   @override
@@ -198,7 +215,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           GestureDetector(
                             onTap: _resend,
                             child: Opacity(
-                              opacity: _secondsLeft > 0 ? 0.45 : 1.0,
+                              opacity: (_secondsLeft > 0 || _isResending) ? 0.45 : 1.0,
                               child: Text(
                                 'Resend',
                                 style: AppTextStyles.dsBody.copyWith(

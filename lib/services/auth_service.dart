@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-/// Tracks whether a user is currently signed in.
-///
-/// Token storage and real credential validation will be handled by the
-/// API layer. This service only holds the in-memory auth state that
-/// drives UI (logged in vs. guest) until a session is established.
+import 'token_service.dart';
+
+/// Tracks in-memory auth state that drives UI (logged in vs. guest).
+/// Token persistence is delegated to [TokenService].
 class AuthService extends ChangeNotifier {
   bool _isSignedIn = false;
 
@@ -17,6 +16,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signOut() async {
     _isSignedIn = false;
+    await TokenService.instance.clearTokens();
     notifyListeners();
   }
 }

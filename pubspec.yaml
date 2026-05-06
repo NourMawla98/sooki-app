@@ -73,6 +73,9 @@ dependencies:
   # Local storage
   shared_preferences: ^2.2.2
 
+  # Secure storage for JWT tokens
+  flutter_secure_storage: ^9.2.2
+
   # Maps (OpenStreetMap) + geolocation + reverse geocoding — address picker
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
