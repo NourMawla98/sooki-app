@@ -38,6 +38,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController    = TextEditingController();
   final _confirmController     = TextEditingController();
   final _emailFocusNode      = FocusNode();
+  final _firstNameFocusNode  = FocusNode();
+  final _lastNameFocusNode   = FocusNode();
+  final _phoneFocusNode      = FocusNode();
   final _passwordFocusNode   = FocusNode();
   final _confirmFocusNode    = FocusNode();
 
@@ -138,6 +141,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
     _confirmController.dispose();
     _emailFocusNode.dispose();
+    _firstNameFocusNode.dispose();
+    _lastNameFocusNode.dispose();
+    _phoneFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmFocusNode.dispose();
     super.dispose();
@@ -259,6 +265,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       prefixIcon: FontAwesomeIcons.solidEnvelope,
                                       textInputAction: TextInputAction.next,
                                       validator: validateEmail,
+                                      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_firstNameFocusNode),
                                     ),
                                     const SizedBox(height: 14),
 
@@ -271,6 +278,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             label: 'First name', required: true,
                                             hint: 'Jane',
                                             controller: _firstNameController,
+                                            focusNode: _firstNameFocusNode,
                                             keyboardType: TextInputType.name,
                                             prefixIcon: FontAwesomeIcons.solidUser,
                                             textInputAction: TextInputAction.next,
@@ -278,6 +286,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                 (v == null || v.trim().isEmpty)
                                                     ? 'Required'
                                                     : null,
+                                            onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_lastNameFocusNode),
                                           ),
                                         ),
                                         const SizedBox(width: 10),
@@ -286,6 +295,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             label: 'Last name', required: true,
                                             hint: 'Doe',
                                             controller: _lastNameController,
+                                            focusNode: _lastNameFocusNode,
                                             keyboardType: TextInputType.name,
                                             prefixIcon: FontAwesomeIcons.solidUser,
                                             textInputAction: TextInputAction.next,
@@ -293,6 +303,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                 (v == null || v.trim().isEmpty)
                                                     ? 'Required'
                                                     : null,
+                                            onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_phoneFocusNode),
                                           ),
                                         ),
                                       ],
@@ -304,12 +315,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       label: 'Mobile Number',
                                       required: true,
                                       controller: _phoneController,
+                                      focusNode: _phoneFocusNode,
                                       errorText: _phoneError,
                                       onBlur: _onPhoneBlur,
                                       onChanged: _onPhoneChanged,
                                       onCountryChanged: (dialCode) =>
                                           _dialCode = dialCode,
                                       textInputAction: TextInputAction.next,
+                                      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocusNode),
                                     ),
                                     const SizedBox(height: 14),
 
@@ -327,6 +340,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         if ((v?.length ?? 0) < 6) return 'Minimum 6 characters';
                                         return null;
                                       },
+                                      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_confirmFocusNode),
                                     ),
                                     const SizedBox(height: 14),
 

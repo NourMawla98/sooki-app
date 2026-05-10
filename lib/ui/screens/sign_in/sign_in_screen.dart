@@ -6,6 +6,7 @@ import '../../../backend_integration/dependency_injection/dependency_injection.d
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
 import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -98,7 +99,13 @@ class _SignInScreenState extends State<SignInScreen> {
         await serviceLocator<AuthService>().signIn();
         if (!mounted) return;
         setState(() => _isLoading = false);
+        final message = data['message'] as String?;
         Navigator.pushReplacementNamed(context, mainScreenRoute);
+        if (message != null) {
+          Future.delayed(const Duration(milliseconds: 400), () {
+            ToastService.instance.showSuccess(message);
+          });
+        }
       },
     );
   }

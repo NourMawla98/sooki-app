@@ -65,7 +65,9 @@ Future<void> setupDependencyInjection({
   await addressService.load();
   serviceLocator.registerSingleton<AddressService>(addressService);
 
-  serviceLocator.registerSingleton<AuthService>(AuthService());
+  final authService = AuthService();
+  await authService.restoreSession();
+  serviceLocator.registerSingleton<AuthService>(authService);
 
   final userProfileService =
       UserProfileService(serviceLocator<SharedPreferences>());

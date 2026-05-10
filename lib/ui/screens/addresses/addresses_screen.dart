@@ -272,14 +272,16 @@ class _DeleteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => showAuroraConfirmSheet(
-        context,
-        title: 'Delete "${address.label}"?',
-        subtitle: 'This address will be permanently removed from your saved locations.',
-        icon: FontAwesomeIcons.trash,
-        confirmLabel: 'Delete',
-        onConfirm: () => GetIt.instance<AddressService>().remove(address.id),
-      ),
+      onTap: () async {
+        final confirmed = await showAuroraConfirmSheet(
+          context,
+          title: 'Delete "${address.label}"?',
+          subtitle: 'This address will be permanently removed from your saved locations.',
+          icon: FontAwesomeIcons.trash,
+          confirmLabel: 'Delete',
+        );
+        if (confirmed) GetIt.instance<AddressService>().remove(address.id);
+      },
       child: SizedBox(
         width: 30,
         height: 30,

@@ -29,6 +29,46 @@ class AuthApi {
     );
   }
 
+  Future<Either<ApiFailure, Map<String, dynamic>>> requestPasswordReset({
+    required String email,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.post,
+      path: 'auth/customer/request-password-reset',
+      body: {'email': email},
+      operationName: 'requestPasswordReset',
+      successParser: (response) {
+        final body = response.data;
+        if (body is Map<String, dynamic>) return body;
+        return <String, dynamic>{};
+      },
+    );
+  }
+
+  Future<Either<ApiFailure, Map<String, dynamic>>> resetPassword({
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.post,
+      path: 'auth/customer/reset-password',
+      body: {
+        'token': token,
+        'newPassword': newPassword,
+        'confirmPassword': confirmPassword,
+      },
+      operationName: 'resetPassword',
+      successParser: (response) {
+        final body = response.data;
+        if (body is Map<String, dynamic>) return body;
+        return <String, dynamic>{};
+      },
+    );
+  }
+
   Future<Either<ApiFailure, Map<String, dynamic>>> resendVerification({
     required String email,
   }) {
@@ -38,6 +78,23 @@ class AuthApi {
       path: 'auth/customer/resend-verification',
       body: {'email': email},
       operationName: 'resendVerification',
+      successParser: (response) {
+        final body = response.data;
+        if (body is Map<String, dynamic>) return body;
+        return <String, dynamic>{};
+      },
+    );
+  }
+
+  Future<Either<ApiFailure, Map<String, dynamic>>> logout({
+    required String refreshToken,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.post,
+      path: 'auth/customer/logout',
+      body: {'refreshToken': refreshToken},
+      operationName: 'logout',
       successParser: (response) {
         final body = response.data;
         if (body is Map<String, dynamic>) return body;

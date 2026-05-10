@@ -9,6 +9,15 @@ class AuthService extends ChangeNotifier {
 
   bool get isSignedIn => _isSignedIn;
 
+  /// Call once at startup — restores session if tokens exist in secure storage.
+  Future<void> restoreSession() async {
+    final token = await TokenService.instance.getAccessToken();
+    if (token != null) {
+      _isSignedIn = true;
+      notifyListeners();
+    }
+  }
+
   Future<void> signIn() async {
     _isSignedIn = true;
     notifyListeners();

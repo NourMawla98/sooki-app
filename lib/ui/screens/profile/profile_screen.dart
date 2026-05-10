@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/auth_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
+import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_secondary_button.dart';
+import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 import 'widgets/profile_header_card.dart';
 import 'widgets/profile_menu_list.dart';
@@ -232,16 +237,45 @@ class _GuestHero extends StatelessWidget {
   }
 }
 
-class _SignOutRow extends StatelessWidget {
+class _SignOutRow extends StatefulWidget {
   const _SignOutRow({required this.isDark});
 
   final bool isDark;
 
   @override
+  State<_SignOutRow> createState() => _SignOutRowState();
+}
+
+class _SignOutRowState extends State<_SignOutRow> {
+  bool _isLoading = false;
+
+  Future<void> _handleSignOut() async {
+    final confirmed = await showAuroraConfirmSheet(
+      context,
+      title: 'Logout',
+      subtitle: 'Are you sure you want to logout?',
+      icon: FontAwesomeIcons.rightFromBracket,
+      confirmLabel: 'Logout',
+    );
+    if (!confirmed || !mounted) return;
+
+    setState(() => _isLoading = true);
+    final refreshToken = await TokenService.instance.getRefreshToken();
+    String? toastMessage;
+    if (refreshToken != null) {
+      final result = await serviceLocator<AuthApi>().logout(refreshToken: refreshToken);
+      result.fold((_) => null, (data) => toastMessage = data['message'] as String?);
+    }
+    if (!mounted) return;
+    await GetIt.instance<AuthService>().signOut();
+    if (toastMessage != null) ToastService.instance.showSuccess(toastMessage!);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final auth = GetIt.instance<AuthService>();
+    final isDark = widget.isDark;
     return GestureDetector(
-      onTap: () => auth.signOut(),
+      onTap: _isLoading ? null : _handleSignOut,
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -263,17 +297,26 @@ class _SignOutRow extends StatelessWidget {
                     .withValues(alpha: isDark ? 0.12 : 0.09),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Center(
-                child: FaIcon(
-                  FontAwesomeIcons.rightFromBracket,
-                  size: 15,
-                  color: AppColors.auroraRed,
-                ),
+              child: Center(
+                child: _isLoading
+                    ? SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.auroraRed,
+                        ),
+                      )
+                    : const FaIcon(
+                        FontAwesomeIcons.rightFromBracket,
+                        size: 15,
+                        color: AppColors.auroraRed,
+                      ),
               ),
             ),
             const SizedBox(width: 14),
             Text(
-              'Sign Out',
+              'Logout',
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.auroraRed,
                 fontWeight: FontWeight.w700,

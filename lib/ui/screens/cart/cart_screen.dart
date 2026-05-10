@@ -62,21 +62,23 @@ class _CartScreenState extends State<CartScreen> {
                                 newQty,
                               );
                             },
-                            onRemove: () => showAuroraConfirmSheet(
-                              context,
-                              title: 'Remove item?',
-                              subtitle: item.product.name,
-                              icon: FontAwesomeIcons.trashCan,
-                              iconColor: AppColors.auroraRed,
-                              confirmLabel: 'Remove',
-                              confirmColor: AppColors.auroraRed,
-                              onConfirm: () {
+                            onRemove: () async {
+                              final confirmed = await showAuroraConfirmSheet(
+                                context,
+                                title: 'Remove item?',
+                                subtitle: item.product.name,
+                                icon: FontAwesomeIcons.trashCan,
+                                iconColor: AppColors.auroraRed,
+                                confirmLabel: 'Remove',
+                                confirmColor: AppColors.auroraRed,
+                              );
+                              if (confirmed) {
                                 cartService.removeItem(item.product.id);
                                 ToastService.instance.showSuccess(
                                   '${item.product.name} removed from cart',
                                 );
-                              },
-                            ),
+                              }
+                            },
                           ),
                         ),
                         const SizedBox(height: 4),

@@ -156,17 +156,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     title: 'Delete Account',
                                     subtitle: 'Permanently delete your data',
                                     isDestructive: true,
-                                    onTap: () => showAuroraConfirmSheet(
-                                      context,
-                                      title: 'Delete Account',
-                                      subtitle:
-                                          'This action is permanent and cannot be undone.',
-                                      icon: FontAwesomeIcons.trashCan,
-                                      iconColor: AppColors.auroraRed,
-                                      confirmLabel: 'Delete',
-                                      confirmColor: AppColors.auroraRed,
-                                      onConfirm: () {},
-                                    ),
+                                    onTap: () async {
+                                      await showAuroraConfirmSheet(
+                                        context,
+                                        title: 'Delete Account',
+                                        subtitle:
+                                            'This action is permanent and cannot be undone.',
+                                        icon: FontAwesomeIcons.trashCan,
+                                        iconColor: AppColors.auroraRed,
+                                        confirmLabel: 'Delete',
+                                        confirmColor: AppColors.auroraRed,
+                                      );
+                                    },
                                   ),
                                 ],
                               ),

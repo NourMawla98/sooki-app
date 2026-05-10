@@ -16,6 +16,7 @@ class AuroraPhoneField extends StatefulWidget {
   final void Function(String)? onChanged;
   final void Function(String dialCode)? onCountryChanged;
   final TextInputAction? textInputAction;
+  final void Function(String)? onFieldSubmitted;
   final String? errorText;
   final VoidCallback? onBlur;
 
@@ -29,6 +30,7 @@ class AuroraPhoneField extends StatefulWidget {
     this.onChanged,
     this.onCountryChanged,
     this.textInputAction,
+    this.onFieldSubmitted,
     this.errorText,
     this.onBlur,
   });
@@ -404,6 +406,7 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField>
                 focusNode: _focusNode,
                 keyboardType: TextInputType.phone,
                 textInputAction: widget.textInputAction,
+                onSubmitted: widget.onFieldSubmitted,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[\d\s\-()+]')),
                 ],

@@ -5,7 +5,7 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-Future<void> showAuroraConfirmSheet(
+Future<bool> showAuroraConfirmSheet(
   BuildContext context, {
   required String title,
   String? subtitle,
@@ -14,9 +14,9 @@ Future<void> showAuroraConfirmSheet(
   String confirmLabel = 'Confirm',
   Color confirmColor = AppColors.auroraRed,
   String cancelLabel = 'Cancel',
-  required VoidCallback onConfirm,
-}) {
-  return showGeneralDialog<void>(
+  Future<void> Function()? onConfirm,
+}) async {
+  final result = await showGeneralDialog<bool>(
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Dismiss',
@@ -54,9 +54,10 @@ Future<void> showAuroraConfirmSheet(
       );
     },
   );
+  return result ?? false;
 }
 
-class _AuroraConfirmSheet extends StatelessWidget {
+class _AuroraConfirmSheet extends StatefulWidget {
   final String title;
   final String? subtitle;
   final FaIconData icon;
@@ -64,7 +65,7 @@ class _AuroraConfirmSheet extends StatelessWidget {
   final String confirmLabel;
   final Color confirmColor;
   final String cancelLabel;
-  final VoidCallback onConfirm;
+  final Future<void> Function()? onConfirm;
 
   const _AuroraConfirmSheet({
     required this.title,
@@ -74,8 +75,25 @@ class _AuroraConfirmSheet extends StatelessWidget {
     required this.confirmLabel,
     required this.confirmColor,
     required this.cancelLabel,
-    required this.onConfirm,
+    this.onConfirm,
   });
+
+  @override
+  State<_AuroraConfirmSheet> createState() => _AuroraConfirmSheetState();
+}
+
+class _AuroraConfirmSheetState extends State<_AuroraConfirmSheet> {
+  bool _isLoading = false;
+
+  Future<void> _handleConfirm() async {
+    if (widget.onConfirm == null) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+    setState(() => _isLoading = true);
+    await widget.onConfirm!();
+    if (mounted) Navigator.of(context).pop(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,27 +121,27 @@ class _AuroraConfirmSheet extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.12),
+              color: widget.iconColor.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: FaIcon(icon, size: 18, color: iconColor),
+            child: FaIcon(widget.icon, size: 18, color: widget.iconColor),
           ),
           const SizedBox(height: 14),
           Text(
-            title,
+            widget.title,
             style: AppTextStyles.heading4.copyWith(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: textColor,
             ),
           ),
-          if (subtitle != null) ...[
+          if (widget.subtitle != null) ...[
             const SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                subtitle!,
+                widget.subtitle!,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -141,23 +159,23 @@ class _AuroraConfirmSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: _isLoading ? null : () => Navigator.of(context).pop(),
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
                         color: isDark
-                            ? AppColors.white.withValues(alpha: 0.06)
-                            : AppColors.auroraPurple.withValues(alpha: 0.07),
+                            ? AppColors.white.withValues(alpha: _isLoading ? 0.03 : 0.06)
+                            : AppColors.auroraPurple.withValues(alpha: _isLoading ? 0.04 : 0.07),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: border),
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        cancelLabel,
+                        widget.cancelLabel,
                         style: AppTextStyles.bodyMedium.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: textColor,
+                          color: textColor.withValues(alpha: _isLoading ? 0.35 : 1.0),
                         ),
                       ),
                     ),
@@ -166,25 +184,31 @@ class _AuroraConfirmSheet extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      onConfirm();
-                    },
+                    onTap: _isLoading ? null : _handleConfirm,
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        color: confirmColor,
+                        color: widget.confirmColor.withValues(alpha: _isLoading ? 0.7 : 1.0),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
-                        confirmLabel,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.white,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.white.withValues(alpha: 0.9),
+                              ),
+                            )
+                          : Text(
+                              widget.confirmLabel,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ),

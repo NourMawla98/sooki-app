@@ -29,6 +29,7 @@ class AuroraInputField extends StatefulWidget {
   final int maxLines;
   final VoidCallback? onTap;
   final void Function(String)? onChanged;
+  final void Function(String)? onFieldSubmitted;
   final TextInputAction? textInputAction;
 
   const AuroraInputField({
@@ -49,6 +50,7 @@ class AuroraInputField extends StatefulWidget {
     this.maxLines = 1,
     this.onTap,
     this.onChanged,
+    this.onFieldSubmitted,
     this.textInputAction,
   });
 
@@ -147,6 +149,7 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
             maxLines: widget.isPassword ? 1 : widget.maxLines,
             onTap: widget.onTap,
             onChanged: widget.onChanged,
+            onFieldSubmitted: widget.onFieldSubmitted,
             textInputAction: widget.textInputAction,
             textAlignVertical: widget.maxLines > 1
                 ? TextAlignVertical.top

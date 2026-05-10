@@ -3,12 +3,15 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/apis/auth_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../enums/app_language.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/language_service.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
+import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../dialogs/aurora_confirm_sheet.dart';
@@ -47,22 +50,13 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
     if (mounted) setState(() {});
   }
 
-  Future<void> _performSignOut(BuildContext dialogContext) async {
-    Navigator.pop(dialogContext);
-    await _authService.signOut();
-    if (!mounted) return;
-    widget.onClose();
-    if (!mounted) return;
-    Navigator.pushReplacementNamed(context, signInScreenRoute);
-  }
-
   void _goToSignIn() {
     widget.onClose();
     Navigator.pushNamed(context, signInScreenRoute);
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    showAuroraConfirmSheet(
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    await showAuroraConfirmSheet(
       context,
       title: 'Logout',
       subtitle: 'Are you sure you want to logout?',
@@ -71,7 +65,16 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
       confirmLabel: 'Logout',
       confirmColor: AppColors.auroraPink,
       cancelLabel: 'Cancel',
-      onConfirm: () => _performSignOut(context),
+      onConfirm: () async {
+        final refreshToken = await TokenService.instance.getRefreshToken();
+        String? toastMessage;
+        if (refreshToken != null) {
+          final result = await serviceLocator<AuthApi>().logout(refreshToken: refreshToken);
+          result.fold((_) => null, (data) => toastMessage = data['message'] as String?);
+        }
+        await _authService.signOut();
+        if (toastMessage != null) ToastService.instance.showSuccess(toastMessage!);
+      },
     );
   }
 
@@ -186,7 +189,6 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                   ? _Tile(
                       icon: FontAwesomeIcons.rightFromBracket,
                       label: 'Logout',
-                      sub: 'Sign out',
                       accent: AppColors.auroraPink,
                       isDark: isDark,
                       subColor: AppColors.auroraPink.withValues(alpha: 0.75),
@@ -262,7 +264,7 @@ class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
     required this.label,
-    required this.sub,
+    this.sub = '',
     required this.accent,
     required this.subColor,
     required this.isDark,

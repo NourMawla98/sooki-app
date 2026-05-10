@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/apis/auth_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
+import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
@@ -37,18 +40,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _handleSendResetLink() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isLoading = true);
-    try {
-      // TODO: POST /auth/forgot-password
-      // await ApiService.instance.forgotPassword(email: _emailController.text.trim());
-      if (!mounted) return;
-      ToastService.instance.showSuccess('Reset link sent to ${_emailController.text.trim()}');
-      Navigator.pop(context);
-    } catch (e) {
-      if (!mounted) return;
-      ToastService.instance.showError('Something went wrong. Please try again.');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+
+    final email = _emailController.text.trim();
+    final result = await serviceLocator<AuthApi>().requestPasswordReset(
+      email: email,
+    );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    result.fold(
+      (_) {},
+      (data) {
+        final message = data['message'] as String?;
+        if (message != null) ToastService.instance.showSuccess(message);
+        Navigator.pushReplacementNamed(context, signInScreenRoute);
+      },
+    );
   }
 
   @override
