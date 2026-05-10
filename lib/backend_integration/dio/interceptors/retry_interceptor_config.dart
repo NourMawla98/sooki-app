@@ -6,8 +6,8 @@ import 'package:dio_smart_retry/dio_smart_retry.dart';
 /// Configuration:
 /// - Retries: 2 attempts
 /// - Retry delays: 200ms, 500ms (exponential backoff)
-/// - Retryable status codes: 401 (for token refresh scenarios)
 /// - Automatically retries on network errors and timeouts
+/// - 401 is NOT retried here — handled by AuthInterceptor
 RetryInterceptor createRetryInterceptor(Dio dio) {
   return RetryInterceptor(
     dio: dio,
@@ -20,7 +20,6 @@ RetryInterceptor createRetryInterceptor(Dio dio) {
       Duration(milliseconds: 200),
       Duration(milliseconds: 500),
     ],
-    // Retry 401 errors (useful for token refresh scenarios)
-    retryableExtraStatuses: {401},
+    retryableExtraStatuses: {},
   );
 }

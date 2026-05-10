@@ -3,28 +3,17 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import '../../../routes/route_constants.dart';
-import '../../../services/auth_service.dart';
 import '../../../services/toast_service.dart';
 
 class ErrorInterceptor extends Interceptor {
-  final AuthService _authService;
-
-  ErrorInterceptor(this._authService);
+  ErrorInterceptor();
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final message = _resolveMessage(err);
 
-    if (err.response?.statusCode == 401) {
-      _authService.signOut();
-      ToastService.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        signInScreenRoute,
-        (_) => false,
-      );
-    } else {
-      ToastService.instance.showError(message);
-    }
+    // 401 is handled by AuthInterceptor (token refresh + retry) — never reaches here
+    ToastService.instance.showError(message);
 
     handler.next(err);
   }
