@@ -43,6 +43,7 @@ Future<Either<ApiFailure, T>> executeRequest<T>({
   Map<String, dynamic>? queryParameters,
   dynamic body,
   Map<String, dynamic>? headers,
+  Map<String, dynamic>? extra,
   String? customErrorMessage,
   CancelToken? cancelToken,
   Logger? logger,
@@ -63,6 +64,7 @@ Future<Either<ApiFailure, T>> executeRequest<T>({
       options: Options(
         headers: {...client.options.headers, ...?headers},
         method: methodName,
+        extra: extra,
       ),
       cancelToken: cancelToken,
     );

@@ -20,6 +20,7 @@ class AppColors {
   static const Color auroraRed = Color(0xFFFF2D55); // error states ONLY
   static const Color auroraGold = Color(0xFFF59E0B); // Editor's Pick tag
   static const Color auroraTeal = Color(0xFF06B6D4); // Quality Checked tag
+  static const Color skeletonBase = Color(0xFFE5E7EB); // skeleton loading placeholders only
 
   /// Signature aurora gradient — pink → purple → blue. Every primary CTA,
   /// every shimmer, every gradient-masked text uses this.

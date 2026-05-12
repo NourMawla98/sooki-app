@@ -10,7 +10,7 @@ class LanguageInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers['X-Language'] = _languageService.languageBackendValue;
+    options.headers['X-Language'] = _languageService.currentLanguage.code;
     super.onRequest(options, handler);
   }
 }

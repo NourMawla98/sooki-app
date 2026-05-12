@@ -268,7 +268,13 @@ class _SignOutRowState extends State<_SignOutRow> {
     }
     if (!mounted) return;
     await GetIt.instance<AuthService>().signOut();
-    if (toastMessage != null) ToastService.instance.showSuccess(toastMessage!);
+    if (!mounted) return;
+    Navigator.of(context).pushNamedAndRemoveUntil(signInScreenRoute, (_) => false);
+    if (toastMessage != null) {
+      Future.delayed(const Duration(milliseconds: 400), () {
+        ToastService.instance.showSuccess(toastMessage!);
+      });
+    }
   }
 
   @override

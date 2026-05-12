@@ -1,36 +1,32 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../data/mock_home_data.dart';
+import '../../../../backend_integration/apis/announcement_api.dart';
+import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../reusable_components/refresh/refresh_scope.dart';
 
 /// Section 1 — Live Ticker.
 ///
-/// 32 px rounded pill with a horizontal aurora gradient fill (blue→purple→pink
-/// at low opacity). A pulsing blue dot anchors the left, followed by one
-/// rotating announcement from [mockTickerMessages]. Messages slide upward and
-/// fade every [interval].
+/// Fetches announcements from [AnnouncementApi]. Messages slide upward and
+/// fade every 3 seconds. Shows a localized placeholder when the list is empty.
 class LiveTicker extends StatefulWidget {
-  final List<String> messages;
-  final Duration interval;
-  final double height;
-
-  const LiveTicker({
-    super.key,
-    this.messages = mockTickerMessages,
-    this.interval = const Duration(seconds: 3),
-    this.height = 32,
-  });
+  const LiveTicker({super.key});
 
   @override
   State<LiveTicker> createState() => _LiveTickerState();
 }
 
 class _LiveTickerState extends State<LiveTicker>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutoRefreshMixin {
+  @override
+  Future<void> onRefresh() => _fetch();
+  /// null = loading, [] = empty/error, [...] = has data
+  List<String>? _messages;
   int _index = 0;
   Timer? _timer;
   late final AnimationController _pulse;
@@ -42,15 +38,30 @@ class _LiveTickerState extends State<LiveTicker>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
+    _fetch();
+  }
 
-    if (widget.messages.length > 1) {
-      _timer = Timer.periodic(widget.interval, (_) {
-        if (!mounted) return;
+  Future<void> _fetch() async {
+    final result = await serviceLocator<AnnouncementApi>().getAnnouncements();
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() => _messages = []),
+      (messages) {
         setState(() {
-          _index = (_index + 1) % widget.messages.length;
+          _messages = messages;
+          _index = 0;
         });
-      });
-    }
+        if (messages.length > 1) _startTimer();
+      },
+    );
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted) return;
+      setState(() => _index = (_index + 1) % _messages!.length);
+    });
   }
 
   @override
@@ -60,9 +71,11 @@ class _LiveTickerState extends State<LiveTicker>
     super.dispose();
   }
 
-  String get _currentMessage {
-    if (widget.messages.isEmpty) return tickerFallbackMessage;
-    return widget.messages[_index];
+  String _currentMessage() {
+    final msgs = _messages;
+    if (msgs == null) return ''; // loading — dot only
+    if (msgs.isEmpty) return tr('ticker.no_announcements');
+    return msgs[_index];
   }
 
   @override
@@ -80,7 +93,7 @@ class _LiveTickerState extends State<LiveTicker>
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Container(
-            height: widget.height,
+            height: 32,
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -121,8 +134,8 @@ class _LiveTickerState extends State<LiveTicker>
                       children: <Widget>[...previousChildren, ?currentChild],
                     ),
                     child: Text(
-                      _currentMessage,
-                      key: ValueKey<int>(_index),
+                      _currentMessage(),
+                      key: ValueKey<String>(_currentMessage()),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.captionSmall.copyWith(
@@ -159,14 +172,10 @@ class _PulsingDot extends StatelessWidget {
           height: 6,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.auroraElectricBlue.withValues(
-              alpha: 0.5 + 0.5 * t,
-            ),
+            color: AppColors.auroraElectricBlue.withValues(alpha: 0.5 + 0.5 * t),
             boxShadow: [
               BoxShadow(
-                color: AppColors.auroraElectricBlue.withValues(
-                  alpha: 0.4 + 0.4 * t,
-                ),
+                color: AppColors.auroraElectricBlue.withValues(alpha: 0.4 + 0.4 * t),
                 blurRadius: 8,
               ),
             ],

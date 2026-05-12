@@ -8,11 +8,11 @@ abstract class BannerDto with _$BannerDto {
   const factory BannerDto({
     required int id,
     required int type,
-    required String title,
+    String? url,
+    String? title,
     String? subtitle,
     String? description,
     String? redirectionRoute,
-    @Default([]) List<String> imageUrls,
   }) = _BannerDto;
 
   factory BannerDto.fromJson(Map<String, dynamic> json) =>

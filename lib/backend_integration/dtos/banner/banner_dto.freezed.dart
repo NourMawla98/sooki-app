@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BannerDto {
 
- int get id; int get type; String get title; String? get subtitle; String? get description; String? get redirectionRoute; List<String> get imageUrls;
+ int get id; int get type; String? get url; String? get title; String? get subtitle; String? get description; String? get redirectionRoute;
 /// Create a copy of BannerDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $BannerDtoCopyWith<BannerDto> get copyWith => _$BannerDtoCopyWithImpl<BannerDto>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BannerDto&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.redirectionRoute, redirectionRoute) || other.redirectionRoute == redirectionRoute)&&const DeepCollectionEquality().equals(other.imageUrls, imageUrls));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BannerDto&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.redirectionRoute, redirectionRoute) || other.redirectionRoute == redirectionRoute));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,type,title,subtitle,description,redirectionRoute,const DeepCollectionEquality().hash(imageUrls));
+int get hashCode => Object.hash(runtimeType,id,type,url,title,subtitle,description,redirectionRoute);
 
 @override
 String toString() {
-  return 'BannerDto(id: $id, type: $type, title: $title, subtitle: $subtitle, description: $description, redirectionRoute: $redirectionRoute, imageUrls: $imageUrls)';
+  return 'BannerDto(id: $id, type: $type, url: $url, title: $title, subtitle: $subtitle, description: $description, redirectionRoute: $redirectionRoute)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $BannerDtoCopyWith<$Res>  {
   factory $BannerDtoCopyWith(BannerDto value, $Res Function(BannerDto) _then) = _$BannerDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, int type, String title, String? subtitle, String? description, String? redirectionRoute, List<String> imageUrls
+ int id, int type, String? url, String? title, String? subtitle, String? description, String? redirectionRoute
 });
 
 
@@ -63,16 +63,16 @@ class _$BannerDtoCopyWithImpl<$Res>
 
 /// Create a copy of BannerDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? title = null,Object? subtitle = freezed,Object? description = freezed,Object? redirectionRoute = freezed,Object? imageUrls = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? url = freezed,Object? title = freezed,Object? subtitle = freezed,Object? description = freezed,Object? redirectionRoute = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
+as int,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,redirectionRoute: freezed == redirectionRoute ? _self.redirectionRoute : redirectionRoute // ignore: cast_nullable_to_non_nullable
-as String?,imageUrls: null == imageUrls ? _self.imageUrls : imageUrls // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as String?,
   ));
 }
 
@@ -157,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int type,  String title,  String? subtitle,  String? description,  String? redirectionRoute,  List<String> imageUrls)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int type,  String? url,  String? title,  String? subtitle,  String? description,  String? redirectionRoute)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BannerDto() when $default != null:
-return $default(_that.id,_that.type,_that.title,_that.subtitle,_that.description,_that.redirectionRoute,_that.imageUrls);case _:
+return $default(_that.id,_that.type,_that.url,_that.title,_that.subtitle,_that.description,_that.redirectionRoute);case _:
   return orElse();
 
 }
@@ -178,10 +178,10 @@ return $default(_that.id,_that.type,_that.title,_that.subtitle,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int type,  String title,  String? subtitle,  String? description,  String? redirectionRoute,  List<String> imageUrls)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int type,  String? url,  String? title,  String? subtitle,  String? description,  String? redirectionRoute)  $default,) {final _that = this;
 switch (_that) {
 case _BannerDto():
-return $default(_that.id,_that.type,_that.title,_that.subtitle,_that.description,_that.redirectionRoute,_that.imageUrls);case _:
+return $default(_that.id,_that.type,_that.url,_that.title,_that.subtitle,_that.description,_that.redirectionRoute);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +198,10 @@ return $default(_that.id,_that.type,_that.title,_that.subtitle,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int type,  String title,  String? subtitle,  String? description,  String? redirectionRoute,  List<String> imageUrls)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int type,  String? url,  String? title,  String? subtitle,  String? description,  String? redirectionRoute)?  $default,) {final _that = this;
 switch (_that) {
 case _BannerDto() when $default != null:
-return $default(_that.id,_that.type,_that.title,_that.subtitle,_that.description,_that.redirectionRoute,_that.imageUrls);case _:
+return $default(_that.id,_that.type,_that.url,_that.title,_that.subtitle,_that.description,_that.redirectionRoute);case _:
   return null;
 
 }
@@ -213,22 +213,16 @@ return $default(_that.id,_that.type,_that.title,_that.subtitle,_that.description
 @JsonSerializable(createToJson: false)
 
 class _BannerDto implements BannerDto {
-  const _BannerDto({required this.id, required this.type, required this.title, this.subtitle, this.description, this.redirectionRoute, final  List<String> imageUrls = const []}): _imageUrls = imageUrls;
+  const _BannerDto({required this.id, required this.type, this.url, this.title, this.subtitle, this.description, this.redirectionRoute});
   factory _BannerDto.fromJson(Map<String, dynamic> json) => _$BannerDtoFromJson(json);
 
 @override final  int id;
 @override final  int type;
-@override final  String title;
+@override final  String? url;
+@override final  String? title;
 @override final  String? subtitle;
 @override final  String? description;
 @override final  String? redirectionRoute;
- final  List<String> _imageUrls;
-@override@JsonKey() List<String> get imageUrls {
-  if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_imageUrls);
-}
-
 
 /// Create a copy of BannerDto
 /// with the given fields replaced by the non-null parameter values.
@@ -240,16 +234,16 @@ _$BannerDtoCopyWith<_BannerDto> get copyWith => __$BannerDtoCopyWithImpl<_Banner
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BannerDto&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.redirectionRoute, redirectionRoute) || other.redirectionRoute == redirectionRoute)&&const DeepCollectionEquality().equals(other._imageUrls, _imageUrls));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BannerDto&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.redirectionRoute, redirectionRoute) || other.redirectionRoute == redirectionRoute));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,type,title,subtitle,description,redirectionRoute,const DeepCollectionEquality().hash(_imageUrls));
+int get hashCode => Object.hash(runtimeType,id,type,url,title,subtitle,description,redirectionRoute);
 
 @override
 String toString() {
-  return 'BannerDto(id: $id, type: $type, title: $title, subtitle: $subtitle, description: $description, redirectionRoute: $redirectionRoute, imageUrls: $imageUrls)';
+  return 'BannerDto(id: $id, type: $type, url: $url, title: $title, subtitle: $subtitle, description: $description, redirectionRoute: $redirectionRoute)';
 }
 
 
@@ -260,7 +254,7 @@ abstract mixin class _$BannerDtoCopyWith<$Res> implements $BannerDtoCopyWith<$Re
   factory _$BannerDtoCopyWith(_BannerDto value, $Res Function(_BannerDto) _then) = __$BannerDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int type, String title, String? subtitle, String? description, String? redirectionRoute, List<String> imageUrls
+ int id, int type, String? url, String? title, String? subtitle, String? description, String? redirectionRoute
 });
 
 
@@ -277,16 +271,16 @@ class __$BannerDtoCopyWithImpl<$Res>
 
 /// Create a copy of BannerDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? title = null,Object? subtitle = freezed,Object? description = freezed,Object? redirectionRoute = freezed,Object? imageUrls = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? url = freezed,Object? title = freezed,Object? subtitle = freezed,Object? description = freezed,Object? redirectionRoute = freezed,}) {
   return _then(_BannerDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
+as int,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,redirectionRoute: freezed == redirectionRoute ? _self.redirectionRoute : redirectionRoute // ignore: cast_nullable_to_non_nullable
-as String?,imageUrls: null == imageUrls ? _self._imageUrls : imageUrls // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as String?,
   ));
 }
 

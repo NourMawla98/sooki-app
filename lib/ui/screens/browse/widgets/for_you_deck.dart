@@ -518,13 +518,18 @@ class _HeartButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
+      child: Container(
         width: 30,
         height: 30,
+        decoration: BoxDecoration(
+          color: AppColors.black.withValues(alpha: 0.55),
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.12)),
+        ),
         child: Center(
           child: FaIcon(
             isActive ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
-            size: 15,
+            size: 13,
             color: AppColors.auroraPink,
           ),
         ),
@@ -536,6 +541,7 @@ class _HeartButton extends StatelessWidget {
 /// Minimalistic skeleton placeholder for [ForYouDeck]. A single shimmering
 /// rounded rectangle matching the deck's 230px height and 14px radius —
 /// communicates "For You card is loading" without faking internal UI.
+// SKELETON LOCKED — appearance approved 2026-05-12. Do not modify.
 class ForYouDeckSkeleton extends StatelessWidget {
   const ForYouDeckSkeleton({super.key});
 
@@ -543,9 +549,16 @@ class ForYouDeckSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-      child: SizedBox(
-        height: 230,
-        child: SkeletonShimmer(borderRadius: BorderRadius.circular(14)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 230,
+            child: SkeletonShimmer(borderRadius: BorderRadius.circular(14)),
+          ),
+        ],
       ),
     );
   }

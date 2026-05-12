@@ -15,20 +15,26 @@ class BannerApi {
   BannerApi(@Named(apiClientKey) this._dio);
 
   /// Fetches banners for a specific banner type
+  /// Returns a list with one banner for the given type, or empty if none configured.
   Future<Either<ApiFailure, List<BannerDto>>> getBanners({
     required BannerType type,
   }) async {
     return executeRequest(
       client: _dio,
       method: HttpMethod.get,
-      path: 'client/banners',
+      path: 'customer/banners',
       queryParameters: {'Type': type.value},
       operationName: 'getBanners',
       successParser: (response) {
-        final List<dynamic> data = response.data['data'] as List<dynamic>;
-        return data
-            .map((json) => BannerDto.fromJson(json as Map<String, dynamic>))
-            .toList();
+        final data = response.data['data'];
+        if (data == null) return <BannerDto>[];
+        if (data is List) {
+          return data
+              .whereType<Map<String, dynamic>>()
+              .map(BannerDto.fromJson)
+              .toList();
+        }
+        return <BannerDto>[];
       },
     );
   }

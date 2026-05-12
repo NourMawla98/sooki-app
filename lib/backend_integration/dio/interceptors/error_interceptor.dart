@@ -10,11 +10,8 @@ class ErrorInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    final message = _resolveMessage(err);
-
-    // 401 is handled by AuthInterceptor (token refresh + retry) — never reaches here
-    ToastService.instance.showError(message);
-
+    // 401 is handled by AuthInterceptor (token refresh + retry) — never reaches here.
+    ToastService.instance.showError(_resolveMessage(err));
     handler.next(err);
   }
 

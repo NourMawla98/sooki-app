@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 
+// SKELETON LOCKED — appearance approved 2026-05-12. Do not modify.
 /// Theme-aware skeleton placeholder. A light highlight band repeatedly pans
 /// across a muted base, signaling that real content is loading. Drop it
 /// anywhere a network image, list row, or text block is being fetched.
@@ -45,7 +46,7 @@ class _SkeletonShimmerState extends State<SkeletonShimmer>
         final isDark = ThemeService.instance.isDarkMode;
         final base = isDark
             ? AppColors.white.withValues(alpha: 0.14)
-            : AppColors.gray200;
+            : AppColors.skeletonBase;
         final highlight = isDark
             ? AppColors.white.withValues(alpha: 0.40)
             : AppColors.white.withValues(alpha: 0.8);

@@ -382,6 +382,7 @@ class _HeartButton extends StatelessWidget {
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 
+// SKELETON LOCKED — appearance approved 2026-05-12. Do not modify.
 class ProductGridSkeleton extends StatelessWidget {
   const ProductGridSkeleton({super.key});
 
@@ -399,14 +400,14 @@ class ProductGridSkeleton extends StatelessWidget {
           childAspectRatio: 0.70,
         ),
         itemCount: 6,
-        itemBuilder: (_, _) => const _ProductGridCardSkeleton(),
+        itemBuilder: (_, _) => const ProductGridCardSkeleton(),
       ),
     );
   }
 }
 
-class _ProductGridCardSkeleton extends StatelessWidget {
-  const _ProductGridCardSkeleton();
+class ProductGridCardSkeleton extends StatelessWidget {
+  const ProductGridCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

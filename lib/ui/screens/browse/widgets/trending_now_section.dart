@@ -1,17 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
-import '../../../../data/mock_products.dart';
-import '../../../../models/product.dart';
+import '../../../../backend_integration/apis/items_api.dart';
+import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
+import '../../../../backend_integration/dtos/item/trending_item_dto.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
+import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
-/// Heat-badge spec: emoji, label, and per-badge glow color.
 class _HeatBadgeSpec {
   final String emoji;
   final String label;
@@ -28,23 +28,43 @@ const List<_HeatBadgeSpec> _heatBadges = [
   _HeatBadgeSpec('✨', 'BUZZING',  AppColors.auroraPink),
 ];
 
-/// Section 3 — Trending Now.
-///
-/// Horizontal scroll of heat-glow product cards. Each card shows a thumbnail,
-/// name, price, and a rotating heat badge (ON FIRE · VIRAL · HYPED · SURGING
-/// · RARE · PEAK · BUZZING) cycling by card position. Uses the first 6
-/// products from [mockBrowseProducts].
-class TrendingNowSection extends StatelessWidget {
-  final List<Product> products;
+class TrendingNowSection extends StatefulWidget {
+  const TrendingNowSection({super.key});
 
-  const TrendingNowSection({super.key, List<Product>? products})
-    : products = products ?? const <Product>[];
+  @override
+  State<TrendingNowSection> createState() => _TrendingNowSectionState();
+}
+
+class _TrendingNowSectionState extends State<TrendingNowSection>
+    with AutoRefreshMixin {
+  List<TrendingItemDto>? _items; // null = loading
+  bool _isError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetch();
+  }
+
+  Future<void> _fetch() async {
+    setState(() { _items = null; _isError = false; });
+    final result = await serviceLocator<ItemsApi>().getTrendingItems();
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() => _isError = true),
+      (items) => setState(() => _items = items),
+    );
+  }
+
+  @override
+  Future<void> onRefresh() => _fetch();
 
   @override
   Widget build(BuildContext context) {
-    final list = products.isEmpty
-        ? mockBrowseProducts.take(6).toList()
-        : products;
+    final items = _items;
+
+    // Hide section entirely if loaded but empty
+    if (items != null && items.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -61,30 +81,59 @@ class TrendingNowSection extends StatelessWidget {
           const SizedBox(height: 12),
           SizedBox(
             height: 170,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.zero,
-              itemCount: list.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 10),
-              itemBuilder: (context, i) => _TrendingCard(
-                product: list[i],
-                heatIndex: i,
-              ),
-            ),
+            child: _isError
+                ? _buildError()
+                : items == null
+                    ? _buildSkeleton()
+                    : _buildList(items),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildSkeleton() {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemCount: 4,
+      separatorBuilder: (_, _) => const SizedBox(width: 10),
+      itemBuilder: (_, _) => const TrendingCardSkeleton(),
+    );
+  }
+
+  Widget _buildError() {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemCount: 4,
+      separatorBuilder: (_, _) => const SizedBox(width: 10),
+      itemBuilder: (_, _) => const TrendingCardSkeleton(),
+    );
+  }
+
+  Widget _buildList(List<TrendingItemDto> items) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemCount: items.length,
+      separatorBuilder: (_, _) => const SizedBox(width: 10),
+      itemBuilder: (context, i) => _TrendingCard(
+        item: items[i],
+        heatIndex: i,
+      ),
+    );
+  }
 }
 
-
 class _TrendingCard extends StatelessWidget {
-  final Product product;
+  final TrendingItemDto item;
   final int heatIndex;
 
-  const _TrendingCard({required this.product, required this.heatIndex});
+  const _TrendingCard({required this.item, required this.heatIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +143,7 @@ class _TrendingCard extends StatelessWidget {
         final isDark = ThemeService.instance.isDarkMode;
         final cardBg = isDark
             ? AppColors.white.withValues(alpha: 0.04)
-            : AppColors.primaryPurple.withValues(alpha: 0.04);
+            : AppColors.white;
         final cardBorder = isDark
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.primaryPurple.withValues(alpha: 0.15);
@@ -115,7 +164,7 @@ class _TrendingCard extends StatelessWidget {
                   onTap: () => Navigator.pushNamed(
                     context,
                     itemDetailsScreenRoute,
-                    arguments: product,
+                    arguments: item.id,
                   ),
                   child: Container(
                     padding: const EdgeInsets.all(8),
@@ -129,11 +178,11 @@ class _TrendingCard extends StatelessWidget {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: _ProductImage(url: product.thumbnailUrl),
+                          child: _ItemImage(url: item.imageUrl),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          product.name,
+                          item.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.captionSmall.copyWith(
@@ -145,7 +194,7 @@ class _TrendingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '\$${product.price.toStringAsFixed(2)}',
+                          '\$${item.price.toStringAsFixed(item.price.truncateToDouble() == item.price ? 0 : 2)}',
                           style: AppTextStyles.auroraMonoPrice.copyWith(
                             color: AppColors.auroraElectricBlue,
                             fontSize: 12,
@@ -173,45 +222,47 @@ class _TrendingCard extends StatelessWidget {
   }
 }
 
-class _ProductImage extends StatelessWidget {
+class _ItemImage extends StatelessWidget {
   final String url;
-  const _ProductImage({required this.url});
+  const _ItemImage({required this.url});
 
   static const double _height = 110;
 
+  Widget get _fallback => Container(
+        width: double.infinity,
+        height: _height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.auroraPink.withValues(alpha: 0.3),
+              AppColors.auroraPurple.withValues(alpha: 0.3),
+            ],
+          ),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
-    final fallback = Container(
-      width: double.infinity,
-      height: _height,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.auroraPink.withValues(alpha: 0.3),
-            AppColors.auroraPurple.withValues(alpha: 0.3),
-          ],
-        ),
-      ),
-    );
-
-    if (url.isEmpty) return fallback;
-
+    if (url.isEmpty) return _fallback;
     return SizedBox(
       width: double.infinity,
       height: _height,
-      child: Image.asset(
+      child: Image.network(
         url,
         fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => fallback,
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return SkeletonShimmer(borderRadius: BorderRadius.circular(10));
+        },
+        errorBuilder: (_, _, _) => _fallback,
       ),
     );
   }
 }
 
-/// Placeholder card shown while trending products are loading. Mirrors the
-/// real card's 130×170 frame with shimmering blocks for image, name, price.
+// SKELETON LOCKED — appearance approved 2026-05-12. Do not modify.
 class TrendingCardSkeleton extends StatelessWidget {
   const TrendingCardSkeleton({super.key});
 
