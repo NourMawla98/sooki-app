@@ -3,10 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../data/mock_products.dart';
-import '../../../data/mock_taxonomy.dart';
+import '../../../backend_integration/apis/colors_api.dart';
+import '../../../backend_integration/apis/items_api.dart';
+import '../../../backend_integration/apis/size_standards_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
+import '../../../backend_integration/dtos/item/color_dto.dart';
+import '../../../backend_integration/dtos/item/item_list_item_dto.dart';
+import '../../../backend_integration/dtos/item/size_standard_dto.dart';
 import '../../../enums/sort_option.dart';
-import '../../../models/product.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -19,11 +23,8 @@ import '../shopping/widgets/sort_sheet.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 import 'category_detail_args.dart';
 
-/// Screen 2 — detail categories + products.
-///
-/// Receives [CategoryDetailArgs] via route arguments.
-/// Sticky zone (breadcrumb + L3 chip row + sort/filter) stays fixed at top
-/// while the product grid scrolls underneath it.
+const _take = 6;
+
 class CategoryDetailScreen extends StatefulWidget {
   final CategoryDetailArgs args;
 
@@ -35,103 +36,127 @@ class CategoryDetailScreen extends StatefulWidget {
 
 class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   String? _selectedDetail;
-
-  late final List<Product> _allProducts = [
-    ...mockBrowseProducts,
-    ...mockDealProducts,
-  ];
-
-  late final double _priceMin = _allProducts
-      .map((p) => p.price)
-      .reduce((a, b) => a < b ? a : b)
-      .floorToDouble();
-  late final double _priceMax = _allProducts
-      .map((p) => p.price)
-      .reduce((a, b) => a > b ? a : b)
-      .ceilToDouble();
-
-  late FilterState _filterState = FilterState.initial(
-    priceMin: _priceMin,
-    priceMax: _priceMax,
-  );
+  int? _selectedDetailId;
   SortOption _sortOption = SortOption.newest;
+  FilterState _filterState = FilterState.initial(priceMin: 0.0, priceMax: 9999.0);
 
-  List<String> get _detailCategories {
-    final sub = findSubCategory(
-      widget.args.mainCategory,
-      widget.args.subCategory ?? '',
+  final List<ItemListItemDto> _items = [];
+  int _totalCount = 0;
+  bool _isLoading = true;
+  bool _isLoadingMore = false;
+  bool _hasError = false;
+  bool _isLastPage = false;
+  int _skip = 0;
+
+  double _priceMin = 0.0;
+  double _priceMax = 9999.0;
+  List<ColorDto> _allColors = [];
+  List<SizeStandardDto> _allSizeStandards = [];
+  List<int> _availableSizeStandardIds = [];
+
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
+    _loadItems(reset: true);
+    _fetchFilterCatalogue();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchFilterCatalogue() async {
+    final colorResult = await serviceLocator<ColorsApi>().getColors();
+    final sizeResult =
+        await serviceLocator<SizeStandardsApi>().getSizeStandards();
+    if (!mounted) return;
+    colorResult.fold((_) {}, (colors) => setState(() => _allColors = colors));
+    sizeResult.fold(
+        (_) {}, (standards) => setState(() => _allSizeStandards = standards));
+  }
+
+  void _onScroll() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent - 300 &&
+        !_isLoadingMore &&
+        !_isLastPage) {
+      _loadItems();
+    }
+  }
+
+  Future<void> _loadItems({bool reset = false}) async {
+    if (!reset && (_isLoadingMore || _isLastPage)) return;
+
+    if (reset) {
+      setState(() {
+        _items.clear();
+        _skip = 0;
+        _isLastPage = false;
+        _isLoading = true;
+        _hasError = false;
+      });
+    } else {
+      setState(() => _isLoadingMore = true);
+    }
+
+    final price = _filterState.priceRange;
+    final result = await serviceLocator<ItemsApi>().getItems(
+      mainCategoryId: widget.args.mainCategory.id,
+      subCategoryId: widget.args.subCategory?.id,
+      detailCategoryId: _selectedDetailId,
+      sortBy: _sortOption.toSortBy(),
+      minPrice: price.start > _priceMin ? price.start : null,
+      maxPrice: price.end < _priceMax ? price.end : null,
+      colorIds: _filterState.colorIds.toList(),
+      sizeValueIds: _filterState.sizeValueIds.toList(),
+      skip: _skip,
+      take: _take,
     );
-    if (sub != null && sub.hasChildren) {
-      return sub.children.map((n) => n.label).toList();
-    }
-    // Fallback: show L2 subcategories of the main category.
-    final main = findCategory(widget.args.mainCategory);
-    if (main != null && main.hasChildren) {
-      return main.children.map((n) => n.label).toList();
-    }
-    return [];
+
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() {
+        _isLoading = false;
+        _isLoadingMore = false;
+        if (reset) _hasError = true;
+      }),
+      (page) => setState(() {
+        if (reset) {
+          _priceMin = page.priceMin;
+          _priceMax = page.priceMax > page.priceMin
+              ? page.priceMax
+              : (_priceMin + 9999.0);
+          _availableSizeStandardIds = page.availableSizeStandardIds;
+        }
+        _items.addAll(page.items);
+        _totalCount = page.totalCount;
+        _isLastPage = page.isLastPage;
+        _skip += page.items.length;
+        _isLoading = false;
+        _isLoadingMore = false;
+        _hasError = false;
+      }),
+    );
   }
 
-  List<Product> get _scopedProducts {
-    return _allProducts.where((p) {
-      if (p.category != widget.args.mainCategory) return false;
-      final sub = widget.args.subCategory;
-      if (sub != null && p.subCategory != sub) return false;
-      if (_selectedDetail != null && p.detailedCategory != _selectedDetail) {
-        return false;
-      }
-      return true;
-    }).toList();
+  void _onDetailSelected(String name) {
+    final isDeselecting = _selectedDetail == name;
+    setState(() {
+      _selectedDetail = isDeselecting ? null : name;
+      _selectedDetailId = isDeselecting
+          ? null
+          : widget.args.subCategory?.detailCategories
+              .where((d) => d.name == name)
+              .firstOrNull
+              ?.id;
+    });
+    _loadItems(reset: true);
   }
-
-  List<Product> get _displayProducts {
-    final filtered = _scopedProducts.where(_filterState.matches).toList();
-    switch (_sortOption) {
-      case SortOption.newest:
-        break;
-      case SortOption.priceLowToHigh:
-        filtered.sort((a, b) => a.price.compareTo(b.price));
-      case SortOption.priceHighToLow:
-        filtered.sort((a, b) => b.price.compareTo(a.price));
-      case SortOption.rating:
-        filtered.sort((a, b) => b.rating.compareTo(a.rating));
-      case SortOption.mostPopular:
-        filtered.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-    }
-    return filtered;
-  }
-
-  List<ColorVariant> get _availableColors {
-    final seen = <String>{};
-    final out = <ColorVariant>[];
-    for (final p in _scopedProducts) {
-      for (final c in p.colors) {
-        if (seen.add(c.name)) out.add(c);
-      }
-    }
-    return out;
-  }
-
-  List<SizeVariant> get _availableSizes {
-    final stocked = <String>{};
-    final seen = <String>{};
-    final out = <SizeVariant>[];
-    for (final p in _scopedProducts) {
-      for (final s in p.sizes) {
-        if (s.isAvailable) stocked.add(s.label);
-        if (seen.add(s.label)) out.add(s);
-      }
-    }
-    return [
-      for (final s in out)
-        SizeVariant(label: s.label, isAvailable: stocked.contains(s.label)),
-    ];
-  }
-
-  int get _filterCount => _filterState.activeCount(
-        priceMin: _priceMin,
-        priceMax: _priceMax,
-      );
 
   Future<void> _openSortSheet() async {
     final result = await showModalBottomSheet<SortOption>(
@@ -140,25 +165,46 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
       useSafeArea: true,
       builder: (_) => SortSheet(current: _sortOption),
     );
-    if (result != null && mounted) setState(() => _sortOption = result);
+    if (result != null && mounted) {
+      setState(() => _sortOption = result);
+      _loadItems(reset: true);
+    }
   }
 
   Future<void> _openFilterSheet() async {
+    final relevantStandards = _allSizeStandards
+        .where((s) => _availableSizeStandardIds.contains(s.id))
+        .toList();
     final result = await showModalBottomSheet<FilterState>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       useSafeArea: true,
       builder: (_) => FilterSheet(
-        initial: _filterState,
+        initial: _filterState.copyWith(
+          priceRange: RangeValues(
+            _filterState.priceRange.start.clamp(_priceMin, _priceMax),
+            _filterState.priceRange.end.clamp(_priceMin, _priceMax),
+          ),
+        ),
         priceMin: _priceMin,
         priceMax: _priceMax,
-        availableColors: _availableColors,
-        availableSizes: _availableSizes,
+        availableColors: _allColors,
+        availableSizeStandards: relevantStandards,
       ),
     );
-    if (result != null && mounted) setState(() => _filterState = result);
+    if (result != null && mounted) {
+      setState(() => _filterState = result);
+      _loadItems(reset: true);
+    }
   }
+
+  int get _filterCount =>
+      _filterState.activeCount(priceMin: _priceMin, priceMax: _priceMax);
+
+  List<String> get _detailCategories =>
+      widget.args.subCategory?.detailCategories.map((d) => d.name).toList() ??
+      [];
 
   @override
   Widget build(BuildContext context) {
@@ -172,14 +218,13 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
               isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
           body: Stack(
             children: [
-              if (isDark)
-                AuroraGlowBlob(
-                  top: -60,
-                  right: -60,
-                  size: 280,
-                  color: AppColors.auroraPurple,
-                  intensity: 0.18,
-                ),
+              AuroraGlowBlob(
+                top: -60,
+                right: -60,
+                size: 280,
+                color: AppColors.auroraPurple,
+                intensity: isDark ? 0.18 : 0.09,
+              ),
               AuroraGlowBlob(
                 bottom: 100,
                 left: -60,
@@ -191,46 +236,42 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── Rule #9 top bar ──────────────────────────────────
                     _TopBar(
-                      title: widget.args.subCategory ??
-                          widget.args.mainCategory,
+                      title: widget.args.subCategory?.name ??
+                          widget.args.mainCategory.name,
                       isDark: isDark,
                     ),
-                    // ── Sticky zone ──────────────────────────────────────
                     _StickyZone(
                       isDark: isDark,
-                      mainCategory: widget.args.mainCategory,
-                      subCategory: widget.args.subCategory,
+                      mainCategory: widget.args.mainCategory.name,
+                      subCategory: widget.args.subCategory?.name,
                       detailCategories: _detailCategories,
                       selectedDetail: _selectedDetail,
                       filterCount: _filterCount,
                       sortOption: _sortOption,
-                      productCount: _displayProducts.length,
-                      onDetailSelected: (label) => setState(
-                        () => _selectedDetail =
-                            _selectedDetail == label ? null : label,
-                      ),
+                      totalCount: _totalCount,
+                      onDetailSelected: _onDetailSelected,
                       onFilter: _openFilterSheet,
                       onSort: _openSortSheet,
                     ),
-                    // ── Product grid ─────────────────────────────────────
                     Expanded(
-                      child: _displayProducts.isEmpty
-                          ? _EmptyState(isDark: isDark)
-                          : GridView.builder(
-                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 32),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 0.70,
-                              ),
-                              itemCount: _displayProducts.length,
-                              itemBuilder: (_, i) =>
-                                  ProductGridCard(product: _displayProducts[i]),
-                            ),
+                      child: RefreshIndicator(
+                        onRefresh: () async => _loadItems(reset: true),
+                        color: AppColors.auroraPink,
+                        child: _isLoading
+                            ? _SkeletonGrid()
+                            : _hasError
+                                ? _ErrorState(onRetry: () => _loadItems(reset: true), isDark: isDark)
+                                : _items.isEmpty
+                                    ? _EmptyState(isDark: isDark)
+                                    : _ItemGrid(
+                                        items: _items,
+                                        isLoadingMore: _isLoadingMore,
+                                        isLastPage: _isLastPage,
+                                        scrollController: _scrollController,
+                                        isDark: isDark,
+                                      ),
+                      ),
                     ),
                   ],
                 ),
@@ -288,7 +329,7 @@ class _StickyZone extends StatelessWidget {
   final String? selectedDetail;
   final int filterCount;
   final SortOption sortOption;
-  final int productCount;
+  final int totalCount;
   final ValueChanged<String> onDetailSelected;
   final VoidCallback onFilter;
   final VoidCallback onSort;
@@ -301,7 +342,7 @@ class _StickyZone extends StatelessWidget {
     required this.selectedDetail,
     required this.filterCount,
     required this.sortOption,
-    required this.productCount,
+    required this.totalCount,
     required this.onDetailSelected,
     required this.onFilter,
     required this.onSort,
@@ -333,7 +374,6 @@ class _StickyZone extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Breadcrumb
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: Row(
@@ -348,14 +388,11 @@ class _StickyZone extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        '›',
-                        style: TextStyle(
-                          color: sepColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text('›',
+                          style: TextStyle(
+                              color: sepColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600)),
                     ),
                     Text(
                       mainCategory,
@@ -368,14 +405,11 @@ class _StickyZone extends StatelessWidget {
                     if (subCategory != null) ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          '›',
-                          style: TextStyle(
-                            color: sepColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: Text('›',
+                            style: TextStyle(
+                                color: sepColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600)),
                       ),
                       Text(
                         subCategory!,
@@ -389,7 +423,6 @@ class _StickyZone extends StatelessWidget {
                   ],
                 ),
               ),
-              // Detail category chip row
               if (detailCategories.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 AuroraDetailChipRow(
@@ -398,19 +431,16 @@ class _StickyZone extends StatelessWidget {
                   onSelected: onDetailSelected,
                 ),
               ],
-              // Sort + Filter + count
               SortFilterBar(
                 sortOption: sortOption,
                 filterCount: filterCount,
-                productCount: productCount,
+                productCount: totalCount,
                 onFilter: onFilter,
                 onSort: onSort,
               ),
               const SizedBox(height: 10),
-              // Divider
               Container(
                 height: 1,
-                margin: const EdgeInsets.symmetric(horizontal: 0),
                 color: dividerColor,
               ),
             ],
@@ -421,7 +451,124 @@ class _StickyZone extends StatelessWidget {
   }
 }
 
-// ─── Empty state ─────────────────────────────────────────────────────────────
+// ─── Item grid ────────────────────────────────────────────────────────────────
+
+class _ItemGrid extends StatelessWidget {
+  final List<ItemListItemDto> items;
+  final bool isLoadingMore;
+  final bool isLastPage;
+  final ScrollController scrollController;
+  final bool isDark;
+
+  const _ItemGrid({
+    required this.items,
+    required this.isLoadingMore,
+    required this.isLastPage,
+    required this.scrollController,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      controller: scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+          sliver: SliverGrid(
+            delegate: SliverChildBuilderDelegate(
+              (_, i) => ProductGridCard(item: items[i]),
+              childCount: items.length,
+            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 0.70,
+            ),
+          ),
+        ),
+        if (isLoadingMore)
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.auroraPurple,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        if (isLastPage && items.isNotEmpty)
+          SliverToBoxAdapter(
+            child: _EndLabel(isDark: isDark),
+          ),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+      ],
+    );
+  }
+}
+
+// ─── Skeleton grid ────────────────────────────────────────────────────────────
+
+class _SkeletonGrid extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 32),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.70,
+      ),
+      itemCount: 6,
+      itemBuilder: (_, _) => const ProductGridCardSkeleton(),
+    );
+  }
+}
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+class _ErrorState extends StatelessWidget {
+  final VoidCallback onRetry;
+  final bool isDark;
+  const _ErrorState({required this.onRetry, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark
+        ? AppColors.white.withValues(alpha: 0.55)
+        : AppColors.auroraPurple.withValues(alpha: 0.65);
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: SizedBox(
+        height: 300,
+        child: Center(
+          child: GestureDetector(
+            onTap: onRetry,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FaIcon(FontAwesomeIcons.arrowsRotate, size: 32, color: color),
+                const SizedBox(height: 10),
+                Text('Tap to retry',
+                    style: AppTextStyles.caption.copyWith(color: color)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _EmptyState extends StatelessWidget {
   final bool isDark;
@@ -436,17 +583,47 @@ class _EmptyState extends StatelessWidget {
         ? AppColors.white.withValues(alpha: 0.60)
         : AppColors.auroraPurple.withValues(alpha: 0.70);
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FaIcon(FontAwesomeIcons.boxOpen, size: 48, color: mutedIcon),
-          const SizedBox(height: 16),
-          Text(
-            'No products in this category yet',
-            style: AppTextStyles.bodyMedium.copyWith(color: mutedText),
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(FontAwesomeIcons.boxOpen, size: 48, color: mutedIcon),
+              const SizedBox(height: 16),
+              Text(
+                'No products in this category yet',
+                style: AppTextStyles.bodyMedium.copyWith(color: mutedText),
+              ),
+            ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EndLabel extends StatelessWidget {
+  final bool isDark;
+  const _EndLabel({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark
+        ? AppColors.white.withValues(alpha: 0.25)
+        : AppColors.auroraPurple.withValues(alpha: 0.35);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Center(
+        child: Text(
+          "— You're all caught up —",
+          style: AppTextStyles.captionSmall.copyWith(
+            color: color,
+            letterSpacing: 0.8,
+          ),
+        ),
       ),
     );
   }

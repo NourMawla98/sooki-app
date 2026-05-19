@@ -5,16 +5,16 @@ import '../../../../backend_integration/apis/items_api.dart';
 import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../../backend_integration/dtos/category/category_dto.dart';
 import '../../../../backend_integration/dtos/item/item_list_item_dto.dart';
-import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 import '../../../reusable_components/category_pill/aurora_category_l1_pill.dart';
+import '../../../reusable_components/product_card/product_grid_card.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
-const _take = 20;
+const _take = 6;
 
 class CategoriesArrivalsSection extends StatefulWidget {
   final ScrollController scrollController;
@@ -250,194 +250,7 @@ class _CategoriesArrivalsSectionState extends State<CategoriesArrivalsSection>
           childAspectRatio: 0.70,
         ),
         itemCount: _items.length,
-        itemBuilder: (_, i) => _NewArrivalCard(item: _items[i]),
-      ),
-    );
-  }
-}
-
-// ─── Item card ────────────────────────────────────────────────────────────────
-
-class _NewArrivalCard extends StatelessWidget {
-  final ItemListItemDto item;
-  const _NewArrivalCard({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: ThemeService.instance,
-      builder: (context, _) {
-        final isDark = ThemeService.instance.isDarkMode;
-        final cardBg = isDark ? AppColors.white.withValues(alpha: 0.04) : AppColors.white;
-        final shadow = isDark
-            ? null
-            : [BoxShadow(color: AppColors.shadowMedium, blurRadius: 8, offset: const Offset(0, 2))];
-        final border = isDark
-            ? Border.all(color: AppColors.white.withValues(alpha: 0.08))
-            : Border.all(color: AppColors.auroraPurple.withValues(alpha: 0.10));
-        final nameColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
-        final storeColor = isDark
-            ? AppColors.white.withValues(alpha: 0.45)
-            : AppColors.auroraPurple.withValues(alpha: 0.50);
-        final priceColor = isDark ? AppColors.auroraElectricBlue : AppColors.auroraPurple;
-        final origColor = isDark
-            ? AppColors.white.withValues(alpha: 0.35)
-            : AppColors.auroraPurple.withValues(alpha: 0.40);
-
-        final thumbnail = item.colorImages.isNotEmpty ? item.colorImages.first : null;
-        final hasDiscount = item.discountedPrice != null;
-
-        return GestureDetector(
-          onTap: () => Navigator.pushNamed(
-            context,
-            itemDetailsScreenRoute,
-            arguments: item.id,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(12),
-              border: border,
-              boxShadow: shadow,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(11),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Image
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (thumbnail != null)
-                          Image.network(
-                            thumbnail,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (_, child, progress) =>
-                                progress == null ? child : const SkeletonShimmer(),
-                            errorBuilder: (_, _, _) => _placeholder(),
-                          )
-                        else
-                          _placeholder(),
-                        if (hasDiscount)
-                          Positioned(
-                            top: 8, left: 8,
-                            child: _DiscountBadge(
-                              original: item.originalPrice,
-                              discounted: item.discountedPrice!,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  // Info
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          item.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.productName.copyWith(
-                            color: nameColor,
-                            fontSize: 11,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          item.storeName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.caption.copyWith(
-                            color: storeColor,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: [
-                            Text(
-                              _fmt(hasDiscount ? item.discountedPrice! : item.originalPrice),
-                              style: AppTextStyles.productPrice.copyWith(
-                                color: priceColor,
-                                fontSize: 13,
-                              ),
-                            ),
-                            if (hasDiscount) ...[
-                              const SizedBox(width: 5),
-                              Text(
-                                _fmt(item.originalPrice),
-                                style: AppTextStyles.productPrice.copyWith(
-                                  color: origColor,
-                                  fontSize: 10,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _placeholder() => Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.auroraPurple.withValues(alpha: 0.35),
-              AppColors.auroraPink.withValues(alpha: 0.20),
-            ],
-          ),
-        ),
-      );
-
-  String _fmt(double p) {
-    final hasDecimals = p.truncateToDouble() != p;
-    return '\$${p.toStringAsFixed(hasDecimals ? 2 : 0)}';
-  }
-}
-
-class _DiscountBadge extends StatelessWidget {
-  final double original;
-  final double discounted;
-  const _DiscountBadge({required this.original, required this.discounted});
-
-  @override
-  Widget build(BuildContext context) {
-    final pct = ((1 - discounted / original) * 100).round();
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        color: AppColors.auroraRed,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        '-$pct%',
-        style: AppTextStyles.badgeText.copyWith(
-          color: AppColors.white,
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
-          height: 1.0,
-        ),
+        itemBuilder: (_, i) => ProductGridCard(item: _items[i]),
       ),
     );
   }

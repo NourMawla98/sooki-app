@@ -3,12 +3,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../backend_integration/apis/auth_api.dart';
+import '../../../backend_integration/apis/profile_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../services/token_service.dart';
+import '../../../services/user_profile_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
@@ -28,8 +30,23 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   static final _auth = GetIt.instance<AuthService>();
 
+  @override
+  void initState() {
+    super.initState();
+    if (_auth.isSignedIn) _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final result = await serviceLocator<ProfileApi>().getProfile();
+    if (!mounted) return;
+    result.fold(
+      (_) => null,
+      (dto) => serviceLocator<UserProfileService>().updateFromDto(dto),
+    );
+  }
+
   Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
+    if (_auth.isSignedIn) await _loadProfile();
     if (mounted) setState(() {});
   }
 
@@ -268,6 +285,7 @@ class _SignOutRowState extends State<_SignOutRow> {
     }
     if (!mounted) return;
     await GetIt.instance<AuthService>().signOut();
+    await serviceLocator<UserProfileService>().clear();
     if (!mounted) return;
     Navigator.of(context).pushNamedAndRemoveUntil(signInScreenRoute, (_) => false);
     if (toastMessage != null) {

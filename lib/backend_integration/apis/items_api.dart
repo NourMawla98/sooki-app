@@ -11,6 +11,9 @@ typedef ItemsPage = ({
   List<ItemListItemDto> items,
   bool isLastPage,
   int totalCount,
+  double priceMin,
+  double priceMax,
+  List<int> availableSizeStandardIds,
 });
 
 @injectable
@@ -21,6 +24,13 @@ class ItemsApi {
 
   Future<Either<ApiFailure, ItemsPage>> getItems({
     int? mainCategoryId,
+    int? subCategoryId,
+    int? detailCategoryId,
+    int sortBy = 1,
+    double? minPrice,
+    double? maxPrice,
+    List<int> colorIds = const [],
+    List<int> sizeValueIds = const [],
     int skip = 0,
     int take = 20,
   }) {
@@ -31,22 +41,41 @@ class ItemsApi {
       queryParameters: {
         'Skip': skip,
         'Take': take,
-        'SortBy': 1, // Newest
+        'SortBy': sortBy,
         if (mainCategoryId != null) 'MainCategoryId': mainCategoryId,
+        if (subCategoryId != null) 'SubCategoryId': subCategoryId,
+        if (detailCategoryId != null) 'DetailCategoryId': detailCategoryId,
+        if (minPrice != null) 'MinPrice': minPrice,
+        if (maxPrice != null) 'MaxPrice': maxPrice,
+        if (colorIds.isNotEmpty) 'ColorIds': colorIds,
+        if (sizeValueIds.isNotEmpty) 'SizeValueIds': sizeValueIds,
       },
       operationName: 'getItems',
       successParser: (response) {
         final body = response.data as Map<String, dynamic>;
-        final isLastPage = body['isLastPage'] as bool? ?? true;
-        final totalCount = body['totalCount'] as int? ?? 0;
-        final data = body['data'];
-        final items = data is List
-            ? data
+        final data = body['data'] as Map<String, dynamic>? ?? {};
+        final isLastPage = data['isLastPage'] as bool? ?? true;
+        final totalCount = data['totalCount'] as int? ?? 0;
+        final priceMin = (data['priceMin'] as num?)?.toDouble() ?? 0.0;
+        final priceMax = (data['priceMax'] as num?)?.toDouble() ?? 9999.0;
+        final rawSizeIds = data['availableSizeStandardIds'] as List?;
+        final availableSizeStandardIds =
+            rawSizeIds?.map((e) => (e as num).toInt()).toList() ?? <int>[];
+        final rawItems = data['items'];
+        final items = rawItems is List
+            ? rawItems
                 .whereType<Map<String, dynamic>>()
                 .map(ItemListItemDto.fromJson)
                 .toList()
             : <ItemListItemDto>[];
-        return (items: items, isLastPage: isLastPage, totalCount: totalCount);
+        return (
+          items: items,
+          isLastPage: isLastPage,
+          totalCount: totalCount,
+          priceMin: priceMin,
+          priceMax: priceMax,
+          availableSizeStandardIds: availableSizeStandardIds,
+        );
       },
     );
   }

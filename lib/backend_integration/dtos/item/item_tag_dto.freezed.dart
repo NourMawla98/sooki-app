@@ -1,0 +1,201 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'item_tag_dto.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// dart format off
+T _$identity<T>(T value) => value;
+
+/// @nodoc
+mixin _$ItemTagDto {
+
+ int get id; String get name;
+/// Create a copy of ItemTagDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ItemTagDtoCopyWith<ItemTagDto> get copyWith => _$ItemTagDtoCopyWithImpl<ItemTagDto>(this as ItemTagDto, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemTagDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name);
+
+@override
+String toString() {
+  return 'ItemTagDto(id: $id, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ItemTagDtoCopyWith<$Res>  {
+  factory $ItemTagDtoCopyWith(ItemTagDto value, $Res Function(ItemTagDto) _then) = _$ItemTagDtoCopyWithImpl;
+@useResult
+$Res call({
+ int id, String name
+});
+
+
+
+
+}
+/// @nodoc
+class _$ItemTagDtoCopyWithImpl<$Res>
+    implements $ItemTagDtoCopyWith<$Res> {
+  _$ItemTagDtoCopyWithImpl(this._self, this._then);
+
+  final ItemTagDto _self;
+  final $Res Function(ItemTagDto) _then;
+
+/// Create a copy of ItemTagDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ItemTagDto].
+extension ItemTagDtoPatterns on ItemTagDto {
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ItemTagDto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ItemTagDto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ItemTagDto value)  $default,){
+final _that = this;
+switch (_that) {
+case _ItemTagDto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ItemTagDto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ItemTagDto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ItemTagDto() when $default != null:
+return $default(_that.id,_that.name);case _:
+  return orElse();
+
+}
+}
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name)  $default,) {final _that = this;
+switch (_that) {
+case _ItemTagDto():
+return $default(_that.id,_that.name);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name)?  $default,) {final _that = this;
+switch (_that) {
+case _ItemTagDto() when $default != null:
+return $default(_that.id,_that.name);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable(createToJson: false)
+
+class _ItemTagDto implements ItemTagDto {
+  const _ItemTagDto({required this.id, required this.name});
+  factory _ItemTagDto.fromJson(Map<String, dynamic> json) => _$ItemTagDtoFromJson(json);
+
+@override final  int id;
+@override final  String name;
+
+/// Create a copy of ItemTagDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ItemTagDtoCopyWith<_ItemTagDto> get copyWith => __$ItemTagDtoCopyWithImpl<_ItemTagDto>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemTagDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name);
+
+@override
+String toString() {
+  return 'ItemTagDto(id: $id, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ItemTagDtoCopyWith<$Res> implements $ItemTagDtoCopyWith<$Res> {
+  factory _$ItemTagDtoCopyWith(_ItemTagDto value, $Res Function(_ItemTagDto) _then) = __$ItemTagDtoCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, String name
+});
+
+
+
+
+}
+/// @nodoc
+class __$ItemTagDtoCopyWithImpl<$Res>
+    implements _$ItemTagDtoCopyWith<$Res> {
+  __$ItemTagDtoCopyWithImpl(this._self, this._then);
+
+  final _ItemTagDto _self;
+  final $Res Function(_ItemTagDto) _then;
+
+/// Create a copy of ItemTagDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,}) {
+  return _then(_ItemTagDto(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

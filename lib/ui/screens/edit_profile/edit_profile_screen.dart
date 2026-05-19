@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/profile_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../services/user_profile_service.dart';
@@ -26,6 +28,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _emailCtrl;
   late final TextEditingController _phoneCtrl;
   bool _saving = false;
+  String? _selectedCountryCode;
 
   @override
   void initState() {
@@ -35,6 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _lastNameCtrl  = TextEditingController(text: profile.lastName);
     _emailCtrl     = TextEditingController(text: profile.email);
     _phoneCtrl     = TextEditingController(text: profile.phone);
+    _selectedCountryCode = profile.phoneCountryCode;
   }
 
   @override
@@ -49,17 +53,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _saving = true);
-    await GetIt.instance<UserProfileService>().save(
+
+    final result = await serviceLocator<ProfileApi>().updateProfile(
       firstName: _firstNameCtrl.text.trim(),
-      lastName:  _lastNameCtrl.text.trim(),
-      email:     _emailCtrl.text.trim(),
-      phone:     _phoneCtrl.text.trim(),
+      lastName: _lastNameCtrl.text.trim(),
+      phoneCountryCode: _selectedCountryCode,
+      phoneNumber: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
     );
-    setState(() => _saving = false);
-    if (mounted) {
-      ToastService.instance.showSuccess('Profile updated');
-      Navigator.of(context).pop();
-    }
+
+    if (!mounted) return;
+
+    result.fold(
+      (failure) {
+        setState(() => _saving = false);
+      },
+      (message) async {
+        await serviceLocator<UserProfileService>().save(
+          firstName: _firstNameCtrl.text.trim(),
+          lastName: _lastNameCtrl.text.trim(),
+          email: _emailCtrl.text.trim(),
+          phone: _phoneCtrl.text.trim(),
+        );
+        if (!mounted) return;
+        setState(() => _saving = false);
+        ToastService.instance.showSuccess(message);
+        Navigator.of(context).pop();
+      },
+    );
   }
 
   @override
@@ -258,6 +278,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               const SizedBox(height: 8),
                               AuroraPhoneField(
                                 controller: _phoneCtrl,
+                                onCountryChanged: (dialCode) {
+                                  _selectedCountryCode = dialCode;
+                                },
                               ),
 
                               const SizedBox(height: 36),

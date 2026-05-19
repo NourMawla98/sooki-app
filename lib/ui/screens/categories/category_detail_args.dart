@@ -1,7 +1,10 @@
+import '../../../backend_integration/dtos/category/category_dto.dart';
+import '../../../backend_integration/dtos/category/sub_category_dto.dart';
+
 /// Route arguments for [CategoryDetailScreen].
 class CategoryDetailArgs {
-  final String mainCategory;
-  final String? subCategory;
+  final CategoryDto mainCategory;
+  final SubCategoryDto? subCategory;
 
   const CategoryDetailArgs({
     required this.mainCategory,

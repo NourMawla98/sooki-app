@@ -5,14 +5,15 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
 /// Subcategory tile — full-bleed image card with label below.
+/// Uses a network image URL; shows a grey placeholder when null or on error.
 class AuroraSubcategoryTile extends StatelessWidget {
-  final String imageAsset;
+  final String? imageUrl;
   final String label;
   final VoidCallback onTap;
 
   const AuroraSubcategoryTile({
     super.key,
-    required this.imageAsset,
+    this.imageUrl,
     required this.label,
     required this.onTap,
   });
@@ -29,16 +30,13 @@ class AuroraSubcategoryTile extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           child: Column(
             children: [
-              // Full-bleed image card
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(imageAsset, fit: BoxFit.cover,
-                    width: double.infinity),
+                  child: _buildImage(isDark),
                 ),
               ),
               const SizedBox(height: 5),
-              // Label below
               Text(
                 label,
                 textAlign: TextAlign.center,
@@ -56,6 +54,24 @@ class AuroraSubcategoryTile extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildImage(bool isDark) {
+    final placeholder = Container(
+      width: double.infinity,
+      color: AppColors.skeletonBase,
+    );
+
+    if (imageUrl == null || imageUrl!.isEmpty) return placeholder;
+
+    return Image.network(
+      imageUrl!,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      errorBuilder: (_, _, _) => placeholder,
+      loadingBuilder: (_, child, progress) =>
+          progress == null ? child : placeholder,
     );
   }
 }

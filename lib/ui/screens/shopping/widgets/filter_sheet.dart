@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../../models/product.dart';
+import '../../../../backend_integration/dtos/item/color_dto.dart';
+import '../../../../backend_integration/dtos/item/size_standard_dto.dart';
+import '../../../../backend_integration/dtos/item/size_value_dto.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
@@ -12,8 +14,8 @@ class FilterSheet extends StatefulWidget {
   final FilterState initial;
   final double priceMin;
   final double priceMax;
-  final List<ColorVariant> availableColors;
-  final List<SizeVariant> availableSizes;
+  final List<ColorDto> availableColors;
+  final List<SizeStandardDto> availableSizeStandards;
 
   const FilterSheet({
     super.key,
@@ -21,7 +23,7 @@ class FilterSheet extends StatefulWidget {
     required this.priceMin,
     required this.priceMax,
     required this.availableColors,
-    required this.availableSizes,
+    required this.availableSizeStandards,
   });
 
   @override
@@ -46,23 +48,17 @@ class _FilterSheetState extends State<FilterSheet> {
   void _togglePrice(RangeValues v) =>
       setState(() => _draft = _draft.copyWith(priceRange: v));
 
-  void _toggleColor(String name) {
-    final next = {..._draft.colors};
-    next.contains(name) ? next.remove(name) : next.add(name);
-    setState(() => _draft = _draft.copyWith(colors: next));
+  void _toggleColor(int id) {
+    final next = {..._draft.colorIds};
+    next.contains(id) ? next.remove(id) : next.add(id);
+    setState(() => _draft = _draft.copyWith(colorIds: next));
   }
 
-  void _toggleSize(String label) {
-    final next = {..._draft.sizes};
-    next.contains(label) ? next.remove(label) : next.add(label);
-    setState(() => _draft = _draft.copyWith(sizes: next));
+  void _toggleSize(int id) {
+    final next = {..._draft.sizeValueIds};
+    next.contains(id) ? next.remove(id) : next.add(id);
+    setState(() => _draft = _draft.copyWith(sizeValueIds: next));
   }
-
-  void _setRating(int stars) => setState(() {
-        _draft = _draft.copyWith(
-          minRating: _draft.minRating == stars ? 0 : stars,
-        );
-      });
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +70,9 @@ class _FilterSheetState extends State<FilterSheet> {
         final resetEnabled = _activeCount > 0;
 
         final mq = MediaQuery.of(context);
-        final maxScrollHeight = (mq.size.height - mq.viewPadding.top - mq.viewPadding.bottom) * 0.60;
+        final maxScrollHeight =
+            (mq.size.height - mq.viewPadding.top - mq.viewPadding.bottom) *
+                0.60;
 
         return DecoratedBox(
           decoration: BoxDecoration(
@@ -84,8 +82,7 @@ class _FilterSheetState extends State<FilterSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            const SizedBox(height: 10),
-              // Header
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -124,11 +121,14 @@ class _FilterSheetState extends State<FilterSheet> {
                             padding: const EdgeInsets.all(1.5),
                             child: DecoratedBox(
                               decoration: BoxDecoration(
-                                color: isDark ? AppColors.auroraDeepBase : AppColors.white,
+                                color: isDark
+                                    ? AppColors.auroraDeepBase
+                                    : AppColors.white,
                                 borderRadius: BorderRadius.circular(6.5),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 7),
                                 child: ShaderMask(
                                   shaderCallback: (b) => const LinearGradient(
                                     colors: AppColors.auroraGradient,
@@ -172,67 +172,70 @@ class _FilterSheetState extends State<FilterSheet> {
                         isDark: isDark,
                         onChanged: _togglePrice,
                       ),
-                      const SizedBox(height: 14),
-                      _FilterDropdown(
-                        label: 'COLOR',
-                        isDark: isDark,
-                        preview: _ColorTriggerPreview(
-                          colors: widget.availableColors,
-                          selected: _draft.colors,
+                      if (widget.availableColors.isNotEmpty) ...[
+                        const SizedBox(height: 14),
+                        _FilterDropdown(
+                          label: 'COLOR',
                           isDark: isDark,
+                          searchable: true,
+                          searchHint: 'Search colors…',
+                          preview: _ColorTriggerPreview(
+                            colors: widget.availableColors,
+                            selectedIds: _draft.colorIds,
+                            isDark: isDark,
+                          ),
+                          childrenBuilder: (q) {
+                            final filtered = widget.availableColors
+                                .where((c) => c.name
+                                    .toLowerCase()
+                                    .contains(q.toLowerCase()))
+                                .toList();
+                            return [
+                              for (var i = 0; i < filtered.length; i++)
+                                _ColorItem(
+                                  color: filtered[i],
+                                  isSelected:
+                                      _draft.colorIds.contains(filtered[i].id),
+                                  isDark: isDark,
+                                  isLast: i == filtered.length - 1,
+                                  onTap: () => _toggleColor(filtered[i].id),
+                                ),
+                            ];
+                          },
                         ),
-                        children: [
-                          for (var i = 0;
-                              i < widget.availableColors.length;
-                              i++)
-                            _ColorItem(
-                              variant: widget.availableColors[i],
-                              isSelected: _draft.colors
-                                  .contains(widget.availableColors[i].name),
-                              isDark: isDark,
-                              isLast:
-                                  i == widget.availableColors.length - 1,
-                              onTap: () => _toggleColor(
-                                  widget.availableColors[i].name),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      _FilterDropdown(
-                        label: 'SIZE',
-                        isDark: isDark,
-                        preview: _SizeTriggerPreview(
-                          sizes: widget.availableSizes,
-                          selected: _draft.sizes,
+                      ],
+                      for (final standard in widget.availableSizeStandards) ...[
+                        const SizedBox(height: 14),
+                        _FilterDropdown(
+                          label: standard.name.toUpperCase(),
                           isDark: isDark,
+                          searchable: true,
+                          searchHint: 'Search sizes…',
+                          preview: _SizeTriggerPreview(
+                            standard: standard,
+                            selectedIds: _draft.sizeValueIds,
+                            isDark: isDark,
+                          ),
+                          childrenBuilder: (q) {
+                            final filtered = standard.values
+                                .where((v) => v.displayValue
+                                    .toLowerCase()
+                                    .contains(q.toLowerCase()))
+                                .toList();
+                            return [
+                              for (var i = 0; i < filtered.length; i++)
+                                _SizeItem(
+                                  sizeValue: filtered[i],
+                                  isSelected: _draft.sizeValueIds
+                                      .contains(filtered[i].id),
+                                  isDark: isDark,
+                                  isLast: i == filtered.length - 1,
+                                  onTap: () => _toggleSize(filtered[i].id),
+                                ),
+                            ];
+                          },
                         ),
-                        children: [
-                          for (var i = 0;
-                              i < widget.availableSizes.length;
-                              i++)
-                            _SizeItem(
-                              variant: widget.availableSizes[i],
-                              isSelected: _draft.sizes.contains(
-                                  widget.availableSizes[i].label),
-                              isDark: isDark,
-                              isLast:
-                                  i == widget.availableSizes.length - 1,
-                              onTap: () => widget.availableSizes[i]
-                                      .isAvailable
-                                  ? _toggleSize(
-                                      widget.availableSizes[i].label)
-                                  : null,
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      _SectionHeading('Rating', isDark: isDark),
-                      const SizedBox(height: 8),
-                      _RatingSection(
-                        min: _draft.minRating,
-                        isDark: isDark,
-                        onChanged: _setRating,
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -240,7 +243,7 @@ class _FilterSheetState extends State<FilterSheet> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 20),
                 child: AuroraPrimaryButton(
-                  text: 'APPLY',
+                  text: 'Apply',
                   height: 48,
                   onPressed: () => Navigator.of(context).pop(_draft),
                 ),
@@ -360,19 +363,23 @@ class _GradientPriceText extends StatelessWidget {
   }
 }
 
-// ─── Cohesive dropdown ────────────────────────────────────────────────────────
+// ─── Collapsible dropdown ─────────────────────────────────────────────────────
 
 class _FilterDropdown extends StatefulWidget {
   final String label;
   final bool isDark;
   final Widget preview;
-  final List<Widget> children;
+  final bool searchable;
+  final String searchHint;
+  final List<Widget> Function(String query) childrenBuilder;
 
   const _FilterDropdown({
     required this.label,
     required this.isDark,
     required this.preview,
-    required this.children,
+    required this.childrenBuilder,
+    this.searchable = false,
+    this.searchHint = 'Search…',
   });
 
   @override
@@ -381,6 +388,14 @@ class _FilterDropdown extends StatefulWidget {
 
 class _FilterDropdownState extends State<_FilterDropdown> {
   bool _expanded = false;
+  String _query = '';
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -390,11 +405,12 @@ class _FilterDropdownState extends State<_FilterDropdown> {
     final borderColor = widget.isDark
         ? AppColors.white.withValues(alpha: 0.12)
         : AppColors.auroraPurple.withValues(alpha: 0.18);
-    final labelColor =
-        widget.isDark ? AppColors.white : AppColors.primaryPurple;
+    final labelColor = widget.isDark ? AppColors.white : AppColors.primaryPurple;
     final chevronColor = widget.isDark
         ? AppColors.white.withValues(alpha: 0.40)
         : AppColors.auroraPurple.withValues(alpha: 0.40);
+
+    final children = widget.childrenBuilder(_query);
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 220),
@@ -409,7 +425,6 @@ class _FilterDropdownState extends State<_FilterDropdown> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Trigger row
             GestureDetector(
               onTap: () => setState(() => _expanded = !_expanded),
               behavior: HitTestBehavior.opaque,
@@ -441,20 +456,42 @@ class _FilterDropdownState extends State<_FilterDropdown> {
                 ),
               ),
             ),
-            // Fixed-height scrollable panel — same container, separated by a divider.
-            // Capped at 220 px (~5 items); scrolls independently within that box.
             if (_expanded) ...[
               Container(height: 1, color: borderColor),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 220),
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: widget.children,
+              if (widget.searchable)
+                _SearchField(
+                  controller: _controller,
+                  hint: widget.searchHint,
+                  isDark: widget.isDark,
+                  borderColor: borderColor,
+                  onChanged: (v) => setState(() => _query = v),
+                ),
+              if (children.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Center(
+                    child: Text(
+                      'No results',
+                      style: AppTextStyles.caption.copyWith(
+                        color: widget.isDark
+                            ? AppColors.white.withValues(alpha: 0.35)
+                            : AppColors.primaryPurple.withValues(alpha: 0.40),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 220),
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: children,
+                    ),
                   ),
                 ),
-              ),
             ],
           ],
         ),
@@ -463,18 +500,97 @@ class _FilterDropdownState extends State<_FilterDropdown> {
   }
 }
 
-// ─── Shared checkbox ─────────────────────────────────────────────────────────
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final bool isDark;
+  final Color borderColor;
+  final ValueChanged<String> onChanged;
+
+  const _SearchField({
+    required this.controller,
+    required this.hint,
+    required this.isDark,
+    required this.borderColor,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hintColor = isDark
+        ? AppColors.white.withValues(alpha: 0.30)
+        : AppColors.primaryPurple.withValues(alpha: 0.35);
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final iconColor = isDark
+        ? AppColors.white.withValues(alpha: 0.35)
+        : AppColors.primaryPurple.withValues(alpha: 0.40);
+    final fieldBg = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.primaryPurple.withValues(alpha: 0.06);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+          child: Container(
+            height: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: fieldBg,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                FaIcon(FontAwesomeIcons.magnifyingGlass, size: 11, color: iconColor),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    onChanged: onChanged,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: textColor,
+                      fontSize: 13,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: hint,
+                      hintStyle: AppTextStyles.caption.copyWith(
+                        color: hintColor,
+                        fontSize: 13,
+                      ),
+                      isDense: true,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+                if (controller.text.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      controller.clear();
+                      onChanged('');
+                    },
+                    child: FaIcon(FontAwesomeIcons.xmark, size: 11, color: iconColor),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        Container(height: 1, color: borderColor),
+      ],
+    );
+  }
+}
+
+// ─── Shared checkbox ──────────────────────────────────────────────────────────
 
 class _CheckBox extends StatelessWidget {
   final bool isChecked;
   final bool isDark;
-  final bool disabled;
 
-  const _CheckBox({
-    required this.isChecked,
-    required this.isDark,
-    this.disabled = false,
-  });
+  const _CheckBox({required this.isChecked, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -491,18 +607,13 @@ class _CheckBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: const Center(
-          child: FaIcon(FontAwesomeIcons.check,
-              size: 11, color: AppColors.white),
+          child: FaIcon(FontAwesomeIcons.check, size: 11, color: AppColors.white),
         ),
       );
     }
-    final borderColor = disabled
-        ? (isDark
-            ? AppColors.white.withValues(alpha: 0.12)
-            : AppColors.primaryPurple.withValues(alpha: 0.12))
-        : (isDark
-            ? AppColors.white.withValues(alpha: 0.22)
-            : AppColors.primaryPurple.withValues(alpha: 0.25));
+    final borderColor = isDark
+        ? AppColors.white.withValues(alpha: 0.22)
+        : AppColors.primaryPurple.withValues(alpha: 0.25);
     return Container(
       width: 20,
       height: 20,
@@ -514,30 +625,31 @@ class _CheckBox extends StatelessWidget {
   }
 }
 
-// ─── Color dropdown ───────────────────────────────────────────────────────────
+// ─── Color helpers ────────────────────────────────────────────────────────────
+
+Color _hexToColor(String hex) {
+  final c = hex.replaceAll('#', '');
+  return Color(int.parse('FF$c', radix: 16));
+}
+
+// ─── Color trigger preview ────────────────────────────────────────────────────
 
 class _ColorTriggerPreview extends StatelessWidget {
-  final List<ColorVariant> colors;
-  final Set<String> selected;
+  final List<ColorDto> colors;
+  final Set<int> selectedIds;
   final bool isDark;
 
   const _ColorTriggerPreview({
     required this.colors,
-    required this.selected,
+    required this.selectedIds,
     required this.isDark,
   });
 
-  Color _hex(String hex) {
-    final c = hex.replaceAll('#', '');
-    return Color(int.parse('FF$c', radix: 16));
-  }
-
   @override
   Widget build(BuildContext context) {
-    final selectedVariants =
-        colors.where((c) => selected.contains(c.name)).toList();
+    final selected = colors.where((c) => selectedIds.contains(c.id)).toList();
 
-    if (selectedVariants.isEmpty) {
+    if (selected.isEmpty) {
       return Text(
         'All colors',
         style: AppTextStyles.caption.copyWith(
@@ -551,8 +663,8 @@ class _ColorTriggerPreview extends StatelessWidget {
     }
 
     const maxDots = 4;
-    final visible = selectedVariants.take(maxDots).toList();
-    final overflow = selectedVariants.length - visible.length;
+    final visible = selected.take(maxDots).toList();
+    final overflow = selected.length - visible.length;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -564,7 +676,7 @@ class _ColorTriggerPreview extends StatelessWidget {
               width: 14,
               height: 14,
               decoration: BoxDecoration(
-                color: _hex(visible[i].hexCode),
+                color: _hexToColor(visible[i].hexCode),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: AppColors.white.withValues(alpha: 0.25),
@@ -591,24 +703,19 @@ class _ColorTriggerPreview extends StatelessWidget {
 }
 
 class _ColorItem extends StatelessWidget {
-  final ColorVariant variant;
+  final ColorDto color;
   final bool isSelected;
   final bool isDark;
   final bool isLast;
   final VoidCallback onTap;
 
   const _ColorItem({
-    required this.variant,
+    required this.color,
     required this.isSelected,
     required this.isDark,
     required this.isLast,
     required this.onTap,
   });
-
-  Color _hex(String hex) {
-    final c = hex.replaceAll('#', '');
-    return Color(int.parse('FF$c', radix: 16));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -628,7 +735,8 @@ class _ColorItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             child: Row(
               children: [
                 _CheckBox(isChecked: isSelected, isDark: isDark),
@@ -637,7 +745,7 @@ class _ColorItem extends StatelessWidget {
                   width: 20,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: _hex(variant.hexCode),
+                    color: _hexToColor(color.hexCode),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isDark
@@ -648,7 +756,7 @@ class _ColorItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  variant.name,
+                  color.name,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: nameColor,
                     fontWeight:
@@ -666,25 +774,25 @@ class _ColorItem extends StatelessWidget {
   }
 }
 
-// ─── Size dropdown ────────────────────────────────────────────────────────────
+// ─── Size trigger preview ─────────────────────────────────────────────────────
 
 class _SizeTriggerPreview extends StatelessWidget {
-  final List<SizeVariant> sizes;
-  final Set<String> selected;
+  final SizeStandardDto standard;
+  final Set<int> selectedIds;
   final bool isDark;
 
   const _SizeTriggerPreview({
-    required this.sizes,
-    required this.selected,
+    required this.standard,
+    required this.selectedIds,
     required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final selectedLabels =
-        sizes.where((s) => selected.contains(s.label)).map((s) => s.label).toList();
+    final selected =
+        standard.values.where((v) => selectedIds.contains(v.id)).toList();
 
-    if (selectedLabels.isEmpty) {
+    if (selected.isEmpty) {
       return Text(
         'All sizes',
         style: AppTextStyles.caption.copyWith(
@@ -697,8 +805,9 @@ class _SizeTriggerPreview extends StatelessWidget {
       );
     }
 
-    final preview = selectedLabels.take(3).join(', ');
-    final overflow = selectedLabels.length - 3;
+    final labels = selected.map((v) => v.displayValue).toList();
+    final preview = labels.take(3).join(', ');
+    final overflow = labels.length - 3;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -714,7 +823,7 @@ class _SizeTriggerPreview extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
-            '${selectedLabels.length}',
+            '${labels.length}',
             style: AppTextStyles.captionSmall.copyWith(
               color: AppColors.white,
               fontSize: 10,
@@ -739,14 +848,14 @@ class _SizeTriggerPreview extends StatelessWidget {
 }
 
 class _SizeItem extends StatelessWidget {
-  final SizeVariant variant;
+  final SizeValueDto sizeValue;
   final bool isSelected;
   final bool isDark;
   final bool isLast;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const _SizeItem({
-    required this.variant,
+    required this.sizeValue,
     required this.isSelected,
     required this.isDark,
     required this.isLast,
@@ -758,16 +867,11 @@ class _SizeItem extends StatelessWidget {
     final dividerColor = isDark
         ? AppColors.white.withValues(alpha: 0.06)
         : AppColors.auroraPurple.withValues(alpha: 0.08);
-    final isAvailable = variant.isAvailable;
-    final nameColor = !isAvailable
-        ? (isDark
-            ? AppColors.white.withValues(alpha: 0.28)
-            : AppColors.primaryPurple.withValues(alpha: 0.28))
-        : isSelected
-            ? (isDark ? AppColors.white : AppColors.auroraPurple)
-            : (isDark
-                ? AppColors.white.withValues(alpha: 0.85)
-                : AppColors.primaryPurple);
+    final nameColor = isSelected
+        ? (isDark ? AppColors.white : AppColors.auroraPurple)
+        : (isDark
+            ? AppColors.white.withValues(alpha: 0.85)
+            : AppColors.primaryPurple);
 
     return GestureDetector(
       onTap: onTap,
@@ -776,133 +880,28 @@ class _SizeItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             child: Row(
               children: [
-                _CheckBox(
-                  isChecked: isSelected && isAvailable,
-                  isDark: isDark,
-                  disabled: !isAvailable,
-                ),
+                _CheckBox(isChecked: isSelected, isDark: isDark),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    variant.label,
+                    sizeValue.displayValue,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: nameColor,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w600,
                       fontSize: 13,
-                      decoration: !isAvailable
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                      decorationColor: nameColor,
                     ),
                   ),
                 ),
-                if (!isAvailable)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.auroraRed.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'Out of stock',
-                      style: AppTextStyles.captionSmall.copyWith(
-                        color: AppColors.auroraRed,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),
           if (!isLast) Container(height: 1, color: dividerColor),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Rating ───────────────────────────────────────────────────────────────────
-
-class _RatingSection extends StatelessWidget {
-  final int min;
-  final bool isDark;
-  final ValueChanged<int> onChanged;
-
-  const _RatingSection({
-    required this.min,
-    required this.isDark,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final primaryText = isDark ? AppColors.white : AppColors.primaryPurple;
-    final idleStar = isDark
-        ? AppColors.white.withValues(alpha: 0.22)
-        : AppColors.primaryPurple.withValues(alpha: 0.28);
-    final label = min == 0 ? 'Any rating' : '$min & up';
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        for (var i = 1; i <= 5; i++)
-          _StarButton(
-            isFilled: i <= min,
-            idleColor: idleStar,
-            onTap: () => onChanged(i),
-          ),
-        const SizedBox(width: 14),
-        Text(
-          label,
-          style: AppTextStyles.caption.copyWith(
-            color: primaryText.withValues(alpha: 0.85),
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _StarButton extends StatelessWidget {
-  final bool isFilled;
-  final Color idleColor;
-  final VoidCallback onTap;
-
-  const _StarButton({
-    required this.isFilled,
-    required this.idleColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
-        child: FaIcon(
-          FontAwesomeIcons.solidStar,
-          size: 22,
-          color: isFilled ? AppColors.accentYellow : idleColor,
-          shadows: isFilled
-              ? [
-                  Shadow(
-                    color: AppColors.accentYellow.withValues(alpha: 0.55),
-                    blurRadius: 10,
-                  ),
-                ]
-              : null,
-        ),
       ),
     );
   }

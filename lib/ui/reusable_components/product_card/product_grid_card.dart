@@ -4,48 +4,56 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../models/product.dart';
+import '../../../backend_integration/dtos/item/item_list_item_dto.dart';
+import '../../../backend_integration/dtos/item/item_tag_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
-import '../rating_stars/star_rating.dart';
 import '../skeleton/skeleton_shimmer.dart';
 
-// ─── Trust tag descriptor ────────────────────────────────────────────────────
+// ─── Tag helpers ─────────────────────────────────────────────────────────────
 
-class _Tag {
-  final String label;
-  final Color color;
-  final FaIconData icon;
-  const _Tag(this.label, this.color, this.icon);
+Color _colorForTag(ItemTagDto tag) {
+  final n = tag.name.toUpperCase();
+  if (n.contains('VERIF')) return AppColors.verifiedGreen;
+  if (n.contains('BRAND')) return AppColors.auroraElectricBlue;
+  if (n.contains('EDIT')) return AppColors.auroraGold;
+  if (n.contains('EXCL')) return AppColors.auroraPink;
+  if (n.contains('QUAL')) return AppColors.auroraTeal;
+  return switch (tag.id) {
+    1 => AppColors.verifiedGreen,
+    2 => AppColors.auroraElectricBlue,
+    3 => AppColors.auroraGold,
+    4 => AppColors.auroraPink,
+    5 => AppColors.auroraTeal,
+    _ => AppColors.auroraPurple,
+  };
 }
 
-List<_Tag> _tagsFor(Product p) {
-  return [
-    if (p.isVerified)
-      const _Tag('VERIFIED', AppColors.verifiedGreen, FontAwesomeIcons.solidCircleCheck),
-    if (p.isBrand)
-      const _Tag('BRAND', AppColors.auroraElectricBlue, FontAwesomeIcons.tag),
-    if (p.isEditorsPick)
-      const _Tag("EDITOR'S PICK", AppColors.auroraGold, FontAwesomeIcons.solidStar),
-    if (p.isPlatformExclusive)
-      const _Tag('EXCLUSIVE', AppColors.auroraPink, FontAwesomeIcons.gem),
-    if (p.isQualityChecked)
-      const _Tag('QUALITY', AppColors.auroraTeal, FontAwesomeIcons.award),
-  ];
+FaIconData _iconForTag(ItemTagDto tag) {
+  final n = tag.name.toUpperCase();
+  if (n.contains('VERIF')) return FontAwesomeIcons.solidCircleCheck;
+  if (n.contains('BRAND')) return FontAwesomeIcons.tag;
+  if (n.contains('EDIT')) return FontAwesomeIcons.solidStar;
+  if (n.contains('EXCL')) return FontAwesomeIcons.gem;
+  if (n.contains('QUAL')) return FontAwesomeIcons.award;
+  return switch (tag.id) {
+    1 => FontAwesomeIcons.solidCircleCheck,
+    2 => FontAwesomeIcons.tag,
+    3 => FontAwesomeIcons.solidStar,
+    4 => FontAwesomeIcons.gem,
+    5 => FontAwesomeIcons.award,
+    _ => FontAwesomeIcons.solidCircleCheck,
+  };
 }
-
-// Primary tag color drives card border + inline checkmark.
-// Priority: Verified > Brand > Editor's Pick > Exclusive > Quality.
-Color? _primaryTagColor(Product p) => _tagsFor(p).firstOrNull?.color;
 
 // ─── Card ────────────────────────────────────────────────────────────────────
 
 class ProductGridCard extends StatelessWidget {
-  final Product product;
-  const ProductGridCard({super.key, required this.product});
+  final ItemListItemDto item;
+  const ProductGridCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +61,10 @@ class ProductGridCard extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final tagColor = _primaryTagColor(product);
+        final primaryTag = item.tags.isNotEmpty ? item.tags.first : null;
+        final tagColor = primaryTag != null ? _colorForTag(primaryTag) : null;
 
-        final cardBg = isDark
-            ? AppColors.white.withValues(alpha: 0.04)
-            : AppColors.white;
+        final cardBg = isDark ? AppColors.white.withValues(alpha: 0.04) : AppColors.white;
         final shadow = isDark
             ? null
             : [BoxShadow(color: AppColors.shadowMedium, blurRadius: 8, offset: const Offset(0, 2))];
@@ -68,7 +75,7 @@ class ProductGridCard extends StatelessWidget {
                 : Border.all(color: AppColors.auroraPurple.withValues(alpha: 0.10));
 
         return GestureDetector(
-          onTap: () => Navigator.pushNamed(context, itemDetailsScreenRoute, arguments: product),
+          onTap: () => Navigator.pushNamed(context, itemDetailsScreenRoute, arguments: item.id),
           child: Container(
             decoration: BoxDecoration(
               color: cardBg,
@@ -82,8 +89,8 @@ class ProductGridCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _ImageArea(product: product, isDark: isDark),
-                  _InfoArea(product: product, isDark: isDark, primaryTagColor: tagColor),
+                  _ImageArea(item: item),
+                  _InfoArea(item: item, isDark: isDark, primaryTagColor: tagColor),
                 ],
               ),
             ),
@@ -97,90 +104,97 @@ class ProductGridCard extends StatelessWidget {
 // ─── Image area ──────────────────────────────────────────────────────────────
 
 class _ImageArea extends StatelessWidget {
-  final Product product;
-  final bool isDark;
-  const _ImageArea({required this.product, required this.isDark});
+  final ItemListItemDto item;
+  const _ImageArea({required this.item});
 
   @override
   Widget build(BuildContext context) {
-    final tags = _tagsFor(product);
+    final thumbnail = item.colorImages.isNotEmpty ? item.colorImages.first : null;
+    final hasDiscount = item.discountedPrice != null;
+    final tags = item.tags.take(3).toList();
+
     return AspectRatio(
       aspectRatio: 1,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            product.thumbnailUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.auroraPurple.withValues(alpha: 0.35),
-                    AppColors.auroraPink.withValues(alpha: 0.20),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Bottom gradient overlay for trust pill legibility
-          Positioned(
-            bottom: 0, left: 0, right: 0,
-            child: Container(
-              height: 80,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Color(0xB3000000), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-          // Top-left: discount badge takes priority over NEW
-          if (product.discountPercentage != null)
-            Positioned(
-              top: 8, left: 8,
-              child: _PillBadge('-${product.discountPercentage}%', AppColors.auroraRed),
+          if (thumbnail != null)
+            Image.network(
+              thumbnail,
+              fit: BoxFit.cover,
+              loadingBuilder: (_, child, progress) =>
+                  progress == null ? child : const SkeletonShimmer(),
+              errorBuilder: (_, _, _) => _placeholder(),
             )
-          else if (product.isNew)
-            Positioned(
-              top: 8, left: 8,
-              child: _PillBadge('NEW', AppColors.verifiedGreen),
-            ),
-          // Bottom-left: trust tag pills
+          else
+            _placeholder(),
           if (tags.isNotEmpty)
             Positioned(
-              bottom: 7, left: 7,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: tags.map((t) => Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: _TrustTagPill(tag: t),
-                )).toList(),
+              bottom: 0, left: 0, right: 0,
+              height: 52,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black.withValues(alpha: 0.55), Colors.transparent],
+                  ),
+                ),
               ),
             ),
-          // Top-right: heart
+          if (hasDiscount)
+            Positioned(
+              top: 8, left: 8,
+              child: _PillBadge(
+                '-${((1 - item.discountedPrice! / item.originalPrice) * 100).round()}%',
+                AppColors.auroraRed,
+              ),
+            ),
+          if (tags.isNotEmpty)
+            Positioned(
+              bottom: 6, left: 6,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < tags.length; i++)
+                    Padding(
+                      padding: EdgeInsets.only(top: i == 0 ? 0 : 3),
+                      child: _TrustTagPill(tag: tags[i]),
+                    ),
+                ],
+              ),
+            ),
           Positioned(
             top: 7, right: 7,
-            child: _HeartButton(productId: product.id),
+            child: _HeartButton(itemId: item.id),
           ),
         ],
       ),
     );
   }
+
+  Widget _placeholder() => Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.auroraPurple.withValues(alpha: 0.35),
+              AppColors.auroraPink.withValues(alpha: 0.20),
+            ],
+          ),
+        ),
+      );
 }
 
 // ─── Info area ───────────────────────────────────────────────────────────────
 
 class _InfoArea extends StatelessWidget {
-  final Product product;
+  final ItemListItemDto item;
   final bool isDark;
   final Color? primaryTagColor;
-  const _InfoArea({required this.product, required this.isDark, required this.primaryTagColor});
+  const _InfoArea({required this.item, required this.isDark, required this.primaryTagColor});
 
   @override
   Widget build(BuildContext context) {
@@ -189,10 +203,7 @@ class _InfoArea extends StatelessWidget {
     final origColor = isDark
         ? AppColors.white.withValues(alpha: 0.35)
         : AppColors.auroraPurple.withValues(alpha: 0.40);
-
-    final countColor = isDark
-        ? AppColors.white.withValues(alpha: 0.38)
-        : AppColors.auroraPurple.withValues(alpha: 0.42);
+    final hasDiscount = item.discountedPrice != null;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
@@ -202,30 +213,10 @@ class _InfoArea extends StatelessWidget {
         children: [
           Row(
             children: [
-              StarRating(rating: product.rating, size: 11, showValue: false),
-              if (product.reviewCount > 0) ...[
-                const SizedBox(width: 3),
-                Text(
-                  '(${product.reviewCount})',
-                  style: AppTextStyles.caption.copyWith(
-                    color: countColor,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 3),
-          Row(
-            children: [
               Expanded(
                 child: Text(
-                  product.name,
-                  style: AppTextStyles.productName.copyWith(
-                    color: nameColor,
-                    fontSize: 11,
-                  ),
+                  item.title,
+                  style: AppTextStyles.productName.copyWith(color: nameColor, fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -236,22 +227,19 @@ class _InfoArea extends StatelessWidget {
               ],
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 4),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                _formatPrice(product.price),
-                style: AppTextStyles.productPrice.copyWith(
-                  color: priceColor,
-                  fontSize: 13,
-                ),
+                _fmt(hasDiscount ? item.discountedPrice! : item.originalPrice),
+                style: AppTextStyles.productPrice.copyWith(color: priceColor, fontSize: 13),
               ),
-              if (product.originalPrice != null) ...[
+              if (hasDiscount) ...[
                 const SizedBox(width: 5),
                 Text(
-                  _formatPrice(product.originalPrice!),
+                  _fmt(item.originalPrice),
                   style: AppTextStyles.productPrice.copyWith(
                     color: origColor,
                     fontSize: 10,
@@ -261,23 +249,12 @@ class _InfoArea extends StatelessWidget {
               ],
             ],
           ),
-          if (product.stockCount > 0 && product.stockCount <= 10) ...[
-            const SizedBox(height: 2),
-            Text(
-              '${product.stockCount} left',
-              style: AppTextStyles.caption.copyWith(
-                color: AppColors.verifiedGreen,
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
-  String _formatPrice(double p) {
+  String _fmt(double p) {
     final hasDecimals = p.truncateToDouble() != p;
     return '\$${p.toStringAsFixed(hasDecimals ? 2 : 0)}';
   }
@@ -310,26 +287,27 @@ class _PillBadge extends StatelessWidget {
 }
 
 class _TrustTagPill extends StatelessWidget {
-  final _Tag tag;
+  final ItemTagDto tag;
   const _TrustTagPill({required this.tag});
 
   @override
   Widget build(BuildContext context) {
+    final color = _colorForTag(tag);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(color: tag.color, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          FaIcon(tag.icon, size: 8, color: AppColors.white),
+          FaIcon(_iconForTag(tag), size: 7, color: AppColors.white),
           const SizedBox(width: 4),
           Text(
-            tag.label,
+            tag.name.toUpperCase(),
             style: AppTextStyles.badgeText.copyWith(
               color: AppColors.white,
               fontSize: 8,
               fontWeight: FontWeight.w800,
-              letterSpacing: 0.3,
+              letterSpacing: 0.4,
               height: 1.0,
             ),
           ),
@@ -340,8 +318,8 @@ class _TrustTagPill extends StatelessWidget {
 }
 
 class _HeartButton extends StatelessWidget {
-  final String productId;
-  const _HeartButton({required this.productId});
+  final int itemId;
+  const _HeartButton({required this.itemId});
 
   static final _wishlist = GetIt.instance<WishlistService>();
 
@@ -350,9 +328,9 @@ class _HeartButton extends StatelessWidget {
     return ListenableBuilder(
       listenable: _wishlist,
       builder: (context, _) {
-        final active = _wishlist.isWishlisted(productId);
+        final active = _wishlist.isWishlisted(itemId.toString());
         return GestureDetector(
-          onTap: () => _wishlist.toggle(productId),
+          onTap: () => _wishlist.toggle(itemId.toString()),
           behavior: HitTestBehavior.opaque,
           child: ClipOval(
             child: BackdropFilter(
@@ -432,9 +410,9 @@ class ProductGridCardSkeleton extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 9, width: 50, child: SkeletonShimmer(borderRadius: BorderRadius.circular(2))),
-                    const SizedBox(height: 5),
                     SizedBox(height: 10, width: 80, child: SkeletonShimmer(borderRadius: BorderRadius.circular(2))),
+                    const SizedBox(height: 4),
+                    SizedBox(height: 9, width: 55, child: SkeletonShimmer(borderRadius: BorderRadius.circular(2))),
                     const SizedBox(height: 5),
                     SizedBox(height: 10, width: 45, child: SkeletonShimmer(borderRadius: BorderRadius.circular(2))),
                   ],

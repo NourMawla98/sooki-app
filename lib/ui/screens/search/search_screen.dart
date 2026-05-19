@@ -9,7 +9,6 @@ import '../../../services/search_history_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/themes.dart';
 import '../../reusable_components/bars/sort_filter_bar.dart';
-import '../../reusable_components/product_card/product_grid_card.dart';
 import '../../reusable_components/search_bar/custom_search_bar.dart';
 import '../shopping/widgets/filter_sheet.dart';
 import '../shopping/widgets/filter_state.dart';
@@ -106,35 +105,6 @@ class _SearchScreenState extends State<SearchScreen> {
   double get _priceMax =>
       _allProducts.map((p) => p.price).reduce((a, b) => a > b ? a : b).ceilToDouble();
 
-  List<ColorVariant> get _availableColors {
-    final raw = _search(_committedQuery);
-    final seen = <String>{};
-    final out = <ColorVariant>[];
-    for (final p in raw) {
-      for (final c in p.colors) {
-        if (seen.add(c.name)) out.add(c);
-      }
-    }
-    return out;
-  }
-
-  List<SizeVariant> get _availableSizes {
-    final raw = _search(_committedQuery);
-    final stocked = <String>{};
-    final seen = <String>{};
-    final out = <SizeVariant>[];
-    for (final p in raw) {
-      for (final s in p.sizes) {
-        if (s.isAvailable) stocked.add(s.label);
-        if (seen.add(s.label)) out.add(s);
-      }
-    }
-    return [
-      for (final s in out)
-        SizeVariant(label: s.label, isAvailable: stocked.contains(s.label)),
-    ];
-  }
-
   int get _filterCount => _filterState.activeCount(priceMin: _priceMin, priceMax: _priceMax);
 
   Future<void> _openSortSheet() async {
@@ -157,21 +127,28 @@ class _SearchScreenState extends State<SearchScreen> {
         initial: _filterState,
         priceMin: _priceMin,
         priceMax: _priceMax,
-        availableColors: _availableColors,
-        availableSizes: _availableSizes,
+        availableColors: const [],
+        availableSizeStandards: const [],
       ),
     );
     if (result != null && mounted) setState(() => _filterState = result);
   }
 
   List<Product> get _filteredSortedResults {
-    final filtered = _search(_committedQuery).where(_filterState.matches).toList();
+    final filtered = _search(_committedQuery).toList();
     switch (_sortOption) {
-      case SortOption.newest: break;
-      case SortOption.priceLowToHigh: filtered.sort((a, b) => a.price.compareTo(b.price));
-      case SortOption.priceHighToLow: filtered.sort((a, b) => b.price.compareTo(a.price));
-      case SortOption.rating: filtered.sort((a, b) => b.rating.compareTo(a.rating));
-      case SortOption.mostPopular: filtered.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+      case SortOption.newest:
+        break;
+      case SortOption.priceLowToHigh:
+        filtered.sort((a, b) => a.price.compareTo(b.price));
+      case SortOption.priceHighToLow:
+        filtered.sort((a, b) => b.price.compareTo(a.price));
+      case SortOption.rating:
+        filtered.sort((a, b) => b.rating.compareTo(a.rating));
+      case SortOption.mostPopular:
+        filtered.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+      case SortOption.biggestDiscount:
+        break;
     }
     return filtered;
   }
@@ -671,7 +648,7 @@ class _ResultsState extends StatelessWidget {
                 childAspectRatio: 0.70,
               ),
               itemCount: products.length,
-              itemBuilder: (_, i) => ProductGridCard(product: products[i]),
+              itemBuilder: (_, i) => _SearchProductCard(product: products[i]),
             ),
           ),
       ],
@@ -966,6 +943,79 @@ class _CategoryCircle extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// Temporary card — search API not yet wired. Remove when real search API is integrated.
+class _SearchProductCard extends StatelessWidget {
+  final Product product;
+  const _SearchProductCard({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = ThemeService.instance.isDarkMode;
+    final cardBg = isDark ? AppColors.white.withValues(alpha: 0.04) : AppColors.white;
+    final border = isDark
+        ? Border.all(color: AppColors.white.withValues(alpha: 0.08))
+        : Border.all(color: AppColors.auroraPurple.withValues(alpha: 0.10));
+    final nameColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final priceColor = isDark ? AppColors.auroraElectricBlue : AppColors.auroraPurple;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: border,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(11),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: Image.asset(
+                product.thumbnailUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.auroraPurple.withValues(alpha: 0.35),
+                        AppColors.auroraPink.withValues(alpha: 0.20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.productName.copyWith(color: nameColor, fontSize: 11),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '\$${product.price.toStringAsFixed(0)}',
+                    style: AppTextStyles.productPrice.copyWith(color: priceColor, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

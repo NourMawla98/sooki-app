@@ -36,8 +36,9 @@ Dio createApiClient({
   dio.interceptors.addAll([
     GlobalHeadersInterceptor(),
     LanguageInterceptor(languageService),
-    createRetryInterceptor(dio),
     ErrorInterceptor(),
+    // RetryInterceptor is after ErrorInterceptor so it runs before it in LIFO error chain
+    createRetryInterceptor(dio),
     // AuthInterceptor is last so its onError runs first (Dio processes errors LIFO)
     AuthInterceptor(authService: authService, dio: dio),
   ]);

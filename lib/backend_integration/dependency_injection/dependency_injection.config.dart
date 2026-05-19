@@ -17,7 +17,10 @@ import '../apis/announcement_api.dart' as _i733;
 import '../apis/auth_api.dart' as _i42;
 import '../apis/banner_api.dart' as _i923;
 import '../apis/categories_api.dart' as _i985;
+import '../apis/colors_api.dart' as _i311;
 import '../apis/items_api.dart' as _i94;
+import '../apis/profile_api.dart' as _i48;
+import '../apis/size_standards_api.dart' as _i577;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i174.GetIt $initGetIt(
@@ -38,8 +41,17 @@ _i174.GetIt $initGetIt(
   gh.factory<_i985.CategoriesApi>(
     () => _i985.CategoriesApi(gh<_i361.Dio>(instanceName: 'apiClient')),
   );
+  gh.factory<_i311.ColorsApi>(
+    () => _i311.ColorsApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
   gh.factory<_i94.ItemsApi>(
     () => _i94.ItemsApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
+  gh.factory<_i48.ProfileApi>(
+    () => _i48.ProfileApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
+  gh.factory<_i577.SizeStandardsApi>(
+    () => _i577.SizeStandardsApi(gh<_i361.Dio>(instanceName: 'apiClient')),
   );
   return getIt;
 }

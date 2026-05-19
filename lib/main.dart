@@ -19,8 +19,8 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final languageService = await LanguageService.initialize(prefs);
 
-  // Adopt the OS theme on launch; user toggles override it for the session.
-  ThemeService.instance.initFromPlatform();
+  // Restore saved theme preference, falling back to OS brightness on first launch.
+  await ThemeService.instance.init();
 
   await setupDependencyInjection(
     prefs: prefs,

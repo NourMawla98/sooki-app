@@ -77,5 +77,8 @@ Every new screen must follow the address form pattern — not a standard `AppBar
 
 Reference implementation: `lib/ui/screens/address_form/address_form_screen.dart`.
 
-### 10. General
+### 10. Store name — hard ban
+`storeName` (and any equivalent field) must **never** appear anywhere in the customer-facing UI — not on product cards, wishlist cards, search results, product detail, or any other screen. It is an admin-only field.
+
+### 11. General
 - Semantic naming. Follow existing patterns. Keep widgets focused and composable. Extract repeated patterns into reusables.

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CategoryDto {
 
- int get id; String get name;
+ int get id; String get name; String? get imageUrl; List<SubCategoryDto> get subCategories;
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $CategoryDtoCopyWith<CategoryDto> get copyWith => _$CategoryDtoCopyWithImpl<Cate
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other.subCategories, subCategories));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name);
+int get hashCode => Object.hash(runtimeType,id,name,imageUrl,const DeepCollectionEquality().hash(subCategories));
 
 @override
 String toString() {
-  return 'CategoryDto(id: $id, name: $name)';
+  return 'CategoryDto(id: $id, name: $name, imageUrl: $imageUrl, subCategories: $subCategories)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $CategoryDtoCopyWith<$Res>  {
   factory $CategoryDtoCopyWith(CategoryDto value, $Res Function(CategoryDto) _then) = _$CategoryDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, String name
+ int id, String name, String? imageUrl, List<SubCategoryDto> subCategories
 });
 
 
@@ -63,11 +63,13 @@ class _$CategoryDtoCopyWithImpl<$Res>
 
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? imageUrl = freezed,Object? subCategories = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,subCategories: null == subCategories ? _self.subCategories : subCategories // ignore: cast_nullable_to_non_nullable
+as List<SubCategoryDto>,
   ));
 }
 
@@ -152,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String? imageUrl,  List<SubCategoryDto> subCategories)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CategoryDto() when $default != null:
-return $default(_that.id,_that.name);case _:
+return $default(_that.id,_that.name,_that.imageUrl,_that.subCategories);case _:
   return orElse();
 
 }
@@ -173,10 +175,10 @@ return $default(_that.id,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String? imageUrl,  List<SubCategoryDto> subCategories)  $default,) {final _that = this;
 switch (_that) {
 case _CategoryDto():
-return $default(_that.id,_that.name);case _:
+return $default(_that.id,_that.name,_that.imageUrl,_that.subCategories);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +195,10 @@ return $default(_that.id,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String? imageUrl,  List<SubCategoryDto> subCategories)?  $default,) {final _that = this;
 switch (_that) {
 case _CategoryDto() when $default != null:
-return $default(_that.id,_that.name);case _:
+return $default(_that.id,_that.name,_that.imageUrl,_that.subCategories);case _:
   return null;
 
 }
@@ -208,11 +210,19 @@ return $default(_that.id,_that.name);case _:
 @JsonSerializable(createToJson: false)
 
 class _CategoryDto implements CategoryDto {
-  const _CategoryDto({required this.id, required this.name});
+  const _CategoryDto({required this.id, required this.name, this.imageUrl, final  List<SubCategoryDto> subCategories = const []}): _subCategories = subCategories;
   factory _CategoryDto.fromJson(Map<String, dynamic> json) => _$CategoryDtoFromJson(json);
 
 @override final  int id;
 @override final  String name;
+@override final  String? imageUrl;
+ final  List<SubCategoryDto> _subCategories;
+@override@JsonKey() List<SubCategoryDto> get subCategories {
+  if (_subCategories is EqualUnmodifiableListView) return _subCategories;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_subCategories);
+}
+
 
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
@@ -224,16 +234,16 @@ _$CategoryDtoCopyWith<_CategoryDto> get copyWith => __$CategoryDtoCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other._subCategories, _subCategories));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name);
+int get hashCode => Object.hash(runtimeType,id,name,imageUrl,const DeepCollectionEquality().hash(_subCategories));
 
 @override
 String toString() {
-  return 'CategoryDto(id: $id, name: $name)';
+  return 'CategoryDto(id: $id, name: $name, imageUrl: $imageUrl, subCategories: $subCategories)';
 }
 
 
@@ -244,7 +254,7 @@ abstract mixin class _$CategoryDtoCopyWith<$Res> implements $CategoryDtoCopyWith
   factory _$CategoryDtoCopyWith(_CategoryDto value, $Res Function(_CategoryDto) _then) = __$CategoryDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name
+ int id, String name, String? imageUrl, List<SubCategoryDto> subCategories
 });
 
 
@@ -261,11 +271,13 @@ class __$CategoryDtoCopyWithImpl<$Res>
 
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? imageUrl = freezed,Object? subCategories = null,}) {
   return _then(_CategoryDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,subCategories: null == subCategories ? _self._subCategories : subCategories // ignore: cast_nullable_to_non_nullable
+as List<SubCategoryDto>,
   ));
 }
 

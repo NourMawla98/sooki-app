@@ -1,36 +1,41 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Global theme notifier — toggles between light and dark mode.
-/// On first launch it adopts the OS brightness; user toggles override it for
-/// the rest of the session.
+/// User preference is persisted to SharedPreferences and restored on startup.
 class ThemeService extends ChangeNotifier {
   ThemeService._();
 
   static final ThemeService instance = ThemeService._();
 
+  static const _key = 'sooki_theme_mode';
+
   ThemeMode _themeMode = ThemeMode.light;
-  bool _userOverride = false;
 
   ThemeMode get themeMode => _themeMode;
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
-  /// Initialize the mode from the current platform brightness unless the
-  /// user has already toggled manually this session. Safe to call from
-  /// `main()` after `WidgetsFlutterBinding.ensureInitialized()`.
-  void initFromPlatform() {
-    if (_userOverride) return;
-    final brightness = PlatformDispatcher.instance.platformBrightness;
-    _themeMode =
-        brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+  /// Restore saved preference, falling back to OS brightness on first launch.
+  Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString(_key);
+    if (saved != null) {
+      _themeMode = saved == 'dark' ? ThemeMode.dark : ThemeMode.light;
+    } else {
+      final brightness = PlatformDispatcher.instance.platformBrightness;
+      _themeMode =
+          brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+    }
     notifyListeners();
   }
 
-  void toggle() {
-    _userOverride = true;
+  Future<void> toggle() async {
     _themeMode =
         _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, _themeMode == ThemeMode.dark ? 'dark' : 'light');
   }
 }

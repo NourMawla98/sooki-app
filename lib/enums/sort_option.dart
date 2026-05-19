@@ -8,7 +8,8 @@ enum SortOption {
   priceLowToHigh,
   priceHighToLow,
   rating,
-  mostPopular;
+  mostPopular,
+  biggestDiscount;
 
   String get label {
     switch (this) {
@@ -22,6 +23,8 @@ enum SortOption {
         return 'Rating';
       case SortOption.mostPopular:
         return 'Most popular';
+      case SortOption.biggestDiscount:
+        return 'Biggest discount';
     }
   }
 
@@ -37,6 +40,26 @@ enum SortOption {
         return FontAwesomeIcons.solidStar;
       case SortOption.mostPopular:
         return FontAwesomeIcons.fire;
+      case SortOption.biggestDiscount:
+        return FontAwesomeIcons.percent;
+    }
+  }
+
+  /// Maps to the backend's SortBy enum values.
+  int toSortBy() {
+    switch (this) {
+      case SortOption.newest:
+        return 1;
+      case SortOption.priceLowToHigh:
+        return 2;
+      case SortOption.priceHighToLow:
+        return 3;
+      case SortOption.rating:
+        return 4; // PopularViews — closest available
+      case SortOption.mostPopular:
+        return 5; // PopularOrders
+      case SortOption.biggestDiscount:
+        return 6;
     }
   }
 
@@ -54,6 +77,8 @@ enum SortOption {
         return 'RATING';
       case SortOption.mostPopular:
         return 'POPULAR';
+      case SortOption.biggestDiscount:
+        return 'DEAL';
     }
   }
 }

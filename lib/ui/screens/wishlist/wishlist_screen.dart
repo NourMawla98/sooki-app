@@ -1,11 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../data/mock_products.dart';
+import '../../../models/product.dart';
 import '../../../routes/route_constants.dart';
+import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
-import '../../../data/mock_products.dart';
+import '../cart/widgets/cart_background.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -15,140 +20,533 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() {});
+  List<Product> _items = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _items = mockBrowseProducts.take(4).toList();
+  }
+
+  void _remove(Product product) {
+    setState(() => _items.remove(product));
+    ToastService.instance.showSuccess('Removed from wishlist');
   }
 
   @override
   Widget build(BuildContext context) {
-    // Use first 4 browse products as mock wishlist items
-    final wishlistItems = mockBrowseProducts.take(4).toList();
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
-            size: 20,
-            color: AppColors.primaryPurple,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Wishlist',
-          style: AppTextStyles.heading4.copyWith(
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: Text(
-                '${wishlistItems.length} items',
-                style: AppTextStyles.bodySmall,
+        return Scaffold(
+          backgroundColor:
+              isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
+          body: Stack(
+            children: [
+              const Positioned.fill(child: CartBackground()),
+              SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(isDark: isDark),
+                    Expanded(
+                      child: _items.isEmpty
+                          ? _WishlistEmptyState(isDark: isDark)
+                          : ListView.builder(
+                              padding:
+                                  const EdgeInsets.fromLTRB(14, 4, 14, 24),
+                              itemCount: _items.length,
+                              itemBuilder: (_, i) => _WishlistCard(
+                                isDark: isDark,
+                                product: _items[i],
+                                onRemove: () => _remove(_items[i]),
+                                onTap: () => Navigator.pushNamed(
+                                  context,
+                                  productDetailScreenRoute,
+                                  arguments: _items[i],
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
               ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final bool isDark;
+  const _TopBar({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      child: Row(
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.pop(context),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child:
+                  FaIcon(FontAwesomeIcons.arrowLeft, size: 16, color: color),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Wishlist',
+            style: AppTextStyles.heading3.copyWith(
+              color: color,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        color: AppColors.auroraPink,
-        child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        itemCount: wishlistItems.length,
-        itemBuilder: (context, index) {
-          final product = wishlistItems[index];
-          return GestureDetector(
-            onTap: () => Navigator.pushNamed(
-              context,
-              productDetailScreenRoute,
-              arguments: product,
-            ),
-            child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      product.thumbnailUrl,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
+    );
+  }
+}
+
+// ─── Card — mirrors CartItemCard's glass style ────────────────────────────────
+
+class _WishlistCard extends StatelessWidget {
+  final bool isDark;
+  final Product product;
+  final VoidCallback onRemove;
+  final VoidCallback onTap;
+
+  const _WishlistCard({
+    required this.isDark,
+    required this.product,
+    required this.onRemove,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fill = isDark
+        ? AppColors.white.withValues(alpha: 0.05)
+        : AppColors.white.withValues(alpha: 0.80);
+    final border = isDark
+        ? AppColors.white.withValues(alpha: 0.10)
+        : AppColors.auroraPurple.withValues(alpha: 0.18);
+    final nameColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final brandColor = isDark
+        ? AppColors.white.withValues(alpha: 0.38)
+        : AppColors.auroraPurple.withValues(alpha: 0.45);
+    final origColor = isDark
+        ? AppColors.white.withValues(alpha: 0.28)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.28);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: fill,
+          border: Border.all(color: border),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _Thumb(url: product.thumbnailUrl, isDark: isDark),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      product.brand.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.captionSmall.copyWith(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: brandColor,
+                        letterSpacing: 0.6,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 3),
+                    Text(
+                      product.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: nameColor,
+                        height: 1.2,
+                      ),
+                    ),
+                    const Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
                       children: [
-                        Text(
-                          product.name,
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.bold,
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [
+                              AppColors.auroraPink,
+                              AppColors.auroraElectricBlue,
+                            ],
+                          ).createShader(bounds),
+                          blendMode: BlendMode.srcIn,
+                          child: Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            style: AppTextStyles.productPrice.copyWith(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.white,
+                              letterSpacing: -0.2,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          product.brand,
-                          style: AppTextStyles.bodySmall,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '\$${product.price.toStringAsFixed(2)}',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.accentRed,
+                        if (product.originalPrice != null &&
+                            product.originalPrice! > product.price) ...[
+                          const SizedBox(width: 5),
+                          Text(
+                            '\$${product.originalPrice!.toStringAsFixed(2)}',
+                            style: AppTextStyles.caption.copyWith(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: origColor,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: origColor,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.solidHeart,
-                          size: 18,
-                          color: AppColors.auroraPink,
-                        ),
-                        onPressed: () {
-                          ToastService.instance.showSuccess('Removed from wishlist');
-                        },
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Heart button — top-right, mirrors X placement in CartItemCard
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onRemove,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: FaIcon(
+                        FontAwesomeIcons.solidHeart,
+                        size: 14,
+                        color: AppColors.auroraPink,
                       ),
-                      IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.cartPlus,
-                          size: 18,
-                          color: AppColors.primaryPurple,
-                        ),
-                        onPressed: () {
-                          ToastService.instance.showSuccess('Added to cart');
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Thumbnail — asset/network aware (mirrors CartItemCard._Thumb) ────────────
+
+class _Thumb extends StatelessWidget {
+  final String url;
+  final bool isDark;
+  const _Thumb({required this.url, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final placeholderColor = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.primaryPurple.withValues(alpha: 0.06);
+    final borderColor = isDark
+        ? AppColors.white.withValues(alpha: 0.10)
+        : AppColors.auroraPurple.withValues(alpha: 0.16);
+    final iconColor = isDark
+        ? AppColors.white.withValues(alpha: 0.20)
+        : AppColors.primaryPurple.withValues(alpha: 0.30);
+
+    final fallback =
+        Center(child: FaIcon(FontAwesomeIcons.image, size: 16, color: iconColor));
+
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: placeholderColor,
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: url.isNotEmpty
+          ? Image(
+              image: url.startsWith('http')
+                  ? NetworkImage(url)
+                  : AssetImage(url) as ImageProvider,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => fallback,
+            )
+          : fallback,
+    );
+  }
+}
+
+// ─── Empty state — mirrors CartEmptyState's hero pattern ─────────────────────
+
+class _WishlistEmptyState extends StatefulWidget {
+  final bool isDark;
+  const _WishlistEmptyState({required this.isDark});
+
+  @override
+  State<_WishlistEmptyState> createState() => _WishlistEmptyStateState();
+}
+
+class _WishlistEmptyStateState extends State<_WishlistEmptyState>
+    with TickerProviderStateMixin {
+  late final AnimationController _floatCtrl;
+  late final AnimationController _glowCtrl;
+  late final AnimationController _orbit1Ctrl;
+  late final AnimationController _orbit2Ctrl;
+  late final AnimationController _orbit3Ctrl;
+  late final Animation<double> _floatY;
+  late final Animation<double> _glowScale;
+  late final Animation<double> _glowOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3200),
+    )..repeat(reverse: true);
+    _glowCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat(reverse: true);
+    _orbit1Ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat();
+    _orbit2Ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 5500),
+    )..repeat();
+    _orbit3Ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3800),
+    )..repeat();
+
+    _floatY = Tween<double>(begin: 0, end: -8).animate(
+      CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut),
+    );
+    _glowScale = Tween<double>(begin: 1.0, end: 1.10).animate(
+      CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut),
+    );
+    _glowOpacity = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _floatCtrl.dispose();
+    _glowCtrl.dispose();
+    _orbit1Ctrl.dispose();
+    _orbit2Ctrl.dispose();
+    _orbit3Ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final headingColor =
+        widget.isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final subColor = widget.isDark
+        ? AppColors.white.withValues(alpha: 0.40)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.40);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _HeartIllustration(
+              floatY: _floatY,
+              glowScale: _glowScale,
+              glowOpacity: _glowOpacity,
+              orbit1: _orbit1Ctrl,
+              orbit2: _orbit2Ctrl,
+              orbit3: _orbit3Ctrl,
+            ),
+            const SizedBox(height: 28),
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: AppColors.auroraGradient,
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+              blendMode: BlendMode.srcIn,
+              child: Text(
+                'YOUR WISHLIST',
+                style:
+                    AppTextStyles.dsSectionLabel.copyWith(color: AppColors.white),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Nothing saved yet',
+              style: AppTextStyles.dsH2.copyWith(
+                color: headingColor,
+                fontSize: 24,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Tap the heart on any item\nand it'll appear right here.",
+              style: AppTextStyles.dsMuted.copyWith(
+                color: subColor,
+                fontSize: 13,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeartIllustration extends StatelessWidget {
+  final Animation<double> floatY;
+  final Animation<double> glowScale;
+  final Animation<double> glowOpacity;
+  final AnimationController orbit1;
+  final AnimationController orbit2;
+  final AnimationController orbit3;
+
+  const _HeartIllustration({
+    required this.floatY,
+    required this.glowScale,
+    required this.glowOpacity,
+    required this.orbit1,
+    required this.orbit2,
+    required this.orbit3,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const wrapSize = 140.0;
+    const center = wrapSize / 2;
+    const r1 = 58.0, r2 = 62.0, r3 = 55.0;
+    const a2Start = 2 * pi / 3;
+    const a3Start = 4 * pi / 3;
+
+    return SizedBox(
+      width: wrapSize,
+      height: wrapSize,
+      child: AnimatedBuilder(
+        animation:
+            Listenable.merge([floatY, glowScale, glowOpacity, orbit1, orbit2, orbit3]),
+        builder: (context, _) {
+          final a1 = 2 * pi * orbit1.value;
+          final a2 = a2Start + 2 * pi * orbit2.value;
+          final a3 = a3Start + 2 * pi * orbit3.value;
+
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              // Pulsing glow
+              Opacity(
+                opacity: glowOpacity.value,
+                child: Transform.scale(
+                  scale: glowScale.value,
+                  child: Container(
+                    width: wrapSize,
+                    height: wrapSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.auroraPink.withValues(alpha: 0.18),
+                          AppColors.auroraPurple.withValues(alpha: 0.10),
+                          AppColors.auroraPurple.withValues(alpha: 0.0),
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Orbit dot 1 — pink
+              Positioned(
+                left: center + r1 * cos(a1) - 3.5,
+                top: center + r1 * sin(a1) - 3.5,
+                child: Container(
+                  width: 7, height: 7,
+                  decoration: const BoxDecoration(
+                    color: AppColors.auroraPink, shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              // Orbit dot 2 — blue
+              Positioned(
+                left: center + r2 * cos(a2) - 2.5,
+                top: center + r2 * sin(a2) - 2.5,
+                child: Container(
+                  width: 5, height: 5,
+                  decoration: const BoxDecoration(
+                    color: AppColors.auroraElectricBlue, shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              // Orbit dot 3 — green
+              Positioned(
+                left: center + r3 * cos(a3) - 2.0,
+                top: center + r3 * sin(a3) - 2.0,
+                child: Container(
+                  width: 4, height: 4,
+                  decoration: const BoxDecoration(
+                    color: AppColors.verifiedGreen, shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              // Floating heart icon
+              Transform.translate(
+                offset: Offset(0, floatY.value),
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: AppColors.auroraGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+                  blendMode: BlendMode.srcIn,
+                  child: const FaIcon(
+                    FontAwesomeIcons.solidHeart,
+                    size: 56,
+                    color: AppColors.white,
+                  ),
+                ),
+              ),
+            ],
           );
         },
-        ),
       ),
     );
   }

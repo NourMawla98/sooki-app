@@ -9,6 +9,7 @@ import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
+import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
 /// Section 1 — Live Ticker.
 ///
@@ -80,6 +81,18 @@ class _LiveTickerState extends State<LiveTicker>
 
   @override
   Widget build(BuildContext context) {
+    if (_messages == null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: SizedBox(
+          height: 32,
+          child: SkeletonShimmer(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    }
+
     return ListenableBuilder(
       listenable: ThemeService.instance,
       builder: (context, _) {

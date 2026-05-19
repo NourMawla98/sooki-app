@@ -19,4 +19,9 @@ _ItemListItemDto _$ItemListItemDtoFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      tags:
+          (json['tags'] as List<dynamic>?)
+              ?.map((e) => ItemTagDto.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
