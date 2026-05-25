@@ -4,6 +4,8 @@ import 'package:injectable/injectable.dart';
 
 import '../dio/client/api_client.dart';
 import '../dio/client/request_executor.dart';
+import '../dtos/item/for_you_item_dto.dart';
+import '../dtos/item/item_detail_dto.dart';
 import '../dtos/item/item_list_item_dto.dart';
 import '../dtos/item/trending_item_dto.dart';
 
@@ -76,6 +78,45 @@ class ItemsApi {
           priceMax: priceMax,
           availableSizeStandardIds: availableSizeStandardIds,
         );
+      },
+    );
+  }
+
+  Future<Either<ApiFailure, List<ForYouItemDto>>> getForYouItems({
+    List<int> viewedItemIds = const [],
+    List<String> searchKeywords = const [],
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.post,
+      path: 'customer/items/for-you',
+      body: {
+        'viewedItemIds': viewedItemIds,
+        'searchKeywords': searchKeywords,
+      },
+      operationName: 'getForYouItems',
+      successParser: (response) {
+        final data = response.data['data'] as Map<String, dynamic>? ?? {};
+        final rawItems = data['items'];
+        return rawItems is List
+            ? rawItems
+                .whereType<Map<String, dynamic>>()
+                .map(ForYouItemDto.fromJson)
+                .toList()
+            : <ForYouItemDto>[];
+      },
+    );
+  }
+
+  Future<Either<ApiFailure, ItemDetailDto>> getItemById(int id) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'customer/items/$id',
+      operationName: 'getItemById',
+      successParser: (response) {
+        final data = response.data['data'] as Map<String, dynamic>;
+        return ItemDetailDto.fromJson(data);
       },
     );
   }

@@ -8,6 +8,7 @@ import '../../../../enums/order_status.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../services/theme_service.dart';
+import '../../../../services/wishlist_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
@@ -25,12 +26,15 @@ import '../../cart/widgets/aurora_login_gate_dialog.dart';
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
+  static final _wishlist = GetIt.instance<WishlistService>();
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge([ThemeService.instance, _wishlist]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final wishlistCount = _wishlist.items.length;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -63,9 +67,9 @@ class QuickActions extends StatelessWidget {
                       label: 'Wishlist',
                       accent: AppColors.auroraPink,
                       isDark: isDark,
-                      badgeCount: 3,
+                      badgeCount: wishlistCount,
                       anim: _BubbleAnim.heartBeat,
-                      onTap: () => Navigator.pushNamed(context, wishlistScreenRoute),
+                      onTap: () => _openWishlist(context),
                     ),
                   ),
                   Expanded(
@@ -98,12 +102,16 @@ class QuickActions extends StatelessWidget {
   }
 
   void _openOrders(BuildContext context, {OrderStatus? filter}) {
-    final isLoggedIn = GetIt.instance<AuthService>().isSignedIn;
-    if (!isLoggedIn) {
+    final isCustomer = GetIt.instance<AuthService>().isCustomer;
+    if (!isCustomer) {
       showAuroraLoginGate(context);
       return;
     }
     Navigator.pushNamed(context, ordersScreenRoute, arguments: filter);
+  }
+
+  void _openWishlist(BuildContext context) {
+    Navigator.pushNamed(context, wishlistScreenRoute);
   }
 }
 

@@ -76,6 +76,12 @@ dependencies:
   # Secure storage for JWT tokens
   flutter_secure_storage: ^9.2.2
 
+  # Device fingerprint for guest auth signature
+  device_info_plus: ^10.1.0
+
+  # HMAC-SHA256 for X-App-Signature header
+  crypto: ^3.0.3
+
   # Maps (OpenStreetMap) + geolocation + reverse geocoding — address picker
   flutter_map: ^7.0.2
   latlong2: ^0.9.1

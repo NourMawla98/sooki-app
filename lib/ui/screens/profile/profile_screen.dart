@@ -7,6 +7,7 @@ import '../../../backend_integration/apis/profile_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/orders_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../services/token_service.dart';
@@ -29,11 +30,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   static final _auth = GetIt.instance<AuthService>();
+  static final _ordersService = GetIt.instance<OrdersService>();
 
   @override
   void initState() {
     super.initState();
-    if (_auth.isSignedIn) _loadProfile();
+    if (_auth.isCustomer) {
+      _loadProfile();
+      _ordersService.refreshActiveCount();
+    }
   }
 
   Future<void> _loadProfile() async {
@@ -46,17 +51,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refresh() async {
-    if (_auth.isSignedIn) await _loadProfile();
+    if (_auth.isCustomer) {
+      await Future.wait([
+        _loadProfile(),
+        _ordersService.refreshActiveCount(),
+      ]);
+    }
     if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([ThemeService.instance, _auth]),
+      listenable: Listenable.merge([ThemeService.instance, _auth, _ordersService]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final isLoggedIn = _auth.isSignedIn;
+        final isLoggedIn = _auth.isCustomer;
 
         return Scaffold(
           backgroundColor:
@@ -96,7 +106,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             else
                               _GuestHero(isDark: isDark),
                             ProfileMenuList(
-                                isDark: isDark, isLoggedIn: isLoggedIn),
+                              isDark: isDark,
+                              isLoggedIn: isLoggedIn,
+                              activeOrderCount: isLoggedIn ? _ordersService.activeOrderCount : 0,
+                            ),
                             if (isLoggedIn) _SignOutRow(isDark: isDark),
                             const SizedBox(height: 12),
                             Center(
@@ -279,19 +292,22 @@ class _SignOutRowState extends State<_SignOutRow> {
     setState(() => _isLoading = true);
     final refreshToken = await TokenService.instance.getRefreshToken();
     String? toastMessage;
+    Map<String, dynamic>? guestTokenData;
     if (refreshToken != null) {
       final result = await serviceLocator<AuthApi>().logout(refreshToken: refreshToken);
-      result.fold((_) => null, (data) => toastMessage = data['message'] as String?);
+      result.fold(
+        (_) => null,
+        (data) {
+          toastMessage = data['message'] as String?;
+          guestTokenData = data['data'] as Map<String, dynamic>?;
+        },
+      );
     }
     if (!mounted) return;
-    await GetIt.instance<AuthService>().signOut();
+    await GetIt.instance<AuthService>().signOut(guestTokenData: guestTokenData);
     await serviceLocator<UserProfileService>().clear();
-    if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil(signInScreenRoute, (_) => false);
     if (toastMessage != null) {
-      Future.delayed(const Duration(milliseconds: 400), () {
-        ToastService.instance.showSuccess(toastMessage!);
-      });
+      ToastService.instance.showSuccess(toastMessage!);
     }
   }
 

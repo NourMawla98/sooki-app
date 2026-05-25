@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
-import '../../../services/toast_service.dart';
 import '../../../services/token_service.dart';
 
 class AuthInterceptor extends Interceptor {
@@ -21,6 +19,13 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // Proactive refresh: if token expires within 5 minutes, refresh before sending
+    final expiresAt = await TokenService.instance.getAccessTokenExpiresAt();
+    if (expiresAt != null &&
+        DateTime.now().isAfter(expiresAt.subtract(const Duration(minutes: 5)))) {
+      await _tryRefresh();
+    }
+
     final token = await TokenService.instance.getAccessToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
@@ -35,15 +40,15 @@ class AuthInterceptor extends Interceptor {
   ) async {
     if (err.response?.statusCode != 401) return handler.next(err);
 
-    // Refresh call itself failed → sign out, no retry
+    // Refresh call itself failed → transition to guest, no retry
     if (err.requestOptions.path.contains('auth/customer/refresh')) {
-      await _forceSignOut();
+      await _handleAuthFailure();
       return handler.reject(err);
     }
 
-    // Already retried with a fresh token and still got 401 → sign out
+    // Already retried with a fresh token and still got 401 → transition to guest
     if (err.requestOptions.extra['isRetry'] == true) {
-      await _forceSignOut();
+      await _handleAuthFailure();
       return handler.reject(err);
     }
 
@@ -63,7 +68,7 @@ class AuthInterceptor extends Interceptor {
         await _retryRequest(p.options, newToken, p.handler);
       }
     } else {
-      await _forceSignOut();
+      await _handleAuthFailure();
       handler.reject(err);
       for (final p in _pending) {
         p.handler.reject(err);
@@ -113,9 +118,11 @@ class AuthInterceptor extends Interceptor {
           final newAccess = data['accessToken'] as String?;
           final newRefresh = data['refreshToken'] as String?;
           if (newAccess != null && newRefresh != null) {
-            await TokenService.instance.saveTokens(
+            await TokenService.instance.saveTokenPair(
               accessToken: newAccess,
               refreshToken: newRefresh,
+              accessTokenExpiresAt: data['accessTokenExpiresAt'] as String?,
+              refreshTokenExpiresAt: data['refreshTokenExpiresAt'] as String?,
             );
             return newAccess;
           }
@@ -126,11 +133,8 @@ class AuthInterceptor extends Interceptor {
     return null;
   }
 
-  Future<void> _forceSignOut() async {
+  /// Called when token refresh fails — silently transitions to guest state.
+  Future<void> _handleAuthFailure() async {
     await _authService.signOut();
-    ToastService.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-      signInScreenRoute,
-      (_) => false,
-    );
   }
 }

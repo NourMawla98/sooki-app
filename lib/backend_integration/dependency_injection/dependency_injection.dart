@@ -7,9 +7,17 @@ import '../../services/address_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/language_service.dart';
+import '../../services/orders_service.dart';
+import '../../services/places_service.dart';
+import '../apis/address_api.dart';
+import '../apis/cart_api.dart';
+import '../apis/location_api.dart';
+import '../apis/orders_api.dart';
 import '../../services/search_history_service.dart';
 import '../../services/user_profile_service.dart';
+import '../../services/viewed_items_service.dart';
 import '../../services/wishlist_service.dart';
+import '../apis/wishlist_api.dart';
 import '../dio/client/api_client.dart';
 import 'dependency_injection.config.dart';
 
@@ -19,21 +27,6 @@ final GetIt serviceLocator = GetIt.instance;
 /// API base URL for Android emulator localhost
 const String apiBaseUrl = 'http://10.0.2.2:1010/api/';
 
-/// Initializes the dependency injection container
-///
-/// Call this once at app startup before using any dependencies.
-/// SharedPreferences and LanguageService must be initialized before calling this.
-///
-/// Example:
-/// ```dart
-/// void main() async {
-///   WidgetsFlutterBinding.ensureInitialized();
-///   final prefs = await SharedPreferences.getInstance();
-///   final languageService = await LanguageService.initialize(prefs);
-///   await setupDependencyInjection(prefs: prefs, languageService: languageService);
-///   runApp(MyApp());
-/// }
-/// ```
 @InjectableInit(
   initializerName: r'$initGetIt',
   preferRelativeImports: true,
@@ -44,37 +37,26 @@ Future<void> setupDependencyInjection({
   required SharedPreferences prefs,
   required LanguageService languageService,
 }) async {
-  // Register pre-initialized dependencies
   serviceLocator.registerSingleton<SharedPreferences>(prefs);
   serviceLocator.registerSingleton<LanguageService>(languageService);
 
-  // Cart & Wishlist services
-  serviceLocator.registerSingleton<CartService>(
-    CartService(serviceLocator<SharedPreferences>()),
-  );
-  serviceLocator.registerSingleton<WishlistService>(
-    WishlistService(serviceLocator<SharedPreferences>()),
-  );
-
-  final searchHistory =
-      SearchHistoryService(serviceLocator<SharedPreferences>());
+  final searchHistory = SearchHistoryService(serviceLocator<SharedPreferences>());
   await searchHistory.load();
   serviceLocator.registerSingleton<SearchHistoryService>(searchHistory);
 
-  final addressService = AddressService(serviceLocator<SharedPreferences>());
-  await addressService.load();
-  serviceLocator.registerSingleton<AddressService>(addressService);
+  final viewedItems = ViewedItemsService(serviceLocator<SharedPreferences>());
+  await viewedItems.load();
+  serviceLocator.registerSingleton<ViewedItemsService>(viewedItems);
+
+  // AddressService and PlacesService are registered after Dio (below)
 
   final authService = AuthService();
-  await authService.restoreSession();
   serviceLocator.registerSingleton<AuthService>(authService);
 
-  final userProfileService =
-      UserProfileService(serviceLocator<SharedPreferences>());
+  final userProfileService = UserProfileService(serviceLocator<SharedPreferences>());
   await userProfileService.load();
   serviceLocator.registerSingleton<UserProfileService>(userProfileService);
 
-  // Register Dio client with language + auth services
   serviceLocator.registerSingleton<Dio>(
     createApiClient(
       baseUrl: apiBaseUrl,
@@ -84,13 +66,23 @@ Future<void> setupDependencyInjection({
     instanceName: apiClientKey,
   );
 
-  // Initialize injectable dependencies
   $initGetIt(serviceLocator, environment: environment);
+
+  final wishlistService = WishlistService(serviceLocator<WishlistApi>());
+  serviceLocator.registerSingleton<WishlistService>(wishlistService);
+
+  final cartService = CartService(serviceLocator<CartApi>());
+  serviceLocator.registerSingleton<CartService>(cartService);
+
+  final addressService = AddressService(serviceLocator<AddressApi>());
+  serviceLocator.registerSingleton<AddressService>(addressService);
+
+  final placesService = PlacesService(serviceLocator<LocationApi>());
+  serviceLocator.registerSingleton<PlacesService>(placesService);
+
+  final ordersService = OrdersService(serviceLocator<OrdersApi>());
+  serviceLocator.registerSingleton<OrdersService>(ordersService);
 }
 
-/// Module for registering external dependencies
 @module
-abstract class AppModule {
-  // SharedPreferences and LanguageService are registered manually in setupDependencyInjection
-  // Dio client is also registered manually to inject LanguageService
-}
+abstract class AppModule {}

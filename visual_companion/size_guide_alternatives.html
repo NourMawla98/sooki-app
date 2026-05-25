@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>All Size Guides</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --pink:#E91E8C;--purple:#7C3AED;--blue:#3B82F6;
+      --teal:#0FB8A0;--gold:#F59E0B;
+      --deep:#0D0B1A;--light:#F0EEF8;--pp:#4C1D95;
+      --green:#22C55E;--red:#EF4444;
+      --aurora:linear-gradient(135deg,#E91E8C,#7C3AED,#3B82F6);
+    }
+    body{font-family:'Nunito',sans-serif;background:#13101f;color:#fff;padding:20px 12px}
+    h1{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center;margin-bottom:6px}
+    .sub{font-size:11px;color:rgba(255,255,255,0.22);text-align:center;margin-bottom:22px}
+    .toggles{display:flex;gap:8px;justify-content:center;margin-bottom:28px}
+    .tbtn{padding:5px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.18);background:transparent;color:rgba(255,255,255,0.55);font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer}
+    .tbtn.on{background:var(--purple);border-color:var(--purple);color:#fff}
+
+    /* grid of sheets */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;max-width:1100px;margin:0 auto}
+
+    /* sheet card */
+    .sheet{border-radius:20px;overflow:hidden;border:1px solid}
+    .sheet.dk{background:var(--deep);border-color:rgba(255,255,255,0.09)}
+    .sheet.lt{background:var(--light);border-color:rgba(76,29,149,0.14)}
+
+    /* sheet header */
+    .shd{padding:18px 18px 0}
+    .sh-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:3px}
+    .sh-name{font-size:16px;font-weight:800}
+    .sh-name.dk{color:#fff}.sh-name.lt{color:var(--pp)}
+    .sh-sub{font-size:11px;font-weight:500;margin-bottom:14px}
+    .sh-sub.dk{color:rgba(255,255,255,0.42)}.sh-sub.lt{color:rgba(76,29,149,0.52)}
+    .close{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+    .close.dk{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.6)}
+    .close.lt{background:rgba(76,29,149,0.06);border:1px solid rgba(76,29,149,0.14);color:rgba(76,29,149,0.6)}
+
+    /* unit toggle */
+    .ut-row{display:flex;justify-content:flex-end;padding:0 18px;margin-bottom:12px}
+    .ut{display:flex;padding:3px;border-radius:9px}
+    .ut.dk{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09)}
+    .ut.lt{background:rgba(76,29,149,0.05);border:1px solid rgba(76,29,149,0.11)}
+    .uc{padding:4px 12px;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;letter-spacing:1px}
+    .uc.on{background:var(--aurora);color:#fff}
+    .uc.off.dk{color:rgba(255,255,255,0.4)}.uc.off.lt{color:rgba(76,29,149,0.45)}
+
+    /* table */
+    .tbl-wrap{padding:0 18px 18px;overflow-x:auto}
+    .tbl{width:100%;border-radius:12px;overflow:hidden;border:1px solid}
+    .tbl.dk{border-color:rgba(255,255,255,0.08);background:rgba(255,255,255,0.03)}
+    .tbl.lt{border-color:rgba(76,29,149,0.10);background:rgba(76,29,149,0.03)}
+    .tbl-head{display:grid;padding:9px 14px}
+    .tbl-head.dk{background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.07)}
+    .tbl-head.lt{background:rgba(76,29,149,0.06);border-bottom:1px solid rgba(76,29,149,0.09)}
+    .th{font-size:9px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}
+    .th.dk{color:rgba(255,255,255,0.45)}.th.lt{color:rgba(76,29,149,0.5)}
+    .tbl-row{display:grid;padding:10px 14px;position:relative}
+    .tbl-row+.tbl-row.dk{border-top:1px solid rgba(255,255,255,0.05)}
+    .tbl-row+.tbl-row.lt{border-top:1px solid rgba(76,29,149,0.07)}
+    .tbl-row.sel.dk{background:linear-gradient(90deg,rgba(233,30,140,.15),rgba(124,58,237,.10),transparent)}
+    .tbl-row.sel.lt{background:linear-gradient(90deg,rgba(233,30,140,.09),rgba(124,58,237,.06),transparent)}
+    .sel-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--pink),var(--purple),var(--blue));border-radius:2px 0 0 2px}
+    .tc{font-size:12px;font-weight:500}
+    .tc.dk{color:rgba(255,255,255,0.50)}.tc.lt{color:rgba(76,29,149,0.55)}
+    .tc.first{font-weight:800}
+    .tc.first.dk{color:#fff}.tc.first.lt{color:var(--pp)}
+    .tc.sel.dk{color:#fff;font-weight:700}.tc.sel.lt{color:var(--pp);font-weight:700}
+    .tc.first.sel{padding-left:8px}
+
+    /* tip */
+    .tip{margin:0 18px 18px;border-radius:12px;padding:11px 13px;display:flex;gap:9px}
+    .tip.dk{background:rgba(59,130,246,0.09);border:1px solid rgba(59,130,246,0.28)}
+    .tip.lt{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.20)}
+    .tip-i{color:var(--blue);font-size:12px;flex-shrink:0;margin-top:1px}
+    .tip-t{font-size:11px;font-weight:500;line-height:1.5}
+    .tip-t.dk{color:rgba(255,255,255,0.52)}.tip-t.lt{color:rgba(76,29,149,0.58)}
+
+    /* bra steps */
+    .bra-steps{padding:0 18px 18px;display:flex;flex-direction:column;gap:10px}
+    .bra-step{border-radius:13px;padding:13px}
+    .bra-step.dk{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)}
+    .bra-step.lt{background:rgba(76,29,149,0.04);border:1px solid rgba(76,29,149,0.10)}
+    .bra-step-lbl{font-size:10px;font-weight:800;letter-spacing:.8px;margin-bottom:4px;background:var(--aurora);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .bra-step-title{font-size:13px;font-weight:700;margin-bottom:6px}
+    .bra-step-title.dk{color:#fff}.bra-step-title.lt{color:var(--pp)}
+    .bra-step-body{font-size:11px;font-weight:500;line-height:1.5}
+    .bra-step-body.dk{color:rgba(255,255,255,0.52)}.bra-step-body.lt{color:rgba(76,29,149,0.58)}
+
+    /* cup diff inner table */
+    .cup-tbl{margin-top:10px;border-radius:9px;overflow:hidden;border:1px solid}
+    .cup-tbl.dk{border-color:rgba(255,255,255,0.09)}
+    .cup-tbl.lt{border-color:rgba(76,29,149,0.12)}
+    .cup-head{display:grid;grid-template-columns:1fr 1fr;padding:7px 12px}
+    .cup-head.dk{background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.07)}
+    .cup-head.lt{background:rgba(76,29,149,0.05);border-bottom:1px solid rgba(76,29,149,0.09)}
+    .cup-row{display:grid;grid-template-columns:1fr 1fr;padding:7px 12px}
+    .cup-row+.cup-row.dk{border-top:1px solid rgba(255,255,255,0.05)}
+    .cup-row+.cup-row.lt{border-top:1px solid rgba(76,29,149,0.07)}
+    .cup-val{font-size:11px}
+    .cup-val.lbl{font-size:9px;font-weight:800;letter-spacing:1.2px}
+    .cup-val.lbl.dk{color:rgba(255,255,255,0.4)}.cup-val.lbl.lt{color:rgba(76,29,149,0.45)}
+    .cup-val.key{font-weight:800}.cup-val.key.dk{color:#fff}.cup-val.key.lt{color:var(--pp)}
+    .cup-val.muted.dk{color:rgba(255,255,255,0.5);font-weight:500}
+    .cup-val.muted.lt{color:rgba(76,29,149,0.55);font-weight:500}
+  </style>
+</head>
+<body>
+
+<h1>All Size Guides — Redesigned</h1>
+<p class="sub">All 9 guide types · toggle dark / light</p>
+
+<div class="toggles">
+  <button class="tbtn on" onclick="setTheme('dk',this)">Dark</button>
+  <button class="tbtn" onclick="setTheme('lt',this)">Light</button>
+</div>
+
+<div class="grid" id="grid">
+
+  <!-- ══ 1. International Letter ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">Body measurements · International Letter</div>
+    </div>
+    <div class="ut-row"><div class="ut dk"><div class="uc off dk">IN</div><div class="uc on">CM</div></div></div>
+    <div class="tbl-wrap">
+      <div class="tbl dk" style="grid-template-columns:none">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1.2fr 1.2fr 1.2fr">
+          <div class="th dk">SIZE</div><div class="th dk">CHEST</div><div class="th dk">WAIST</div><div class="th dk">HIP</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.2fr 1.2fr 1.2fr"><div class="tc first dk">XS</div><div class="tc dk">79–84</div><div class="tc dk">58–64</div><div class="tc dk">84–89</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.2fr 1.2fr 1.2fr"><div class="tc first dk">S</div><div class="tc dk">86–91</div><div class="tc dk">66–71</div><div class="tc dk">91–97</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1.2fr 1.2fr 1.2fr"><div class="sel-bar"></div><div class="tc first sel dk">M</div><div class="tc sel dk">94–99</div><div class="tc sel dk">74–79</div><div class="tc sel dk">99–104</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.2fr 1.2fr 1.2fr"><div class="tc first dk">L</div><div class="tc dk">102–107</div><div class="tc dk">81–86</div><div class="tc dk">107–112</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.2fr 1.2fr 1.2fr"><div class="tc first dk">XL</div><div class="tc dk">109–114</div><div class="tc dk">89–94</div><div class="tc dk">114–119</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.2fr 1.2fr 1.2fr"><div class="tc first dk">2XL</div><div class="tc dk">117–122</div><div class="tc dk">97–102</div><div class="tc dk">122–127</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Chest — around the fullest part of your bust.<br>Waist — around the narrowest part, just above the belly button.<br>Hip — around the fullest part, ~20 cm below your waist.</div></div>
+  </div>
+
+  <!-- ══ 2. Women's Apparel ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">EU women's apparel sizes</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1.3fr 1.3fr 1.3fr">
+          <div class="th dk">EU</div><div class="th dk">CHEST</div><div class="th dk">WAIST</div><div class="th dk">HIP</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.3fr 1.3fr"><div class="tc first dk">32</div><div class="tc dk">77–79</div><div class="tc dk">59–61</div><div class="tc dk">82–84</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.3fr 1.3fr"><div class="tc first dk">34</div><div class="tc dk">80–82</div><div class="tc dk">62–64</div><div class="tc dk">85–87</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1.3fr 1.3fr 1.3fr"><div class="sel-bar"></div><div class="tc first sel dk">36</div><div class="tc sel dk">83–86</div><div class="tc sel dk">65–68</div><div class="tc sel dk">88–91</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.3fr 1.3fr"><div class="tc first dk">38</div><div class="tc dk">87–90</div><div class="tc dk">69–72</div><div class="tc dk">92–95</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.3fr 1.3fr"><div class="tc first dk">40</div><div class="tc dk">91–94</div><div class="tc dk">73–76</div><div class="tc dk">96–99</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.3fr 1.3fr"><div class="tc first dk">42</div><div class="tc dk">95–98</div><div class="tc dk">77–80</div><div class="tc dk">100–103</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Chest, Waist, Hip measurements in cm.</div></div>
+  </div>
+
+  <!-- ══ 3. Kids' Shoes ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">EU kids' shoe sizes by foot length</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1.3fr 1.4fr">
+          <div class="th dk">EU</div><div class="th dk">FOOT (cm)</div><div class="th dk">AGE</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.4fr"><div class="tc first dk">22</div><div class="tc dk">13.7</div><div class="tc dk">2 years</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.4fr"><div class="tc first dk">23</div><div class="tc dk">14.4</div><div class="tc dk">2–3 years</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1.3fr 1.4fr"><div class="sel-bar"></div><div class="tc first sel dk">24</div><div class="tc sel dk">15.0</div><div class="tc sel dk">3 years</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.4fr"><div class="tc first dk">25</div><div class="tc dk">15.7</div><div class="tc dk">3–4 years</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.4fr"><div class="tc first dk">26</div><div class="tc dk">16.4</div><div class="tc dk">4 years</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.3fr 1.4fr"><div class="tc first dk">27</div><div class="tc dk">17.1</div><div class="tc dk">4–5 years</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Trace foot on paper, measure heel to toe in cm. Add 0.5 cm for growing room.</div></div>
+  </div>
+
+  <!-- ══ 4. Baby Sizes ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">Baby sizes by age, weight and height</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1.1fr 1.1fr 1.1fr">
+          <div class="th dk">SIZE</div><div class="th dk">AGE</div><div class="th dk">KG</div><div class="th dk">CM</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.1fr 1.1fr 1.1fr"><div class="tc first dk">NB</div><div class="tc dk">Newborn</div><div class="tc dk">0–3.5</div><div class="tc dk">50</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.1fr 1.1fr 1.1fr"><div class="tc first dk">0–3M</div><div class="tc dk">0–3 mo</div><div class="tc dk">3.5–6</div><div class="tc dk">56</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1.1fr 1.1fr 1.1fr"><div class="sel-bar"></div><div class="tc first sel dk">3–6M</div><div class="tc sel dk">3–6 mo</div><div class="tc sel dk">6–8</div><div class="tc sel dk">62</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.1fr 1.1fr 1.1fr"><div class="tc first dk">6–9M</div><div class="tc dk">6–9 mo</div><div class="tc dk">8–10</div><div class="tc dk">68</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.1fr 1.1fr 1.1fr"><div class="tc first dk">9–12M</div><div class="tc dk">9–12 mo</div><div class="tc dk">10–11</div><div class="tc dk">74</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.1fr 1.1fr 1.1fr"><div class="tc first dk">12–18M</div><div class="tc dk">12–18 mo</div><div class="tc dk">11–12.5</div><div class="tc dk">80</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Babies grow quickly — if between sizes, size up for longer wear.</div></div>
+  </div>
+
+  <!-- ══ 5. Kids Sizes (Age) ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">Kids sizes by age, height and weight</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1fr 1.3fr 1.1fr">
+          <div class="th dk">SIZE</div><div class="th dk">AGE</div><div class="th dk">HEIGHT</div><div class="th dk">WEIGHT</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.3fr 1.1fr"><div class="tc first dk">3–4Y</div><div class="tc dk">3–4 yr</div><div class="tc dk">98–104 cm</div><div class="tc dk">15–17 kg</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.3fr 1.1fr"><div class="tc first dk">4–5Y</div><div class="tc dk">4–5 yr</div><div class="tc dk">104–110</div><div class="tc dk">17–19</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1fr 1.3fr 1.1fr"><div class="sel-bar"></div><div class="tc first sel dk">5–6Y</div><div class="tc sel dk">5–6 yr</div><div class="tc sel dk">110–116</div><div class="tc sel dk">19–21</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.3fr 1.1fr"><div class="tc first dk">6–7Y</div><div class="tc dk">6–7 yr</div><div class="tc dk">116–122</div><div class="tc dk">21–24</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.3fr 1.1fr"><div class="tc first dk">7–8Y</div><div class="tc dk">7–8 yr</div><div class="tc dk">122–128</div><div class="tc dk">24–27</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Measure child's height standing straight against a wall without shoes.</div></div>
+  </div>
+
+  <!-- ══ 6. Bra Size ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">Find your bra size in 3 steps</div>
+    </div>
+    <div class="bra-steps">
+      <div class="bra-step dk">
+        <div class="bra-step-lbl">Step 1</div>
+        <div class="bra-step-title dk">Measure your band</div>
+        <div class="bra-step-body dk">Wrap a tape around your ribcage, directly under your bust. Breathe out and measure in cm. Round up to the nearest 5 (e.g. 78 cm → 80).</div>
+      </div>
+      <div class="bra-step dk">
+        <div class="bra-step-lbl">Step 2</div>
+        <div class="bra-step-title dk">Find your cup size</div>
+        <div class="bra-step-body dk">Measure around the fullest part of your bust. Subtract your band from this number to find the cup difference.
+          <div class="cup-tbl dk">
+            <div class="cup-head dk"><div class="cup-val lbl dk">CUP</div><div class="cup-val lbl dk">DIFFERENCE</div></div>
+            <div class="cup-row dk"><div class="cup-val key dk">AA</div><div class="cup-val muted dk">0–2 cm</div></div>
+            <div class="cup-row dk"><div class="cup-val key dk">A</div><div class="cup-val muted dk">2–4 cm</div></div>
+            <div class="cup-row dk"><div class="cup-val key dk">B</div><div class="cup-val muted dk">4–6 cm</div></div>
+            <div class="cup-row dk"><div class="cup-val key dk">C</div><div class="cup-val muted dk">6–8 cm</div></div>
+            <div class="cup-row dk"><div class="cup-val key dk">D</div><div class="cup-val muted dk">8–10 cm</div></div>
+            <div class="cup-row dk"><div class="cup-val key dk">E</div><div class="cup-val muted dk">10–12 cm</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="bra-step dk">
+        <div class="bra-step-lbl">Step 3</div>
+        <div class="bra-step-title dk">Combine</div>
+        <div class="bra-step-body dk">Combine your band and cup — e.g. band 80 + cup B = 80B.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 7. Ring Sizes ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">EU ring sizes by circumference and diameter</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1.6fr 1.4fr">
+          <div class="th dk">EU</div><div class="th dk">CIRCUMF. (mm)</div><div class="th dk">DIAM. (mm)</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.6fr 1.4fr"><div class="tc first dk">48</div><div class="tc dk">48</div><div class="tc dk">15.3</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.6fr 1.4fr"><div class="tc first dk">50</div><div class="tc dk">50</div><div class="tc dk">15.9</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1.6fr 1.4fr"><div class="sel-bar"></div><div class="tc first sel dk">52</div><div class="tc sel dk">52</div><div class="tc sel dk">16.6</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.6fr 1.4fr"><div class="tc first dk">54</div><div class="tc dk">54</div><div class="tc dk">17.2</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.6fr 1.4fr"><div class="tc first dk">56</div><div class="tc dk">56</div><div class="tc dk">17.8</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.6fr 1.4fr"><div class="tc first dk">58</div><div class="tc dk">58</div><div class="tc dk">18.5</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Wrap paper around your finger, mark where it overlaps, measure the length in mm — that is your circumference.</div></div>
+  </div>
+
+  <!-- ══ 8. Bed Sizes ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">Mattress dimensions and recommended use</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1fr 1.6fr">
+          <div class="th dk">SIZE</div><div class="th dk">TYPE</div><div class="th dk">BEST FOR</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.6fr"><div class="tc first dk">90×200</div><div class="tc dk">Single</div><div class="tc dk">One person / children</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.6fr"><div class="tc first dk">120×200</div><div class="tc dk">Sm. Double</div><div class="tc dk">One person + width</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1fr 1.6fr"><div class="sel-bar"></div><div class="tc first sel dk">160×200</div><div class="tc sel dk">Queen</div><div class="tc sel dk">Couples – most popular</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.6fr"><div class="tc first dk">180×200</div><div class="tc dk">King</div><div class="tc dk">Couples + space</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1fr 1.6fr"><div class="tc first dk">200×200</div><div class="tc dk">Super King</div><div class="tc dk">Maximum comfort</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">For bedding (sheets, duvets), choose the same size as your mattress.</div></div>
+  </div>
+
+  <!-- ══ 9. Belt Size ══ -->
+  <div class="sheet dk" data-sheet>
+    <div class="shd">
+      <div class="sh-row"><div class="sh-name dk">Size Guide</div><div class="close dk">✕</div></div>
+      <div class="sh-sub dk">Belt size by trouser waist measurement</div>
+    </div>
+    <div class="tbl-wrap" style="padding-top:14px">
+      <div class="tbl dk">
+        <div class="tbl-head dk" style="display:grid;grid-template-columns:1fr 1.5fr">
+          <div class="th dk">BELT SIZE</div><div class="th dk">FITS TROUSER WAIST</div>
+        </div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.5fr"><div class="tc first dk">70 cm</div><div class="tc dk">65–70 cm</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.5fr"><div class="tc first dk">75 cm</div><div class="tc dk">70–75 cm</div></div>
+        <div class="tbl-row sel dk" style="grid-template-columns:1fr 1.5fr"><div class="sel-bar"></div><div class="tc first sel dk">80 cm</div><div class="tc sel dk">75–80 cm</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.5fr"><div class="tc first dk">85 cm</div><div class="tc dk">80–85 cm</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.5fr"><div class="tc first dk">90 cm</div><div class="tc dk">85–90 cm</div></div>
+        <div class="tbl-row dk" style="grid-template-columns:1fr 1.5fr"><div class="tc first dk">95 cm</div><div class="tc dk">90–95 cm</div></div>
+      </div>
+    </div>
+    <div class="tip dk"><div class="tip-i">ℹ</div><div class="tip-t dk">Belt size = your waist measurement + 5 cm.</div></div>
+  </div>
+
+</div>
+
+<script>
+function setTheme(t,el){
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  const o = t==='dk' ? 'lt' : 'dk';
+  // swap dk/lt on all themed elements
+  document.querySelectorAll('[class]').forEach(e=>{
+    const cls=[...e.classList];
+    cls.forEach(c=>{
+      if(c===t) return;
+      if(c===o){e.classList.remove(o);e.classList.add(t)}
+    });
+  });
+}
+</script>
+</body>
+</html>

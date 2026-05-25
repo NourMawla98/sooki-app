@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../../backend_integration/dtos/address/address_dto.dart';
 import '../../../../services/address_service.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../services/theme_service.dart';
@@ -10,6 +11,12 @@ import '../../../../themes/app_text_styles.dart';
 import '_cart_surface_theme.dart';
 import 'address_picker_sheet.dart';
 import 'aurora_login_gate_dialog.dart';
+
+String _addressLine(AddressDto addr) {
+  final parts = <String>[addr.city.name];
+  if (addr.area != null) parts.add(addr.area!.name);
+  return parts.join(', ');
+}
 
 /// A1 compact delivery-address pill. Tap anywhere on the row (or on CHANGE)
 /// to open the picker sheet with all saved addresses.
@@ -31,7 +38,7 @@ class AddressPill extends StatelessWidget {
           isDark: ThemeService.instance.isDarkMode,
         );
         final addr = addressService.selectedAddress;
-        final isLoggedIn = authService.isSignedIn;
+        final isLoggedIn = authService.isCustomer;
 
         return Opacity(
           opacity: isLoggedIn ? 1.0 : 0.45,
@@ -91,7 +98,7 @@ class AddressPill extends StatelessWidget {
                             _TitleLine(addr: addr, surfaceColors: c),
                             const SizedBox(height: 1),
                             Text(
-                              addr.line,
+                              _addressLine(addr),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.bodySmall.copyWith(
@@ -137,7 +144,7 @@ class AddressPill extends StatelessWidget {
 }
 
 class _TitleLine extends StatelessWidget {
-  final dynamic addr;
+  final AddressDto addr;
   final CartSurfaceColors surfaceColors;
 
   const _TitleLine({required this.addr, required this.surfaceColors});
@@ -157,7 +164,7 @@ class _TitleLine extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: addr.label as String,
+                  text: addr.label ?? '',
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -170,7 +177,7 @@ class _TitleLine extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (addr.isDefault as bool) ...[
+        if (addr.isDefault) ...[
           const SizedBox(width: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),

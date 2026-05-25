@@ -1,34 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/dtos/order/order_detail_dto.dart';
+import '../../../backend_integration/dtos/order/order_item_dto.dart';
+import '../../../enums/order_status.dart';
+import '../../../services/orders_service.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
-// Horizontal tracker step labels (4 steps)
-const _kHSteps = ['Placed', 'Processing', 'Shipped', 'Delivered'];
+const _kStepLabels = ['Placed', 'Processing', 'Out for delivery', 'Delivered'];
+
+const _months = [
+  '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+String _fmtDate(DateTime dt) => '${_months[dt.month]} ${dt.day}, ${dt.year}';
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 class OrderDetailScreen extends StatefulWidget {
-  const OrderDetailScreen({super.key, required this.order});
-  final MockOrderDetail order;
+  const OrderDetailScreen({super.key, required this.orderId});
+  final int orderId;
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  int get _hFilledCount => widget.order.timelineStep.clamp(0, 4);
+  OrderDetailDto? _detail;
+  bool _loading = true;
+  bool _hasError = false;
+  bool _cancelling = false;
+  bool _confirming = false;
 
-  Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() {});
+  OrdersService get _service => GetIt.instance<OrdersService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
   }
 
-  bool get _canCancel =>
-      widget.order.status == 'Processing' || widget.order.status == 'Shipped';
+  Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; });
+    final result = await _service.getOrderDetail(widget.orderId);
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() { _loading = false; _hasError = true; }),
+      (dto) => setState(() { _loading = false; _detail = dto; }),
+    );
+  }
+
+  Future<void> _cancel() async {
+    final detail = _detail;
+    if (detail == null || _cancelling) return;
+    final confirmed = await showAuroraConfirmSheet(
+      context,
+      title: 'Cancel order?',
+      subtitle: 'This action cannot be undone.',
+      icon: FontAwesomeIcons.ban,
+      confirmLabel: 'Cancel order',
+      confirmColor: AppColors.auroraRed,
+    );
+    if (!confirmed || !mounted) return;
+    setState(() => _cancelling = true);
+    final msg = await _service.cancelOrder(detail.id);
+    if (!mounted) return;
+    setState(() => _cancelling = false);
+    if (msg.isNotEmpty) {
+      ToastService.instance.showSuccess(msg);
+      await _load();
+    }
+  }
+
+  Future<void> _confirmReceipt() async {
+    final detail = _detail;
+    if (detail == null || _confirming) return;
+    setState(() => _confirming = true);
+    final msg = await _service.confirmReceipt(detail.id);
+    if (!mounted) return;
+    setState(() => _confirming = false);
+    if (msg.isNotEmpty) {
+      ToastService.instance.showSuccess(msg);
+      await _load();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +99,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bg = isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
         final titleColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
 
         return Scaffold(
-          backgroundColor: bg,
+          backgroundColor:
+              isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
           body: Stack(
             children: [
               AuroraGlowBlob(
@@ -69,7 +132,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Order Detail',
+                            'Order detail',
                             style: AppTextStyles.dsBodyBold.copyWith(
                               color: titleColor,
                               fontWeight: FontWeight.w800,
@@ -79,37 +142,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ],
                       ),
                     ),
-                    // Scrollable body
+
                     Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: _refresh,
-                        color: AppColors.auroraPink,
-                        child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 32),
-                        child: Column(
-                          children: [
-                            _HeroCard(
-                              order: widget.order,
-                              isDark: isDark,
-                              hFilledCount: _hFilledCount,
-                            ),
-                            const SizedBox(height: 12),
-                            _ItemsCard(order: widget.order, isDark: isDark),
-                            const SizedBox(height: 12),
-                            _SummaryCard(order: widget.order, isDark: isDark),
-                            const SizedBox(height: 12),
-                            _AddressCard(isDark: isDark),
-                            const SizedBox(height: 12),
-                            _PaymentCard(isDark: isDark),
-                            if (_canCancel) ...[
-                              const SizedBox(height: 16),
-                              _CancelButton(isDark: isDark),
-                            ],
-                          ],
-                        ),
-                        ),
-                      ),
+                      child: _loading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.auroraPurple,
+                              ),
+                            )
+                          : _hasError
+                              ? _ErrorState(onRetry: _load, isDark: isDark)
+                              : RefreshIndicator(
+                                  onRefresh: _load,
+                                  color: AppColors.auroraPink,
+                                  child: SingleChildScrollView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        14, 0, 14, 32),
+                                    child: _Body(
+                                      detail: _detail!,
+                                      isDark: isDark,
+                                      cancelling: _cancelling,
+                                      confirming: _confirming,
+                                      onCancel: _cancel,
+                                      onConfirmReceipt: _confirmReceipt,
+                                    ),
+                                  ),
+                                ),
                     ),
                   ],
                 ),
@@ -122,17 +182,78 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 }
 
+// ── Body ──────────────────────────────────────────────────────────────────────
+
+class _Body extends StatelessWidget {
+  const _Body({
+    required this.detail,
+    required this.isDark,
+    required this.cancelling,
+    required this.confirming,
+    required this.onCancel,
+    required this.onConfirmReceipt,
+  });
+
+  final OrderDetailDto detail;
+  final bool isDark;
+  final bool cancelling;
+  final bool confirming;
+  final VoidCallback onCancel;
+  final VoidCallback onConfirmReceipt;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = OrderStatus.fromInt(detail.status);
+    final progressStep = status.progressStep;
+
+    return Column(
+      children: [
+        _HeroCard(detail: detail, status: status, progressStep: progressStep, isDark: isDark),
+        const SizedBox(height: 12),
+        _ItemsCard(items: detail.items, isDark: isDark),
+        const SizedBox(height: 12),
+        _SummaryCard(detail: detail, isDark: isDark),
+        const SizedBox(height: 12),
+        _AddressCard(detail: detail, isDark: isDark),
+        const SizedBox(height: 12),
+        _PaymentCard(detail: detail, isDark: isDark),
+        if (detail.customerNote != null && detail.customerNote!.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _NoteCard(note: detail.customerNote!, isDark: isDark),
+        ],
+
+        // Action buttons
+        if (status.isInProgress && status != OrderStatus.outForDelivery) ...[
+          const SizedBox(height: 20),
+          _CancelButton(cancelling: cancelling, onCancel: onCancel, isDark: isDark),
+        ],
+        if (status == OrderStatus.outForDelivery) ...[
+          const SizedBox(height: 20),
+          AuroraPrimaryButton(
+            text: 'Confirm receipt',
+            isLoading: confirming,
+            onPressed: onConfirmReceipt,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 // ── Hero card ─────────────────────────────────────────────────────────────────
 
 class _HeroCard extends StatelessWidget {
   const _HeroCard({
-    required this.order,
+    required this.detail,
+    required this.status,
+    required this.progressStep,
     required this.isDark,
-    required this.hFilledCount,
   });
-  final MockOrderDetail order;
+
+  final OrderDetailDto detail;
+  final OrderStatus status;
+  final int? progressStep;
   final bool isDark;
-  final int hFilledCount;
 
   @override
   Widget build(BuildContext context) {
@@ -156,61 +277,52 @@ class _HeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: cardBorder),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Order # + status pill
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              order.id,
-                              style: AppTextStyles.dsBodyBold.copyWith(
-                                color: numColor,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              '${order.date} · ${order.items.length} items',
-                              style: AppTextStyles.dsMuted.copyWith(
-                                color: metaColor,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      detail.trackingNumber,
+                      style: AppTextStyles.dsBodyBold.copyWith(
+                        color: numColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.3,
                       ),
-                      _StatusPill(status: order.status, color: order.statusColor),
-                    ],
-                  ),
-                  // Divider + tracker — hidden for cancelled orders
-                  if (order.status != 'Cancelled') ...[
-                    Container(
-                      height: 1,
-                      margin: const EdgeInsets.symmetric(vertical: 14),
-                      color: dividerColor,
                     ),
-                    _HorizontalTracker(filledCount: hFilledCount, isDark: isDark),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${_fmtDate(detail.createdAt)} · ${detail.items.length} items',
+                      style: AppTextStyles.dsMuted.copyWith(
+                        color: metaColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
-                ],
+                ),
               ),
+              _StatusPill(status: status),
+            ],
+          ),
+
+          // Progress tracker — shown only for non-closed orders
+          if (progressStep != null) ...[
+            Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(vertical: 14),
+              color: dividerColor,
             ),
+            _HorizontalTracker(filledCount: progressStep!, isDark: isDark),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -219,12 +331,12 @@ class _HeroCard extends StatelessWidget {
 // ── Status pill ───────────────────────────────────────────────────────────────
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.status, required this.color});
-  final String status;
-  final Color color;
+  const _StatusPill({required this.status});
+  final OrderStatus status;
 
   @override
   Widget build(BuildContext context) {
+    final color = status.accentColor;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
@@ -233,7 +345,7 @@ class _StatusPill extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
-        status.toUpperCase(),
+        status.label.toUpperCase(),
         style: AppTextStyles.dsCTA.copyWith(
           color: color,
           fontSize: 10,
@@ -254,16 +366,11 @@ class _HorizontalTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Single row: [step, Expanded(line), step, Expanded(line), step, Expanded(line), step]
-    // Each step is a Stack — the circle sits at the top, the line runs through it at
-    // vertical center (top: 13), and the label floats below via Positioned so it doesn't
-    // affect row height. The row height is fixed to 28 (dot only); labels are painted
-    // outside bounds with clipBehavior: Clip.none on the outer Stack.
     return SizedBox(
       height: 48,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: List.generate(2 * _kHSteps.length - 1, (idx) {
+        children: List.generate(2 * _kStepLabels.length - 1, (idx) {
           if (idx.isEven) return _buildStep(idx ~/ 2);
           return Expanded(child: _buildLine(idx ~/ 2));
         }),
@@ -286,8 +393,6 @@ class _HorizontalTracker extends StatelessWidget {
             ? AppColors.white.withValues(alpha: 0.22)
             : AppColors.auroraPurple.withValues(alpha: 0.22);
 
-    // Stack with overflow allowed: circle is the layout child (28×28),
-    // label is Positioned below it so it paints outside without affecting row height.
     return SizedBox(
       width: 28,
       child: Stack(
@@ -320,7 +425,7 @@ class _HorizontalTracker extends StatelessWidget {
                     ),
             ),
             child: Center(
-              child: FaIcon(_hStepIcon(i), size: 11, color: iconColor),
+              child: FaIcon(_stepIcon(i), size: 11, color: iconColor),
             ),
           ),
           Positioned(
@@ -328,7 +433,7 @@ class _HorizontalTracker extends StatelessWidget {
             left: -40,
             right: -40,
             child: Text(
-              _kHSteps[i],
+              _kStepLabels[i],
               style: AppTextStyles.dsMuted.copyWith(
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
@@ -344,11 +449,10 @@ class _HorizontalTracker extends StatelessWidget {
   }
 
   Widget _buildLine(int i) {
-    // Line is filled when BOTH endpoints are filled (i.e. step i AND step i+1 are done)
     final lineFilled = i < filledCount - 1;
     return Container(
       height: 2,
-      margin: const EdgeInsets.only(top: 13), // center on 28px dot
+      margin: const EdgeInsets.only(top: 13),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(1),
         gradient: lineFilled
@@ -365,7 +469,7 @@ class _HorizontalTracker extends StatelessWidget {
     );
   }
 
-  FaIconData _hStepIcon(int i) {
+  FaIconData _stepIcon(int i) {
     switch (i) {
       case 0: return FontAwesomeIcons.check;
       case 1: return FontAwesomeIcons.gear;
@@ -378,38 +482,55 @@ class _HorizontalTracker extends StatelessWidget {
 // ── Items card ────────────────────────────────────────────────────────────────
 
 class _ItemsCard extends StatelessWidget {
-  const _ItemsCard({required this.order, required this.isDark});
-  final MockOrderDetail order;
+  const _ItemsCard({required this.items, required this.isDark});
+  final List<OrderItemDto> items;
   final bool isDark;
+
+  static const _gradients = [
+    [AppColors.auroraPink, AppColors.auroraPurple],
+    [AppColors.auroraPurple, AppColors.auroraElectricBlue],
+    [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
+    [AppColors.auroraGold, AppColors.auroraRed],
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final muteColor = isDark
+        ? AppColors.white.withValues(alpha: 0.38)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.38);
+    final divColor = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.auroraPurple.withValues(alpha: 0.07);
+
     return _SectionCard(
       title: 'ITEMS ORDERED',
       isDark: isDark,
       child: Column(
-        children: List.generate(order.items.length, (i) {
-          final item = order.items[i];
-          final isLast = i == order.items.length - 1;
-          final thumbGradients = [
-            [AppColors.auroraPink, AppColors.auroraPurple],
-            [AppColors.auroraPurple, AppColors.auroraElectricBlue],
-            [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
-          ];
-          final g = thumbGradients[i % 3];
+        children: items.asMap().entries.map((entry) {
+          final i = entry.key;
+          final item = entry.value;
+          final isLast = i == items.length - 1;
+          final pair = _gradients[i % _gradients.length];
+
           return Column(
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 46, height: 46,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        colors: g,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                  // Thumbnail
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SizedBox(
+                      width: 46,
+                      height: 46,
+                      child: item.imageUrl != null
+                          ? Image.network(
+                              item.imageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, err, stack) =>
+                                  _GradThumb(pair: pair),
+                            )
+                          : _GradThumb(pair: pair),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -418,20 +539,20 @@ class _ItemsCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.name,
+                          item.itemTitle,
                           style: AppTextStyles.dsBodyBold.copyWith(
-                            color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                            color: textColor,
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Size ${item.size} · Qty ${item.quantity}',
+                          '${item.colorName} · ${item.sizeName} · Qty ${item.quantity}',
                           style: AppTextStyles.dsMuted.copyWith(
-                            color: isDark
-                                ? AppColors.white.withValues(alpha: 0.38)
-                                : AppColors.auroraDeepBase.withValues(alpha: 0.38),
+                            color: muteColor,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -440,9 +561,9 @@ class _ItemsCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '\$${item.price.toStringAsFixed(2)}',
+                    '\$${item.totalPrice.toStringAsFixed(2)}',
                     style: AppTextStyles.dsBodyBold.copyWith(
-                      color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                      color: textColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w900,
                       letterSpacing: -0.1,
@@ -452,18 +573,32 @@ class _ItemsCard extends StatelessWidget {
               ),
               if (!isLast) ...[
                 const SizedBox(height: 10),
-                Container(
-                  height: 1,
-                  color: isDark
-                      ? AppColors.white.withValues(alpha: 0.06)
-                      : AppColors.auroraPurple.withValues(alpha: 0.07),
-                ),
+                Container(height: 1, color: divColor),
                 const SizedBox(height: 10),
               ],
             ],
           );
-        }),
+        }).toList(),
       ),
+    );
+  }
+}
+
+class _GradThumb extends StatelessWidget {
+  const _GradThumb({required this.pair});
+  final List<Color> pair;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: pair,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: const SizedBox.expand(),
     );
   }
 }
@@ -471,8 +606,8 @@ class _ItemsCard extends StatelessWidget {
 // ── Summary card ──────────────────────────────────────────────────────────────
 
 class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({required this.order, required this.isDark});
-  final MockOrderDetail order;
+  const _SummaryCard({required this.detail, required this.isDark});
+  final OrderDetailDto detail;
   final bool isDark;
 
   @override
@@ -490,49 +625,47 @@ class _SummaryCard extends StatelessWidget {
       isDark: isDark,
       child: Column(
         children: [
-          _PriceRow(
-            label: 'Subtotal',
-            value: '\$${order.subtotal.toStringAsFixed(2)}',
-            labelColor: labelColor,
-            valColor: valColor,
-          ),
+          _PriceRow(label: 'Subtotal',
+              value: '\$${detail.subtotal.toStringAsFixed(2)}',
+              labelColor: labelColor, valColor: valColor),
           const SizedBox(height: 6),
           _PriceRow(
-            label: 'Shipping',
-            value: order.shipping == 0.0 ? 'Free' : '\$${order.shipping.toStringAsFixed(2)}',
-            labelColor: labelColor,
-            valColor: valColor,
-          ),
-          const SizedBox(height: 6),
-          _PriceRow(
-            label: 'Tax',
-            value: '\$${order.tax.toStringAsFixed(2)}',
-            labelColor: labelColor,
-            valColor: valColor,
-          ),
+              label: 'Delivery fee',
+              value: detail.deliveryFee == 0.0
+                  ? 'Free'
+                  : '\$${detail.deliveryFee.toStringAsFixed(2)}',
+              labelColor: labelColor,
+              valColor: detail.deliveryFee == 0.0
+                  ? AppColors.verifiedGreen
+                  : valColor),
+          if (detail.discountAmount > 0) ...[
+            const SizedBox(height: 6),
+            _PriceRow(
+                label: 'Discount',
+                value: '−\$${detail.discountAmount.toStringAsFixed(2)}',
+                labelColor: labelColor,
+                valColor: AppColors.auroraPink),
+          ],
           const SizedBox(height: 10),
           Container(height: 1, color: dividerColor),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Total',
-                style: AppTextStyles.dsBodyBold.copyWith(
-                  color: isDark ? AppColors.white : AppColors.auroraDeepBase,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              Text('Total',
+                  style: AppTextStyles.dsBodyBold.copyWith(
+                      color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                      fontSize: 13, fontWeight: FontWeight.w800)),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
                   colors: AppColors.auroraGradient,
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
-                ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+                ).createShader(
+                    Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
                 blendMode: BlendMode.srcIn,
                 child: Text(
-                  '\$${order.total.toStringAsFixed(2)}',
+                  '\$${detail.totalAmount.toStringAsFixed(2)}',
                   style: AppTextStyles.dsBodyBold.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
@@ -566,8 +699,12 @@ class _PriceRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTextStyles.dsMuted.copyWith(color: labelColor, fontSize: 12, fontWeight: FontWeight.w500)),
-        Text(value, style: AppTextStyles.dsBodyBold.copyWith(color: valColor, fontSize: 12, fontWeight: FontWeight.w700)),
+        Text(label,
+            style: AppTextStyles.dsMuted
+                .copyWith(color: labelColor, fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(value,
+            style: AppTextStyles.dsBodyBold
+                .copyWith(color: valColor, fontSize: 12, fontWeight: FontWeight.w700)),
       ],
     );
   }
@@ -576,11 +713,27 @@ class _PriceRow extends StatelessWidget {
 // ── Address card ──────────────────────────────────────────────────────────────
 
 class _AddressCard extends StatelessWidget {
-  const _AddressCard({required this.isDark});
+  const _AddressCard({required this.detail, required this.isDark});
+  final OrderDetailDto detail;
   final bool isDark;
+
+  String get _addressLines {
+    final parts = <String>[];
+    if (detail.street != null) parts.add(detail.street!);
+    if (detail.building != null) parts.add(detail.building!);
+    if (detail.floor != null) parts.add('Floor ${detail.floor}');
+    final cityLine = [detail.city, if (detail.area != null) detail.area!].join(', ');
+    parts.add(cityLine);
+    return parts.join(', ');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+    final muteColor = isDark
+        ? AppColors.white.withValues(alpha: 0.38)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.38);
+
     return _SectionCard(
       title: 'DELIVERY ADDRESS',
       isDark: isDark,
@@ -590,16 +743,13 @@ class _AddressCard extends StatelessWidget {
             width: 36, height: 36,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.auroraPurple.withValues(alpha: 0.14),
-                  AppColors.auroraElectricBlue.withValues(alpha: 0.09),
-                ],
-              ),
-              border: Border.all(color: AppColors.auroraPurple.withValues(alpha: 0.18)),
+              color: AppColors.auroraPurple.withValues(alpha: 0.12),
+              border: Border.all(
+                  color: AppColors.auroraPurple.withValues(alpha: 0.18)),
             ),
             child: Center(
-              child: FaIcon(FontAwesomeIcons.locationDot, size: 14, color: AppColors.auroraPurple),
+              child: FaIcon(FontAwesomeIcons.locationDot,
+                  size: 14, color: AppColors.auroraPurple),
             ),
           ),
           const SizedBox(width: 10),
@@ -608,21 +758,27 @@ class _AddressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Nour Mawla',
+                  detail.customerName,
                   style: AppTextStyles.dsBodyBold.copyWith(
-                    color: isDark ? AppColors.white : AppColors.auroraDeepBase,
-                    fontSize: 13, fontWeight: FontWeight.w700,
-                  ),
+                      color: textColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700),
                 ),
+                if (detail.addressLabel != null) ...[
+                  const SizedBox(height: 1),
+                  Text(
+                    detail.addressLabel!,
+                    style: AppTextStyles.dsMuted.copyWith(
+                        color: AppColors.auroraPurple,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
                 const SizedBox(height: 1),
                 Text(
-                  'Hamra St, Beirut, Lebanon',
+                  _addressLines,
                   style: AppTextStyles.dsMuted.copyWith(
-                    color: isDark
-                        ? AppColors.white.withValues(alpha: 0.38)
-                        : AppColors.auroraDeepBase.withValues(alpha: 0.38),
-                    fontSize: 11, fontWeight: FontWeight.w500,
-                  ),
+                      color: muteColor, fontSize: 11, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -636,11 +792,36 @@ class _AddressCard extends StatelessWidget {
 // ── Payment card ──────────────────────────────────────────────────────────────
 
 class _PaymentCard extends StatelessWidget {
-  const _PaymentCard({required this.isDark});
+  const _PaymentCard({required this.detail, required this.isDark});
+  final OrderDetailDto detail;
   final bool isDark;
+
+  String get _methodLabel =>
+      detail.paymentMethod == 1 ? 'Cash on delivery' : 'Unknown';
+
+  String get _statusLabel {
+    switch (detail.paymentStatus) {
+      case 1: return 'Pending';
+      case 2: return 'Paid';
+      case 3: return 'Failed';
+      case 4: return 'Refunded';
+      default: return 'Unknown';
+    }
+  }
+
+  Color get _statusColor {
+    switch (detail.paymentStatus) {
+      case 2: return AppColors.verifiedGreen;
+      case 3: return AppColors.auroraRed;
+      case 4: return AppColors.auroraGold;
+      default: return AppColors.auroraGold;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+
     return _SectionCard(
       title: 'PAYMENT',
       isDark: isDark,
@@ -650,16 +831,13 @@ class _PaymentCard extends StatelessWidget {
             width: 36, height: 36,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.auroraPurple.withValues(alpha: 0.14),
-                  AppColors.auroraElectricBlue.withValues(alpha: 0.09),
-                ],
-              ),
-              border: Border.all(color: AppColors.auroraPurple.withValues(alpha: 0.18)),
+              color: AppColors.auroraPurple.withValues(alpha: 0.12),
+              border: Border.all(
+                  color: AppColors.auroraPurple.withValues(alpha: 0.18)),
             ),
             child: Center(
-              child: FaIcon(FontAwesomeIcons.moneyBill, size: 14, color: AppColors.auroraPurple),
+              child: FaIcon(FontAwesomeIcons.moneyBill,
+                  size: 14, color: AppColors.auroraPurple),
             ),
           ),
           const SizedBox(width: 10),
@@ -668,21 +846,19 @@ class _PaymentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Cash on Delivery',
+                  _methodLabel,
                   style: AppTextStyles.dsBodyBold.copyWith(
-                    color: isDark ? AppColors.white : AppColors.auroraDeepBase,
-                    fontSize: 13, fontWeight: FontWeight.w700,
-                  ),
+                      color: textColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 1),
                 Text(
-                  'Pay when you receive your order',
+                  _statusLabel,
                   style: AppTextStyles.dsMuted.copyWith(
-                    color: isDark
-                        ? AppColors.white.withValues(alpha: 0.38)
-                        : AppColors.auroraDeepBase.withValues(alpha: 0.38),
-                    fontSize: 11, fontWeight: FontWeight.w500,
-                  ),
+                      color: _statusColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -693,16 +869,47 @@ class _PaymentCard extends StatelessWidget {
   }
 }
 
+// ── Note card ─────────────────────────────────────────────────────────────────
+
+class _NoteCard extends StatelessWidget {
+  const _NoteCard({required this.note, required this.isDark});
+  final String note;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final muteColor = isDark
+        ? AppColors.white.withValues(alpha: 0.55)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.55);
+
+    return _SectionCard(
+      title: 'DELIVERY NOTE',
+      isDark: isDark,
+      child: Text(
+        note,
+        style: AppTextStyles.dsMuted.copyWith(
+            color: muteColor, fontSize: 13, height: 1.5),
+      ),
+    );
+  }
+}
+
 // ── Cancel button ─────────────────────────────────────────────────────────────
 
 class _CancelButton extends StatelessWidget {
-  const _CancelButton({required this.isDark});
+  const _CancelButton({
+    required this.cancelling,
+    required this.onCancel,
+    required this.isDark,
+  });
+  final bool cancelling;
+  final VoidCallback onCancel;
   final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: cancelling ? null : onCancel,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -710,19 +917,69 @@ class _CancelButton extends StatelessWidget {
           color: AppColors.auroraRed.withValues(alpha: isDark ? 0.08 : 0.06),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: AppColors.auroraRed.withValues(alpha: isDark ? 0.22 : 0.18),
-          ),
+              color: AppColors.auroraRed.withValues(alpha: isDark ? 0.22 : 0.18)),
         ),
         child: Center(
-          child: Text(
-            'CANCEL ORDER',
-            style: AppTextStyles.dsCTA.copyWith(
-              color: AppColors.auroraRed,
-              fontSize: 13,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.6,
-            ),
-          ),
+          child: cancelling
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    color: AppColors.auroraRed,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  'CANCEL ORDER',
+                  style: AppTextStyles.dsCTA.copyWith(
+                    color: AppColors.auroraRed,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.6,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Error state ───────────────────────────────────────────────────────────────
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.onRetry, required this.isDark});
+  final VoidCallback onRetry;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final muteColor = isDark
+        ? AppColors.white.withValues(alpha: 0.38)
+        : AppColors.auroraDeepBase.withValues(alpha: 0.38);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(FontAwesomeIcons.circleExclamation,
+                size: 36,
+                color: isDark
+                    ? AppColors.white.withValues(alpha: 0.18)
+                    : AppColors.auroraPurple.withValues(alpha: 0.18)),
+            const SizedBox(height: 16),
+            Text('Failed to load order',
+                style: AppTextStyles.dsBodyBold.copyWith(
+                    color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text('Pull to refresh or tap retry',
+                style: AppTextStyles.dsMuted
+                    .copyWith(color: muteColor, fontSize: 13)),
+            const SizedBox(height: 20),
+            AuroraPrimaryButton(text: 'Retry', onPressed: onRetry),
+          ],
         ),
       ),
     );
@@ -763,58 +1020,12 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: AppTextStyles.dsFieldLabel.copyWith(color: labelColor),
-          ),
+          Text(title,
+              style: AppTextStyles.dsFieldLabel.copyWith(color: labelColor)),
           const SizedBox(height: 12),
           child,
         ],
       ),
     );
   }
-}
-
-// ── Mock data models ──────────────────────────────────────────────────────────
-
-class MockOrderDetail {
-  const MockOrderDetail({
-    required this.id,
-    required this.date,
-    required this.status,
-    required this.statusColor,
-    required this.statusIcon,
-    required this.timelineStep,
-    required this.items,
-    required this.subtotal,
-    required this.shipping,
-    required this.tax,
-    required this.total,
-  });
-
-  final String id;
-  final String date;
-  final String status;
-  final Color statusColor;
-  final FaIconData statusIcon;
-  final int timelineStep; // 1-4
-  final List<MockOrderItem> items;
-  final double subtotal;
-  final double shipping;
-  final double tax;
-  final double total;
-}
-
-class MockOrderItem {
-  const MockOrderItem({
-    required this.name,
-    required this.quantity,
-    required this.size,
-    required this.price,
-  });
-
-  final String name;
-  final int quantity;
-  final String size;
-  final double price;
 }

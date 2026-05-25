@@ -165,7 +165,9 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
   }
 
   void _trackOrder() {
-    Navigator.pushNamedAndRemoveUntil(context, mainScreenRoute, (_) => false);
+    Navigator.of(context)
+      ..popUntil((route) => route.isFirst)
+      ..pushNamed(ordersScreenRoute);
   }
 
   @override

@@ -8,6 +8,7 @@ import '../../../backend_integration/dtos/item/item_list_item_dto.dart';
 import '../../../backend_integration/dtos/item/item_tag_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/toast_service.dart';
 import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -330,7 +331,12 @@ class _HeartButton extends StatelessWidget {
       builder: (context, _) {
         final active = _wishlist.isWishlisted(itemId.toString());
         return GestureDetector(
-          onTap: () => _wishlist.toggle(itemId.toString()),
+          onTap: () async {
+            final msg = await _wishlist.toggle(itemId.toString());
+            if (msg != null && msg.isNotEmpty) {
+              ToastService.instance.showSuccess(msg);
+            }
+          },
           behavior: HitTestBehavior.opaque,
           child: ClipOval(
             child: BackdropFilter(

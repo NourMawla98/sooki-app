@@ -58,18 +58,36 @@ class PriceQuantityRow extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (originalTotal != null) ...[
+                  if (originalTotal != null || quantity > 1) ...[
                     const SizedBox(height: 4),
-                    Text(
-                      '\$${originalTotal.toStringAsFixed(2)}',
-                      style: AppFonts.primary(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: mutedStrong,
-                        decoration: TextDecoration.lineThrough,
-                        decorationColor: mutedStrong,
-                        height: 1.0,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (originalTotal != null)
+                          Text(
+                            '\$${originalTotal.toStringAsFixed(2)}',
+                            style: AppFonts.primary(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: mutedStrong,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: mutedStrong,
+                              height: 1.0,
+                            ),
+                          ),
+                        if (originalTotal != null && quantity > 1)
+                          const SizedBox(width: 8),
+                        if (quantity > 1)
+                          Text(
+                            '\$${unitPrice.toStringAsFixed(2)} / unit',
+                            style: AppFonts.primary(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: mutedStrong,
+                              height: 1.0,
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ],

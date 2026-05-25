@@ -12,17 +12,12 @@ import 'package:flutter/foundation.dart';
 class GlobalHeadersInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Add app version
     options.headers['X-App-Version'] = '1.0.0'; // TODO: Get from package_info_plus
-
-    // Add platform information
     options.headers['X-Platform'] = _getPlatform();
-
-    // Add platform version
+    options.headers['X-Currency'] = 'USD';
     if (!kIsWeb) {
       options.headers['X-Platform-Version'] = _getPlatformVersion();
     }
-
     super.onRequest(options, handler);
   }
 

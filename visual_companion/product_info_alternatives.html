@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Info — Final Combo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --aurora-pink: #E91E8C;
+      --aurora-purple: #7C3AED;
+      --aurora-blue: #3B82F6;
+      --aurora-teal: #0FB8A0;
+      --aurora-gold: #F59E0B;
+      --deep-base: #0D0B1A;
+      --light-base: #F0EEF8;
+      --primary-purple: #4C1D95;
+      --verified-green: #22C55E;
+      --white: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #1a1625;
+      color: #fff;
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle-header {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .toggle-btn {
+      padding: 6px 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: var(--aurora-purple);
+      border-color: var(--aurora-purple);
+      color: white;
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .panel-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .panel-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 16px 16px 0 0;
+      color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.05);
+    }
+    .panel-label.light-label {
+      color: rgba(76,29,149,0.45);
+      background: rgba(76,29,149,0.05);
+    }
+
+    .phone {
+      padding: 22px 18px 26px;
+      border-radius: 0 0 16px 16px;
+    }
+    .phone.dark { background: #0D0B1A; }
+    .phone.light { background: #F0EEF8; }
+
+    /* ─── TOP: B-style header ─── */
+    .top-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .cat-chip {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .cat-chip.dark {
+      color: var(--aurora-purple);
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+    }
+    .cat-chip.light {
+      color: var(--primary-purple);
+      background: rgba(76,29,149,0.08);
+      border: 1px solid rgba(76,29,149,0.2);
+    }
+    .stock-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--verified-green);
+    }
+    .stock-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--verified-green);
+      flex-shrink: 0;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+    .title.dark { color: #fff; }
+    .title.light { color: var(--primary-purple); }
+
+    .product-subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .product-subtitle.dark { color: rgba(255,255,255,0.5); }
+    .product-subtitle.light { color: rgba(76,29,149,0.55); }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      margin-bottom: 20px;
+    }
+    .divider.dark { background: rgba(255,255,255,0.07); }
+    .divider.light { background: rgba(76,29,149,0.1); }
+
+    /* ─── ABOUT GLASS (C-style) ─── */
+    .about-glass {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .about-glass.dark {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .about-glass.light {
+      background: rgba(76,29,149,0.04);
+      border: 1px solid rgba(76,29,149,0.1);
+    }
+
+    .about-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .about-label.dark { color: rgba(255,255,255,0.28); }
+    .about-label.light { color: rgba(76,29,149,0.4); }
+
+    .about-text {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.65;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .about-text.dark { color: rgba(255,255,255,0.55); }
+    .about-text.light { color: rgba(76,29,149,0.6); }
+    .about-text.collapsed { max-height: 3.3em; /* ~2 lines */ }
+    .about-text.expanded { max-height: 200px; }
+
+    .read-more-btn {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      padding: 0;
+      letter-spacing: 0.3px;
+    }
+    .read-more-btn.dark {
+      color: var(--aurora-purple);
+    }
+    .read-more-btn.light {
+      color: var(--primary-purple);
+    }
+
+    /* ─── TAGS ─── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+    .tag-pink { color: var(--aurora-pink); background: rgba(233,30,140,0.12); border-color: rgba(233,30,140,0.35); }
+    .tag-blue { color: var(--aurora-blue); background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }
+
+    @media (max-width: 600px) {
+      .panels { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Product Info — B + C Combo</h1>
+<p class="subtitle-header">Category chip + inline stock · Glass "About" box · Read more</p>
+
+<div class="toggle-row">
+  <button class="toggle-btn active" onclick="setTheme('dark', this)">Dark Mode</button>
+  <button class="toggle-btn" onclick="setTheme('light', this)">Light Mode</button>
+</div>
+
+<div class="panels">
+
+  <!-- DARK -->
+  <div class="panel-wrap" id="panel-dark">
+    <div class="panel-label">Dark mode</div>
+    <div class="phone dark" id="phone-dark">
+
+      <div class="top-row">
+        <span class="cat-chip dark">SHOES & FOOTWEAR</span>
+        <div class="stock-pill"><div class="dot"></div>In stock</div>
+      </div>
+
+      <div class="title dark">Slim Fit Heels &amp; Pumps</div>
+      <div class="product-subtitle dark">Slim Fit quality Heels &amp; Pumps</div>
+
+      <div class="divider dark"></div>
+
+      <div class="about-glass dark">
+        <div class="about-label dark">ABOUT THIS ITEM</div>
+        <div class="about-text dark collapsed" id="text-dark">
+          Discover our Slim Fit Heels &amp; Pumps. Crafted with care for everyday style and comfort. These heels are made from premium leather and feature a cushioned insole for all-day wear. Available in multiple colors to match any outfit.
+        </div>
+        <button class="read-more-btn dark" id="btn-dark" onclick="toggle('dark')">Read more</button>
+      </div>
+
+      <div class="tags">
+        <span class="tag tag-pink">Trending</span>
+        <span class="tag tag-blue">Summer Collection</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHT -->
+  <div class="panel-wrap" id="panel-light">
+    <div class="panel-label light-label">Light mode</div>
+    <div class="phone light" id="phone-light">
+
+      <div class="top-row">
+        <span class="cat-chip light">SHOES & FOOTWEAR</span>
+        <div class="stock-pill"><div class="dot"></div>In stock</div>
+      </div>
+
+      <div class="title light">Slim Fit Heels &amp; Pumps</div>
+      <div class="product-subtitle light">Slim Fit quality Heels &amp; Pumps</div>
+
+      <div class="divider light"></div>
+
+      <div class="about-glass light">
+        <div class="about-label light">ABOUT THIS ITEM</div>
+        <div class="about-text light collapsed" id="text-light">
+          Discover our Slim Fit Heels &amp; Pumps. Crafted with care for everyday style and comfort. These heels are made from premium leather and feature a cushioned insole for all-day wear. Available in multiple colors to match any outfit.
+        </div>
+        <button class="read-more-btn light" id="btn-light" onclick="toggle('light')">Read more</button>
+      </div>
+
+      <div class="tags">
+        <span class="tag tag-pink">Trending</span>
+        <span class="tag tag-blue">Summer Collection</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const expanded = { dark: false, light: false };
+
+  function toggle(theme) {
+    expanded[theme] = !expanded[theme];
+    const txt = document.getElementById('text-' + theme);
+    const btn = document.getElementById('btn-' + theme);
+    txt.classList.toggle('collapsed', !expanded[theme]);
+    txt.classList.toggle('expanded', expanded[theme]);
+    btn.textContent = expanded[theme] ? 'Show less' : 'Read more';
+  }
+
+  function setTheme(theme, el) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    // show/hide panels
+    document.getElementById('panel-dark').style.display = theme === 'dark' ? '' : 'none';
+    document.getElementById('panel-light').style.display = theme === 'light' ? '' : 'none';
+    // show both when clicking opposite — just show both always for comparison
+    document.getElementById('panel-dark').style.display = '';
+    document.getElementById('panel-light').style.display = '';
+  }
+</script>
+
+</body>
+</html>

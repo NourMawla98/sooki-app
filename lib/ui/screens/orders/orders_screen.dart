@@ -1,181 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/dtos/order/order_list_item_dto.dart';
 import '../../../enums/order_status.dart';
 import '../../../routes/route_constants.dart';
+import '../../../services/orders_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/order_card/order_card.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
-import 'order_detail_screen.dart';
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
-
-class _Order {
-  final String id;
-  final String date;
-  final OrderStatus status;
-  final int itemCount;
-  final double total;
-  final List<List<Color>> thumbnails;
-  final int timelineStep;
-
-  const _Order({
-    required this.id,
-    required this.date,
-    required this.status,
-    required this.itemCount,
-    required this.total,
-    required this.thumbnails,
-    required this.timelineStep,
-  });
-
-  MockOrderDetail toDetail() {
-    final items = List.generate(
-      itemCount,
-      (i) => MockOrderItem(
-        name: ['Summer Dress', 'Casual Top', 'Sneakers', 'Handbag',
-            'Smart Watch'][i % 5],
-        quantity: 1,
-        size: ['S', 'M', 'L', 'XL'][i % 4],
-        price: total / itemCount,
-      ),
-    );
-    return MockOrderDetail(
-      id: id,
-      date: date,
-      status: status.label,
-      statusColor: status.accentColor,
-      statusIcon: _iconForStatus(status),
-      timelineStep: timelineStep,
-      items: items,
-      subtotal: total * 0.85,
-      shipping: total > 50 ? 0.0 : 4.99,
-      tax: total * 0.08,
-      total: total,
-    );
-  }
-
-  static FaIconData _iconForStatus(OrderStatus s) {
-    switch (s) {
-      case OrderStatus.processing: return FontAwesomeIcons.gear;
-      case OrderStatus.shipped:    return FontAwesomeIcons.truck;
-      case OrderStatus.delivered:  return FontAwesomeIcons.circleCheck;
-      case OrderStatus.cancelled:  return FontAwesomeIcons.circleXmark;
-    }
-  }
-}
-
-const _mockOrders = [
-  _Order(
-    id: '#SOO-00148',
-    date: 'Apr 28, 2026',
-    status: OrderStatus.processing,
-    itemCount: 5,
-    total: 124.50,
-    timelineStep: 2,
-    thumbnails: [
-      [AppColors.auroraPink, AppColors.auroraPurple],
-      [AppColors.auroraPurple, AppColors.auroraElectricBlue],
-      [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
-    ],
-  ),
-  _Order(
-    id: '#SOO-00145',
-    date: 'Apr 24, 2026',
-    status: OrderStatus.shipped,
-    itemCount: 2,
-    total: 38.00,
-    timelineStep: 3,
-    thumbnails: [
-      [AppColors.auroraGold, AppColors.auroraRed],
-      [AppColors.auroraTeal, AppColors.auroraPurple],
-    ],
-  ),
-  _Order(
-    id: '#SOO-00142',
-    date: 'Apr 18, 2026',
-    status: OrderStatus.delivered,
-    itemCount: 3,
-    total: 67.25,
-    timelineStep: 4,
-    thumbnails: [
-      [AppColors.verifiedGreen, AppColors.auroraElectricBlue],
-      [AppColors.auroraPink, AppColors.auroraGold],
-      [AppColors.auroraPurple, AppColors.auroraRed],
-    ],
-  ),
-  _Order(
-    id: '#SOO-00139',
-    date: 'Apr 10, 2026',
-    status: OrderStatus.cancelled,
-    itemCount: 1,
-    total: 22.00,
-    timelineStep: 1,
-    thumbnails: [
-      [AppColors.auroraRed, AppColors.auroraPurple],
-    ],
-  ),
-  _Order(
-    id: '#SOO-00133',
-    date: 'Mar 30, 2026',
-    status: OrderStatus.delivered,
-    itemCount: 4,
-    total: 214.95,
-    timelineStep: 4,
-    thumbnails: [
-      [AppColors.auroraPurple, AppColors.auroraPink],
-      [AppColors.auroraElectricBlue, AppColors.auroraTeal],
-      [AppColors.auroraGold, AppColors.verifiedGreen],
-    ],
-  ),
-];
-
-// ── Screen ────────────────────────────────────────────────────────────────────
+enum _Tab { inProgress, delivered, closed }
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key, this.initialFilter});
-
-  final OrderStatus? initialFilter;
+  const OrdersScreen({super.key});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  late OrderStatus? _filter = widget.initialFilter; // null = Active (processing + shipped)
+  _Tab _tab = _Tab.inProgress;
+  final _scrollController = ScrollController();
 
-  Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() {});
+  OrdersService get _service => GetIt.instance<OrdersService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _service.loadOrders(reset: true);
+    _scrollController.addListener(_onScroll);
   }
 
-  List<_Order> get _filtered {
-    if (_filter == null) {
-      return _mockOrders
-          .where((o) =>
-              o.status == OrderStatus.processing ||
-              o.status == OrderStatus.shipped)
-          .toList();
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      _service.loadMore();
     }
-    return _mockOrders.where((o) => o.status == _filter).toList();
+  }
+
+  Future<void> _refresh() => _service.loadOrders(reset: true);
+
+  List<OrderListItemDto> _filtered(List<OrderListItemDto> all) {
+    return all.where((dto) {
+      final status = OrderStatus.fromInt(dto.status);
+      return switch (_tab) {
+        _Tab.inProgress => status.isInProgress,
+        _Tab.delivered => status.isDelivered,
+        _Tab.closed => status.isClosed,
+      };
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge([ThemeService.instance, _service]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bg =
-            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
-        final titleColor =
-            isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final titleColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final filtered = _filtered(_service.orders);
 
         return Scaffold(
-          backgroundColor: bg,
+          backgroundColor:
+              isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
           body: Stack(
             children: [
               AuroraGlowBlob(
@@ -188,7 +85,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 color: AppColors.auroraElectricBlue,
                 intensity: isDark ? 0.16 : 0.07,
               ),
-
               SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,33 +102,34 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           const SizedBox(width: 4),
                           Text(
                             'Orders',
-                            style: AppTextStyles.heading3.copyWith(
+                            style: AppTextStyles.dsH2.copyWith(
                               color: titleColor,
                               fontWeight: FontWeight.w800,
                               fontSize: 18,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          // Count badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: AppColors.auroraGradient,
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
+                          if (_service.activeOrderCount > 0) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: AppColors.auroraGradient,
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              '${_mockOrders.length}',
-                              style: AppTextStyles.dsCTA.copyWith(
-                                fontSize: 10,
-                                letterSpacing: 0.5,
+                              child: Text(
+                                '${_service.activeOrderCount}',
+                                style: AppTextStyles.dsCTA.copyWith(
+                                  fontSize: 10,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
@@ -243,23 +140,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: Row(
                         children: [
                           _FilterTab(
-                            label: 'Active',
-                            isActive: _filter == null,
-                            onTap: () => setState(() => _filter = null),
+                            label: 'In Progress',
+                            isActive: _tab == _Tab.inProgress,
+                            onTap: () => setState(() => _tab = _Tab.inProgress),
                           ),
                           const SizedBox(width: 8),
                           _FilterTab(
                             label: 'Delivered',
-                            isActive: _filter == OrderStatus.delivered,
-                            onTap: () => setState(
-                                () => _filter = OrderStatus.delivered),
+                            isActive: _tab == _Tab.delivered,
+                            onTap: () => setState(() => _tab = _Tab.delivered),
                           ),
                           const SizedBox(width: 8),
                           _FilterTab(
-                            label: 'Cancelled',
-                            isActive: _filter == OrderStatus.cancelled,
-                            onTap: () => setState(
-                                () => _filter = OrderStatus.cancelled),
+                            label: 'Closed',
+                            isActive: _tab == _Tab.closed,
+                            onTap: () => setState(() => _tab = _Tab.closed),
                           ),
                         ],
                       ),
@@ -270,34 +165,52 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: RefreshIndicator(
                         onRefresh: _refresh,
                         color: AppColors.auroraPink,
-                        child: _filtered.isEmpty
-                          ? SingleChildScrollView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              child: _EmptyState(isDark: isDark),
-                            )
-                          : ListView.separated(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
-                              itemCount: _filtered.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 10),
-                              itemBuilder: (context, i) {
-                                final order = _filtered[i];
-                                return OrderCard(
-                                  orderId: order.id,
-                                  date: order.date,
-                                  status: order.status,
-                                  itemCount: order.itemCount,
-                                  total: order.total,
-                                  thumbnailGradients: order.thumbnails,
-                                  onTap: () => Navigator.pushNamed(
-                                    context,
-                                    orderDetailScreenRoute,
-                                    arguments: order.toDetail(),
+                        child: _service.isLoading && _service.orders.isEmpty
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.auroraPurple,
+                                ),
+                              )
+                            : filtered.isEmpty
+                                ? SingleChildScrollView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    child: _EmptyState(isDark: isDark),
+                                  )
+                                : ListView.separated(
+                                    controller: _scrollController,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        14, 0, 14, 24),
+                                    itemCount: filtered.length +
+                                        (_service.isLoading ? 1 : 0),
+                                    separatorBuilder: (_, _) =>
+                                        const SizedBox(height: 10),
+                                    itemBuilder: (context, i) {
+                                      if (i >= filtered.length) {
+                                        return const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 16),
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              color: AppColors.auroraPurple,
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      final order = filtered[i];
+                                      return OrderCard(
+                                        dto: order,
+                                        onTap: () => Navigator.pushNamed(
+                                          context,
+                                          orderDetailScreenRoute,
+                                          arguments: order.id,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
-                              },
-                            ),
                       ),
                     ),
                   ],
@@ -326,35 +239,10 @@ class _FilterTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isActive) {
-      return GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: AppColors.auroraGradient,
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            label,
-            style: AppTextStyles.dsCTA.copyWith(
-              fontSize: 11,
-              letterSpacing: 0.3,
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Inactive: primary button style at reduced opacity
     return GestureDetector(
       onTap: onTap,
       child: Opacity(
-        opacity: 0.35,
+        opacity: isActive ? 1.0 : 0.30,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
           decoration: BoxDecoration(
@@ -391,34 +279,38 @@ class _EmptyState extends StatelessWidget {
         : AppColors.auroraDeepBase.withValues(alpha: 0.38);
 
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ShaderMask(
-            shaderCallback: (b) => const LinearGradient(
-              colors: AppColors.auroraGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ).createShader(Rect.fromLTWH(0, 0, b.width, b.height)),
-            blendMode: BlendMode.srcIn,
-            child: const FaIcon(FontAwesomeIcons.box,
-                size: 40, color: AppColors.white),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No orders here',
-            style: AppTextStyles.dsH2.copyWith(
-              color: isDark ? AppColors.white : AppColors.auroraDeepBase,
-              fontSize: 20,
+      child: Padding(
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).size.height * 0.20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShaderMask(
+              shaderCallback: (b) => const LinearGradient(
+                colors: AppColors.auroraGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(Rect.fromLTWH(0, 0, b.width, b.height)),
+              blendMode: BlendMode.srcIn,
+              child: const FaIcon(FontAwesomeIcons.box,
+                  size: 40, color: AppColors.white),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Orders in this category will appear here.',
-            style: AppTextStyles.dsMuted
-                .copyWith(color: subColor, fontSize: 13),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              'No orders here',
+              style: AppTextStyles.dsH2.copyWith(
+                color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Orders in this category will appear here.',
+              style: AppTextStyles.dsMuted.copyWith(
+                  color: subColor, fontSize: 13),
+            ),
+          ],
+        ),
       ),
     );
   }

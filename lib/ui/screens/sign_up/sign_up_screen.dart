@@ -6,7 +6,7 @@ import '../../../backend_integration/dependency_injection/dependency_injection.d
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
-import '../../../services/token_service.dart';
+import '../../../services/auth_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/form_validators.dart';
@@ -168,13 +168,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     result.fold(
       (_) => setState(() => _isLoading = false),
       (data) async {
-        final accessToken = data['accessToken'] as String?;
-        final refreshToken = data['refreshToken'] as String?;
-        if (accessToken != null && refreshToken != null) {
-          await TokenService.instance.saveTokens(
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-          );
+        final tokenData = data['data'] as Map<String, dynamic>?;
+        if (tokenData != null) {
+          await serviceLocator<AuthService>().signIn(tokenData);
         }
         final message = data['message'] as String?;
         if (message != null) ToastService.instance.showSuccess(message);
@@ -183,7 +179,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Navigator.pushReplacementNamed(
           context,
           emailVerificationScreenRoute,
-          arguments: _emailController.text.trim(),
+          arguments: {
+            'email': _emailController.text.trim(),
+            'password': _passwordController.text,
+          },
         );
       },
     );

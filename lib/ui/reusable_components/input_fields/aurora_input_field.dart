@@ -168,28 +168,19 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
                 color: hintColor,
                 height: 1.0,
               ),
-              prefixIcon: widget.prefixIcon != null
-                  ? widget.maxLines > 1
-                      ? Align(
-                          alignment: Alignment.topLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 14, right: 10, top: 14),
-                            child: FaIcon(
-                              widget.prefixIcon!,
-                              size: 16,
-                              color: iconColor,
-                            ),
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(left: 14, right: 10),
-                          child: FaIcon(
-                            widget.prefixIcon!,
-                            size: 16,
-                            color: iconColor,
-                          ),
-                        )
+              // Single-line: icon in the dedicated prefixIcon slot (left-edge, vertically centered).
+              // Multi-line: icon as an inline prefix so it sits on the same baseline as the cursor.
+              prefixIcon: (widget.prefixIcon != null && widget.maxLines == 1)
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 14, right: 10),
+                      child: FaIcon(widget.prefixIcon!, size: 16, color: iconColor),
+                    )
+                  : null,
+              prefix: (widget.prefixIcon != null && widget.maxLines > 1)
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: FaIcon(widget.prefixIcon!, size: 16, color: iconColor),
+                    )
                   : null,
               prefixIconConstraints:
                   const BoxConstraints(minWidth: 0, minHeight: 0),
@@ -223,7 +214,9 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
               // (Cannot use error: widget + errorText simultaneously.)
               errorStyle: const TextStyle(height: 0, fontSize: 0),
               contentPadding: EdgeInsets.symmetric(
-                horizontal: widget.prefixIcon != null ? 0 : 14,
+                // prefixIcon slot (single-line): content starts right after icon, no extra left pad.
+                // prefix widget (multi-line) or no icon: add 14px left pad from the container edge.
+                horizontal: (widget.prefixIcon != null && widget.maxLines == 1) ? 0 : 14,
                 vertical: 12,
               ),
               isDense: true,

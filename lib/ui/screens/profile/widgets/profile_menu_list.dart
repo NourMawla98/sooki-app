@@ -11,10 +11,12 @@ class ProfileMenuList extends StatelessWidget {
     super.key,
     required this.isDark,
     required this.isLoggedIn,
+    this.activeOrderCount = 0,
   });
 
   final bool isDark;
   final bool isLoggedIn;
+  final int activeOrderCount;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class ProfileMenuList extends StatelessWidget {
         title: 'My Orders',
         subtitle:
             isLoggedIn ? 'Track and manage your orders' : 'Sign in to view',
-        badge: isLoggedIn ? '2' : null,
+        badge: isLoggedIn && activeOrderCount > 0 ? '$activeOrderCount' : null,
         isDark: isDark,
         onTap: () => Navigator.pushNamed(context, ordersScreenRoute),
       ),

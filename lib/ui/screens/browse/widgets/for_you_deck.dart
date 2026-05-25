@@ -4,24 +4,27 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../../backend_integration/apis/items_api.dart';
+import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../../data/mock_home_data.dart';
-import '../../../../data/mock_products.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../services/search_history_service.dart';
+import '../../../../services/viewed_items_service.dart';
+import '../../../../services/toast_service.dart';
+import '../../../../services/wishlist_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
-/// Section 5 — For You Deck. Auto-advances every [interval] and accepts
-/// bidirectional manual swipes: drag right → previous pick, drag left →
-/// next pick. A pink→purple progress bar along the top edge of the card
-/// counts down the auto-advance timer.
+/// Section 5 — For You Deck. Fetches personalized picks from the API, then
+/// auto-advances every [interval] and accepts bidirectional manual swipes.
+/// A pink→purple progress bar along the top edge counts down the timer.
 class ForYouDeck extends StatefulWidget {
-  final List<ForYouPick> picks;
   final Duration interval;
 
   const ForYouDeck({
     super.key,
-    this.picks = const [],
     this.interval = const Duration(seconds: 5),
   });
 
@@ -30,10 +33,16 @@ class ForYouDeck extends StatefulWidget {
 }
 
 class _ForYouDeckState extends State<ForYouDeck>
-    with TickerProviderStateMixin {
-  late final List<ForYouPick> _picks;
+    with TickerProviderStateMixin, AutoRefreshMixin {
+  final _wishlist = serviceLocator<WishlistService>();
+  final _api = serviceLocator<ItemsApi>();
+  final _viewedItems = serviceLocator<ViewedItemsService>();
+  final _searchHistory = serviceLocator<SearchHistoryService>();
+
+  List<ForYouPick> _picks = [];
+  bool _loading = true;
+
   int _index = 0;
-  final Set<int> _wishlisted = <int>{};
 
   Timer? _autoTimer;
   late final AnimationController _swipeController;
@@ -50,8 +59,6 @@ class _ForYouDeckState extends State<ForYouDeck>
   @override
   void initState() {
     super.initState();
-    _picks = widget.picks.isEmpty ? mockForYouPicks : widget.picks;
-
     _swipeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -70,8 +77,43 @@ class _ForYouDeckState extends State<ForYouDeck>
       vsync: this,
       duration: widget.interval,
     );
-    _restartAutoAdvance();
+    _fetch();
   }
+
+  Future<void> _fetch() async {
+    setState(() => _loading = true);
+    final result = await _api.getForYouItems(
+      viewedItemIds: _viewedItems.ids,
+      searchKeywords: _searchHistory.recents,
+    );
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() => _loading = false),
+      (items) {
+        final picks = items.asMap().entries.map((e) {
+          final dto = e.value;
+          final gradient = forYouGradientPalette[e.key % forYouGradientPalette.length];
+          return ForYouPick(
+            itemId: dto.id,
+            name: dto.title,
+            price: dto.discountedPrice ?? dto.originalPrice,
+            why: dto.reasonMessage,
+            imageUrl: dto.imageUrl,
+            gradient: gradient,
+          );
+        }).toList();
+        setState(() {
+          _picks = picks;
+          _loading = false;
+          _index = 0;
+        });
+        if (picks.isNotEmpty) _restartAutoAdvance();
+      },
+    );
+  }
+
+  @override
+  Future<void> onRefresh() => _fetch();
 
   void _onSwipeTick() {
     if (_midpointReached || _swipeController.value < 0.5) return;
@@ -110,19 +152,21 @@ class _ForYouDeckState extends State<ForYouDeck>
     super.dispose();
   }
 
-  void _toggleWishlist(int idx) {
-    setState(() {
-      if (_wishlisted.contains(idx)) {
-        _wishlisted.remove(idx);
-      } else {
-        _wishlisted.add(idx);
-      }
-    });
+  Future<void> _toggleWishlist(int idx) async {
+    if (idx >= _picks.length) return;
+    final msg = await _wishlist.toggle(_picks[idx].itemId.toString());
+    if (msg != null && msg.isNotEmpty) {
+      ToastService.instance.showSuccess(msg);
+    }
   }
 
   void _onTapCard() {
-    final product = mockBrowseProducts[_index % mockBrowseProducts.length];
-    Navigator.pushNamed(context, itemDetailsScreenRoute, arguments: product);
+    if (_picks.isEmpty) return;
+    Navigator.pushNamed(
+      context,
+      productDetailScreenRoute,
+      arguments: _picks[_index].itemId,
+    );
   }
 
   void _onHorizontalDragStart(DragStartDetails _) {
@@ -157,25 +201,30 @@ class _ForYouDeckState extends State<ForYouDeck>
 
   @override
   Widget build(BuildContext context) {
-    if (_picks.isEmpty) return const SizedBox.shrink();
-
     const deckHeight = 230.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _SectionHeader(),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: deckHeight,
-            child: LayoutBuilder(
-              builder: (context, constraints) =>
-                  _buildCard(constraints.maxWidth),
+    return ListenableBuilder(
+      listenable: _wishlist,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _SectionHeader(),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: deckHeight,
+              child: _loading
+                  ? SkeletonShimmer(borderRadius: BorderRadius.circular(14))
+                  : _picks.isEmpty
+                      ? const SizedBox.shrink()
+                      : LayoutBuilder(
+                          builder: (context, constraints) =>
+                              _buildCard(constraints.maxWidth),
+                        ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -238,7 +287,7 @@ class _ForYouDeckState extends State<ForYouDeck>
         pick: _picks[_index],
         index: _index,
         total: _picks.length,
-        isWishlisted: _wishlisted.contains(_index),
+        isWishlisted: _wishlist.isWishlisted(_picks[_index].itemId.toString()),
         progressController: _progressController,
         onTap: _onTapCard,
         onHeartTap: () => _toggleWishlist(_index),
@@ -375,15 +424,17 @@ class _ForYouCard extends StatelessWidget {
                   colors: pick.gradient,
                 ),
               ),
-              child: Image.network(
-                pick.imageUrl,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return const SkeletonShimmer();
-                },
-                errorBuilder: (context, _, _) => const SizedBox.shrink(),
-              ),
+              child: pick.imageUrl != null
+                ? Image.network(
+                    pick.imageUrl!,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return const SkeletonShimmer();
+                    },
+                    errorBuilder: (context, _, _) => const SizedBox.shrink(),
+                  )
+                : const SizedBox.shrink(),
             ),
             // Dark overlay for text legibility.
             const DecoratedBox(

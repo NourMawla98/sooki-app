@@ -3,11 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../data/mock_products.dart';
-import '../../../models/product.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
+import '../../../backend_integration/dtos/wishlist/wishlist_item_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
+import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../cart/widgets/cart_background.dart';
@@ -20,25 +21,28 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  List<Product> _items = [];
+  final _wishlist = serviceLocator<WishlistService>();
 
   @override
   void initState() {
     super.initState();
-    _items = mockBrowseProducts.take(4).toList();
+    _wishlist.loadFromServer();
   }
 
-  void _remove(Product product) {
-    setState(() => _items.remove(product));
-    ToastService.instance.showSuccess('Removed from wishlist');
+  Future<void> _remove(WishlistItemDto item) async {
+    final msg = await _wishlist.toggle(item.itemId.toString());
+    if (msg != null && msg.isNotEmpty) {
+      ToastService.instance.showSuccess(msg);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge([ThemeService.instance, _wishlist]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final items = _wishlist.items;
 
         return Scaffold(
           backgroundColor:
@@ -51,20 +55,20 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   children: [
                     _TopBar(isDark: isDark),
                     Expanded(
-                      child: _items.isEmpty
+                      child: items.isEmpty
                           ? _WishlistEmptyState(isDark: isDark)
                           : ListView.builder(
                               padding:
                                   const EdgeInsets.fromLTRB(14, 4, 14, 24),
-                              itemCount: _items.length,
+                              itemCount: items.length,
                               itemBuilder: (_, i) => _WishlistCard(
                                 isDark: isDark,
-                                product: _items[i],
-                                onRemove: () => _remove(_items[i]),
+                                item: items[i],
+                                onRemove: () => _remove(items[i]),
                                 onTap: () => Navigator.pushNamed(
                                   context,
-                                  productDetailScreenRoute,
-                                  arguments: _items[i],
+                                  itemDetailsScreenRoute,
+                                  arguments: items[i].itemId,
                                 ),
                               ),
                             ),
@@ -117,17 +121,17 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Card — mirrors CartItemCard's glass style ────────────────────────────────
+// ─── Card ─────────────────────────────────────────────────────────────────────
 
 class _WishlistCard extends StatelessWidget {
   final bool isDark;
-  final Product product;
+  final WishlistItemDto item;
   final VoidCallback onRemove;
   final VoidCallback onTap;
 
   const _WishlistCard({
     required this.isDark,
-    required this.product,
+    required this.item,
     required this.onRemove,
     required this.onTap,
   });
@@ -141,12 +145,12 @@ class _WishlistCard extends StatelessWidget {
         ? AppColors.white.withValues(alpha: 0.10)
         : AppColors.auroraPurple.withValues(alpha: 0.18);
     final nameColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
-    final brandColor = isDark
-        ? AppColors.white.withValues(alpha: 0.38)
-        : AppColors.auroraPurple.withValues(alpha: 0.45);
     final origColor = isDark
         ? AppColors.white.withValues(alpha: 0.28)
         : AppColors.auroraDeepBase.withValues(alpha: 0.28);
+
+    final currentPrice = item.discountedPrice ?? item.originalPrice;
+    final hasDiscount = item.discountedPrice != null;
 
     return GestureDetector(
       onTap: onTap,
@@ -162,7 +166,7 @@ class _WishlistCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _Thumb(url: product.thumbnailUrl, isDark: isDark),
+              _Thumb(url: item.mainImageUrl ?? '', isDark: isDark),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -170,19 +174,7 @@ class _WishlistCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      product.brand.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.captionSmall.copyWith(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: brandColor,
-                        letterSpacing: 0.6,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      product.name,
+                      item.itemTitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.bodyMedium.copyWith(
@@ -206,7 +198,7 @@ class _WishlistCard extends StatelessWidget {
                           ).createShader(bounds),
                           blendMode: BlendMode.srcIn,
                           child: Text(
-                            '\$${product.price.toStringAsFixed(2)}',
+                            '\$${currentPrice.toStringAsFixed(2)}',
                             style: AppTextStyles.productPrice.copyWith(
                               fontSize: 15,
                               fontWeight: FontWeight.w900,
@@ -215,11 +207,10 @@ class _WishlistCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (product.originalPrice != null &&
-                            product.originalPrice! > product.price) ...[
+                        if (hasDiscount) ...[
                           const SizedBox(width: 5),
                           Text(
-                            '\$${product.originalPrice!.toStringAsFixed(2)}',
+                            '\$${item.originalPrice.toStringAsFixed(2)}',
                             style: AppTextStyles.caption.copyWith(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -235,7 +226,6 @@ class _WishlistCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              // Heart button — top-right, mirrors X placement in CartItemCard
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -261,7 +251,7 @@ class _WishlistCard extends StatelessWidget {
   }
 }
 
-// ─── Thumbnail — asset/network aware (mirrors CartItemCard._Thumb) ────────────
+// ─── Thumbnail ────────────────────────────────────────────────────────────────
 
 class _Thumb extends StatelessWidget {
   final String url;
@@ -293,19 +283,19 @@ class _Thumb extends StatelessWidget {
       ),
       clipBehavior: Clip.hardEdge,
       child: url.isNotEmpty
-          ? Image(
-              image: url.startsWith('http')
-                  ? NetworkImage(url)
-                  : AssetImage(url) as ImageProvider,
+          ? Image.network(
+              url,
               fit: BoxFit.cover,
               errorBuilder: (_, _, _) => fallback,
+              loadingBuilder: (_, child, progress) =>
+                  progress == null ? child : fallback,
             )
           : fallback,
     );
   }
 }
 
-// ─── Empty state — mirrors CartEmptyState's hero pattern ─────────────────────
+// ─── Empty state ──────────────────────────────────────────────────────────────
 
 class _WishlistEmptyState extends StatefulWidget {
   final bool isDark;
@@ -472,7 +462,6 @@ class _HeartIllustration extends StatelessWidget {
           return Stack(
             alignment: Alignment.center,
             children: [
-              // Pulsing glow
               Opacity(
                 opacity: glowOpacity.value,
                 child: Transform.scale(
@@ -494,7 +483,6 @@ class _HeartIllustration extends StatelessWidget {
                   ),
                 ),
               ),
-              // Orbit dot 1 — pink
               Positioned(
                 left: center + r1 * cos(a1) - 3.5,
                 top: center + r1 * sin(a1) - 3.5,
@@ -505,7 +493,6 @@ class _HeartIllustration extends StatelessWidget {
                   ),
                 ),
               ),
-              // Orbit dot 2 — blue
               Positioned(
                 left: center + r2 * cos(a2) - 2.5,
                 top: center + r2 * sin(a2) - 2.5,
@@ -516,7 +503,6 @@ class _HeartIllustration extends StatelessWidget {
                   ),
                 ),
               ),
-              // Orbit dot 3 — green
               Positioned(
                 left: center + r3 * cos(a3) - 2.0,
                 top: center + r3 * sin(a3) - 2.0,
@@ -527,7 +513,6 @@ class _HeartIllustration extends StatelessWidget {
                   ),
                 ),
               ),
-              // Floating heart icon
               Transform.translate(
                 offset: Offset(0, floatY.value),
                 child: ShaderMask(

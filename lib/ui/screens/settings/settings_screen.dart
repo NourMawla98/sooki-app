@@ -35,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       listenable: Listenable.merge([ThemeService.instance, GetIt.instance<AuthService>()]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final isSignedIn = GetIt.instance<AuthService>().isSignedIn;
+        final isSignedIn = GetIt.instance<AuthService>().isCustomer;
         return Scaffold(
           backgroundColor:
               isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,

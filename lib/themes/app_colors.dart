@@ -13,7 +13,7 @@ class AppColors {
   static const Color auroraPink = Color(0xFFFF00C8);
   static const Color auroraElectricBlue = Color(0xFF0096FF);
   static const Color auroraDeepBase = Color(0xFF0A0A18);
-  static const Color auroraLightBase = Color(0xFFF8F8FC);
+  static const Color auroraLightBase = Color(0xFFEFEDF8);
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000); // shadows / overlays only
   static const Color verifiedGreen = Color(0xFF6BCB77); // verified-seller badge ONLY

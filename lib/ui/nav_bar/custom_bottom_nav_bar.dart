@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../services/cart_service.dart';
 import '../../services/theme_service.dart';
 import '../../themes/themes.dart';
 import '../reusable_components/aurora/aurora_bar_line.dart';
@@ -23,12 +25,15 @@ class CustomBottomNavBar extends StatelessWidget {
     required this.onTap,
   });
 
+  static final _cart = GetIt.instance<CartService>();
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      listenable: Listenable.merge([ThemeService.instance, _cart]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final cartCount = _cart.itemCount;
         final barBg = isDark
             ? AppColors.auroraDeepBase.withValues(alpha: 0.95)
             : AppColors.white.withValues(alpha: 0.95);
@@ -100,6 +105,7 @@ class CustomBottomNavBar extends StatelessWidget {
                             activeColor: activeColor,
                             inactiveColor: inactiveColor,
                             isDark: isDark,
+                            badgeCount: cartCount > 0 ? cartCount : null,
                             onTap: () => onTap(4),
                           ),
                         ],
@@ -123,6 +129,7 @@ class _NavTab extends StatefulWidget {
   final Color activeColor;
   final Color inactiveColor;
   final bool isDark;
+  final int? badgeCount;
   final VoidCallback onTap;
 
   const _NavTab({
@@ -133,6 +140,7 @@ class _NavTab extends StatefulWidget {
     required this.inactiveColor,
     required this.isDark,
     required this.onTap,
+    this.badgeCount,
   });
 
   @override
@@ -172,6 +180,8 @@ class _NavTabState extends State<_NavTab>
   @override
   Widget build(BuildContext context) {
     final color = widget.isActive ? widget.activeColor : widget.inactiveColor;
+    final cutoutColor =
+        widget.isDark ? AppColors.auroraDeepBase : AppColors.white;
     return Expanded(
       child: InkWell(
         onTap: widget.onTap,
@@ -200,11 +210,30 @@ class _NavTabState extends State<_NavTab>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FaIcon(
-                    widget.icon,
-                    size: 20,
-                    color: color,
-                    shadows: widget.isActive ? [glowShadow] : null,
+                  SizedBox(
+                    width: 32,
+                    height: 26,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        FaIcon(
+                          widget.icon,
+                          size: 20,
+                          color: color,
+                          shadows: widget.isActive ? [glowShadow] : null,
+                        ),
+                        if (widget.badgeCount != null)
+                          Positioned(
+                            top: -2,
+                            right: 0,
+                            child: _NavBadge(
+                              count: widget.badgeCount!,
+                              cutoutColor: cutoutColor,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -221,6 +250,43 @@ class _NavTabState extends State<_NavTab>
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _NavBadge extends StatelessWidget {
+  final int count;
+  final Color cutoutColor;
+
+  const _NavBadge({required this.count, required this.cutoutColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      decoration: BoxDecoration(
+        color: AppColors.auroraPink,
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(color: cutoutColor, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.auroraPink.withValues(alpha: 0.45),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: AppTextStyles.captionSmall.copyWith(
+            color: AppColors.white,
+            fontSize: 8,
+            fontWeight: FontWeight.w800,
+            height: 1.0,
+          ),
         ),
       ),
     );

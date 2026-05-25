@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout Screen — Sooki</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #12121f;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 40px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    flex-wrap: wrap;
+  }
+
+  /* ── Phone frame ── */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: #0A0A18;
+    border-radius: 44px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 8px #181828;
+    flex-shrink: 0;
+  }
+  .phone.light {
+    background: #EFEDF8;
+    border-color: rgba(124,58,237,0.10);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.2), 0 0 0 8px #ddd;
+  }
+
+  /* ── Glow blobs ── */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  .blob-tl { width: 220px; height: 220px; top: -80px; right: -80px; background: #7C3AED; opacity: 0.18; }
+  .blob-br { width: 240px; height: 240px; bottom: -90px; left: -90px; background: #0096FF; opacity: 0.16; }
+  .light .blob-tl { opacity: 0.09; }
+  .light .blob-br { opacity: 0.08; }
+
+  /* ── Content ── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 48px; /* status bar */
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    padding: 4px 16px 4px 4px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 20px;
+  }
+  .back-btn svg { width: 16px; height: 16px; }
+  .dark .back-btn svg path { fill: #fff; }
+  .light .back-btn svg path { fill: #7C3AED; }
+  .topbar-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .dark .topbar-title { color: #fff; }
+  .light .topbar-title { color: #7C3AED; }
+
+  /* ── Scroll area ── */
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px 130px;
+    scrollbar-width: none;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ── Section labels ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  .section-label:first-child { margin-top: 4px; }
+  .dark .section-label { color: rgba(255,255,255,0.38); }
+  .light .section-label { color: rgba(124,58,237,0.45); }
+
+  /* ── Address pill ── */
+  .address-pill {
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dark .address-pill { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); }
+  .light .address-pill { background: rgba(255,255,255,0.80); border: 1px solid rgba(124,58,237,0.18); }
+
+  .addr-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(124,58,237,0.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .addr-icon svg { width: 12px; height: 12px; }
+
+  .addr-text { flex: 1; }
+  .addr-deliver {
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .dark .addr-deliver { color: rgba(255,255,255,0.90); }
+  .light .addr-deliver { color: #1a1a2e; }
+  .addr-deliver span { color: #7C3AED; }
+
+  .addr-sub {
+    font-size: 10.5px;
+    margin-top: 1px;
+  }
+  .dark .addr-sub { color: rgba(255,255,255,0.40); }
+  .light .addr-sub { color: rgba(124,58,237,0.50); }
+
+  .change-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(124,58,237,0.50);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #7C3AED;
+    flex-shrink: 0;
+  }
+
+  /* ── Glass card ── */
+  .glass-card {
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .dark .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+  .light .glass-card { background: rgba(255,255,255,0.85); border: 1px solid rgba(124,58,237,0.12); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+  /* ── Order items ── */
+  .order-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .order-item + .order-item {
+    border-top: 1px solid;
+  }
+  .dark .order-item + .order-item { border-color: rgba(255,255,255,0.06); }
+  .light .order-item + .order-item { border-color: rgba(124,58,237,0.08); }
+
+  .item-thumb {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #FF00C8, #7C3AED);
+  }
+  .item-thumb.t2 { background: linear-gradient(135deg, #7C3AED, #0096FF); }
+  .item-thumb.t3 { background: linear-gradient(135deg, #0096FF, #6BCB77); }
+
+  .item-info { flex: 1; }
+  .item-name {
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .dark .item-name { color: rgba(255,255,255,0.88); }
+  .light .item-name { color: #1a1a2e; }
+  .item-meta {
+    font-size: 10.5px;
+    margin-top: 2px;
+  }
+  .dark .item-meta { color: rgba(255,255,255,0.38); }
+  .light .item-meta { color: rgba(124,58,237,0.50); }
+  .item-price {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .dark .item-price { color: rgba(255,255,255,0.90); }
+  .light .item-price { color: #1a1a2e; }
+
+  /* ── Totals ── */
+  .totals { margin-top: 12px; }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .total-label {
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .dark .total-label { color: rgba(255,255,255,0.45); }
+  .light .total-label { color: rgba(124,58,237,0.55); }
+  .total-value {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .dark .total-value { color: rgba(255,255,255,0.88); }
+  .light .total-value { color: #1a1a2e; }
+  .total-value.free { color: #6BCB77; }
+
+  .divider-dashed {
+    height: 1px;
+    border: none;
+    border-top: 1px dashed;
+    margin: 10px 0;
+  }
+  .dark .divider-dashed { border-color: rgba(255,255,255,0.12); }
+  .light .divider-dashed { border-color: rgba(124,58,237,0.15); }
+
+  .grand-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .grand-label {
+    font-size: 14px;
+    font-weight: 900;
+  }
+  .dark .grand-label { color: #fff; }
+  .light .grand-label { color: #1a1a2e; }
+  .grand-value {
+    font-size: 20px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #FF00C8, #0096FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Payment method ── */
+  .payment-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .payment-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(124,58,237,0.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .payment-icon svg { width: 16px; height: 16px; }
+  .payment-text { flex: 1; }
+  .payment-name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .dark .payment-name { color: rgba(255,255,255,0.90); }
+  .light .payment-name { color: #1a1a2e; }
+  .payment-sub {
+    font-size: 10.5px;
+    margin-top: 2px;
+  }
+  .dark .payment-sub { color: rgba(255,255,255,0.38); }
+  .light .payment-sub { color: rgba(124,58,237,0.45); }
+  .payment-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: rgba(124,58,237,0.12);
+    color: #7C3AED;
+  }
+
+  /* ── Note field ── */
+  .note-field {
+    border-radius: 12px;
+    padding: 12px 14px;
+    min-height: 72px;
+    font-size: 13px;
+    font-weight: 500;
+    resize: none;
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+  }
+  .dark .note-field {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.70);
+  }
+  .dark .note-field::placeholder { color: rgba(255,255,255,0.25); }
+  .light .note-field {
+    background: rgba(255,255,255,0.85);
+    border: 1px solid rgba(124,58,237,0.18);
+    color: rgba(26,26,46,0.80);
+  }
+  .light .note-field::placeholder { color: rgba(124,58,237,0.38); }
+
+  /* ── Sticky bottom bar ── */
+  .bottom-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px 16px 32px;
+  }
+  .dark .bottom-bar {
+    background: linear-gradient(to top, #0A0A18 55%, rgba(10,10,24,0));
+  }
+  .light .bottom-bar {
+    background: linear-gradient(to top, #EFEDF8 55%, rgba(239,237,248,0));
+  }
+
+  .place-btn {
+    width: 100%;
+    height: 52px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(90deg, #FF00C8, #7C3AED, #0096FF);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+  }
+  .place-btn:disabled {
+    opacity: 0.35;
+  }
+
+  /* ── Label ── */
+  .variant-label {
+    text-align: center;
+    color: rgba(255,255,255,0.45);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  /* ── No address warning ── */
+  .no-addr-warn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-top: 8px;
+    background: rgba(255,45,85,0.10);
+    border: 1px solid rgba(255,45,85,0.20);
+  }
+  .no-addr-warn-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #FF2D55;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── DARK MODE ── -->
+<div>
+  <div class="phone dark">
+    <div class="blob blob-tl"></div>
+    <div class="blob blob-br"></div>
+    <div class="screen dark">
+      <!-- Top bar -->
+      <div class="topbar dark">
+        <div class="back-btn dark">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="topbar-title dark">Checkout</span>
+      </div>
+
+      <!-- Scroll content -->
+      <div class="scroll">
+
+        <!-- Delivery address -->
+        <div class="section-label dark">Delivery address</div>
+        <div class="address-pill dark">
+          <div class="addr-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7C3AED"/></svg>
+          </div>
+          <div class="addr-text">
+            <div class="addr-deliver dark">Deliver to · <span>Home</span></div>
+            <div class="addr-sub dark">Amman, Abdoun</div>
+          </div>
+          <div class="change-btn">CHANGE</div>
+        </div>
+
+        <!-- Order summary -->
+        <div class="section-label dark" style="margin-top:20px">Order summary</div>
+        <div class="glass-card dark">
+          <div class="order-item dark">
+            <div class="item-thumb"></div>
+            <div class="item-info">
+              <div class="item-name dark">Floral Midi Dress</div>
+              <div class="item-meta dark">Red · M · Qty 1</div>
+            </div>
+            <div class="item-price dark">$42.00</div>
+          </div>
+          <div class="order-item dark">
+            <div class="item-thumb t2"></div>
+            <div class="item-info">
+              <div class="item-name dark">Casual Linen Top</div>
+              <div class="item-meta dark">Blue · S · Qty 2</div>
+            </div>
+            <div class="item-price dark">$58.00</div>
+          </div>
+          <div class="order-item dark">
+            <div class="item-thumb t3"></div>
+            <div class="item-info">
+              <div class="item-name dark">Classic Sneakers</div>
+              <div class="item-meta dark">White · 38 · Qty 1</div>
+            </div>
+            <div class="item-price dark">$89.00</div>
+          </div>
+
+          <div class="totals">
+            <div class="total-row">
+              <span class="total-label dark">Subtotal</span>
+              <span class="total-value dark">$189.00</span>
+            </div>
+            <div class="total-row">
+              <span class="total-label dark">Delivery fee</span>
+              <span class="total-value free">Free</span>
+            </div>
+            <hr class="divider-dashed dark">
+            <div class="grand-total-row">
+              <span class="grand-label dark">Total</span>
+              <span class="grand-value">$189.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment method -->
+        <div class="section-label dark">Payment method</div>
+        <div class="glass-card dark">
+          <div class="payment-row">
+            <div class="payment-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 4h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm7-5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" stroke="#7C3AED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="payment-text">
+              <div class="payment-name dark">Cash on delivery</div>
+              <div class="payment-sub dark">Pay when your order arrives</div>
+            </div>
+            <div class="payment-badge">ONLY</div>
+          </div>
+        </div>
+
+        <!-- Delivery note -->
+        <div class="section-label dark">Delivery note <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.6;font-size:10px">(optional)</span></div>
+        <textarea class="note-field dark" placeholder="Any special instructions for delivery?"></textarea>
+
+      </div><!-- /scroll -->
+
+      <!-- Sticky bottom bar -->
+      <div class="bottom-bar dark">
+        <button class="place-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          PLACE ORDER
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <div class="variant-label">Dark mode</div>
+</div>
+
+<!-- ── LIGHT MODE ── -->
+<div>
+  <div class="phone light">
+    <div class="blob blob-tl"></div>
+    <div class="blob blob-br"></div>
+    <div class="screen light">
+      <!-- Top bar -->
+      <div class="topbar light">
+        <div class="back-btn light">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="topbar-title light">Checkout</span>
+      </div>
+
+      <!-- Scroll content -->
+      <div class="scroll">
+
+        <!-- Delivery address -->
+        <div class="section-label light">Delivery address</div>
+        <div class="address-pill light">
+          <div class="addr-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7C3AED"/></svg>
+          </div>
+          <div class="addr-text">
+            <div class="addr-deliver light">Deliver to · <span>Home</span></div>
+            <div class="addr-sub light">Amman, Abdoun</div>
+          </div>
+          <div class="change-btn">CHANGE</div>
+        </div>
+
+        <!-- Order summary -->
+        <div class="section-label light" style="margin-top:20px">Order summary</div>
+        <div class="glass-card light">
+          <div class="order-item light">
+            <div class="item-thumb"></div>
+            <div class="item-info">
+              <div class="item-name light">Floral Midi Dress</div>
+              <div class="item-meta light">Red · M · Qty 1</div>
+            </div>
+            <div class="item-price light">$42.00</div>
+          </div>
+          <div class="order-item light">
+            <div class="item-thumb t2"></div>
+            <div class="item-info">
+              <div class="item-name light">Casual Linen Top</div>
+              <div class="item-meta light">Blue · S · Qty 2</div>
+            </div>
+            <div class="item-price light">$58.00</div>
+          </div>
+          <div class="order-item light">
+            <div class="item-thumb t3"></div>
+            <div class="item-info">
+              <div class="item-name light">Classic Sneakers</div>
+              <div class="item-meta light">White · 38 · Qty 1</div>
+            </div>
+            <div class="item-price light">$89.00</div>
+          </div>
+
+          <div class="totals">
+            <div class="total-row">
+              <span class="total-label light">Subtotal</span>
+              <span class="total-value light">$189.00</span>
+            </div>
+            <div class="total-row">
+              <span class="total-label light">Delivery fee</span>
+              <span class="total-value free">Free</span>
+            </div>
+            <hr class="divider-dashed light">
+            <div class="grand-total-row">
+              <span class="grand-label light">Total</span>
+              <span class="grand-value">$189.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment method -->
+        <div class="section-label light">Payment method</div>
+        <div class="glass-card light">
+          <div class="payment-row">
+            <div class="payment-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 4h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm7-5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" stroke="#7C3AED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="payment-text">
+              <div class="payment-name light">Cash on delivery</div>
+              <div class="payment-sub light">Pay when your order arrives</div>
+            </div>
+            <div class="payment-badge">ONLY</div>
+          </div>
+        </div>
+
+        <!-- Delivery note -->
+        <div class="section-label light">Delivery note <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.6;font-size:10px">(optional)</span></div>
+        <textarea class="note-field light" placeholder="Any special instructions for delivery?"></textarea>
+
+      </div><!-- /scroll -->
+
+      <!-- Sticky bottom bar -->
+      <div class="bottom-bar light">
+        <button class="place-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          PLACE ORDER
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="variant-label">Light mode</div>
+</div>
+
+<!-- ── DARK — NO ADDRESS STATE ── -->
+<div>
+  <div class="phone dark">
+    <div class="blob blob-tl"></div>
+    <div class="blob blob-br"></div>
+    <div class="screen dark">
+      <div class="topbar dark">
+        <div class="back-btn dark">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="topbar-title dark">Checkout</span>
+      </div>
+
+      <div class="scroll">
+        <div class="section-label dark">Delivery address</div>
+        <!-- No address selected state -->
+        <div class="address-pill dark" style="opacity:0.55">
+          <div class="addr-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7C3AED"/></svg>
+          </div>
+          <div class="addr-text">
+            <div class="addr-deliver dark">No delivery address</div>
+            <div class="addr-sub dark">Tap to add one</div>
+          </div>
+          <div class="change-btn">ADD</div>
+        </div>
+        <div class="no-addr-warn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#FF2D55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="no-addr-warn-text">Please select a delivery address to continue</span>
+        </div>
+
+        <div class="section-label dark" style="margin-top:20px">Order summary</div>
+        <div class="glass-card dark">
+          <div class="order-item dark">
+            <div class="item-thumb"></div>
+            <div class="item-info">
+              <div class="item-name dark">Floral Midi Dress</div>
+              <div class="item-meta dark">Red · M · Qty 1</div>
+            </div>
+            <div class="item-price dark">$42.00</div>
+          </div>
+          <div class="totals">
+            <div class="total-row">
+              <span class="total-label dark">Subtotal</span>
+              <span class="total-value dark">$42.00</span>
+            </div>
+            <div class="total-row">
+              <span class="total-label dark">Delivery fee</span>
+              <span class="total-value free">Free</span>
+            </div>
+            <hr class="divider-dashed dark">
+            <div class="grand-total-row">
+              <span class="grand-label dark">Total</span>
+              <span class="grand-value">$42.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label dark">Payment method</div>
+        <div class="glass-card dark">
+          <div class="payment-row">
+            <div class="payment-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 4h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm7-5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" stroke="#7C3AED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="payment-text">
+              <div class="payment-name dark">Cash on delivery</div>
+              <div class="payment-sub dark">Pay when your order arrives</div>
+            </div>
+            <div class="payment-badge">ONLY</div>
+          </div>
+        </div>
+
+        <div class="section-label dark">Delivery note <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.6;font-size:10px">(optional)</span></div>
+        <textarea class="note-field dark" placeholder="Any special instructions for delivery?"></textarea>
+      </div>
+
+      <!-- Disabled button when no address -->
+      <div class="bottom-bar dark">
+        <button class="place-btn" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          PLACE ORDER
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <div class="variant-label">No address selected</div>
+</div>
+
+</body>
+</html>

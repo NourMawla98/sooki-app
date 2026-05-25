@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../../models/product.dart';
 import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../services/toast_service.dart';
 import '../../../../themes/themes.dart';
 
 class StickyBottomBar extends StatelessWidget {
-  final Product product;
-  final SizeVariant? selectedSize;
-  final ColorVariant? selectedColor;
-  final int quantity;
-
   const StickyBottomBar({
     super.key,
-    required this.product,
-    this.selectedSize,
-    this.selectedColor,
-    this.quantity = 1,
+    required this.itemId,
+    required this.itemTitle,
+    this.mainImageUrl,
+    this.selectedColorName,
+    this.selectedSizeValueId,
+    this.selectedSizeName,
+    required this.unitPrice,
+    required this.quantity,
+    required this.hasSizes,
   });
 
-  bool get _requiresSize => product.sizes.isNotEmpty;
-  bool get _isEnabled => !_requiresSize || selectedSize != null;
+  final int itemId;
+  final String itemTitle;
+  final String? mainImageUrl;
+  final String? selectedColorName;
+  final int? selectedSizeValueId;
+  final String? selectedSizeName;
+  final double unitPrice;
+  final int quantity;
+  final bool hasSizes;
+
+  bool get _requiresSize => hasSizes;
+  bool get _isEnabled => !_requiresSize || selectedSizeValueId != null;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +82,7 @@ class StickyBottomBar extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    _requiresSize && selectedSize == null
+                    _requiresSize && selectedSizeValueId == null
                         ? 'Select a size'
                         : 'Add to cart',
                     style: AppFonts.primary(
@@ -93,14 +102,20 @@ class StickyBottomBar extends StatelessWidget {
     );
   }
 
-  void _addToCart() {
-    final cartService = GetIt.instance<CartService>();
-    cartService.addItem(
-      product,
-      color: selectedColor,
-      size: selectedSize,
+  Future<void> _addToCart() async {
+    final cart = GetIt.instance<CartService>();
+    final msg = await cart.addToCart(
+      sizeValueId: selectedSizeValueId,
+      itemId: itemId,
+      itemTitle: itemTitle,
+      mainImageUrl: mainImageUrl,
+      colorName: selectedColorName ?? '',
+      sizeName: selectedSizeName ?? '',
+      unitPrice: unitPrice,
       quantity: quantity,
     );
-    ToastService.instance.showSuccess('${product.name} added to cart');
+    if (msg != null && msg.isNotEmpty) {
+      ToastService.instance.showSuccess(msg);
+    }
   }
 }

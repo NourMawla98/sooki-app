@@ -82,6 +82,18 @@ as List<ItemTagDto>,
 
 /// Adds pattern-matching-related methods to [ItemListItemDto].
 extension ItemListItemDtoPatterns on ItemListItemDto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ItemListItemDto value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
@@ -91,6 +103,19 @@ return $default(_that);case _:
 
 }
 }
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ItemListItemDto value)  $default,){
 final _that = this;
 switch (_that) {
@@ -100,6 +125,18 @@ return $default(_that);case _:
 
 }
 }
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ItemListItemDto value)?  $default,){
 final _that = this;
 switch (_that) {
@@ -109,6 +146,18 @@ return $default(_that);case _:
 
 }
 }
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ItemListItemDto() when $default != null:
@@ -117,6 +166,19 @@ return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_
 
 }
 }
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags)  $default,) {final _that = this;
 switch (_that) {
 case _ItemListItemDto():
@@ -125,6 +187,18 @@ return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_
 
 }
 }
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags)?  $default,) {final _that = this;
 switch (_that) {
 case _ItemListItemDto() when $default != null:
@@ -140,7 +214,7 @@ return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_
 @JsonSerializable(createToJson: false)
 
 class _ItemListItemDto implements ItemListItemDto {
-  const _ItemListItemDto({required this.id, required this.title, required this.originalPrice, this.discountedPrice, required this.storeName, required this.categoryName, final  List<String> colorImages = const [], final  List<ItemTagDto> tags = const []}): _colorImages = colorImages, _tags = tags;
+  const _ItemListItemDto({required this.id, required this.title, required this.originalPrice, this.discountedPrice, required this.storeName, required this.categoryName, final  List<String> colorImages = const [], final  List<ItemTagDto> tags = const []}): _colorImages = colorImages,_tags = tags;
   factory _ItemListItemDto.fromJson(Map<String, dynamic> json) => _$ItemListItemDtoFromJson(json);
 
 @override final  int id;

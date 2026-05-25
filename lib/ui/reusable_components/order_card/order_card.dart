@@ -1,33 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../../../backend_integration/dtos/order/order_list_item_dto.dart';
 import '../../../enums/order_status.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Reusable order summary card used on the Orders screen and anywhere else
-/// an order needs to be represented in a list.
+const _months = [
+  '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+String _formatDate(DateTime dt) =>
+    '${_months[dt.month]} ${dt.day}, ${dt.year}';
+
 class OrderCard extends StatelessWidget {
-  final String orderId;
-  final String date;
-  final OrderStatus status;
-  final int itemCount;
-  final double total;
-
-  /// Up to 3 gradient color pairs rendered as thumbnail placeholders.
-  /// Each entry is [startColor, endColor].
-  final List<List<Color>> thumbnailGradients;
-
+  final OrderListItemDto dto;
   final VoidCallback? onTap;
 
   const OrderCard({
     super.key,
-    required this.orderId,
-    required this.date,
-    required this.status,
-    required this.itemCount,
-    required this.total,
-    required this.thumbnailGradients,
+    required this.dto,
     this.onTap,
   });
 
@@ -37,6 +30,7 @@ class OrderCard extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final status = OrderStatus.fromInt(dto.status);
         final accent = status.accentColor;
 
         final cardFill = isDark
@@ -57,9 +51,9 @@ class OrderCard extends StatelessWidget {
             : AppColors.auroraDeepBase.withValues(alpha: 0.35);
         final totalColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
 
-        // Show max 3 thumbnails + overflow chip
-        final visibleThumbs = thumbnailGradients.take(3).toList();
-        final overflow = itemCount - visibleThumbs.length;
+        final visibleItems = dto.items.take(3).toList();
+        final overflow = dto.items.length - visibleItems.length;
+        final date = _formatDate(dto.createdAt);
 
         return GestureDetector(
           onTap: onTap,
@@ -94,19 +88,17 @@ class OrderCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Top row: order # + status pill
+                            // Top row: tracking number + status pill
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        orderId,
-                                        style: AppTextStyles.dsBodyBold
-                                            .copyWith(
+                                        dto.trackingNumber,
+                                        style: AppTextStyles.dsBodyBold.copyWith(
                                           color: orderNumColor,
                                           fontSize: 13,
                                           fontWeight: FontWeight.w800,
@@ -135,24 +127,22 @@ class OrderCard extends StatelessWidget {
                             // Thumbnails row
                             Row(
                               children: [
-                                ...visibleThumbs.map(
-                                  (g) => Padding(
+                                ...visibleItems.asMap().entries.map(
+                                  (e) => Padding(
                                     padding: const EdgeInsets.only(right: 6),
                                     child: _Thumbnail(
-                                      startColor: g[0],
-                                      endColor: g[1],
+                                      imageUrl: e.value.imageUrl,
+                                      index: e.key,
                                     ),
                                   ),
                                 ),
                                 if (overflow > 0)
-                                  _OverflowChip(
-                                      count: overflow, isDark: isDark),
+                                  _OverflowChip(count: overflow, isDark: isDark),
                               ],
                             ),
 
                             const SizedBox(height: 10),
 
-                            // Divider
                             Container(height: 1, color: dividerColor),
 
                             const SizedBox(height: 9),
@@ -162,7 +152,7 @@ class OrderCard extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '$itemCount item${itemCount > 1 ? 's' : ''}',
+                                  '${dto.items.length} item${dto.items.length == 1 ? '' : 's'}',
                                   style: AppTextStyles.dsMuted.copyWith(
                                     color: itemCountColor,
                                     fontSize: 11,
@@ -170,7 +160,7 @@ class OrderCard extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '\$${total.toStringAsFixed(2)}',
+                                  '\$${dto.totalAmount.toStringAsFixed(2)}',
                                   style: AppTextStyles.dsBodyBold.copyWith(
                                     color: totalColor,
                                     fontSize: 15,
@@ -225,23 +215,52 @@ class _StatusPill extends StatelessWidget {
 }
 
 class _Thumbnail extends StatelessWidget {
-  final Color startColor;
-  final Color endColor;
-  const _Thumbnail({required this.startColor, required this.endColor});
+  final String? imageUrl;
+  final int index;
+
+  const _Thumbnail({required this.imageUrl, required this.index});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: SizedBox(
+        width: 40,
+        height: 40,
+        child: imageUrl != null
+            ? Image.network(
+                imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, err, stack) => _FallbackGrad(index: index),
+              )
+            : _FallbackGrad(index: index),
+      ),
+    );
+  }
+}
+
+class _FallbackGrad extends StatelessWidget {
+  final int index;
+  const _FallbackGrad({required this.index});
+
+  static const _pairs = [
+    [AppColors.auroraPink, AppColors.auroraPurple],
+    [AppColors.auroraPurple, AppColors.auroraElectricBlue],
+    [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final pair = _pairs[index % _pairs.length];
+    return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
         gradient: LinearGradient(
-          colors: [startColor, endColor],
+          colors: pair,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
+      child: const SizedBox.expand(),
     );
   }
 }

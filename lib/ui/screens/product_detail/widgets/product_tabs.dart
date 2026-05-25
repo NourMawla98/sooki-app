@@ -1,71 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../../models/product.dart';
+import '../../../../backend_integration/dtos/item/item_detail_dto.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';
 import 'aurora_review_card.dart';
 
 class ProductTabs extends StatefulWidget {
-  final Product product;
-  final List<Review> reviews;
-
   const ProductTabs({
     super.key,
-    required this.product,
-    required this.reviews,
+    required this.labels,
+    required this.attributes,
+    this.sizeMeasurements = const [],
+    this.selectedSizeValueId,
   });
+
+  final List<ItemDetailLabelDto> labels;
+  final List<ItemDetailAttributeDto> attributes;
+  final List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements;
+  final int? selectedSizeValueId;
 
   @override
   State<ProductTabs> createState() => _ProductTabsState();
 }
 
 class _ProductTabsState extends State<ProductTabs> {
-  static const int _pageSize = 10;
-  static const double _prefetchThreshold = 220;
-  static const Duration _fetchDelay = Duration(milliseconds: 400);
-
   int _activeIndex = 0;
-  late final ScrollController _reviewsController;
-  late List<Review> _loadedReviews;
-  bool _isLoadingMore = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _reviewsController = ScrollController()..addListener(_onReviewsScroll);
-    _loadedReviews = widget.reviews.take(_pageSize).toList();
-  }
+  final ScrollController _reviewsController = ScrollController();
 
   @override
   void dispose() {
-    _reviewsController.removeListener(_onReviewsScroll);
     _reviewsController.dispose();
     super.dispose();
-  }
-
-  bool get _hasMore => _loadedReviews.length < widget.reviews.length;
-
-  void _onReviewsScroll() {
-    if (_isLoadingMore || !_hasMore) return;
-    if (!_reviewsController.hasClients) return;
-    if (_reviewsController.position.extentAfter > _prefetchThreshold) return;
-    _fetchMore();
-  }
-
-  Future<void> _fetchMore() async {
-    setState(() => _isLoadingMore = true);
-    await Future.delayed(_fetchDelay);
-    if (!mounted) return;
-    final next = widget.reviews
-        .skip(_loadedReviews.length)
-        .take(_pageSize)
-        .toList();
-    setState(() {
-      _loadedReviews = [..._loadedReviews, ...next];
-      _isLoadingMore = false;
-    });
   }
 
   @override
@@ -80,7 +47,7 @@ class _ProductTabsState extends State<ProductTabs> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _CustomTabBar(
                 activeIndex: _activeIndex,
-                reviewCount: widget.reviews.length,
+                reviewCount: 0,
                 isDark: isDark,
                 onTap: (i) => setState(() => _activeIndex = i),
               ),
@@ -90,12 +57,18 @@ class _ProductTabsState extends State<ProductTabs> {
               child: IndexedStack(
                 index: _activeIndex,
                 children: [
-                  _DetailsTab(product: widget.product, isDark: isDark),
+                  _DetailsTab(
+                    labels: widget.labels,
+                    attributes: widget.attributes,
+                    sizeMeasurements: widget.sizeMeasurements,
+                    selectedSizeValueId: widget.selectedSizeValueId,
+                    isDark: isDark,
+                  ),
                   _ReviewsTab(
-                    product: widget.product,
-                    totalReviewCount: widget.reviews.length,
-                    reviews: _loadedReviews,
-                    isLoadingMore: _isLoadingMore,
+                    rating: 0.0,
+                    totalReviewCount: 0,
+                    reviews: const [],
+                    isLoadingMore: false,
                     controller: _reviewsController,
                   ),
                 ],
@@ -228,7 +201,8 @@ class _TabButton extends StatelessWidget {
             if (count != null) ...[
               const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: pillBg,
                   border: Border.all(color: pillBorder),
@@ -253,9 +227,18 @@ class _TabButton extends StatelessWidget {
 }
 
 class _DetailsTab extends StatelessWidget {
-  const _DetailsTab({required this.product, required this.isDark});
+  const _DetailsTab({
+    required this.labels,
+    required this.attributes,
+    required this.sizeMeasurements,
+    required this.selectedSizeValueId,
+    required this.isDark,
+  });
 
-  final Product product;
+  final List<ItemDetailLabelDto> labels;
+  final List<ItemDetailAttributeDto> attributes;
+  final List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements;
+  final int? selectedSizeValueId;
   final bool isDark;
 
   @override
@@ -276,23 +259,11 @@ class _DetailsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (product.description.isNotEmpty) ...[
-            Text(
-              product.description,
-              style: AppFonts.primary(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: bodyColor,
-                height: 1.45,
-              ),
-            ),
-            const SizedBox(height: 18),
-          ],
-          if (product.features.isNotEmpty) ...[
-            _SectionLabel(label: 'KEY FEATURES', color: mutedLabel),
+          if (labels.isNotEmpty) ...[
+            _SectionLabel(label: 'CERTIFICATIONS', color: mutedLabel),
             const SizedBox(height: 10),
-            ...product.features.map(
-              (feature) => Padding(
+            ...labels.map(
+              (l) => Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,7 +272,7 @@ class _DetailsTab extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        feature,
+                        l.name,
                         style: AppFonts.primary(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -316,21 +287,260 @@ class _DetailsTab extends StatelessWidget {
             ),
             const SizedBox(height: 14),
           ],
-          if (product.specifications.isNotEmpty) ...[
+          if (attributes.isNotEmpty) ...[
             _SectionLabel(label: 'SPECIFICATIONS', color: mutedLabel),
             const SizedBox(height: 10),
             _SpecsTileGrid(
-              specs: product.specifications,
+              specs: {
+                for (final a in attributes) a.attributeName: a.value,
+              },
               cellBg: cellBg,
               cellBorder: cellBorder,
               mutedLabel: mutedLabel,
             ),
+            if (sizeMeasurements.isNotEmpty) const SizedBox(height: 14),
           ],
+          if (sizeMeasurements.isNotEmpty)
+            _MeasurementsTable(
+              groups: sizeMeasurements,
+              selectedSizeValueId: selectedSizeValueId,
+              isDark: isDark,
+              mutedLabel: mutedLabel,
+              cellBorder: cellBorder,
+            ),
         ],
       ),
     );
   }
 }
+
+// ─── Measurements table (transposed: types=rows, sizes=columns) ───────────────
+
+class _MeasurementsTable extends StatelessWidget {
+  const _MeasurementsTable({
+    required this.groups,
+    required this.selectedSizeValueId,
+    required this.isDark,
+    required this.mutedLabel,
+    required this.cellBorder,
+  });
+
+  final List<ItemDetailSizeMeasurementGroupDto> groups;
+  final int? selectedSizeValueId;
+  final bool isDark;
+  final Color mutedLabel;
+  final Color cellBorder;
+
+  List<String> get _types {
+    final seen = <String>{};
+    final result = <String>[];
+    for (final g in groups) {
+      for (final m in g.measurements) {
+        if (seen.add(m.measurementType)) result.add(m.measurementType);
+      }
+    }
+    return result;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final types = _types;
+    if (types.isEmpty) return const SizedBox.shrink();
+
+    final headerBg = isDark
+        ? AppColors.white.withValues(alpha: 0.03)
+        : AppColors.primaryPurple.withValues(alpha: 0.03);
+    final divider = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.primaryPurple.withValues(alpha: 0.08);
+    final cellBg = isDark
+        ? AppColors.white.withValues(alpha: 0.04)
+        : AppColors.primaryPurple.withValues(alpha: 0.04);
+    final bodyColor = (isDark ? AppColors.white : AppColors.primaryPurple)
+        .withValues(alpha: 0.80);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _SectionLabel(label: 'MEASUREMENTS', color: mutedLabel),
+            const SizedBox(width: 6),
+            Text(
+              '(cm)',
+              style: AppFonts.primary(
+                fontSize: 9,
+                fontWeight: FontWeight.w500,
+                color: mutedLabel.withValues(alpha: 0.60),
+                height: 1.1,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            border: Border.all(color: cellBorder),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Header row: empty cell + one cell per size
+                  Container(
+                    color: headerBg,
+                    child: Row(
+                      children: [
+                        _MCell(
+                          width: 90,
+                          bg: Colors.transparent,
+                          border: Border(right: BorderSide(color: divider)),
+                          child: const SizedBox.shrink(),
+                        ),
+                        ...groups.map((g) {
+                          final isSelected =
+                              g.sizeValueId == selectedSizeValueId;
+                          return _MCell(
+                            width: 56,
+                            bg: isSelected
+                                ? AppColors.auroraPurple.withValues(alpha: 0.08)
+                                : Colors.transparent,
+                            border: Border(right: BorderSide(color: divider)),
+                            child: isSelected
+                                ? ShaderMask(
+                                    shaderCallback: (b) =>
+                                        const LinearGradient(
+                                      colors: AppColors.auroraGradient,
+                                    ).createShader(b),
+                                    blendMode: BlendMode.srcIn,
+                                    child: Text(
+                                      g.displayValue,
+                                      textAlign: TextAlign.center,
+                                      style: AppFonts.primary(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.white,
+                                        height: 1.1,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    g.displayValue,
+                                    textAlign: TextAlign.center,
+                                    style: AppFonts.primary(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: mutedLabel,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                  Container(height: 1, color: divider),
+                  // Body rows: one row per measurement type
+                  ...types.asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final type = entry.value;
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            _MCell(
+                              width: 90,
+                              bg: cellBg,
+                              border:
+                                  Border(right: BorderSide(color: divider)),
+                              child: Text(
+                                type.toUpperCase(),
+                                style: AppFonts.primary(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: mutedLabel,
+                                  letterSpacing: 0.8,
+                                  height: 1.1,
+                                ),
+                              ),
+                            ),
+                            ...groups.map((g) {
+                              final isSelected =
+                                  g.sizeValueId == selectedSizeValueId;
+                              final m = g.measurements
+                                  .where((m) => m.measurementType == type)
+                                  .firstOrNull;
+                              final val =
+                                  m != null ? m.value.toStringAsFixed(1) : '—';
+                              return _MCell(
+                                width: 56,
+                                bg: isSelected
+                                    ? AppColors.auroraPurple
+                                        .withValues(alpha: 0.06)
+                                    : Colors.transparent,
+                                border:
+                                    Border(right: BorderSide(color: divider)),
+                                child: Text(
+                                  val,
+                                  textAlign: TextAlign.center,
+                                  style: AppFonts.primary(
+                                    fontSize: 11,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: isSelected ? bodyColor : mutedLabel,
+                                    height: 1.1,
+                                  ),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                        if (i < types.length - 1)
+                          Container(height: 1, color: divider),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MCell extends StatelessWidget {
+  const _MCell({
+    required this.width,
+    required this.bg,
+    required this.border,
+    required this.child,
+  });
+
+  final double width;
+  final Color bg;
+  final Border border;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+      decoration: BoxDecoration(color: bg, border: border),
+      child: child,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel({required this.label, required this.color});
@@ -382,16 +592,16 @@ class _AuroraCheckGlyph extends StatelessWidget {
 
 class _ReviewsTab extends StatelessWidget {
   const _ReviewsTab({
-    required this.product,
+    required this.rating,
     required this.totalReviewCount,
     required this.reviews,
     required this.isLoadingMore,
     required this.controller,
   });
 
-  final Product product;
+  final double rating;
   final int totalReviewCount;
-  final List<Review> reviews;
+  final List<dynamic> reviews;
   final bool isLoadingMore;
   final ScrollController controller;
 
@@ -407,7 +617,7 @@ class _ReviewsTab extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: _ReviewSummary(
-              rating: product.rating,
+              rating: rating,
               reviewCount: totalReviewCount,
             ),
           );
@@ -459,7 +669,7 @@ class _ReviewSummary extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                rating.toStringAsFixed(1),
+                rating > 0 ? rating.toStringAsFixed(1) : '—',
                 style: AppFonts.primary(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -473,10 +683,13 @@ class _ReviewSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    StarRating(rating: rating, size: 13, showValue: false),
+                    if (rating > 0)
+                      StarRating(rating: rating, size: 13, showValue: false),
                     const SizedBox(height: 4),
                     Text(
-                      'Based on $reviewCount reviews',
+                      reviewCount > 0
+                          ? 'Based on $reviewCount reviews'
+                          : 'No reviews yet',
                       style: AppFonts.primary(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,

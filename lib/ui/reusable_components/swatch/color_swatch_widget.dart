@@ -2,26 +2,28 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../../models/product.dart';
+import '../../../backend_integration/dtos/item/item_detail_dto.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import 'color_swatch_type.dart';
 
-/// Circular color swatch. Matches [AuroraCategoryL1Pill]'s selection treatment:
+/// Circular color swatch for [ItemDetailColorDto].
 /// - **Unselected:** 2px neutral border
-/// - **Selected:** 2px aurora-gradient border whose colors continuously sweep
-///   around the perimeter (rotating [SweepGradient]).
+/// - **Selected:** 2px aurora-gradient border that continuously sweeps around
+///   the perimeter (rotating [SweepGradient]).
 class ColorSwatchWidget extends StatefulWidget {
   const ColorSwatchWidget({
     super.key,
-    required this.variant,
+    required this.color,
     this.selected = false,
+    this.isAvailable = true,
     this.size = 32.0,
     this.onTap,
   });
 
-  final ColorVariant variant;
+  final ItemDetailColorDto color;
   final bool selected;
+  final bool isAvailable;
   final double size;
   final VoidCallback? onTap;
 
@@ -71,13 +73,11 @@ class _ColorSwatchWidgetState extends State<ColorSwatchWidget>
             ? AppColors.white.withValues(alpha: 0.22)
             : AppColors.primaryPurple.withValues(alpha: 0.30);
 
-        // Fill disc — sits inside the border stroke. Inset by the stroke width
-        // on each side so the fill doesn't overlap the stroke.
         final fillDiameter = widget.size - _strokeWidth * 2;
         final fillDisc = SizedBox(
           width: fillDiameter,
           height: fillDiameter,
-          child: ClipOval(child: _SwatchFill(variant: widget.variant)),
+          child: ClipOval(child: _SwatchFill(color: widget.color)),
         );
 
         Widget swatch = SizedBox(
@@ -108,7 +108,7 @@ class _ColorSwatchWidgetState extends State<ColorSwatchWidget>
                 ),
         );
 
-        if (!widget.variant.isAvailable) {
+        if (!widget.isAvailable) {
           swatch = Stack(
             alignment: Alignment.center,
             children: [
@@ -123,10 +123,7 @@ class _ColorSwatchWidgetState extends State<ColorSwatchWidget>
         }
 
         return GestureDetector(
-          onTap:
-              (widget.variant.isAvailable && widget.onTap != null)
-                  ? widget.onTap
-                  : null,
+          onTap: (widget.isAvailable && widget.onTap != null) ? widget.onTap : null,
           behavior: HitTestBehavior.opaque,
           child: swatch,
         );
@@ -136,16 +133,22 @@ class _ColorSwatchWidgetState extends State<ColorSwatchWidget>
 }
 
 class _SwatchFill extends StatelessWidget {
-  const _SwatchFill({required this.variant});
-  final ColorVariant variant;
+  const _SwatchFill({required this.color});
+  final ItemDetailColorDto color;
 
   @override
   Widget build(BuildContext context) {
-    switch (inferSwatchType(variant)) {
+    switch (inferSwatchType(color)) {
+      case ColorSwatchType.pattern:
+        return Image.network(
+          color.patternImageUrl!,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) =>
+              Container(color: _hexToColor(color.color1.hexCode)),
+        );
       case ColorSwatchType.solid:
-        return Container(color: _hexToColor(variant.hexCode));
+        return Container(color: _hexToColor(color.color1.hexCode));
       case ColorSwatchType.twoColor:
-        final hexes = variant.hexCodes!;
         return DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -153,10 +156,10 @@ class _SwatchFill extends StatelessWidget {
               end: Alignment.bottomRight,
               stops: const [0.0, 0.5, 0.5, 1.0],
               colors: [
-                _hexToColor(hexes[0]),
-                _hexToColor(hexes[0]),
-                _hexToColor(hexes[1]),
-                _hexToColor(hexes[1]),
+                _hexToColor(color.color1.hexCode),
+                _hexToColor(color.color1.hexCode),
+                _hexToColor(color.color2!.hexCode),
+                _hexToColor(color.color2!.hexCode),
               ],
             ),
           ),
@@ -164,30 +167,29 @@ class _SwatchFill extends StatelessWidget {
       case ColorSwatchType.threeColor:
         return CustomPaint(
           painter: _ConicPainter(
-            colors: variant.hexCodes!.map(_hexToColor).toList(),
+            colors: [
+              _hexToColor(color.color1.hexCode),
+              _hexToColor(color.color2!.hexCode),
+              _hexToColor(color.color3!.hexCode),
+            ],
             hardEdges: true,
           ),
         );
       case ColorSwatchType.multicolor:
-        final palette = (variant.hexCodes != null &&
-                variant.hexCodes!.length >= 4)
-            ? variant.hexCodes!.map(_hexToColor).toList()
-            : const <Color>[
-                Color(0xFFFF0000),
-                Color(0xFFFFA500),
-                Color(0xFFFFFF00),
-                Color(0xFF00C853),
-                Color(0xFF0096FF),
-                Color(0xFF7C3AED),
-                Color(0xFFFF00C8),
-              ];
         return CustomPaint(
-          painter: _ConicPainter(colors: palette, hardEdges: false),
+          painter: _ConicPainter(
+            colors: const <Color>[
+              Color(0xFFFF0000),
+              Color(0xFFFFA500),
+              Color(0xFFFFFF00),
+              Color(0xFF00C853),
+              Color(0xFF0096FF),
+              Color(0xFF7C3AED),
+              Color(0xFFFF00C8),
+            ],
+            hardEdges: false,
+          ),
         );
-      case ColorSwatchType.pattern:
-        final path = variant.swatchAssetPath;
-        if (path == null) return Container(color: _hexToColor(variant.hexCode));
-        return Image.asset(path, fit: BoxFit.cover);
     }
   }
 }
@@ -197,9 +199,6 @@ Color _hexToColor(String hex) {
   return Color(int.parse('0xFF$cleaned'));
 }
 
-/// Paints a circle outline using a [SweepGradient] whose rotation is driven by
-/// [angle]. Animating `angle` from 0 → 2π on repeat makes the gradient colors
-/// appear to travel around the perimeter.
 class _RotatingCircleBorderPainter extends CustomPainter {
   final double angle;
   static const double _strokeWidth = 2;

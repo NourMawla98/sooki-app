@@ -1,4 +1,4 @@
-import '../../../models/product.dart';
+import '../../../backend_integration/dtos/item/item_detail_dto.dart';
 
 enum ColorSwatchType {
   solid,
@@ -8,17 +8,21 @@ enum ColorSwatchType {
   pattern,
 }
 
-ColorSwatchType inferSwatchType(ColorVariant variant) {
-  if (variant.swatchAssetPath != null) return ColorSwatchType.pattern;
-
-  final lowered = variant.name.toLowerCase();
+ColorSwatchType inferSwatchType(ItemDetailColorDto color) {
+  if (color.patternImageUrl != null) return ColorSwatchType.pattern;
+  if (color.color3 != null) return ColorSwatchType.threeColor;
+  if (color.color2 != null) return ColorSwatchType.twoColor;
+  final lowered = color.colorType.toLowerCase();
   if (lowered.contains('multi') || lowered.contains('rainbow')) {
     return ColorSwatchType.multicolor;
   }
+  return ColorSwatchType.solid;
+}
 
-  final hexes = variant.hexCodes;
-  if (hexes == null || hexes.length <= 1) return ColorSwatchType.solid;
-  if (hexes.length == 2) return ColorSwatchType.twoColor;
-  if (hexes.length == 3) return ColorSwatchType.threeColor;
-  return ColorSwatchType.multicolor;
+String colorDisplayName(ItemDetailColorDto color) {
+  if (color.color3 != null) {
+    return '${color.color1.name} / ${color.color2!.name} / ${color.color3!.name}';
+  }
+  if (color.color2 != null) return '${color.color1.name} / ${color.color2!.name}';
+  return color.color1.name;
 }

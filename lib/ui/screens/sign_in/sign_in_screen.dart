@@ -7,7 +7,6 @@ import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
-import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/form_validators.dart';
@@ -88,15 +87,10 @@ class _SignInScreenState extends State<SignInScreen> {
     result.fold(
       (_) => setState(() => _isLoading = false),
       (data) async {
-        final accessToken = data['data']?['accessToken'] as String?;
-        final refreshToken = data['data']?['refreshToken'] as String?;
-        if (accessToken != null && refreshToken != null) {
-          await TokenService.instance.saveTokens(
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-          );
+        final tokenData = data['data'] as Map<String, dynamic>?;
+        if (tokenData != null) {
+          await serviceLocator<AuthService>().signIn(tokenData);
         }
-        await serviceLocator<AuthService>().signIn();
         if (!mounted) return;
         setState(() => _isLoading = false);
         final message = data['message'] as String?;

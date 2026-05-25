@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../services/cart_service.dart';
+import '../../backend_integration/dtos/cart/cart_dto.dart';
 import '../../services/theme_service.dart';
 import '../../themes/app_colors.dart';
 import '../../themes/app_text_styles.dart';
 
 class CartItemCard extends StatelessWidget {
-  final CartItem item;
+  final CartLineItem item;
   final ValueChanged<int> onQuantityChanged;
   final VoidCallback onRemove;
 
@@ -35,14 +35,6 @@ class CartItemCard extends StatelessWidget {
             ? AppColors.white.withValues(alpha: 0.50)
             : AppColors.auroraDeepBase.withValues(alpha: 0.60);
 
-        final lineTotal = item.product.price * item.quantity;
-        final hasDiscount =
-            (item.product.originalPrice ?? 0) > item.product.price;
-        final discountPct = hasDiscount
-            ? ((1 - item.product.price / item.product.originalPrice!) * 100)
-                .round()
-            : 0;
-
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(10),
@@ -55,7 +47,7 @@ class CartItemCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Thumb(url: item.product.thumbnailUrl, isDark: isDark),
+                _Thumb(url: item.imageUrl, isDark: isDark),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _Info(
@@ -80,9 +72,9 @@ class CartItemCard extends StatelessWidget {
                     ),
                     _RightBottom(
                       quantity: item.quantity,
-                      lineTotal: lineTotal,
-                      discountPct: discountPct,
-                      showDiscount: hasDiscount,
+                      lineTotal: item.lineTotal,
+                      stock: item.stock,
+                      isAvailable: item.isAvailable,
                       onQuantityChanged: onQuantityChanged,
                       isDark: isDark,
                       textColor: textColor,
@@ -99,9 +91,10 @@ class CartItemCard extends StatelessWidget {
   }
 }
 
-// ─── Thumbnail ───────────────────────────────────────────────────────────
+// ─── Thumbnail ────────────────────────────────────────────────────────────────
+
 class _Thumb extends StatelessWidget {
-  final String url;
+  final String? url;
   final bool isDark;
 
   const _Thumb({required this.url, required this.isDark});
@@ -118,9 +111,8 @@ class _Thumb extends StatelessWidget {
         ? AppColors.white.withValues(alpha: 0.20)
         : AppColors.primaryPurple.withValues(alpha: 0.30);
 
-    final fallback = Center(
-      child: FaIcon(FontAwesomeIcons.image, size: 16, color: iconColor),
-    );
+    final fallback =
+        Center(child: FaIcon(FontAwesomeIcons.image, size: 16, color: iconColor));
 
     return Container(
       width: 64,
@@ -131,22 +123,21 @@ class _Thumb extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       clipBehavior: Clip.hardEdge,
-      child: url.isNotEmpty
-          ? Image(
-              image: url.startsWith('http')
-                  ? NetworkImage(url)
-                  : AssetImage(url) as ImageProvider,
+      child: (url != null && url!.isNotEmpty)
+          ? Image.network(
+              url!,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => fallback,
+              errorBuilder: (_, __, ___) => fallback,
             )
           : fallback,
     );
   }
 }
 
-// ─── Name + color/size meta ───────────────────────────────────────────────
+// ─── Name + meta ──────────────────────────────────────────────────────────────
+
 class _Info extends StatelessWidget {
-  final CartItem item;
+  final CartLineItem item;
   final Color textColor;
   final Color muteColor;
 
@@ -158,17 +149,14 @@ class _Info extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = item.selectedColor;
-    final size = item.selectedSize;
-    final stock = item.product.stockCount;
-    final lowStock = stock > 0 && stock <= 6;
+    final lowStock = item.stock > 0 && item.stock <= 6;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          item.product.name,
+          item.title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.bodyMedium.copyWith(
@@ -178,78 +166,60 @@ class _Info extends StatelessWidget {
             height: 1.2,
           ),
         ),
-        if (color != null || size != null || lowStock) ...[
-          const SizedBox(height: 4),
-          Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 5,
-            runSpacing: 2,
-            children: [
-              if (color != null) ...[
-                _ColorDot(hex: color.hexCode),
-                Text(
-                  color.name,
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: muteColor,
-                  ),
+        const SizedBox(height: 4),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 5,
+          runSpacing: 2,
+          children: [
+            Text(
+              item.colorName,
+              style: AppTextStyles.caption.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: muteColor,
+              ),
+            ),
+            Text(
+              'Size ${item.sizeName}',
+              style: AppTextStyles.caption.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: muteColor,
+              ),
+            ),
+            if (lowStock)
+              Text(
+                'Only ${item.stock} left',
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.auroraPink,
                 ),
-              ],
-              if (size != null)
-                Text(
-                  'Size ${size.label}',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: muteColor,
-                  ),
+              ),
+            if (!item.isAvailable)
+              Text(
+                'Unavailable',
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.accentRed,
                 ),
-              if (lowStock)
-                Text(
-                  'Only $stock left',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.auroraPink,
-                  ),
-                ),
-            ],
-          ),
-        ],
+              ),
+          ],
+        ),
       ],
     );
   }
 }
 
-class _ColorDot extends StatelessWidget {
-  final String hex;
-  const _ColorDot({required this.hex});
+// ─── Price + stepper ──────────────────────────────────────────────────────────
 
-  @override
-  Widget build(BuildContext context) {
-    Color color;
-    try {
-      final v =
-          int.parse('FF${hex.replaceAll('#', '')}', radix: 16);
-      color = Color(v);
-    } catch (_) {
-      color = AppColors.auroraPurple;
-    }
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-    );
-  }
-}
-
-// ─── Price + stepper, sits at the bottom of the right column ─────────────
 class _RightBottom extends StatelessWidget {
   final int quantity;
   final double lineTotal;
-  final int discountPct;
-  final bool showDiscount;
+  final int stock;
+  final bool isAvailable;
   final ValueChanged<int> onQuantityChanged;
   final bool isDark;
   final Color textColor;
@@ -258,8 +228,8 @@ class _RightBottom extends StatelessWidget {
   const _RightBottom({
     required this.quantity,
     required this.lineTotal,
-    required this.discountPct,
-    required this.showDiscount,
+    required this.stock,
+    required this.isAvailable,
     required this.onQuantityChanged,
     required this.isDark,
     required this.textColor,
@@ -272,40 +242,25 @@ class _RightBottom extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ShaderMask(
-              shaderCallback: (rect) => const LinearGradient(
-                colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
-              ).createShader(rect),
-              child: Text(
-                '\$${lineTotal.toStringAsFixed(2)}',
-                style: AppTextStyles.productPrice.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.white,
-                  letterSpacing: -0.2,
-                ),
-              ),
+        ShaderMask(
+          shaderCallback: (rect) => const LinearGradient(
+            colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
+          ).createShader(rect),
+          child: Text(
+            '\$${lineTotal.toStringAsFixed(2)}',
+            style: AppTextStyles.productPrice.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+              color: AppColors.white,
+              letterSpacing: -0.2,
             ),
-            if (showDiscount) ...[
-              const SizedBox(height: 2),
-              Text(
-                '−$discountPct%',
-                style: AppTextStyles.caption.copyWith(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.auroraPink,
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
         const SizedBox(width: 8),
         _Stepper(
           quantity: quantity,
+          maxStock: stock,
+          isAvailable: isAvailable,
           onChanged: onQuantityChanged,
           isDark: isDark,
           textColor: textColor,
@@ -315,15 +270,20 @@ class _RightBottom extends StatelessWidget {
   }
 }
 
-// ─── Quantity stepper ─────────────────────────────────────────────────────
+// ─── Quantity stepper ──────────────────────────────────────────────────────────
+
 class _Stepper extends StatelessWidget {
   final int quantity;
+  final int maxStock;
+  final bool isAvailable;
   final ValueChanged<int> onChanged;
   final bool isDark;
   final Color textColor;
 
   const _Stepper({
     required this.quantity,
+    required this.maxStock,
+    required this.isAvailable,
     required this.onChanged,
     required this.isDark,
     required this.textColor,
@@ -336,6 +296,9 @@ class _Stepper extends StatelessWidget {
     final chipBorder = isDark
         ? AppColors.white.withValues(alpha: 0.10)
         : AppColors.auroraPurple.withValues(alpha: 0.18);
+
+    final minusEnabled = quantity > 1;
+    final plusEnabled = isAvailable && (maxStock == 0 || quantity < maxStock);
 
     return Container(
       padding: const EdgeInsets.all(2),
@@ -350,7 +313,7 @@ class _Stepper extends StatelessWidget {
           _StepBtn(
             icon: FontAwesomeIcons.minus,
             color: AppColors.auroraPink,
-            enabled: quantity > 1,
+            enabled: minusEnabled,
             onTap: () => onChanged(quantity - 1),
           ),
           SizedBox(
@@ -370,7 +333,7 @@ class _Stepper extends StatelessWidget {
           _StepBtn(
             icon: FontAwesomeIcons.plus,
             color: AppColors.auroraElectricBlue,
-            enabled: true,
+            enabled: plusEnabled,
             onTap: () => onChanged(quantity + 1),
           ),
         ],
@@ -378,7 +341,6 @@ class _Stepper extends StatelessWidget {
     );
   }
 }
-
 
 class _StepBtn extends StatelessWidget {
   final FaIconData icon;

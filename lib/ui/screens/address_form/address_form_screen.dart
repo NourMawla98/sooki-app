@@ -4,19 +4,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../models/delivery_address.dart';
+import '../../../backend_integration/dtos/address/address_dto.dart';
+import '../../../backend_integration/dtos/address/address_request_dto.dart';
+import '../../../backend_integration/dtos/location/location_item_dto.dart';
 import '../../../services/address_service.dart';
 import '../../../services/location_service.dart';
+import '../../../services/places_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
-import '../../reusable_components/input_fields/aurora_phone_field.dart';
 import '../../reusable_components/toggles/aurora_switch.dart';
 import '../cart/widgets/_cart_surface_theme.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
-import 'widgets/_lebanon_areas.dart';
 import 'widgets/aurora_select.dart';
 import 'widgets/label_chooser.dart';
 import 'widgets/map_picker_card.dart';
@@ -24,34 +25,39 @@ import 'widgets/map_picker_card.dart';
 class AddressFormScreen extends StatefulWidget {
   const AddressFormScreen({super.key, this.initialAddress});
 
-  final DeliveryAddress? initialAddress;
+  final AddressDto? initialAddress;
 
   @override
   State<AddressFormScreen> createState() => _AddressFormScreenState();
 }
 
 class _AddressFormScreenState extends State<AddressFormScreen> {
-  static const LatLng _defaultCenter = LatLng(33.8892, 35.5014); // Beirut
+  static const LatLng _defaultCenter = LatLng(33.8892, 35.5014);
 
   final MapController _mapController = MapController();
   final MapSearchController _mapSearchController = MapSearchController();
   final TextEditingController _customLabelController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _floorController = TextEditingController();
   final TextEditingController _aptController = TextEditingController();
-  final TextEditingController _instructionsController =
-      TextEditingController();
+  final TextEditingController _instructionsController = TextEditingController();
 
   final LocationService _locationService = LocationService();
+  final PlacesService _placesService = GetIt.instance<PlacesService>();
 
   AddressLabelType _labelType = AddressLabelType.home;
-  String? _city;
-  String? _area;
+  LocationItemDto? _city;
+  LocationItemDto? _area;
+  List<LocationItemDto> _cities = [];
+  List<LocationItemDto> _areas = [];
+  bool _loadingCities = false;
+  bool _loadingAreas = false;
   bool _isDefault = false;
   bool _includeLocation = false;
   bool _loadingLocation = false;
+  bool _saving = false;
   bool _searchLoading = false;
   String? _locationError;
 
@@ -63,39 +69,82 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   @override
   void initState() {
     super.initState();
+    _initForm();
+  }
+
+  Future<void> _initForm() async {
+    // Pre-populate from existing address before cities load
     final a = widget.initialAddress;
-    if (a == null) return;
-    final label = a.label.toLowerCase();
-    if (label == 'home') {
-      _labelType = AddressLabelType.home;
-    } else if (label == 'office' || label == 'work') {
-      _labelType = AddressLabelType.office;
-    } else {
-      _labelType = AddressLabelType.other;
-      _customLabelController.text = a.label;
+    if (a != null) {
+      final label = (a.label ?? '').toLowerCase();
+      if (label == 'home') {
+        _labelType = AddressLabelType.home;
+      } else if (label == 'office' || label == 'work') {
+        _labelType = AddressLabelType.office;
+      } else {
+        _labelType = AddressLabelType.other;
+        _customLabelController.text = a.label ?? '';
+      }
+      _fullNameController.text = a.fullName;
+      _streetController.text = a.street;
+      _buildingController.text = a.building ?? '';
+      _floorController.text = a.floor ?? '';
+      _aptController.text = a.apt ?? '';
+      _instructionsController.text = a.instructions ?? '';
+      _city = a.city;
+      _area = a.area;
+      _isDefault = a.isDefault;
+      if (a.latitude != null && a.longitude != null) {
+        _latitude = a.latitude;
+        _longitude = a.longitude;
+        _pinnedCenter = LatLng(a.latitude!, a.longitude!);
+        _includeLocation = true;
+        _mapTouched = true;
+      }
     }
-    _phoneController.text = a.phone;
-    _streetController.text = a.street ?? '';
-    _buildingController.text = a.building ?? '';
-    _floorController.text = a.floor ?? '';
-    _aptController.text = a.apt ?? '';
-    _instructionsController.text = a.instructions ?? '';
-    _city = a.city;
-    _area = a.area;
-    _isDefault = a.isDefault;
-    if (a.latitude != null && a.longitude != null) {
-      _latitude = a.latitude;
-      _longitude = a.longitude;
-      _pinnedCenter = LatLng(a.latitude!, a.longitude!);
-      _includeLocation = true;
-      _mapTouched = true;
+
+    await _loadCities();
+
+    // Load areas for the pre-selected city
+    if (_city != null) {
+      await _loadAreas(_city!.id);
     }
+  }
+
+  Future<void> _loadCities() async {
+    setState(() => _loadingCities = true);
+    final cities = await _placesService.loadLebanonCities();
+    if (!mounted) return;
+    setState(() {
+      _cities = cities;
+      _loadingCities = false;
+      // Re-match city by id in case the list returned a fresh instance
+      if (_city != null) {
+        final match = cities.where((c) => c.id == _city!.id);
+        if (match.isNotEmpty) _city = match.first;
+      }
+    });
+  }
+
+  Future<void> _loadAreas(int cityId) async {
+    setState(() => _loadingAreas = true);
+    final areas = await _placesService.loadAreas(cityId);
+    if (!mounted) return;
+    setState(() {
+      _areas = areas;
+      _loadingAreas = false;
+      // Re-match area by id
+      if (_area != null) {
+        final match = areas.where((ar) => ar.id == _area!.id);
+        _area = match.isNotEmpty ? match.first : null;
+      }
+    });
   }
 
   @override
   void dispose() {
     _customLabelController.dispose();
-    _phoneController.dispose();
+    _fullNameController.dispose();
     _streetController.dispose();
     _buildingController.dispose();
     _floorController.dispose();
@@ -120,10 +169,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
 
   bool get _canSave =>
       _effectiveLabel.isNotEmpty &&
-      _phoneController.text.trim().isNotEmpty &&
-      (_city ?? '').isNotEmpty &&
-      (_area ?? '').isNotEmpty &&
-      _buildingController.text.trim().isNotEmpty;
+      _fullNameController.text.trim().isNotEmpty &&
+      _city != null &&
+      _streetController.text.trim().isNotEmpty;
 
   void _onCenterChanged(LatLng center) {
     setState(() {
@@ -197,22 +245,16 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   Future<void> _onIncludeLocationToggled(bool value) async {
     setState(() {
       _includeLocation = value;
-      if (!value) {
-        _locationError = null;
-      }
+      if (!value) _locationError = null;
     });
-    if (!value) return;
-    // Toggled on — try to center the map on the selected area so the user
-    // starts near where they live, not a generic default.
-    if (_mapTouched) return;
+    if (!value || _mapTouched) return;
     final queryParts = <String>[
-      if ((_area ?? '').isNotEmpty && _area != 'Other') _area!,
-      if ((_city ?? '').isNotEmpty && _city != 'Other') _city!,
+      if (_area != null) _area!.name,
+      if (_city != null) _city!.name,
       'Lebanon',
     ];
     if (queryParts.length <= 1) return;
-    final result =
-        await _locationService.searchAddress(queryParts.join(', '));
+    final result = await _locationService.searchAddress(queryParts.join(', '));
     if (!mounted || result == null) return;
     final latLng = LatLng(result.latitude, result.longitude);
     _mapController.move(latLng, 14);
@@ -224,26 +266,16 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!_canSave) return;
+    if (!_canSave || _saving) return;
+    setState(() => _saving = true);
     final service = GetIt.instance<AddressService>();
-    final id = widget.initialAddress?.id ?? 'addr-${DateTime.now().millisecondsSinceEpoch}';
-    final line = DeliveryAddress.composeLine(
-      building: _buildingController.text,
-      street: _streetController.text,
-      area: _area,
-      city: _city,
-    );
-    final addr = DeliveryAddress(
-      id: id,
+    final dto = AddressRequestDto(
       label: _effectiveLabel,
-      phone: _phoneController.text.trim(),
-      line: line,
-      city: _city,
-      area: _area,
-      street: _streetController.text.trim().isEmpty
+      fullName: _fullNameController.text.trim(),
+      street: _streetController.text.trim(),
+      building: _buildingController.text.trim().isEmpty
           ? null
-          : _streetController.text.trim(),
-      building: _buildingController.text.trim(),
+          : _buildingController.text.trim(),
       floor: _floorController.text.trim().isEmpty
           ? null
           : _floorController.text.trim(),
@@ -253,14 +285,22 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       instructions: _instructionsController.text.trim().isEmpty
           ? null
           : _instructionsController.text.trim(),
-      // Pin is only saved if the user opted in AND touched / placed it.
+      cityId: _city!.id,
+      areaId: _area?.id,
       latitude: (_includeLocation && _mapTouched) ? _latitude : null,
       longitude: (_includeLocation && _mapTouched) ? _longitude : null,
       isDefault: _isDefault,
     );
-    await service.add(addr);
+
+    if (widget.initialAddress != null) {
+      await service.editAddress(widget.initialAddress!.id, dto);
+    } else {
+      await service.createAddress(dto);
+    }
+
     if (!mounted) return;
-    Navigator.of(context).pop(id);
+    setState(() => _saving = false);
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -269,8 +309,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bgColor =
-            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+        final bgColor = isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final c = CartSurfaceColors.of(isDark: isDark);
 
         return Scaffold(
@@ -279,23 +318,22 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
           body: Stack(
             children: [
               AuroraGlowBlob(
-                top: -80,
-                right: -80,
-                size: 260,
+                top: -80, right: -80, size: 260,
                 color: AppColors.auroraPurple,
                 intensity: isDark ? 0.20 : 0.10,
               ),
               AuroraGlowBlob(
-                bottom: -80,
-                left: -80,
-                size: 280,
+                bottom: -80, left: -80, size: 280,
                 color: AppColors.auroraElectricBlue,
                 intensity: isDark ? 0.18 : 0.08,
               ),
               SafeArea(
                 child: Column(
                   children: [
-                    _TopBar(isDark: isDark),
+                    _TopBar(
+                      isDark: isDark,
+                      isEdit: widget.initialAddress != null,
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -305,8 +343,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             _sectionLabel('Label', isDark),
                             LabelChooser(
                               selected: _labelType,
-                              onChanged: (t) =>
-                                  setState(() => _labelType = t),
+                              onChanged: (t) => setState(() => _labelType = t),
                             ),
                             if (_labelType == AddressLabelType.other) ...[
                               const SizedBox(height: 10),
@@ -318,42 +355,57 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               ),
                             ],
                             const SizedBox(height: 18),
-                            _sectionLabel('Phone', isDark),
-                            AuroraPhoneField(
-                              controller: _phoneController,
+                            _sectionLabel('Full Name', isDark),
+                            AuroraInputField(
+                              controller: _fullNameController,
+                              hint: 'Recipient\'s full name',
+                              prefixIcon: FontAwesomeIcons.user,
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 18),
                             _sectionLabel('City', isDark),
                             AuroraSelect(
-                              value: _city,
-                              hint: 'Pick your city',
+                              value: _city?.name,
+                              hint: _loadingCities ? 'Loading…' : 'Pick your city',
                               sheetTitle: 'Select city',
-                              options: lebanonCities,
+                              options: _cities.map((c) => c.name).toList(),
                               prefixIcon: FontAwesomeIcons.city,
-                              onChanged: (v) => setState(() {
-                                _city = v;
-                                _area = null;
-                              }),
+                              enabled: !_loadingCities && _cities.isNotEmpty,
+                              onChanged: (name) async {
+                                final match = _cities.where((c) => c.name == name);
+                                if (match.isEmpty) return;
+                                setState(() {
+                                  _city = match.first;
+                                  _area = null;
+                                  _areas = [];
+                                });
+                                await _loadAreas(_city!.id);
+                              },
                             ),
                             const SizedBox(height: 14),
                             _sectionLabel('Area', isDark),
                             AuroraSelect(
-                              value: _area,
+                              value: _area?.name,
                               hint: _city == null
                                   ? 'Pick a city first'
-                                  : 'Pick your area',
+                                  : _loadingAreas
+                                      ? 'Loading…'
+                                      : 'Pick your area',
                               sheetTitle: 'Select area',
-                              options: areasFor(_city),
+                              options: _areas.map((a) => a.name).toList(),
                               prefixIcon: FontAwesomeIcons.map,
-                              enabled: _city != null,
-                              onChanged: (v) => setState(() => _area = v),
+                              enabled: _city != null && !_loadingAreas && _areas.isNotEmpty,
+                              onChanged: (name) {
+                                final match = _areas.where((a) => a.name == name);
+                                if (match.isEmpty) return;
+                                setState(() => _area = match.first);
+                              },
                             ),
                             const SizedBox(height: 14),
                             _sectionLabel('Street', isDark),
                             AuroraInputField(
                               controller: _streetController,
-                              hint: 'Street name (optional)',
+                              hint: 'Street name',
                               prefixIcon: FontAwesomeIcons.road,
                               onChanged: (_) => setState(() {}),
                             ),
@@ -361,7 +413,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             _sectionLabel('Building', isDark),
                             AuroraInputField(
                               controller: _buildingController,
-                              hint: 'Building name or number',
+                              hint: 'Building name or number (optional)',
                               prefixIcon: FontAwesomeIcons.building,
                               onChanged: (_) => setState(() {}),
                             ),
@@ -371,8 +423,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       _sectionLabel('Floor', isDark),
                                       AuroraInputField(
@@ -387,8 +438,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       _sectionLabel('Apartment', isDark),
                                       AuroraInputField(
@@ -408,6 +458,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               hint: 'Landmark, gate code, delivery notes…',
                               prefixIcon: FontAwesomeIcons.noteSticky,
                               maxLines: 3,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 20),
@@ -451,8 +503,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             const SizedBox(height: 18),
                             _DefaultToggle(
                               value: _isDefault,
-                              onChanged: (v) =>
-                                  setState(() => _isDefault = v),
+                              onChanged: (v) => setState(() => _isDefault = v),
                               surfaceColors: c,
                               isDark: isDark,
                             ),
@@ -461,19 +512,15 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                         ),
                       ),
                     ),
-                    // Sticky save CTA
                     Container(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.auroraDeepBase
-                            : AppColors.white,
+                        color: isDark ? AppColors.auroraDeepBase : AppColors.white,
                         border: Border(
                           top: BorderSide(
                             color: isDark
                                 ? AppColors.white.withValues(alpha: 0.06)
-                                : AppColors.auroraPurple
-                                    .withValues(alpha: 0.12),
+                                : AppColors.auroraPurple.withValues(alpha: 0.12),
                             width: 1,
                           ),
                         ),
@@ -483,8 +530,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                         child: AbsorbPointer(
                           absorbing: !_canSave,
                           child: AuroraPrimaryButton(
-                            text: 'SAVE ADDRESS',
+                            text: 'Save address',
                             height: 52,
+                            isLoading: _saving,
                             onPressed: _save,
                           ),
                         ),
@@ -511,7 +559,6 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       ),
     );
   }
-
 }
 
 class _IncludeLocationToggle extends StatelessWidget {
@@ -546,11 +593,7 @@ class _IncludeLocationToggle extends StatelessWidget {
         ),
         child: Row(
           children: [
-            FaIcon(
-              FontAwesomeIcons.locationDot,
-              size: 15,
-              color: AppColors.auroraElectricBlue,
-            ),
+            FaIcon(FontAwesomeIcons.locationDot, size: 15, color: AppColors.auroraElectricBlue),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -576,11 +619,7 @@ class _IncludeLocationToggle extends StatelessWidget {
                 ],
               ),
             ),
-            AuroraSwitch(
-              value: value,
-              onChanged: onChanged,
-              isDark: isDark,
-            ),
+            AuroraSwitch(value: value, onChanged: onChanged, isDark: isDark),
           ],
         ),
       ),
@@ -588,33 +627,27 @@ class _IncludeLocationToggle extends StatelessWidget {
   }
 }
 
-// ─── Top bar ────────────────────────────────────────────────────────────
 class _TopBar extends StatelessWidget {
   final bool isDark;
+  final bool isEdit;
 
-  const _TopBar({required this.isDark});
+  const _TopBar({required this.isDark, required this.isEdit});
 
   @override
   Widget build(BuildContext context) {
-    // Match AppHeader's glyph color convention: auroraPurple in light,
-    // white in dark. Same aurora presence as every other header chrome.
     final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(
-              FontAwesomeIcons.arrowLeft,
-              size: 20,
-              color: iconColor,
-            ),
+            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: iconColor),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              'Add a new address',
+              isEdit ? 'Edit address' : 'Add a new address',
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -644,11 +677,7 @@ class _LatLngReadout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        FaIcon(
-          FontAwesomeIcons.locationCrosshairs,
-          size: 11,
-          color: surfaceColors.textMute2,
-        ),
+        FaIcon(FontAwesomeIcons.locationCrosshairs, size: 11, color: surfaceColors.textMute2),
         const SizedBox(width: 6),
         Text(
           'Pinned: ${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}',
@@ -720,15 +749,10 @@ class _DefaultToggle extends StatelessWidget {
                 ],
               ),
             ),
-            AuroraSwitch(
-              value: value,
-              onChanged: onChanged,
-              isDark: isDark,
-            ),
+            AuroraSwitch(value: value, onChanged: onChanged, isDark: isDark),
           ],
         ),
       ),
     );
   }
 }
-

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../../models/delivery_address.dart';
+import '../../../../backend_integration/dtos/address/address_dto.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/address_service.dart';
 import '../../../../services/theme_service.dart';
@@ -22,8 +22,22 @@ Future<void> showAddressPickerSheet(BuildContext context) {
   );
 }
 
-class _AddressPickerSheet extends StatelessWidget {
+class _AddressPickerSheet extends StatefulWidget {
   const _AddressPickerSheet();
+
+  @override
+  State<_AddressPickerSheet> createState() => _AddressPickerSheetState();
+}
+
+class _AddressPickerSheetState extends State<_AddressPickerSheet> {
+  @override
+  void initState() {
+    super.initState();
+    final service = GetIt.instance<AddressService>();
+    if (service.addresses.isEmpty) {
+      service.loadFromServer();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +45,12 @@ class _AddressPickerSheet extends StatelessWidget {
     return ListenableBuilder(
       listenable: Listenable.merge([addressService, ThemeService.instance]),
       builder: (context, _) {
-        final c = CartSurfaceColors.of(
-          isDark: ThemeService.instance.isDarkMode,
-        );
+        final c = CartSurfaceColors.of(isDark: ThemeService.instance.isDarkMode);
         final addresses = addressService.addresses;
         final selectedId = addressService.selectedId;
 
         return ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.75,
-          ),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
           child: Container(
             decoration: BoxDecoration(
               color: c.sheet,
@@ -87,9 +97,8 @@ class _AddressPickerSheet extends StatelessWidget {
                           addr: a,
                           selected: a.id == selectedId,
                           surfaceColors: c,
-                          onTap: () async {
-                            await addressService.select(a.id);
-                            if (!context.mounted) return;
+                          onTap: () {
+                            addressService.select(a.id);
                             Navigator.of(context).pop();
                           },
                         ),
@@ -113,20 +122,16 @@ class _AddressPickerSheet extends StatelessWidget {
   }
 
   Future<void> _onAddNew(BuildContext context) async {
-    // TODO(auth): once AuthService lands, show the login-gate dialog first
-    // for guest users and only push the form after successful sign-in.
     final navigator = Navigator.of(context);
     final result = await navigator.pushNamed(addAddressScreenRoute);
-    if (result is String) {
-      // The form returned a new address id. Close the picker so the cart's
-      // AddressPill re-renders with the freshly selected address.
+    if (result == true) {
       if (navigator.canPop()) navigator.pop();
     }
   }
 }
 
 class _AddressRow extends StatelessWidget {
-  final DeliveryAddress addr;
+  final AddressDto addr;
   final bool selected;
   final CartSurfaceColors surfaceColors;
   final VoidCallback onTap;
@@ -138,15 +143,17 @@ class _AddressRow extends StatelessWidget {
     required this.onTap,
   });
 
+  String get _locationLine {
+    final parts = <String>[addr.city.name];
+    if (addr.area != null) parts.add(addr.area!.name);
+    return parts.join(', ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final pink = AppColors.auroraPurple;
-    final bg = selected
-        ? pink.withValues(alpha: 0.10)
-        : surfaceColors.chipFill;
-    final border = selected
-        ? pink.withValues(alpha: 0.40)
-        : surfaceColors.chipBorder;
+    final bg = selected ? pink.withValues(alpha: 0.10) : surfaceColors.chipFill;
+    final border = selected ? pink.withValues(alpha: 0.40) : surfaceColors.chipBorder;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -165,13 +172,10 @@ class _AddressRow extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  _RadioDot(
-                    selected: selected,
-                    surfaceColors: surfaceColors,
-                  ),
+                  _RadioDot(selected: selected, surfaceColors: surfaceColors),
                   const SizedBox(width: 10),
                   Text(
-                    addr.label,
+                    addr.label ?? '',
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -181,14 +185,9 @@ class _AddressRow extends StatelessWidget {
                   if (addr.isDefault) ...[
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 1,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                       decoration: BoxDecoration(
-                        color: AppColors.auroraElectricBlue.withValues(
-                          alpha: 0.14,
-                        ),
+                        color: AppColors.auroraElectricBlue.withValues(alpha: 0.14),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -202,26 +201,32 @@ class _AddressRow extends StatelessWidget {
                       ),
                     ),
                   ],
-                  const Spacer(),
-                  Text(
-                    addr.phone,
-                    style: AppTextStyles.caption.copyWith(
-                      fontSize: 11,
-                      color: surfaceColors.textMute2,
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 6),
               Padding(
                 padding: const EdgeInsets.only(left: 28),
-                child: Text(
-                  addr.line,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    fontSize: 11,
-                    height: 1.4,
-                    color: surfaceColors.textMute,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      addr.fullName,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: surfaceColors.textMute,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _locationLine,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontSize: 11,
+                        height: 1.4,
+                        color: surfaceColors.textMute,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -247,9 +252,7 @@ class _RadioDot extends StatelessWidget {
         shape: BoxShape.circle,
         color: selected ? AppColors.auroraPurple : Colors.transparent,
         border: Border.all(
-          color: selected
-              ? AppColors.auroraPurple
-              : surfaceColors.chipBorder,
+          color: selected ? AppColors.auroraPurple : surfaceColors.chipBorder,
           width: 2,
         ),
       ),
@@ -258,13 +261,9 @@ class _RadioDot extends StatelessWidget {
           ? Container(
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.white,
-              ),
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.white),
             )
           : null,
     );
   }
 }
-

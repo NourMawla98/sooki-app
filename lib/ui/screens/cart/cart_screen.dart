@@ -28,72 +28,70 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() {});
+  final CartService _cart = GetIt.instance<CartService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _cart.loadFromServer();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cartService = GetIt.instance<CartService>();
-
     return ListenableBuilder(
-      listenable: Listenable.merge([cartService, ThemeService.instance]),
+      listenable: Listenable.merge([_cart, ThemeService.instance]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final Widget content = cartService.isEmpty
+        final items = _cart.displayItems;
+        final Widget content = items.isEmpty
             ? const CartEmptyState()
             : Column(
                 children: [
                   Expanded(
                     child: RefreshIndicator(
-                      onRefresh: _refresh,
+                      onRefresh: () => _cart.loadFromServer(),
                       color: AppColors.auroraPink,
                       child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-                      children: [
-                        ...cartService.items.map(
-                          (item) => CartItemCard(
-                            item: item,
-                            onQuantityChanged: (newQty) {
-                              cartService.updateQuantity(
-                                item.product.id,
-                                newQty,
-                              );
-                            },
-                            onRemove: () async {
-                              final confirmed = await showAuroraConfirmSheet(
-                                context,
-                                title: 'Remove item?',
-                                subtitle: item.product.name,
-                                icon: FontAwesomeIcons.trashCan,
-                                iconColor: AppColors.auroraRed,
-                                confirmLabel: 'Remove',
-                                confirmColor: AppColors.auroraRed,
-                              );
-                              if (confirmed) {
-                                cartService.removeItem(item.product.id);
-                                ToastService.instance.showSuccess(
-                                  '${item.product.name} removed from cart',
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+                        children: [
+                          ...items.map(
+                            (item) => CartItemCard(
+                              item: item,
+                              onQuantityChanged: (newQty) =>
+                                  _cart.updateQuantity(item.id, newQty),
+                              onRemove: () async {
+                                final confirmed = await showAuroraConfirmSheet(
+                                  context,
+                                  title: 'Remove item?',
+                                  subtitle: item.title,
+                                  icon: FontAwesomeIcons.trashCan,
+                                  iconColor: AppColors.auroraRed,
+                                  confirmLabel: 'Remove',
+                                  confirmColor: AppColors.auroraRed,
                                 );
-                              }
-                            },
+                                if (confirmed) {
+                                  final msg = await _cart.removeItem(item.id);
+                                  if (msg != null && msg.isNotEmpty) {
+                                    ToastService.instance.showSuccess(msg);
+                                  }
+                                }
+                              },
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        const AddressPill(),
-                        const SizedBox(height: 8),
-                        const PromoRow(),
-                        const SizedBox(height: 8),
-                        const CashOnDeliveryPill(),
-                        const SizedBox(height: 12),
-                      ],
+                          const SizedBox(height: 4),
+                          const AddressPill(),
+                          const SizedBox(height: 8),
+                          const PromoRow(),
+                          const SizedBox(height: 8),
+                          const CashOnDeliveryPill(),
+                          const SizedBox(height: 12),
+                        ],
                       ),
                     ),
                   ),
                   CartSummary(
-                    cartService: cartService,
+                    cartService: _cart,
                     onCheckout: () => _showCheckoutGate(context),
                   ),
                 ],
@@ -104,8 +102,6 @@ class _CartScreenState extends State<CartScreen> {
 
         return Stack(
           children: [
-            // Solid opaque layer — always drawn first so nothing bleeds through
-            // from screens behind this one in the tab stack.
             Positioned.fill(child: ColoredBox(color: bgColor)),
             const Positioned.fill(child: CartBackground()),
             Positioned.fill(child: content),
@@ -116,9 +112,9 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _showCheckoutGate(BuildContext context) {
-    final isLoggedIn = GetIt.instance<AuthService>().isSignedIn;
-    if (isLoggedIn) {
-      Navigator.pushNamed(context, orderSuccessScreenRoute);
+    final isCustomer = GetIt.instance<AuthService>().isCustomer;
+    if (isCustomer) {
+      Navigator.pushNamed(context, checkoutScreenRoute);
     } else {
       showAuroraLoginGate(context);
     }

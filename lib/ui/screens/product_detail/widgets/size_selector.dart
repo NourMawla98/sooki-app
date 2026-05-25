@@ -1,11 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../../models/product.dart';
+import '../../../../backend_integration/dtos/item/item_detail_dto.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import 'size_guide_data.dart';
 
 class SizeSelector extends StatelessWidget {
   const SizeSelector({
@@ -14,12 +13,14 @@ class SizeSelector extends StatelessWidget {
     required this.selected,
     required this.onSelected,
     required this.onSizeGuide,
+    this.standardName,
   });
 
-  final List<SizeVariant> sizes;
-  final SizeVariant? selected;
-  final ValueChanged<SizeVariant> onSelected;
+  final List<ItemDetailSizeDto> sizes;
+  final ItemDetailSizeDto? selected;
+  final ValueChanged<ItemDetailSizeDto> onSelected;
   final VoidCallback onSizeGuide;
+  final String? standardName;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,7 @@ class SizeSelector extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        selected!.label,
+                        selected!.displayValue,
                         style: AppFonts.primary(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -77,6 +78,7 @@ class SizeSelector extends StatelessWidget {
                     ],
                   ],
                 ),
+                if (kSizeGuides.containsKey(standardName))
                 GestureDetector(
                   onTap: onSizeGuide,
                   behavior: HitTestBehavior.opaque,
@@ -122,13 +124,13 @@ class SizeSelector extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: sizes.map((size) {
-                final isSelected = selected == size;
+                final isAvailable = size.stock > 0;
                 return _SizeChip(
-                  label: size.label,
-                  isSelected: isSelected,
-                  isAvailable: size.isAvailable,
+                  label: size.displayValue,
+                  isSelected: selected == size,
+                  isAvailable: isAvailable,
                   isDark: isDark,
-                  onTap: size.isAvailable ? () => onSelected(size) : null,
+                  onTap: isAvailable ? () => onSelected(size) : null,
                 );
               }).toList(),
             ),
@@ -139,7 +141,7 @@ class SizeSelector extends StatelessWidget {
   }
 }
 
-class _SizeChip extends StatefulWidget {
+class _SizeChip extends StatelessWidget {
   const _SizeChip({
     required this.label,
     required this.isSelected,
@@ -155,189 +157,66 @@ class _SizeChip extends StatefulWidget {
   final VoidCallback? onTap;
 
   @override
-  State<_SizeChip> createState() => _SizeChipState();
-}
-
-class _SizeChipState extends State<_SizeChip>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _rotator;
-
-  @override
-  void initState() {
-    super.initState();
-    _rotator = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    );
-    if (widget.isSelected) _rotator.repeat();
-  }
-
-  @override
-  void didUpdateWidget(covariant _SizeChip old) {
-    super.didUpdateWidget(old);
-    if (widget.isSelected && !_rotator.isAnimating) {
-      _rotator.repeat();
-    } else if (!widget.isSelected && _rotator.isAnimating) {
-      _rotator.stop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _rotator.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final cellBg = widget.isDark
-        ? AppColors.white.withValues(alpha: 0.04)
-        : AppColors.primaryPurple.withValues(alpha: 0.06);
-    final cellBorder = widget.isDark
-        ? AppColors.white.withValues(alpha: 0.15)
-        : AppColors.primaryPurple.withValues(alpha: 0.35);
-    final textColor =
-        widget.isDark ? AppColors.white : AppColors.primaryPurple;
-    final unselectedText = widget.isDark
-        ? AppColors.white.withValues(alpha: 0.65)
-        : AppColors.primaryPurple;
+    final innerFill =
+        isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
 
-    final content = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      child: Text(
-        widget.label,
-        textAlign: TextAlign.center,
-        style: AppFonts.primary(
-          fontSize: 12,
-          fontWeight:
-              widget.isSelected ? FontWeight.w800 : FontWeight.w700,
-          color: widget.isSelected ? textColor : unselectedText,
-          decoration: !widget.isAvailable
-              ? TextDecoration.lineThrough
-              : TextDecoration.none,
-          decorationColor: textColor,
-          letterSpacing: 0.3,
-          height: 1.1,
+    Widget chip = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: AppColors.auroraGradient,
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1.5),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: innerFill,
+            borderRadius: BorderRadius.circular(4.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: AppColors.auroraGradient,
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ).createShader(
+                  Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+              blendMode: BlendMode.srcIn,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: AppFonts.primary(
+                  fontSize: 12,
+                  fontWeight:
+                      isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: AppColors.white,
+                  decoration: !isAvailable
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                  decorationColor: AppColors.white,
+                  letterSpacing: 0.3,
+                  height: 1.1,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
 
-    Widget chip = Stack(
-      children: [
-        if (!widget.isSelected)
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: cellBg,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-          ),
-        Positioned.fill(
-          child: widget.isSelected
-              ? RepaintBoundary(
-                  child: AnimatedBuilder(
-                    animation: _rotator,
-                    builder: (context, _) => CustomPaint(
-                      painter: _RotatingRoundedBorderPainter(
-                        angle: _rotator.value * 2 * math.pi,
-                      ),
-                    ),
-                  ),
-                )
-              : CustomPaint(
-                  painter: _StaticRoundedBorderPainter(color: cellBorder),
-                ),
-        ),
-        content,
-      ],
-    );
-
-    if (!widget.isAvailable) {
-      chip = Opacity(opacity: 0.35, child: chip);
-    }
+    final opacity =
+        !isAvailable ? 0.18 : (!isSelected ? 0.38 : 1.0);
+    if (opacity < 1.0) chip = Opacity(opacity: opacity, child: chip);
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: chip,
     );
   }
-}
-
-const double _chipBorderRadius = 6;
-const double _chipStrokeWidth = 2;
-
-class _RotatingRoundedBorderPainter extends CustomPainter {
-  final double angle;
-
-  _RotatingRoundedBorderPainter({required this.angle});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const inset = _chipStrokeWidth / 2;
-    final rect = Rect.fromLTWH(
-      inset,
-      inset,
-      size.width - inset * 2,
-      size.height - inset * 2,
-    );
-    final rrect = RRect.fromRectAndRadius(
-      rect,
-      const Radius.circular(_chipBorderRadius),
-    );
-
-    final shader = SweepGradient(
-      colors: const [
-        AppColors.auroraPink,
-        AppColors.auroraPurple,
-        AppColors.auroraElectricBlue,
-        AppColors.auroraPurple,
-        AppColors.auroraPink,
-      ],
-      stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
-      transform: GradientRotation(angle),
-    ).createShader(rect);
-
-    final paint = Paint()
-      ..shader = shader
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = _chipStrokeWidth;
-
-    canvas.drawRRect(rrect, paint);
-  }
-
-  @override
-  bool shouldRepaint(_RotatingRoundedBorderPainter old) => old.angle != angle;
-}
-
-class _StaticRoundedBorderPainter extends CustomPainter {
-  final Color color;
-
-  _StaticRoundedBorderPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const inset = _chipStrokeWidth / 2;
-    final rect = Rect.fromLTWH(
-      inset,
-      inset,
-      size.width - inset * 2,
-      size.height - inset * 2,
-    );
-    final rrect = RRect.fromRectAndRadius(
-      rect,
-      const Radius.circular(_chipBorderRadius),
-    );
-
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = _chipStrokeWidth;
-
-    canvas.drawRRect(rrect, paint);
-  }
-
-  @override
-  bool shouldRepaint(_StaticRoundedBorderPainter old) => old.color != color;
 }

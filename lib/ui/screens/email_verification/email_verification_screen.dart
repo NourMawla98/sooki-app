@@ -6,18 +6,27 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../backend_integration/apis/auth_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
+import '../../../services/auth_service.dart';
+import '../../../services/wishlist_service.dart';
+import '../../../services/cart_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../reusable_components/aurora/aurora_secondary_button.dart';
 import '../../screens/splash/widgets/aurora_glow_blob.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
+  final String password;
 
-  const EmailVerificationScreen({super.key, required this.email});
+  const EmailVerificationScreen({
+    super.key,
+    required this.email,
+    required this.password,
+  });
 
   @override
   State<EmailVerificationScreen> createState() =>
@@ -29,11 +38,43 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   int _secondsLeft = _cooldownSeconds;
   Timer? _timer;
   bool _isResending = false;
+  bool _isVerifying = false;
 
   @override
   void initState() {
     super.initState();
     _startTimer();
+  }
+
+  Future<void> _handleDoneVerification() async {
+    if (_isVerifying) return;
+    setState(() => _isVerifying = true);
+
+    final result = await serviceLocator<AuthApi>().login(
+      email: widget.email,
+      password: widget.password,
+    );
+
+    if (!mounted) return;
+
+    await result.fold(
+      (err) async {
+        setState(() => _isVerifying = false);
+        ToastService.instance.showError(
+          err.message.isNotEmpty ? err.message : 'Login failed. Please verify your email first.',
+        );
+      },
+      (data) async {
+        final tokenData = data['data'] as Map<String, dynamic>?;
+        if (tokenData != null) {
+          await serviceLocator<AuthService>().signIn(tokenData);
+          await serviceLocator<WishlistService>().loadFromServer();
+          await serviceLocator<CartService>().loadFromServer();
+        }
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, mainScreenRoute);
+      },
+    );
   }
 
   void _startTimer() {
@@ -194,10 +235,23 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                       const SizedBox(height: 36),
 
-                      AuroraPrimaryButton(
-                        text: 'Browse the shop',
-                        onPressed: () => Navigator.pushReplacementNamed(
-                            context, mainScreenRoute),
+                      if (widget.password.isNotEmpty) ...[
+                        AuroraPrimaryButton(
+                          text: "I've verified my email",
+                          isLoading: _isVerifying,
+                          onPressed: _handleDoneVerification,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      AuroraSecondaryButton(
+                        text: 'Continue as guest',
+                        height: 52,
+                        onPressed: () async {
+                          await serviceLocator<AuthService>().signOut();
+                          if (!context.mounted) return;
+                          Navigator.pushReplacementNamed(
+                              context, mainScreenRoute);
+                        },
                       ),
                       const SizedBox(height: 24),
 
