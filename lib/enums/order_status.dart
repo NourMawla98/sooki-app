@@ -33,19 +33,15 @@ enum OrderStatus {
   bool get isDelivered => this == delivered || this == received;
   bool get isClosed => this == cancelled || this == rejected || this == refunded || this == deliveryFailed;
 
-  /// 1-based step for the 4-step progress tracker. Null for terminal cancelled states.
+  /// 1-based step for the 4-step progress tracker. Null for closed statuses.
   int? get progressStep {
     switch (this) {
-      case processing:
-      case packaged:
-        return 2;
-      case outForDelivery:
-        return 3;
+      case processing:    return 1;
+      case packaged:      return 2;
+      case outForDelivery: return 3;
       case delivered:
-      case received:
-        return 4;
-      default:
-        return null;
+      case received:      return 4;
+      default:            return null;
     }
   }
 

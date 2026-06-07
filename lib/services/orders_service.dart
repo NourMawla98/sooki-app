@@ -77,35 +77,37 @@ class OrdersService extends ChangeNotifier {
     return _api.getOrderById(id);
   }
 
-  Future<String> placeOrder(PlaceOrderRequestDto dto) async {
+  Future<({int orderId, String trackingNumber})?> placeOrder(
+    PlaceOrderRequestDto dto,
+  ) async {
     final result = await _api.placeOrder(dto);
     return result.fold(
-      (_) => '',
-      (message) async {
+      (_) => null,
+      (data) async {
         await refreshActiveCount();
-        return message;
+        return data;
       },
     );
   }
 
-  Future<String> cancelOrder(int id) async {
+  Future<({bool success, String message})> cancelOrder(int id) async {
     final result = await _api.cancelOrder(id);
     return result.fold(
-      (_) => '',
+      (_) => (success: false, message: ''),
       (message) async {
         await refreshActiveCount();
-        return message;
+        return (success: true, message: message);
       },
     );
   }
 
-  Future<String> confirmReceipt(int id) async {
+  Future<({bool success, String message})> confirmReceipt(int id) async {
     final result = await _api.confirmReceipt(id);
     return result.fold(
-      (_) => '',
+      (_) => (success: false, message: ''),
       (message) async {
         await refreshActiveCount();
-        return message;
+        return (success: true, message: message);
       },
     );
   }

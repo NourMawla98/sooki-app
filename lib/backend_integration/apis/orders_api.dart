@@ -37,10 +37,9 @@ class OrdersApi {
       operationName: 'listOrders',
       successParser: (response) {
         final body = response.data as Map<String, dynamic>;
-        final data = body['data'] as Map<String, dynamic>? ?? {};
-        final isLastPage = data['isLastPage'] as bool? ?? true;
-        final totalCount = data['totalCount'] as int? ?? 0;
-        final rawItems = data['items'];
+        final isLastPage = body['isLastPage'] as bool? ?? true;
+        final totalCount = body['totalCount'] as int? ?? 0;
+        final rawItems = body['data'];
         final items = rawItems is List
             ? rawItems
                 .whereType<Map<String, dynamic>>()
@@ -65,15 +64,23 @@ class OrdersApi {
     );
   }
 
-  Future<Either<ApiFailure, String>> placeOrder(PlaceOrderRequestDto dto) {
+  Future<Either<ApiFailure, ({int orderId, String trackingNumber})>> placeOrder(
+    PlaceOrderRequestDto dto,
+  ) {
     return executeRequest(
       client: _dio,
       method: HttpMethod.post,
       path: 'customer/orders',
       body: dto.toJson(),
       operationName: 'placeOrder',
-      successParser: (r) =>
-          (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',
+      successParser: (r) {
+        final data = (r.data as Map<String, dynamic>?)?['data']
+            as Map<String, dynamic>? ?? {};
+        return (
+          orderId: data['id'] as int,
+          trackingNumber: data['trackingNumber'] as String? ?? '',
+        );
+      },
     );
   }
 
@@ -96,6 +103,29 @@ class OrdersApi {
       operationName: 'confirmReceipt',
       successParser: (r) =>
           (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',
+    );
+  }
+
+  Future<Either<ApiFailure, double>> getDeliveryFee({
+    required int addressId,
+    required double cartTotal,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'customer/orders/delivery-fee',
+      queryParameters: {
+        'addressId': addressId,
+        'cartTotal': cartTotal,
+      },
+      operationName: 'getDeliveryFee',
+      successParser: (r) {
+        final data = (r.data as Map<String, dynamic>?)?['data'];
+        if (data is Map<String, dynamic>) {
+          return (data['fee'] as num?)?.toDouble() ?? 0.0;
+        }
+        return (data as num?)?.toDouble() ?? 0.0;
+      },
     );
   }
 }

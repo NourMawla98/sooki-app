@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../../backend_integration/apis/orders_api.dart';
+import '../../../../services/address_service.dart';
 import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
@@ -8,7 +11,7 @@ import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
 import '_cart_surface_theme.dart';
 
-class CartSummary extends StatelessWidget {
+class CartSummary extends StatefulWidget {
   final CartService cartService;
   final VoidCallback onCheckout;
 
@@ -19,19 +22,101 @@ class CartSummary extends StatelessWidget {
   });
 
   @override
+  State<CartSummary> createState() => _CartSummaryState();
+}
+
+class _CartSummaryState extends State<CartSummary>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _dotsController;
+
+  double? _deliveryFee;
+  bool _loadingFee = false;
+  double _lastFetchedSubtotal = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _dotsController = AnimationController(
+      duration: const Duration(milliseconds: 900),
+      vsync: this,
+    )..repeat();
+    widget.cartService.addListener(_onCartChanged);
+    _fetchFee();
+  }
+
+  @override
+  void dispose() {
+    _dotsController.dispose();
+    widget.cartService.removeListener(_onCartChanged);
+    super.dispose();
+  }
+
+  void _onCartChanged() {
+    final sub = widget.cartService.subtotal;
+    if (sub != _lastFetchedSubtotal) _fetchFee();
+  }
+
+  Future<void> _fetchFee() async {
+    if (widget.cartService.isEmpty) {
+      setState(() {
+        _deliveryFee = 0.0;
+        _loadingFee = false;
+        _lastFetchedSubtotal = widget.cartService.subtotal;
+      });
+      return;
+    }
+
+    final addressService = GetIt.instance<AddressService>();
+    if (addressService.addresses.isEmpty) {
+      await addressService.loadFromServer();
+    }
+    final addressId = addressService.selectedId;
+    if (addressId == null) return;
+
+    final subtotal = widget.cartService.subtotal;
+    _lastFetchedSubtotal = subtotal;
+    setState(() => _loadingFee = true);
+
+    final api = GetIt.instance<OrdersApi>();
+    final result = await api.getDeliveryFee(
+      addressId: addressId,
+      cartTotal: subtotal,
+    );
+
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() => _loadingFee = false),
+      (fee) => setState(() {
+        _deliveryFee = fee;
+        _loadingFee = false;
+      }),
+    );
+  }
+
+  double get _effectiveShipping {
+    if (_deliveryFee != null) return _deliveryFee!;
+    return widget.cartService.shippingCost;
+  }
+
+  double get _effectiveTotal {
+    final raw = widget.cartService.subtotal +
+        _effectiveShipping -
+        widget.cartService.promoDiscount;
+    return raw < 0 ? 0 : raw;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([cartService, ThemeService.instance]),
+      listenable: Listenable.merge([widget.cartService, ThemeService.instance]),
       builder: (context, _) {
         final c = CartSurfaceColors.of(
           isDark: ThemeService.instance.isDarkMode,
         );
-        final subtotal = cartService.subtotal;
-        final shipping = cartService.shippingCost;
-        final promoDiscount = cartService.promoDiscount;
-        final total = cartService.total;
-        final itemCount = cartService.itemCount;
-        final hasPromo = cartService.hasPromo;
+        final subtotal = widget.cartService.subtotal;
+        final promoDiscount = widget.cartService.promoDiscount;
+        final itemCount = widget.cartService.itemCount;
+        final hasPromo = widget.cartService.hasPromo;
 
         return DecoratedBox(
           decoration: BoxDecoration(
@@ -67,16 +152,18 @@ class CartSummary extends StatelessWidget {
                         valueColor: c.text,
                       ),
                       const SizedBox(height: 6),
-                      _SummaryRow(
-                        label: 'Shipping',
-                        value: '\$${shipping.toStringAsFixed(2)}',
+                      _ShippingRow(
+                        loadingFee: _loadingFee,
+                        deliveryFee: _deliveryFee,
+                        fallback: widget.cartService.shippingCost,
+                        dotsController: _dotsController,
                         labelColor: c.textMute,
                         valueColor: c.text,
                       ),
                       if (hasPromo) ...[
                         const SizedBox(height: 6),
                         _SummaryRow(
-                          label: 'Promo · ${cartService.promoCode}',
+                          label: 'Promo · ${widget.cartService.promoCode}',
                           value: '−\$${promoDiscount.toStringAsFixed(2)}',
                           labelColor: c.textMute,
                           valueColor: AppColors.auroraPink,
@@ -87,13 +174,13 @@ class CartSummary extends StatelessWidget {
                       const SizedBox(height: 10),
                       _TotalRow(
                         itemCount: itemCount,
-                        total: total,
+                        total: _effectiveTotal,
                         surfaceColors: c,
                       ),
                       const SizedBox(height: 12),
                       AuroraPrimaryButton(
-                        text: 'PROCEED TO CHECKOUT',
-                        onPressed: onCheckout,
+                        text: 'Proceed to checkout',
+                        onPressed: widget.onCheckout,
                         height: 40,
                         borderRadius: 10,
                         textStyle: AppTextStyles.buttonMedium.copyWith(
@@ -113,6 +200,91 @@ class CartSummary extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// ─── Shipping row with dots loader ──────────────────────────────────────
+class _ShippingRow extends StatelessWidget {
+  final bool loadingFee;
+  final double? deliveryFee;
+  final double fallback;
+  final AnimationController dotsController;
+  final Color labelColor;
+  final Color valueColor;
+
+  const _ShippingRow({
+    required this.loadingFee,
+    required this.deliveryFee,
+    required this.fallback,
+    required this.dotsController,
+    required this.labelColor,
+    required this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Widget valueWidget;
+    if (loadingFee) {
+      valueWidget = _DotsLoader(controller: dotsController, color: valueColor);
+    } else {
+      final fee = deliveryFee ?? fallback;
+      final text = fee == 0.0 ? 'Free' : '\$${fee.toStringAsFixed(2)}';
+      valueWidget = Text(
+        text,
+        style: AppTextStyles.bodyMedium.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: fee == 0.0 ? AppColors.auroraPink : valueColor,
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: Text(
+            'Shipping',
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+              color: labelColor,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(width: 12),
+        valueWidget,
+      ],
+    );
+  }
+}
+
+// ─── Animated dots loader ────────────────────────────────────────────────
+class _DotsLoader extends AnimatedWidget {
+  final Color color;
+
+  const _DotsLoader({
+    required AnimationController controller,
+    required this.color,
+  }) : super(listenable: controller);
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = listenable as AnimationController;
+    final step = (controller.value * 3).floor();
+    final dots = '.' * (step + 1);
+    return SizedBox(
+      width: 24,
+      child: Text(
+        dots,
+        style: AppTextStyles.bodyMedium.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
     );
   }
 }
@@ -330,7 +502,7 @@ class _TrustRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       (FontAwesomeIcons.shieldHalved, 'Secure'),
-      (FontAwesomeIcons.rotateLeft, 'Easy returns'),
+      (FontAwesomeIcons.bolt, 'Fast'),
       (FontAwesomeIcons.moneyBillWave, 'Cash on delivery'),
     ];
     return Row(

@@ -48,17 +48,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           : _noteController.text.trim(),
     );
 
-    final message = await _ordersService.placeOrder(dto);
+    final result = await _ordersService.placeOrder(dto);
     if (!mounted) return;
     setState(() => _placing = false);
 
-    if (message.isNotEmpty) {
+    if (result != null) {
       await _cartService.clearCart();
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(
         orderSuccessScreenRoute,
-        arguments: const OrderSuccessArgs(
-          estimatedDelivery: '2–4 business days',
+        arguments: OrderSuccessArgs(
+          orderId: result.orderId,
+          orderNumber: result.trackingNumber,
+          estimatedDelivery: '2–5 business days',
           paymentMethod: 'Cash on delivery',
         ),
       );

@@ -99,7 +99,7 @@ class LegalPageScreen extends StatelessWidget {
     ),
     LegalSection(
       title: 'Order Cancellation',
-      content: 'Orders can only be cancelled while in the Processing stage. Once an order has been shipped, it can no longer be cancelled. Contact our support team via WhatsApp for assistance.',
+      content: 'Orders can only be cancelled while in the Processing or Packaged stage. Once an order is Out for Delivery, it can no longer be cancelled. Contact our support team via email for assistance.',
     ),
     LegalSection(
       title: 'Intellectual Property',

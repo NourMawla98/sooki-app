@@ -32,11 +32,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   static final _auth = GetIt.instance<AuthService>();
   static final _ordersService = GetIt.instance<OrdersService>();
 
+  int? _statsOrders;
+  int? _statsWishlist;
+  int? _statsPoints;
+
   @override
   void initState() {
     super.initState();
     if (_auth.isCustomer) {
       _loadProfile();
+      _loadStats();
       _ordersService.refreshActiveCount();
     }
   }
@@ -50,10 +55,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _loadStats() async {
+    final result = await serviceLocator<ProfileApi>().getStats();
+    if (!mounted) return;
+    result.fold(
+      (_) => null,
+      (stats) => setState(() {
+        _statsOrders = stats.ordersCount;
+        _statsWishlist = stats.wishlistCount;
+        _statsPoints = stats.points;
+      }),
+    );
+  }
+
   Future<void> _refresh() async {
     if (_auth.isCustomer) {
       await Future.wait([
         _loadProfile(),
+        _loadStats(),
         _ordersService.refreshActiveCount(),
       ]);
     }
@@ -102,7 +121,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (isLoggedIn)
-                              const ProfileHeaderCard()
+                              ProfileHeaderCard(
+                                ordersCount: _statsOrders,
+                                wishlistCount: _statsWishlist,
+                                points: _statsPoints,
+                              )
                             else
                               _GuestHero(isDark: isDark),
                             ProfileMenuList(

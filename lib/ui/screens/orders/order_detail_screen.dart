@@ -14,7 +14,7 @@ import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
-const _kStepLabels = ['Placed', 'Processing', 'Out for delivery', 'Delivered'];
+const _kStepLabels = ['Processing', 'Packaged', 'Out for delivery', 'Delivered'];
 
 const _months = [
   '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -71,11 +71,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
     if (!confirmed || !mounted) return;
     setState(() => _cancelling = true);
-    final msg = await _service.cancelOrder(detail.id);
+    final result = await _service.cancelOrder(detail.id);
     if (!mounted) return;
     setState(() => _cancelling = false);
-    if (msg.isNotEmpty) {
-      ToastService.instance.showSuccess(msg);
+    if (result.success) {
+      if (result.message.isNotEmpty) ToastService.instance.showSuccess(result.message);
       await _load();
     }
   }
@@ -84,11 +84,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final detail = _detail;
     if (detail == null || _confirming) return;
     setState(() => _confirming = true);
-    final msg = await _service.confirmReceipt(detail.id);
+    final result = await _service.confirmReceipt(detail.id);
     if (!mounted) return;
     setState(() => _confirming = false);
-    if (msg.isNotEmpty) {
-      ToastService.instance.showSuccess(msg);
+    if (result.success) {
+      if (result.message.isNotEmpty) ToastService.instance.showSuccess(result.message);
       await _load();
     }
   }
@@ -471,8 +471,8 @@ class _HorizontalTracker extends StatelessWidget {
 
   FaIconData _stepIcon(int i) {
     switch (i) {
-      case 0: return FontAwesomeIcons.check;
-      case 1: return FontAwesomeIcons.gear;
+      case 0: return FontAwesomeIcons.rotate;
+      case 1: return FontAwesomeIcons.box;
       case 2: return FontAwesomeIcons.truck;
       default: return FontAwesomeIcons.circleCheck;
     }
@@ -757,24 +757,35 @@ class _AddressCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  detail.customerName,
-                  style: AppTextStyles.dsBodyBold.copyWith(
-                      color: textColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700),
+                Row(
+                  children: [
+                    Text(
+                      detail.customerName,
+                      style: AppTextStyles.dsBodyBold.copyWith(
+                          color: textColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    if (detail.addressLabel != null) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.auroraPurple.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          detail.addressLabel!,
+                          style: AppTextStyles.dsMuted.copyWith(
+                              color: AppColors.auroraPurple,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                if (detail.addressLabel != null) ...[
-                  const SizedBox(height: 1),
-                  Text(
-                    detail.addressLabel!,
-                    style: AppTextStyles.dsMuted.copyWith(
-                        color: AppColors.auroraPurple,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ],
-                const SizedBox(height: 1),
+                const SizedBox(height: 2),
                 Text(
                   _addressLines,
                   style: AppTextStyles.dsMuted.copyWith(
@@ -1011,6 +1022,7 @@ class _SectionCard extends StatelessWidget {
         : AppColors.auroraPurple.withValues(alpha: 0.55);
 
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: cardFill,
         borderRadius: BorderRadius.circular(16),

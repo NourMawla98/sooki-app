@@ -207,7 +207,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           context,
                                           orderDetailScreenRoute,
                                           arguments: order.id,
-                                        ),
+                                        ).then((_) => _refresh()),
                                       );
                                     },
                                   ),

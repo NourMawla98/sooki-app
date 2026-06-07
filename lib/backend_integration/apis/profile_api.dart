@@ -25,6 +25,23 @@ class ProfileApi {
     );
   }
 
+  Future<Either<ApiFailure, ({int ordersCount, int wishlistCount, int points})>> getStats() {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'customer/profile/stats',
+      operationName: 'getProfileStats',
+      successParser: (response) {
+        final data = response.data['data'] as Map<String, dynamic>;
+        return (
+          ordersCount: data['ordersCount'] as int? ?? 0,
+          wishlistCount: data['wishlistCount'] as int? ?? 0,
+          points: data['points'] as int? ?? 0,
+        );
+      },
+    );
+  }
+
   Future<Either<ApiFailure, String>> updateProfile({
     required String firstName,
     required String lastName,

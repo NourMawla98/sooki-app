@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../../models/product.dart';
+import '../../../../models/review.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';

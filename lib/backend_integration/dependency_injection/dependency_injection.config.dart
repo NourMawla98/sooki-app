@@ -22,6 +22,7 @@ import '../apis/categories_api.dart' as _i985;
 import '../apis/colors_api.dart' as _i256;
 import '../apis/items_api.dart' as _i94;
 import '../apis/location_api.dart' as _i734;
+import '../apis/notification_preferences_api.dart' as _i433;
 import '../apis/orders_api.dart' as _i143;
 import '../apis/profile_api.dart' as _i48;
 import '../apis/size_standards_api.dart' as _i464;
@@ -60,6 +61,11 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i734.LocationApi>(
     () => _i734.LocationApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
+  gh.factory<_i433.NotificationPreferencesApi>(
+    () => _i433.NotificationPreferencesApi(
+      gh<_i361.Dio>(instanceName: 'apiClient'),
+    ),
   );
   gh.factory<_i143.OrdersApi>(
     () => _i143.OrdersApi(gh<_i361.Dio>(instanceName: 'apiClient')),

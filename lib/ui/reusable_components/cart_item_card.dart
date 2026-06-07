@@ -10,12 +10,14 @@ class CartItemCard extends StatelessWidget {
   final CartLineItem item;
   final ValueChanged<int> onQuantityChanged;
   final VoidCallback onRemove;
+  final VoidCallback? onTap;
 
   const CartItemCard({
     super.key,
     required this.item,
     required this.onQuantityChanged,
     required this.onRemove,
+    this.onTap,
   });
 
   @override
@@ -35,7 +37,9 @@ class CartItemCard extends StatelessWidget {
             ? AppColors.white.withValues(alpha: 0.50)
             : AppColors.auroraDeepBase.withValues(alpha: 0.60);
 
-        return Container(
+        return GestureDetector(
+          onTap: onTap,
+          child: Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -84,6 +88,7 @@ class CartItemCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         );
       },

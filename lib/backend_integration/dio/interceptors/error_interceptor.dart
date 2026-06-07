@@ -11,7 +11,9 @@ class ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // 401 is handled by AuthInterceptor (token refresh + retry) — never reaches here.
-    ToastService.instance.showError(_resolveMessage(err));
+    // Callers can pass extra: {'silentError': true} to suppress the toast.
+    final silent = err.requestOptions.extra['silentError'] == true;
+    if (!silent) ToastService.instance.showError(_resolveMessage(err));
     handler.next(err);
   }
 

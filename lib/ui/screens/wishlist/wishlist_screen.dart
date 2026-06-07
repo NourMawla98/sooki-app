@@ -151,6 +151,9 @@ class _WishlistCard extends StatelessWidget {
 
     final currentPrice = item.discountedPrice ?? item.originalPrice;
     final hasDiscount = item.discountedPrice != null;
+    final discountPct = hasDiscount
+        ? ((1 - item.discountedPrice! / item.originalPrice) * 100).round()
+        : 0;
 
     return GestureDetector(
       onTap: onTap,
@@ -162,89 +165,104 @@ class _WishlistCard extends StatelessWidget {
           border: Border.all(color: border),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _Thumb(url: item.mainImageUrl ?? '', isDark: isDark),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      item.itemTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: nameColor,
-                        height: 1.2,
-                      ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _Thumb(url: item.mainImageUrl ?? '', isDark: isDark),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.itemTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: nameColor,
+                      height: 1.2,
                     ),
-                    const Spacer(),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        ShaderMask(
-                          shaderCallback: (bounds) => const LinearGradient(
-                            colors: [
-                              AppColors.auroraPink,
-                              AppColors.auroraElectricBlue,
-                            ],
-                          ).createShader(bounds),
-                          blendMode: BlendMode.srcIn,
-                          child: Text(
-                            '\$${currentPrice.toStringAsFixed(2)}',
-                            style: AppTextStyles.productPrice.copyWith(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.white,
-                              letterSpacing: -0.2,
-                            ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      if (!item.isAvailable)
+                        _TagBadge(
+                          label: 'Out of stock',
+                          textColor: isDark
+                              ? AppColors.auroraRed.withValues(alpha: 0.85)
+                              : AppColors.auroraRed,
+                          bgColor: AppColors.auroraRed.withValues(alpha: isDark ? 0.12 : 0.08),
+                          borderColor: AppColors.auroraRed.withValues(alpha: isDark ? 0.22 : 0.18),
+                        ),
+                      if (!item.isAvailable && hasDiscount)
+                        const SizedBox(width: 5),
+                      if (hasDiscount)
+                        _TagBadge(
+                          label: '−$discountPct%',
+                          textColor: AppColors.auroraPink,
+                          bgColor: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.08),
+                          borderColor: AppColors.auroraPink.withValues(alpha: isDark ? 0.22 : 0.18),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            AppColors.auroraPink,
+                            AppColors.auroraElectricBlue,
+                          ],
+                        ).createShader(bounds),
+                        blendMode: BlendMode.srcIn,
+                        child: Text(
+                          '\$${currentPrice.toStringAsFixed(2)}',
+                          style: AppTextStyles.productPrice.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.white,
+                            letterSpacing: -0.2,
                           ),
                         ),
-                        if (hasDiscount) ...[
-                          const SizedBox(width: 5),
-                          Text(
-                            '\$${item.originalPrice.toStringAsFixed(2)}',
-                            style: AppTextStyles.caption.copyWith(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: origColor,
-                              decoration: TextDecoration.lineThrough,
-                              decorationColor: origColor,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: onRemove,
-                    child: Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: FaIcon(
-                        FontAwesomeIcons.solidHeart,
-                        size: 14,
-                        color: AppColors.auroraPink,
                       ),
-                    ),
+                      if (hasDiscount) ...[
+                        const SizedBox(width: 5),
+                        Text(
+                          '\$${item.originalPrice.toStringAsFixed(2)}',
+                          style: AppTextStyles.caption.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: origColor,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: origColor,
+                          ),
+                        ),
+                      ],
+                      const Spacer(),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: onRemove,
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: FaIcon(
+                            FontAwesomeIcons.solidHeart,
+                            size: 14,
+                            color: AppColors.auroraPink,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -274,8 +292,8 @@ class _Thumb extends StatelessWidget {
         Center(child: FaIcon(FontAwesomeIcons.image, size: 16, color: iconColor));
 
     return Container(
-      width: 80,
-      height: 80,
+      width: 68,
+      height: 68,
       decoration: BoxDecoration(
         color: placeholderColor,
         border: Border.all(color: borderColor),
@@ -291,6 +309,43 @@ class _Thumb extends StatelessWidget {
                   progress == null ? child : fallback,
             )
           : fallback,
+    );
+  }
+}
+
+// ─── Tag badge ────────────────────────────────────────────────────────────────
+
+class _TagBadge extends StatelessWidget {
+  final String label;
+  final Color textColor;
+  final Color bgColor;
+  final Color borderColor;
+
+  const _TagBadge({
+    required this.label,
+    required this.textColor,
+    required this.bgColor,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: borderColor),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.caption.copyWith(
+          fontSize: 9.5,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+          letterSpacing: 0.2,
+        ),
+      ),
     );
   }
 }

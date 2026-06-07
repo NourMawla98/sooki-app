@@ -6,8 +6,6 @@ import '../interceptors/auth_interceptor.dart';
 import '../interceptors/error_interceptor.dart';
 import '../interceptors/global_headers_interceptor.dart';
 import '../interceptors/language_interceptor.dart';
-import '../interceptors/retry_interceptor_config.dart';
-
 /// DI key for the API client
 const String apiClientKey = 'apiClient';
 
@@ -37,8 +35,6 @@ Dio createApiClient({
     GlobalHeadersInterceptor(),
     LanguageInterceptor(languageService),
     ErrorInterceptor(),
-    // RetryInterceptor is after ErrorInterceptor so it runs before it in LIFO error chain
-    createRetryInterceptor(dio),
     // AuthInterceptor is last so its onError runs first (Dio processes errors LIFO)
     AuthInterceptor(authService: authService, dio: dio),
   ]);

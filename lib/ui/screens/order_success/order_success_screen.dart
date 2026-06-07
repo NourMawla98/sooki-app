@@ -14,13 +14,15 @@ import '../../reusable_components/aurora/aurora_secondary_button.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
 class OrderSuccessArgs {
+  final int? orderId;
   final String orderNumber;
   final String estimatedDelivery;
   final String paymentMethod;
 
   const OrderSuccessArgs({
-    this.orderNumber = '#SOO-00142',
-    this.estimatedDelivery = '2 – 4 days',
+    this.orderId,
+    this.orderNumber = '',
+    this.estimatedDelivery = '2–5 business days',
     this.paymentMethod = 'Cash on delivery',
   });
 }
@@ -165,9 +167,16 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
   }
 
   void _trackOrder() {
-    Navigator.of(context)
-      ..popUntil((route) => route.isFirst)
-      ..pushNamed(ordersScreenRoute);
+    final id = widget.args.orderId;
+    if (id != null) {
+      Navigator.of(context)
+        ..popUntil((route) => route.isFirst)
+        ..pushNamed(orderDetailScreenRoute, arguments: id);
+    } else {
+      Navigator.of(context)
+        ..popUntil((route) => route.isFirst)
+        ..pushNamed(ordersScreenRoute);
+    }
   }
 
   @override
@@ -343,12 +352,12 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                             const SizedBox(height: 28),
 
                             AuroraPrimaryButton(
-                              text: 'TRACK MY ORDER',
+                              text: 'Track my order',
                               onPressed: _trackOrder,
                             ),
                             const SizedBox(height: 12),
                             AuroraSecondaryButton(
-                              text: 'CONTINUE SHOPPING',
+                              text: 'Continue shopping',
                               onPressed: _continueShopping,
                             ),
                           ],

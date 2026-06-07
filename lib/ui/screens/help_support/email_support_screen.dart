@@ -152,6 +152,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                               hint: 'Describe your issue in detail...',
                               controller: _messageController,
                               maxLines: 6,
+                              keyboardType: TextInputType.multiline,
                               textInputAction: TextInputAction.newline,
                             ),
                             const SizedBox(height: 28),

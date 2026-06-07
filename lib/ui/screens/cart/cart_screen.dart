@@ -58,6 +58,11 @@ class _CartScreenState extends State<CartScreen> {
                           ...items.map(
                             (item) => CartItemCard(
                               item: item,
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                itemDetailsScreenRoute,
+                                arguments: item.itemId,
+                              ),
                               onQuantityChanged: (newQty) =>
                                   _cart.updateQuantity(item.id, newQty),
                               onRemove: () async {

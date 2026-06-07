@@ -9,7 +9,16 @@ import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
-  const ProfileHeaderCard({super.key});
+  final int? ordersCount;
+  final int? wishlistCount;
+  final int? points;
+
+  const ProfileHeaderCard({
+    super.key,
+    this.ordersCount,
+    this.wishlistCount,
+    this.points,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +155,23 @@ class ProfileHeaderCard extends StatelessWidget {
                 child: IntrinsicHeight(
                   child: Row(
                     children: [
-                      _StatCell(value: '12', label: 'Orders', isDark: isDark),
+                      _StatCell(
+                        value: ordersCount?.toString() ?? '—',
+                        label: 'Orders',
+                        isDark: isDark,
+                      ),
                       _VerticalDivider(isDark: isDark),
-                      _StatCell(value: '3', label: 'Wishlist', isDark: isDark),
+                      _StatCell(
+                        value: wishlistCount?.toString() ?? '—',
+                        label: 'Wishlist',
+                        isDark: isDark,
+                      ),
                       _VerticalDivider(isDark: isDark),
-                      _StatCell(value: '840', label: 'Points', isDark: isDark),
+                      _StatCell(
+                        value: points?.toString() ?? '—',
+                        label: 'Points',
+                        isDark: isDark,
+                      ),
                     ],
                   ),
                 ),

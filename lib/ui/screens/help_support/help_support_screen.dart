@@ -28,7 +28,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     ),
     _FaqItem(
       question: 'Can I cancel my order?',
-      answer: 'You can cancel your order only while it\'s still in the Processing stage. Once it moves to Shipped, cancellation is no longer available. Contact us via WhatsApp if you need help.',
+      answer: 'You can cancel your order while it\'s in Processing or Packaged status. Once it moves to Out for Delivery, cancellation is no longer available. Contact us via email support if you need help.',
     ),
     _FaqItem(
       question: 'What payment methods are available?',

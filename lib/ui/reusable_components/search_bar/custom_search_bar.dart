@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../data/mock_products.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/search_history_service.dart';
 import '../../../services/theme_service.dart';
@@ -24,12 +23,14 @@ class CustomSearchBar extends StatefulWidget {
     this.readOnly = false,
     this.autofocus = false,
     this.showOverlay = true,
+    this.initialValue,
     this.onSubmitted,
     this.onChanged,
   });
 
   final bool readOnly;
   final bool autofocus;
+  final String? initialValue;
 
   /// Whether to show the autocomplete overlay dropdown when focused.
   /// Set to false on the SearchScreen — it manages its own results.
@@ -47,7 +48,6 @@ class CustomSearchBar extends StatefulWidget {
 }
 
 class _CustomSearchBarState extends State<CustomSearchBar> {
-  static const int _matchLimit = 4;
   static const int _debounceMs = 120;
 
   final TextEditingController _controller = TextEditingController();
@@ -57,7 +57,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   OverlayEntry? _dimEntry;
   OverlayEntry? _dropdownEntry;
   String _query = '';
-  List<String> _matches = const [];
   int _debounceToken = 0;
 
   SearchHistoryService get _history => GetIt.instance<SearchHistoryService>();
@@ -65,8 +64,24 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialValue != null && widget.initialValue!.isNotEmpty) {
+      _controller.text = widget.initialValue!;
+      _query = widget.initialValue!;
+    }
     _focusNode.addListener(_onFocusChange);
     _controller.addListener(_onTextChange);
+  }
+
+  @override
+  void didUpdateWidget(CustomSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newVal = widget.initialValue ?? '';
+    final oldVal = oldWidget.initialValue ?? '';
+    if (newVal != oldVal && newVal.isNotEmpty && _controller.text != newVal) {
+      _controller.text = newVal;
+      _controller.selection = TextSelection.collapsed(offset: newVal.length);
+      _query = newVal;
+    }
   }
 
   @override
@@ -99,26 +114,10 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     final token = ++_debounceToken;
     Future.delayed(const Duration(milliseconds: _debounceMs), () {
       if (!mounted || token != _debounceToken) return;
-      _recomputeMatches();
       _dropdownEntry?.markNeedsBuild();
     });
   }
 
-  void _recomputeMatches() {
-    final q = _query.trim().toLowerCase();
-    if (q.isEmpty) {
-      _matches = const [];
-      return;
-    }
-    final pool = <String>{};
-    for (final p in [...mockBrowseProducts, ...mockDealProducts]) {
-      if (p.name.toLowerCase().contains(q)) {
-        pool.add(p.name);
-        if (pool.length >= _matchLimit) break;
-      }
-    }
-    _matches = pool.toList();
-  }
 
   void _showOverlay() {
     if (_dimEntry != null) return;
@@ -337,36 +336,10 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   }
 
   Widget _buildMatches(bool isDark) {
-    final muted = isDark
-        ? AppColors.white.withValues(alpha: 0.55)
-        : AppColors.primaryPurple.withValues(alpha: 0.60);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_matches.isEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
-            child: Text(
-              'No matches. Tap See all to search anyway.',
-              style: AppFonts.primary(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w500,
-                color: muted,
-              ),
-            ),
-          )
-        else
-          for (int i = 0; i < _matches.length; i++) ...[
-            _row(
-              label: _matches[i],
-              isDark: isDark,
-              highlight: _query,
-              onTap: () => _submitQuery(_matches[i]),
-            ),
-            if (i != _matches.length - 1) _rowDivider(isDark),
-          ],
-        _rowDivider(isDark),
         GestureDetector(
           onTap: () => _submitQuery(_query),
           behavior: HitTestBehavior.opaque,

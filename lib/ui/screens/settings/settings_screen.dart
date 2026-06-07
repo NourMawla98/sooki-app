@@ -3,6 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/notification_preferences_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
+import '../../../backend_integration/dtos/notification/notification_preferences_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
@@ -24,9 +27,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _emailNotifications = false;
   String _language = 'English';
 
+  NotificationPreferencesApi get _notifApi =>
+      serviceLocator<NotificationPreferencesApi>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (GetIt.instance<AuthService>().isCustomer) _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final result = await _notifApi.getPreferences();
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (dto) => setState(() {
+        _pushNotifications = dto.pushNotificationsEnabled;
+        _emailNotifications = dto.emailNotificationsEnabled;
+      }),
+    );
+  }
+
+  Future<void> _updatePreferences() async {
+    await _notifApi.updatePreferences(NotificationPreferencesDto(
+      pushNotificationsEnabled: _pushNotifications,
+      emailNotificationsEnabled: _emailNotifications,
+    ));
+  }
+
   Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() {});
+    await _loadPreferences();
   }
 
   @override
@@ -96,39 +126,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                            _GroupLabel(label: 'Notifications', isDark: isDark),
-                            _GroupCard(
-                              isDark: isDark,
-                              children: [
-                                _ToggleRow(
-                                  isDark: isDark,
-                                  iconBg: AppColors.auroraGold.withValues(
-                                      alpha: isDark ? 0.15 : 0.12),
-                                  iconColor: AppColors.auroraGold,
-                                  icon: FontAwesomeIcons.bell,
-                                  title: 'Push Notifications',
-                                  subtitle: 'Order updates & offers',
-                                  value: _pushNotifications,
-                                  onChanged: (v) =>
-                                      setState(() => _pushNotifications = v),
-                                ),
-                                _Divider(isDark: isDark),
-                                _ToggleRow(
-                                  isDark: isDark,
-                                  iconBg: AppColors.auroraElectricBlue
-                                      .withValues(
-                                          alpha: isDark ? 0.15 : 0.10),
-                                  iconColor: AppColors.auroraElectricBlue,
-                                  icon: FontAwesomeIcons.envelope,
-                                  title: 'Email Notifications',
-                                  subtitle: 'Receipts & newsletters',
-                                  value: _emailNotifications,
-                                  onChanged: (v) =>
-                                      setState(() => _emailNotifications = v),
-                                ),
-                              ],
-                            ),
+                            if (isSignedIn) ...[
+                              const SizedBox(height: 20),
+                              _GroupLabel(label: 'Notifications', isDark: isDark),
+                              _GroupCard(
+                                isDark: isDark,
+                                children: [
+                                  _ToggleRow(
+                                    isDark: isDark,
+                                    iconBg: AppColors.auroraGold.withValues(
+                                        alpha: isDark ? 0.15 : 0.12),
+                                    iconColor: AppColors.auroraGold,
+                                    icon: FontAwesomeIcons.bell,
+                                    title: 'Push Notifications',
+                                    subtitle: 'Order updates & offers',
+                                    value: _pushNotifications,
+                                    onChanged: (v) {
+                                      setState(() => _pushNotifications = v);
+                                      _updatePreferences();
+                                    },
+                                  ),
+                                  _Divider(isDark: isDark),
+                                  _ToggleRow(
+                                    isDark: isDark,
+                                    iconBg: AppColors.auroraElectricBlue
+                                        .withValues(
+                                            alpha: isDark ? 0.15 : 0.10),
+                                    iconColor: AppColors.auroraElectricBlue,
+                                    icon: FontAwesomeIcons.envelope,
+                                    title: 'Email Notifications',
+                                    subtitle: 'Receipts & newsletters',
+                                    value: _emailNotifications,
+                                    onChanged: (v) {
+                                      setState(() => _emailNotifications = v);
+                                      _updatePreferences();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                             if (isSignedIn) ...[
                               const SizedBox(height: 20),
                               _GroupLabel(label: 'Account', isDark: isDark),
