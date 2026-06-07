@@ -108,28 +108,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               fontSize: 18,
                             ),
                           ),
-                          if (_service.activeOrderCount > 0) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: AppColors.auroraGradient,
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                '${_service.activeOrderCount}',
-                                style: AppTextStyles.dsCTA.copyWith(
-                                  fontSize: 10,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                     ),

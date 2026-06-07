@@ -9,6 +9,7 @@ part of 'order_item_dto.dart';
 _OrderItemDto _$OrderItemDtoFromJson(Map<String, dynamic> json) =>
     _OrderItemDto(
       id: (json['id'] as num).toInt(),
+      itemId: (json['itemId'] as num?)?.toInt() ?? 0,
       status: (json['status'] as num).toInt(),
       quantity: (json['quantity'] as num).toInt(),
       unitPrice: (json['unitPrice'] as num).toDouble(),

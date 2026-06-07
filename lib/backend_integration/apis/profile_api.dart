@@ -42,6 +42,23 @@ class ProfileApi {
     );
   }
 
+  Future<Either<ApiFailure, String>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.put,
+      path: 'customer/profile/change-password',
+      operationName: 'changePassword',
+      body: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      },
+      successParser: (response) => (response.data['message'] as String?) ?? '',
+    );
+  }
+
   Future<Either<ApiFailure, String>> updateProfile({
     required String firstName,
     required String lastName,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/apis/profile_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
@@ -31,15 +33,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      setState(() => _loading = false);
-      ToastService.instance.showSuccess('Password updated successfully');
-      Navigator.pop(context);
-    });
+    final result = await serviceLocator<ProfileApi>().changePassword(
+      currentPassword: _currentCtrl.text,
+      newPassword: _newCtrl.text,
+    );
+    if (!mounted) return;
+    setState(() => _loading = false);
+    result.fold(
+      (_) {},
+      (message) {
+        if (message.isNotEmpty) ToastService.instance.showSuccess(message);
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override

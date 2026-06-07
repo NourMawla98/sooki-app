@@ -15,9 +15,14 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    NotificationService.instance.fetchNotifications();
+  }
+
   Future<void> _refresh() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() {});
+    await NotificationService.instance.fetchNotifications();
   }
 
   @override

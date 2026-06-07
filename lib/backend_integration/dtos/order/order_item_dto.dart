@@ -7,6 +7,7 @@ part 'order_item_dto.g.dart';
 abstract class OrderItemDto with _$OrderItemDto {
   const factory OrderItemDto({
     required int id,
+    @Default(0) int itemId,
     required int status,
     required int quantity,
     required double unitPrice,

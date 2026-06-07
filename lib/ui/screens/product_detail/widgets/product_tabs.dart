@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../backend_integration/dtos/item/item_detail_dto.dart';
+import '../../../../models/review.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';
@@ -14,12 +15,22 @@ class ProductTabs extends StatefulWidget {
     required this.attributes,
     this.sizeMeasurements = const [],
     this.selectedSizeValueId,
+    this.reviews = const [],
+    this.averageRating = 0.0,
+    this.totalReviewCount = 0,
+    this.isLoadingMoreReviews = false,
+    this.reviewsController,
   });
 
   final List<ItemDetailLabelDto> labels;
   final List<ItemDetailAttributeDto> attributes;
   final List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements;
   final int? selectedSizeValueId;
+  final List<Review> reviews;
+  final double averageRating;
+  final int totalReviewCount;
+  final bool isLoadingMoreReviews;
+  final ScrollController? reviewsController;
 
   @override
   State<ProductTabs> createState() => _ProductTabsState();
@@ -27,13 +38,6 @@ class ProductTabs extends StatefulWidget {
 
 class _ProductTabsState extends State<ProductTabs> {
   int _activeIndex = 0;
-  final ScrollController _reviewsController = ScrollController();
-
-  @override
-  void dispose() {
-    _reviewsController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,7 @@ class _ProductTabsState extends State<ProductTabs> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _CustomTabBar(
                 activeIndex: _activeIndex,
-                reviewCount: 0,
+                reviewCount: widget.totalReviewCount,
                 isDark: isDark,
                 onTap: (i) => setState(() => _activeIndex = i),
               ),
@@ -65,11 +69,11 @@ class _ProductTabsState extends State<ProductTabs> {
                     isDark: isDark,
                   ),
                   _ReviewsTab(
-                    rating: 0.0,
-                    totalReviewCount: 0,
-                    reviews: const [],
-                    isLoadingMore: false,
-                    controller: _reviewsController,
+                    rating: widget.averageRating,
+                    totalReviewCount: widget.totalReviewCount,
+                    reviews: widget.reviews,
+                    isLoadingMore: widget.isLoadingMoreReviews,
+                    controller: widget.reviewsController,
                   ),
                 ],
               ),
@@ -601,15 +605,15 @@ class _ReviewsTab extends StatelessWidget {
 
   final double rating;
   final int totalReviewCount;
-  final List<dynamic> reviews;
+  final List<Review> reviews;
   final bool isLoadingMore;
-  final ScrollController controller;
+  final ScrollController? controller;
 
   @override
   Widget build(BuildContext context) {
     final itemCount = 1 + reviews.length + (isLoadingMore ? 1 : 0);
     return ListView.builder(
-      controller: controller,
+      controller: controller ?? ScrollController(),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
       itemCount: itemCount,
       itemBuilder: (context, i) {

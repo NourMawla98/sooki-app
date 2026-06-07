@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../backend_integration/apis/items_api.dart';
+import '../../../models/review.dart';
 import '../../../services/viewed_items_service.dart';
 import '../../../backend_integration/dtos/item/item_detail_dto.dart';
 import '../../../backend_integration/dtos/item/item_tag_dto.dart';
@@ -53,6 +54,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   List<String> _masterImages = [];
   Map<int, int> _colorFirstIndex = {};
 
+  final ScrollController _reviewsScrollController = ScrollController();
+  List<Review> _reviews = [];
+  bool _reviewsLoadingMore = false;
+  bool _reviewsIsLastPage = false;
+  int _reviewsTotalCount = 0;
+  static const int _reviewsTake = 10;
+
   @override
   void initState() {
     super.initState();
@@ -61,12 +69,55 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       const Duration(seconds: 3),
       () => _viewedItems.record(widget.itemId),
     );
+    _reviewsScrollController.addListener(_onReviewsScroll);
   }
 
   @override
   void dispose() {
     _dwellTimer?.cancel();
+    _reviewsScrollController.dispose();
     super.dispose();
+  }
+
+  void _onReviewsScroll() {
+    final pos = _reviewsScrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 300 &&
+        !_reviewsLoadingMore &&
+        !_reviewsIsLastPage) {
+      _fetchMoreReviews();
+    }
+  }
+
+  Future<void> _fetchReviews() async {
+    final result = await _itemsApi.getReviews(widget.itemId, skip: 0, take: _reviewsTake);
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (page) => setState(() {
+        _reviews = page.reviews;
+        _reviewsIsLastPage = page.isLastPage;
+        _reviewsTotalCount = page.totalCount;
+      }),
+    );
+  }
+
+  Future<void> _fetchMoreReviews() async {
+    if (_reviewsLoadingMore || _reviewsIsLastPage) return;
+    setState(() => _reviewsLoadingMore = true);
+    final result = await _itemsApi.getReviews(
+      widget.itemId,
+      skip: _reviews.length,
+      take: _reviewsTake,
+    );
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (page) => setState(() {
+        _reviews = [..._reviews, ...page.reviews];
+        _reviewsIsLastPage = page.isLastPage;
+      }),
+    );
+    setState(() => _reviewsLoadingMore = false);
   }
 
   Future<void> _fetchItem() async {
@@ -89,6 +140,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             .firstOrNull;
         _selectedColor = firstAvailable ?? item.colors.firstOrNull;
         setState(() => _loading = false);
+        _fetchReviews();
       },
     );
   }
@@ -349,6 +401,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               attributes: item.attributes,
               sizeMeasurements: item.sizeMeasurements,
               selectedSizeValueId: _selectedSize?.sizeValueId,
+              reviews: _reviews,
+              averageRating: item.averageRating,
+              totalReviewCount: _reviewsTotalCount,
+              isLoadingMoreReviews: _reviewsLoadingMore,
+              reviewsController: _reviewsScrollController,
             ),
             const SizedBox(height: 16),
           ],

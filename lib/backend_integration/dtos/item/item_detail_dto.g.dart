@@ -21,6 +21,8 @@ _ItemDetailDto _$ItemDetailDtoFromJson(
   categoryName: json['categoryName'] as String,
   subCategoryName: json['subCategoryName'] as String?,
   detailCategoryName: json['detailCategoryName'] as String?,
+  averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
+  reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
   colors:
       (json['colors'] as List<dynamic>?)
           ?.map((e) => ItemDetailColorDto.fromJson(e as Map<String, dynamic>))

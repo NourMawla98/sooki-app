@@ -4,10 +4,17 @@ import 'package:injectable/injectable.dart';
 
 import '../dio/client/api_client.dart';
 import '../dio/client/request_executor.dart';
+import '../../../models/review.dart';
 import '../dtos/item/for_you_item_dto.dart';
 import '../dtos/item/item_detail_dto.dart';
 import '../dtos/item/item_list_item_dto.dart';
 import '../dtos/item/trending_item_dto.dart';
+
+typedef ReviewsPage = ({
+  List<Review> reviews,
+  bool isLastPage,
+  int totalCount,
+});
 
 typedef ItemsPage = ({
   List<ItemListItemDto> items,
@@ -120,6 +127,54 @@ class ItemsApi {
         final data = response.data['data'] as Map<String, dynamic>;
         return ItemDetailDto.fromJson(data);
       },
+    );
+  }
+
+  Future<Either<ApiFailure, ReviewsPage>> getReviews(
+    int itemId, {
+    int skip = 0,
+    int take = 10,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'customer/items/$itemId/reviews',
+      operationName: 'getReviews',
+      queryParameters: {'Skip': skip, 'Take': take},
+      successParser: (response) {
+        final body = response.data as Map<String, dynamic>;
+        final list = (body['data'] as List).cast<Map<String, dynamic>>();
+        final reviews = list.map((j) {
+          final dt = DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now();
+          final months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          return Review(
+            userName: j['reviewerDisplayName'] as String? ?? '',
+            rating: ((j['rating'] as num?) ?? 0).toDouble(),
+            text: j['body'] as String? ?? '',
+            date: '${dt.day} ${months[dt.month - 1]} ${dt.year}',
+          );
+        }).toList();
+        return (
+          reviews: reviews,
+          isLastPage: body['isLastPage'] as bool? ?? true,
+          totalCount: body['totalCount'] as int? ?? 0,
+        );
+      },
+    );
+  }
+
+  Future<Either<ApiFailure, String>> submitReview(
+    int itemId, {
+    required int rating,
+    required String body,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.post,
+      path: 'customer/items/$itemId/reviews',
+      operationName: 'submitReview',
+      body: {'rating': rating, 'body': body},
+      successParser: (response) => (response.data['message'] as String?) ?? '',
     );
   }
 

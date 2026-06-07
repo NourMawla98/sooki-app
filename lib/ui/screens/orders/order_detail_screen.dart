@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/items_api.dart';
+import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../backend_integration/dtos/order/order_detail_dto.dart';
 import '../../../backend_integration/dtos/order/order_item_dto.dart';
 import '../../../enums/order_status.dart';
@@ -12,6 +14,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
+import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
 const _kStepLabels = ['Processing', 'Packaged', 'Out for delivery', 'Delivered'];
@@ -210,7 +213,7 @@ class _Body extends StatelessWidget {
       children: [
         _HeroCard(detail: detail, status: status, progressStep: progressStep, isDark: isDark),
         const SizedBox(height: 12),
-        _ItemsCard(items: detail.items, isDark: isDark),
+        _ItemsCard(items: detail.items, isDark: isDark, orderStatus: detail.status),
         const SizedBox(height: 12),
         _SummaryCard(detail: detail, isDark: isDark),
         const SizedBox(height: 12),
@@ -482,9 +485,20 @@ class _HorizontalTracker extends StatelessWidget {
 // ── Items card ────────────────────────────────────────────────────────────────
 
 class _ItemsCard extends StatelessWidget {
-  const _ItemsCard({required this.items, required this.isDark});
+  const _ItemsCard({required this.items, required this.isDark, required this.orderStatus});
   final List<OrderItemDto> items;
   final bool isDark;
+  final int orderStatus;
+
+  bool get _canReview => OrderStatus.fromInt(orderStatus).isDelivered;
+
+  void _showReviewDialog(BuildContext context, OrderItemDto item) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      builder: (_) => _WriteReviewDialog(item: item),
+    );
+  }
 
   static const _gradients = [
     [AppColors.auroraPink, AppColors.auroraPurple],
@@ -571,6 +585,37 @@ class _ItemsCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (_canReview) ...[
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: GestureDetector(
+                    onTap: () => _showReviewDialog(context, item),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.auroraGold.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FaIcon(FontAwesomeIcons.solidStar, size: 11, color: AppColors.auroraGold),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Write a review',
+                            style: AppTextStyles.dsMuted.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.auroraGold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               if (!isLast) ...[
                 const SizedBox(height: 10),
                 Container(height: 1, color: divColor),
@@ -1038,6 +1083,128 @@ class _SectionCard extends StatelessWidget {
           child,
         ],
       ),
+    );
+  }
+}
+
+// ── Write review dialog ───────────────────────────────────────────────────────
+
+class _WriteReviewDialog extends StatefulWidget {
+  const _WriteReviewDialog({required this.item});
+  final OrderItemDto item;
+
+  @override
+  State<_WriteReviewDialog> createState() => _WriteReviewDialogState();
+}
+
+class _WriteReviewDialogState extends State<_WriteReviewDialog> {
+  int _rating = 0;
+  final _bodyCtrl = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _bodyCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_rating == 0) return;
+    setState(() => _loading = true);
+    final result = await serviceLocator<ItemsApi>().submitReview(
+      widget.item.itemId,
+      rating: _rating,
+      body: _bodyCtrl.text.trim(),
+    );
+    if (!mounted) return;
+    setState(() => _loading = false);
+    result.fold(
+      (_) {},
+      (message) {
+        if (message.isNotEmpty) ToastService.instance.showSuccess(message);
+        Navigator.of(context).pop();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        final isDark = ThemeService.instance.isDarkMode;
+        final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
+        final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final mutedColor = (isDark ? AppColors.white : AppColors.auroraDeepBase).withValues(alpha: 0.45);
+        final borderColor = isDark
+            ? AppColors.white.withValues(alpha: 0.10)
+            : AppColors.auroraPurple.withValues(alpha: 0.18);
+
+        return Dialog(
+          backgroundColor: bg,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Write a review',
+                  style: AppTextStyles.heading3.copyWith(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: textColor,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.item.itemTitle,
+                  style: AppTextStyles.dsMuted.copyWith(
+                    fontSize: 12,
+                    color: mutedColor,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 16),
+                // Star rating picker
+                Row(
+                  children: List.generate(5, (i) {
+                    final filled = i < _rating;
+                    return GestureDetector(
+                      onTap: () => setState(() => _rating = i + 1),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FaIcon(
+                          filled ? FontAwesomeIcons.solidStar : FontAwesomeIcons.star,
+                          size: 28,
+                          color: filled ? AppColors.auroraGold : borderColor,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 16),
+                AuroraInputField(
+                  controller: _bodyCtrl,
+                  hint: 'Share your thoughts (optional)',
+                  maxLines: 4,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                ),
+                const SizedBox(height: 20),
+                AuroraPrimaryButton(
+                  text: 'Submit review',
+                  onPressed: _rating > 0 ? _submit : null,
+                  isLoading: _loading,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

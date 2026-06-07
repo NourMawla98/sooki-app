@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ItemDetailDto {
 
- int get id; String get title; String? get subtitle; String? get description; double get originalPrice; double? get discountedPrice; int get discountPercentage; int? get stock; String? get brand; String get categoryName; String? get subCategoryName; String? get detailCategoryName; List<ItemDetailColorDto> get colors; List<ItemTagDto> get tags; List<ItemDetailLabelDto> get labels; List<ItemDetailAttributeDto> get attributes; List<ItemDetailSizeMeasurementGroupDto> get sizeMeasurements;
+ int get id; String get title; String? get subtitle; String? get description; double get originalPrice; double? get discountedPrice; int get discountPercentage; int? get stock; String? get brand; String get categoryName; String? get subCategoryName; String? get detailCategoryName; double get averageRating; int get reviewCount; List<ItemDetailColorDto> get colors; List<ItemTagDto> get tags; List<ItemDetailLabelDto> get labels; List<ItemDetailAttributeDto> get attributes; List<ItemDetailSizeMeasurementGroupDto> get sizeMeasurements;
 /// Create a copy of ItemDetailDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ItemDetailDtoCopyWith<ItemDetailDto> get copyWith => _$ItemDetailDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.discountPercentage, discountPercentage) || other.discountPercentage == discountPercentage)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.subCategoryName, subCategoryName) || other.subCategoryName == subCategoryName)&&(identical(other.detailCategoryName, detailCategoryName) || other.detailCategoryName == detailCategoryName)&&const DeepCollectionEquality().equals(other.colors, colors)&&const DeepCollectionEquality().equals(other.tags, tags)&&const DeepCollectionEquality().equals(other.labels, labels)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&const DeepCollectionEquality().equals(other.sizeMeasurements, sizeMeasurements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.discountPercentage, discountPercentage) || other.discountPercentage == discountPercentage)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.subCategoryName, subCategoryName) || other.subCategoryName == subCategoryName)&&(identical(other.detailCategoryName, detailCategoryName) || other.detailCategoryName == detailCategoryName)&&(identical(other.averageRating, averageRating) || other.averageRating == averageRating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&const DeepCollectionEquality().equals(other.colors, colors)&&const DeepCollectionEquality().equals(other.tags, tags)&&const DeepCollectionEquality().equals(other.labels, labels)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&const DeepCollectionEquality().equals(other.sizeMeasurements, sizeMeasurements));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,subtitle,description,originalPrice,discountedPrice,discountPercentage,stock,brand,categoryName,subCategoryName,detailCategoryName,const DeepCollectionEquality().hash(colors),const DeepCollectionEquality().hash(tags),const DeepCollectionEquality().hash(labels),const DeepCollectionEquality().hash(attributes),const DeepCollectionEquality().hash(sizeMeasurements));
+int get hashCode => Object.hashAll([runtimeType,id,title,subtitle,description,originalPrice,discountedPrice,discountPercentage,stock,brand,categoryName,subCategoryName,detailCategoryName,averageRating,reviewCount,const DeepCollectionEquality().hash(colors),const DeepCollectionEquality().hash(tags),const DeepCollectionEquality().hash(labels),const DeepCollectionEquality().hash(attributes),const DeepCollectionEquality().hash(sizeMeasurements)]);
 
 @override
 String toString() {
-  return 'ItemDetailDto(id: $id, title: $title, subtitle: $subtitle, description: $description, originalPrice: $originalPrice, discountedPrice: $discountedPrice, discountPercentage: $discountPercentage, stock: $stock, brand: $brand, categoryName: $categoryName, subCategoryName: $subCategoryName, detailCategoryName: $detailCategoryName, colors: $colors, tags: $tags, labels: $labels, attributes: $attributes, sizeMeasurements: $sizeMeasurements)';
+  return 'ItemDetailDto(id: $id, title: $title, subtitle: $subtitle, description: $description, originalPrice: $originalPrice, discountedPrice: $discountedPrice, discountPercentage: $discountPercentage, stock: $stock, brand: $brand, categoryName: $categoryName, subCategoryName: $subCategoryName, detailCategoryName: $detailCategoryName, averageRating: $averageRating, reviewCount: $reviewCount, colors: $colors, tags: $tags, labels: $labels, attributes: $attributes, sizeMeasurements: $sizeMeasurements)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ItemDetailDtoCopyWith<$Res>  {
   factory $ItemDetailDtoCopyWith(ItemDetailDto value, $Res Function(ItemDetailDto) _then) = _$ItemDetailDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, String title, String? subtitle, String? description, double originalPrice, double? discountedPrice, int discountPercentage, int? stock, String? brand, String categoryName, String? subCategoryName, String? detailCategoryName, List<ItemDetailColorDto> colors, List<ItemTagDto> tags, List<ItemDetailLabelDto> labels, List<ItemDetailAttributeDto> attributes, List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements
+ int id, String title, String? subtitle, String? description, double originalPrice, double? discountedPrice, int discountPercentage, int? stock, String? brand, String categoryName, String? subCategoryName, String? detailCategoryName, double averageRating, int reviewCount, List<ItemDetailColorDto> colors, List<ItemTagDto> tags, List<ItemDetailLabelDto> labels, List<ItemDetailAttributeDto> attributes, List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements
 });
 
 
@@ -63,7 +63,7 @@ class _$ItemDetailDtoCopyWithImpl<$Res>
 
 /// Create a copy of ItemDetailDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? subtitle = freezed,Object? description = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? discountPercentage = null,Object? stock = freezed,Object? brand = freezed,Object? categoryName = null,Object? subCategoryName = freezed,Object? detailCategoryName = freezed,Object? colors = null,Object? tags = null,Object? labels = null,Object? attributes = null,Object? sizeMeasurements = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? subtitle = freezed,Object? description = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? discountPercentage = null,Object? stock = freezed,Object? brand = freezed,Object? categoryName = null,Object? subCategoryName = freezed,Object? detailCategoryName = freezed,Object? averageRating = null,Object? reviewCount = null,Object? colors = null,Object? tags = null,Object? labels = null,Object? attributes = null,Object? sizeMeasurements = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,9 @@ as int?,brand: freezed == brand ? _self.brand : brand // ignore: cast_nullable_t
 as String?,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
 as String,subCategoryName: freezed == subCategoryName ? _self.subCategoryName : subCategoryName // ignore: cast_nullable_to_non_nullable
 as String?,detailCategoryName: freezed == detailCategoryName ? _self.detailCategoryName : detailCategoryName // ignore: cast_nullable_to_non_nullable
-as String?,colors: null == colors ? _self.colors : colors // ignore: cast_nullable_to_non_nullable
+as String?,averageRating: null == averageRating ? _self.averageRating : averageRating // ignore: cast_nullable_to_non_nullable
+as double,reviewCount: null == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable
+as int,colors: null == colors ? _self.colors : colors // ignore: cast_nullable_to_non_nullable
 as List<ItemDetailColorDto>,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<ItemTagDto>,labels: null == labels ? _self.labels : labels // ignore: cast_nullable_to_non_nullable
 as List<ItemDetailLabelDto>,attributes: null == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
@@ -167,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? subtitle,  String? description,  double originalPrice,  double? discountedPrice,  int discountPercentage,  int? stock,  String? brand,  String categoryName,  String? subCategoryName,  String? detailCategoryName,  List<ItemDetailColorDto> colors,  List<ItemTagDto> tags,  List<ItemDetailLabelDto> labels,  List<ItemDetailAttributeDto> attributes,  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? subtitle,  String? description,  double originalPrice,  double? discountedPrice,  int discountPercentage,  int? stock,  String? brand,  String categoryName,  String? subCategoryName,  String? detailCategoryName,  double averageRating,  int reviewCount,  List<ItemDetailColorDto> colors,  List<ItemTagDto> tags,  List<ItemDetailLabelDto> labels,  List<ItemDetailAttributeDto> attributes,  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ItemDetailDto() when $default != null:
-return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.originalPrice,_that.discountedPrice,_that.discountPercentage,_that.stock,_that.brand,_that.categoryName,_that.subCategoryName,_that.detailCategoryName,_that.colors,_that.tags,_that.labels,_that.attributes,_that.sizeMeasurements);case _:
+return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.originalPrice,_that.discountedPrice,_that.discountPercentage,_that.stock,_that.brand,_that.categoryName,_that.subCategoryName,_that.detailCategoryName,_that.averageRating,_that.reviewCount,_that.colors,_that.tags,_that.labels,_that.attributes,_that.sizeMeasurements);case _:
   return orElse();
 
 }
@@ -188,10 +190,10 @@ return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.orig
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? subtitle,  String? description,  double originalPrice,  double? discountedPrice,  int discountPercentage,  int? stock,  String? brand,  String categoryName,  String? subCategoryName,  String? detailCategoryName,  List<ItemDetailColorDto> colors,  List<ItemTagDto> tags,  List<ItemDetailLabelDto> labels,  List<ItemDetailAttributeDto> attributes,  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? subtitle,  String? description,  double originalPrice,  double? discountedPrice,  int discountPercentage,  int? stock,  String? brand,  String categoryName,  String? subCategoryName,  String? detailCategoryName,  double averageRating,  int reviewCount,  List<ItemDetailColorDto> colors,  List<ItemTagDto> tags,  List<ItemDetailLabelDto> labels,  List<ItemDetailAttributeDto> attributes,  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements)  $default,) {final _that = this;
 switch (_that) {
 case _ItemDetailDto():
-return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.originalPrice,_that.discountedPrice,_that.discountPercentage,_that.stock,_that.brand,_that.categoryName,_that.subCategoryName,_that.detailCategoryName,_that.colors,_that.tags,_that.labels,_that.attributes,_that.sizeMeasurements);case _:
+return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.originalPrice,_that.discountedPrice,_that.discountPercentage,_that.stock,_that.brand,_that.categoryName,_that.subCategoryName,_that.detailCategoryName,_that.averageRating,_that.reviewCount,_that.colors,_that.tags,_that.labels,_that.attributes,_that.sizeMeasurements);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +210,10 @@ return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.orig
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? subtitle,  String? description,  double originalPrice,  double? discountedPrice,  int discountPercentage,  int? stock,  String? brand,  String categoryName,  String? subCategoryName,  String? detailCategoryName,  List<ItemDetailColorDto> colors,  List<ItemTagDto> tags,  List<ItemDetailLabelDto> labels,  List<ItemDetailAttributeDto> attributes,  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? subtitle,  String? description,  double originalPrice,  double? discountedPrice,  int discountPercentage,  int? stock,  String? brand,  String categoryName,  String? subCategoryName,  String? detailCategoryName,  double averageRating,  int reviewCount,  List<ItemDetailColorDto> colors,  List<ItemTagDto> tags,  List<ItemDetailLabelDto> labels,  List<ItemDetailAttributeDto> attributes,  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements)?  $default,) {final _that = this;
 switch (_that) {
 case _ItemDetailDto() when $default != null:
-return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.originalPrice,_that.discountedPrice,_that.discountPercentage,_that.stock,_that.brand,_that.categoryName,_that.subCategoryName,_that.detailCategoryName,_that.colors,_that.tags,_that.labels,_that.attributes,_that.sizeMeasurements);case _:
+return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.originalPrice,_that.discountedPrice,_that.discountPercentage,_that.stock,_that.brand,_that.categoryName,_that.subCategoryName,_that.detailCategoryName,_that.averageRating,_that.reviewCount,_that.colors,_that.tags,_that.labels,_that.attributes,_that.sizeMeasurements);case _:
   return null;
 
 }
@@ -223,7 +225,7 @@ return $default(_that.id,_that.title,_that.subtitle,_that.description,_that.orig
 @JsonSerializable(createToJson: false)
 
 class _ItemDetailDto implements ItemDetailDto {
-  const _ItemDetailDto({required this.id, required this.title, this.subtitle, this.description, required this.originalPrice, this.discountedPrice, required this.discountPercentage, this.stock, this.brand, required this.categoryName, this.subCategoryName, this.detailCategoryName, final  List<ItemDetailColorDto> colors = const [], final  List<ItemTagDto> tags = const [], final  List<ItemDetailLabelDto> labels = const [], final  List<ItemDetailAttributeDto> attributes = const [], final  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements = const []}): _colors = colors,_tags = tags,_labels = labels,_attributes = attributes,_sizeMeasurements = sizeMeasurements;
+  const _ItemDetailDto({required this.id, required this.title, this.subtitle, this.description, required this.originalPrice, this.discountedPrice, required this.discountPercentage, this.stock, this.brand, required this.categoryName, this.subCategoryName, this.detailCategoryName, this.averageRating = 0.0, this.reviewCount = 0, final  List<ItemDetailColorDto> colors = const [], final  List<ItemTagDto> tags = const [], final  List<ItemDetailLabelDto> labels = const [], final  List<ItemDetailAttributeDto> attributes = const [], final  List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements = const []}): _colors = colors,_tags = tags,_labels = labels,_attributes = attributes,_sizeMeasurements = sizeMeasurements;
   factory _ItemDetailDto.fromJson(Map<String, dynamic> json) => _$ItemDetailDtoFromJson(json);
 
 @override final  int id;
@@ -238,6 +240,8 @@ class _ItemDetailDto implements ItemDetailDto {
 @override final  String categoryName;
 @override final  String? subCategoryName;
 @override final  String? detailCategoryName;
+@override@JsonKey() final  double averageRating;
+@override@JsonKey() final  int reviewCount;
  final  List<ItemDetailColorDto> _colors;
 @override@JsonKey() List<ItemDetailColorDto> get colors {
   if (_colors is EqualUnmodifiableListView) return _colors;
@@ -284,16 +288,16 @@ _$ItemDetailDtoCopyWith<_ItemDetailDto> get copyWith => __$ItemDetailDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.discountPercentage, discountPercentage) || other.discountPercentage == discountPercentage)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.subCategoryName, subCategoryName) || other.subCategoryName == subCategoryName)&&(identical(other.detailCategoryName, detailCategoryName) || other.detailCategoryName == detailCategoryName)&&const DeepCollectionEquality().equals(other._colors, _colors)&&const DeepCollectionEquality().equals(other._tags, _tags)&&const DeepCollectionEquality().equals(other._labels, _labels)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&const DeepCollectionEquality().equals(other._sizeMeasurements, _sizeMeasurements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.discountPercentage, discountPercentage) || other.discountPercentage == discountPercentage)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.subCategoryName, subCategoryName) || other.subCategoryName == subCategoryName)&&(identical(other.detailCategoryName, detailCategoryName) || other.detailCategoryName == detailCategoryName)&&(identical(other.averageRating, averageRating) || other.averageRating == averageRating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&const DeepCollectionEquality().equals(other._colors, _colors)&&const DeepCollectionEquality().equals(other._tags, _tags)&&const DeepCollectionEquality().equals(other._labels, _labels)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&const DeepCollectionEquality().equals(other._sizeMeasurements, _sizeMeasurements));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,subtitle,description,originalPrice,discountedPrice,discountPercentage,stock,brand,categoryName,subCategoryName,detailCategoryName,const DeepCollectionEquality().hash(_colors),const DeepCollectionEquality().hash(_tags),const DeepCollectionEquality().hash(_labels),const DeepCollectionEquality().hash(_attributes),const DeepCollectionEquality().hash(_sizeMeasurements));
+int get hashCode => Object.hashAll([runtimeType,id,title,subtitle,description,originalPrice,discountedPrice,discountPercentage,stock,brand,categoryName,subCategoryName,detailCategoryName,averageRating,reviewCount,const DeepCollectionEquality().hash(_colors),const DeepCollectionEquality().hash(_tags),const DeepCollectionEquality().hash(_labels),const DeepCollectionEquality().hash(_attributes),const DeepCollectionEquality().hash(_sizeMeasurements)]);
 
 @override
 String toString() {
-  return 'ItemDetailDto(id: $id, title: $title, subtitle: $subtitle, description: $description, originalPrice: $originalPrice, discountedPrice: $discountedPrice, discountPercentage: $discountPercentage, stock: $stock, brand: $brand, categoryName: $categoryName, subCategoryName: $subCategoryName, detailCategoryName: $detailCategoryName, colors: $colors, tags: $tags, labels: $labels, attributes: $attributes, sizeMeasurements: $sizeMeasurements)';
+  return 'ItemDetailDto(id: $id, title: $title, subtitle: $subtitle, description: $description, originalPrice: $originalPrice, discountedPrice: $discountedPrice, discountPercentage: $discountPercentage, stock: $stock, brand: $brand, categoryName: $categoryName, subCategoryName: $subCategoryName, detailCategoryName: $detailCategoryName, averageRating: $averageRating, reviewCount: $reviewCount, colors: $colors, tags: $tags, labels: $labels, attributes: $attributes, sizeMeasurements: $sizeMeasurements)';
 }
 
 
@@ -304,7 +308,7 @@ abstract mixin class _$ItemDetailDtoCopyWith<$Res> implements $ItemDetailDtoCopy
   factory _$ItemDetailDtoCopyWith(_ItemDetailDto value, $Res Function(_ItemDetailDto) _then) = __$ItemDetailDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String title, String? subtitle, String? description, double originalPrice, double? discountedPrice, int discountPercentage, int? stock, String? brand, String categoryName, String? subCategoryName, String? detailCategoryName, List<ItemDetailColorDto> colors, List<ItemTagDto> tags, List<ItemDetailLabelDto> labels, List<ItemDetailAttributeDto> attributes, List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements
+ int id, String title, String? subtitle, String? description, double originalPrice, double? discountedPrice, int discountPercentage, int? stock, String? brand, String categoryName, String? subCategoryName, String? detailCategoryName, double averageRating, int reviewCount, List<ItemDetailColorDto> colors, List<ItemTagDto> tags, List<ItemDetailLabelDto> labels, List<ItemDetailAttributeDto> attributes, List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements
 });
 
 
@@ -321,7 +325,7 @@ class __$ItemDetailDtoCopyWithImpl<$Res>
 
 /// Create a copy of ItemDetailDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? subtitle = freezed,Object? description = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? discountPercentage = null,Object? stock = freezed,Object? brand = freezed,Object? categoryName = null,Object? subCategoryName = freezed,Object? detailCategoryName = freezed,Object? colors = null,Object? tags = null,Object? labels = null,Object? attributes = null,Object? sizeMeasurements = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? subtitle = freezed,Object? description = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? discountPercentage = null,Object? stock = freezed,Object? brand = freezed,Object? categoryName = null,Object? subCategoryName = freezed,Object? detailCategoryName = freezed,Object? averageRating = null,Object? reviewCount = null,Object? colors = null,Object? tags = null,Object? labels = null,Object? attributes = null,Object? sizeMeasurements = null,}) {
   return _then(_ItemDetailDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -335,7 +339,9 @@ as int?,brand: freezed == brand ? _self.brand : brand // ignore: cast_nullable_t
 as String?,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
 as String,subCategoryName: freezed == subCategoryName ? _self.subCategoryName : subCategoryName // ignore: cast_nullable_to_non_nullable
 as String?,detailCategoryName: freezed == detailCategoryName ? _self.detailCategoryName : detailCategoryName // ignore: cast_nullable_to_non_nullable
-as String?,colors: null == colors ? _self._colors : colors // ignore: cast_nullable_to_non_nullable
+as String?,averageRating: null == averageRating ? _self.averageRating : averageRating // ignore: cast_nullable_to_non_nullable
+as double,reviewCount: null == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable
+as int,colors: null == colors ? _self._colors : colors // ignore: cast_nullable_to_non_nullable
 as List<ItemDetailColorDto>,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<ItemTagDto>,labels: null == labels ? _self._labels : labels // ignore: cast_nullable_to_non_nullable
 as List<ItemDetailLabelDto>,attributes: null == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable

@@ -22,6 +22,8 @@ abstract class ItemDetailDto with _$ItemDetailDto {
     required String categoryName,
     String? subCategoryName,
     String? detailCategoryName,
+    @Default(0.0) double averageRating,
+    @Default(0) int reviewCount,
     @Default([]) List<ItemDetailColorDto> colors,
     @Default([]) List<ItemTagDto> tags,
     @Default([]) List<ItemDetailLabelDto> labels,
