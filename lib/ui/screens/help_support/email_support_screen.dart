@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/reports_api.dart';
+import '../../../enums/report_category.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
@@ -8,6 +12,7 @@ import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_selectable_chip.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../cart/widgets/aurora_login_gate_dialog.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
 class EmailSupportScreen extends StatefulWidget {
@@ -18,12 +23,23 @@ class EmailSupportScreen extends StatefulWidget {
 }
 
 class _EmailSupportScreenState extends State<EmailSupportScreen> {
-  String _selectedCategory = 'Order Issue';
+  ReportCategory _selectedCategory = ReportCategory.orderIssue;
   final _subjectController = TextEditingController();
   final _orderController = TextEditingController();
   final _messageController = TextEditingController();
+  bool _submitting = false;
 
-  static const _categories = ['Order Issue', 'Payment', 'Account', 'Other'];
+  // Subset shown here; backend also supports Bug & Suggestion.
+  static const _categories = [
+    ReportCategory.orderIssue,
+    ReportCategory.payment,
+    ReportCategory.account,
+    ReportCategory.other,
+  ];
+
+  // Backend limits (subject 150, description 2000).
+  static const int _subjectMax = 150;
+  static const int _descriptionMax = 2000;
 
   @override
   void dispose() {
@@ -33,17 +49,56 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_subjectController.text.trim().isEmpty) {
+  Future<void> _submit() async {
+    if (_submitting) return;
+
+    // Reports are customer-only on the backend.
+    if (!GetIt.instance<AuthService>().isCustomer) {
+      showAuroraLoginGate(context);
+      return;
+    }
+
+    final subject = _subjectController.text.trim();
+    final message = _messageController.text.trim();
+    if (subject.isEmpty) {
       ToastService.instance.showError('Please enter a subject');
       return;
     }
-    if (_messageController.text.trim().isEmpty) {
+    if (message.isEmpty) {
       ToastService.instance.showError('Please enter a message');
       return;
     }
-    ToastService.instance.showSuccess('Support ticket submitted');
-    Navigator.pop(context);
+    if (subject.length > _subjectMax) {
+      ToastService.instance.showError('Subject must be $_subjectMax characters or less');
+      return;
+    }
+
+    // Backend has no order field — fold it into the description when provided.
+    final order = _orderController.text.trim();
+    final description = order.isEmpty ? message : 'Order: $order\n\n$message';
+    if (description.length > _descriptionMax) {
+      ToastService.instance.showError('Message is too long');
+      return;
+    }
+
+    setState(() => _submitting = true);
+    final result = await GetIt.instance<ReportsApi>().createReport(
+      category: _selectedCategory.backendValue,
+      subject: subject,
+      description: description,
+    );
+    if (!mounted) return;
+    setState(() => _submitting = false);
+
+    result.fold(
+      (_) {}, // ErrorInterceptor already toasts the failure.
+      (responseMessage) {
+        if (responseMessage.isNotEmpty) {
+          ToastService.instance.showSuccess(responseMessage);
+        }
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override
@@ -121,7 +176,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                               runSpacing: 8,
                               children: _categories
                                   .map((cat) => AuroraSelectableChip(
-                                        label: cat,
+                                        label: cat.label,
                                         isSelected: _selectedCategory == cat,
                                         onTap: () => setState(() => _selectedCategory = cat),
                                       ))
@@ -159,6 +214,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
 
                             AuroraPrimaryButton(
                               text: 'Send Message',
+                              isLoading: _submitting,
                               onPressed: _submit,
                             ),
                           ],

@@ -6,6 +6,7 @@ import '../../../backend_integration/dependency_injection/dependency_injection.d
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/language_service.dart';
+import '../../../services/notification_service.dart';
 import '../../../services/push_notification_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
@@ -72,6 +73,8 @@ class _SplashScreenState extends State<SplashScreen>
       unawaited(serviceLocator<LanguageService>().syncToBackend());
       // Register this device for push now that we hold a JWT.
       unawaited(PushNotificationService.instance.init());
+      // Prime the bell badge with the current unread count.
+      unawaited(NotificationService.instance.fetchUnreadCount());
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');
     }

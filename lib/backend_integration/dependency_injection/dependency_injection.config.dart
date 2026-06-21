@@ -26,6 +26,7 @@ import '../apis/notification_preferences_api.dart' as _i433;
 import '../apis/notifications_api.dart' as _i625;
 import '../apis/orders_api.dart' as _i143;
 import '../apis/profile_api.dart' as _i48;
+import '../apis/reports_api.dart' as _i851;
 import '../apis/size_standards_api.dart' as _i464;
 import '../apis/wishlist_api.dart' as _i1055;
 
@@ -76,6 +77,9 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i48.ProfileApi>(
     () => _i48.ProfileApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
+  gh.factory<_i851.ReportsApi>(
+    () => _i851.ReportsApi(gh<_i361.Dio>(instanceName: 'apiClient')),
   );
   gh.factory<_i464.SizeStandardsApi>(
     () => _i464.SizeStandardsApi(gh<_i361.Dio>(instanceName: 'apiClient')),
