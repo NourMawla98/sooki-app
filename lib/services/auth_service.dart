@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../config/app_config.dart';
+import 'push_notification_service.dart';
 import 'token_service.dart';
 
 /// Tracks identity state (guest vs customer) derived from the stored JWT.
@@ -61,6 +62,13 @@ class AuthService extends ChangeNotifier {
   /// If [guestTokenData] is provided (from logout API response), saves those tokens.
   /// Otherwise clears tokens and runs guest auth as fallback.
   Future<void> signOut({Map<String, dynamic>? guestTokenData}) async {
+    // Unbind this device's push token while the customer JWT is still active.
+    try {
+      await PushNotificationService.instance.unregister();
+    } catch (_) {
+      // Best-effort — never block logout on token removal.
+    }
+
     if (guestTokenData != null) {
       await _saveTokenData(guestTokenData);
       _isCustomer = false;

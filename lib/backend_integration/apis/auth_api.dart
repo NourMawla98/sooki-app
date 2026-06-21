@@ -103,6 +103,24 @@ class AuthApi {
     );
   }
 
+  /// Persist the customer's selected language to their account
+  /// (`PUT auth/customer/language`). Accepts guest and customer JWTs.
+  Future<Either<ApiFailure, String>> updateLanguage({
+    required int language,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.put,
+      path: 'auth/customer/language',
+      body: {'language': language},
+      operationName: 'updateLanguage',
+      // Background persistence — never surface a toast on failure.
+      extra: const {'silentError': true},
+      successParser: (r) =>
+          (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',
+    );
+  }
+
   Future<Either<ApiFailure, Map<String, dynamic>>> register({
     required String email,
     required String password,

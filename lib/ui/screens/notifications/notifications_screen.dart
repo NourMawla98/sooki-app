@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/dtos/notification/notification_dto.dart';
 import '../../../services/notification_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
@@ -15,10 +16,28 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     NotificationService.instance.fetchNotifications();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      NotificationService.instance.loadMore();
+    }
   }
 
   Future<void> _refresh() async {
@@ -63,6 +82,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 isDark: isDark,
                                 today: today,
                                 earlier: earlier,
+                                controller: _scrollController,
                               )
                             : SingleChildScrollView(
                                 physics: const AlwaysScrollableScrollPhysics(),
@@ -137,15 +157,18 @@ class _NotificationList extends StatelessWidget {
     required this.isDark,
     required this.today,
     required this.earlier,
+    required this.controller,
   });
 
   final bool isDark;
-  final List<AppNotification> today;
-  final List<AppNotification> earlier;
+  final List<NotificationDto> today;
+  final List<NotificationDto> earlier;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
+      controller: controller,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 32),
       children: [
@@ -188,7 +211,7 @@ class _GroupLabel extends StatelessWidget {
 class _NotifGroup extends StatelessWidget {
   const _NotifGroup({required this.items, required this.isDark});
 
-  final List<AppNotification> items;
+  final List<NotificationDto> items;
   final bool isDark;
 
   @override
@@ -231,7 +254,7 @@ class _NotifGroup extends StatelessWidget {
 class _NotifRow extends StatelessWidget {
   const _NotifRow({required this.item, required this.isDark});
 
-  final AppNotification item;
+  final NotificationDto item;
   final bool isDark;
 
   @override
@@ -239,18 +262,30 @@ class _NotifRow extends StatelessWidget {
     final unreadBg = isDark
         ? AppColors.auroraPurple.withValues(alpha: 0.06)
         : AppColors.auroraPurple.withValues(alpha: 0.04);
-    final removeColor = isDark
-        ? AppColors.white.withValues(alpha: 0.35)
-        : AppColors.auroraDeepBase.withValues(alpha: 0.45);
+    final iconTint = isDark ? AppColors.auroraPink : AppColors.auroraPurple;
+    final iconBg = isDark
+        ? AppColors.auroraPurple.withValues(alpha: 0.16)
+        : AppColors.auroraPurple.withValues(alpha: 0.10);
 
     return GestureDetector(
       onTap: () => NotificationService.instance.markRead(item.id),
       child: Container(
         color: item.isRead ? null : unreadBg,
-        padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+        padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              width: 38,
+              height: 38,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: FaIcon(item.notificationType.icon, size: 14, color: iconTint),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,9 +303,22 @@ class _NotifRow extends StatelessWidget {
                       height: 1.35,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  if (item.body.isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      item.body,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontSize: 12.5,
+                        color: isDark
+                            ? AppColors.white.withValues(alpha: 0.55)
+                            : AppColors.auroraDeepBase.withValues(alpha: 0.6),
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 4),
                   Text(
-                    item.time,
+                    item.relativeLabel,
                     style: AppTextStyles.captionSmall.copyWith(
                       fontSize: 12,
                       color: isDark
@@ -279,22 +327,6 @@ class _NotifRow extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            GestureDetector(
-              onTap: () => NotificationService.instance.delete(item.id),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                width: 22,
-                height: 22,
-                alignment: Alignment.center,
-                color: Colors.transparent,
-                child: FaIcon(
-                  FontAwesomeIcons.xmark,
-                  size: 10,
-                  color: removeColor,
-                ),
               ),
             ),
           ],

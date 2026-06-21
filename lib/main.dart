@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,7 @@ import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
 import 'services/language_service.dart';
+import 'services/push_notification_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'themes/themes.dart';
@@ -23,6 +25,8 @@ Future<void> main() async {
   // android/app/google-services.json (and iOS GoogleService-Info.plist later).
   try {
     await Firebase.initializeApp();
+    // Background/terminated push handler must be registered at startup.
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   } catch (_) {
     // App still runs without push if Firebase init fails (e.g. missing config).
   }

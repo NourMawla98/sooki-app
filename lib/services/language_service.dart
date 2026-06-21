@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../backend_integration/apis/auth_api.dart';
 import '../enums/app_language.dart';
 import '../i18n/i18n_bootstrap.dart';
+import 'toast_service.dart';
 
 /// Service for managing app language.
 ///
@@ -67,5 +71,30 @@ class LanguageService {
     if (context != null && context.mounted) {
       await context.setLocale(I18nBootstrap.localeFor(language));
     }
+
+    // Persist the choice to the customer's account (fire-and-forget) and
+    // surface the backend's confirmation message.
+    unawaited(syncToBackend(showMessage: true));
+  }
+
+  /// Push the current language to the backend so the account record matches the
+  /// device. Called from [setLanguage] on every change, and once at startup
+  /// after auth so the first-run device-detected language is also saved.
+  /// Silently no-ops if the API isn't registered yet (e.g. pre-DI).
+  ///
+  /// When [showMessage] is true (explicit user change), the backend's success
+  /// message is shown as a toast. The startup sync passes false to stay silent.
+  Future<void> syncToBackend({bool showMessage = false}) async {
+    if (!GetIt.instance.isRegistered<AuthApi>()) return;
+    final result = await GetIt.instance<AuthApi>()
+        .updateLanguage(language: _currentLanguage.backendValue);
+    result.fold(
+      (_) {}, // errors are silenced for this background sync
+      (message) {
+        if (showMessage && message.isNotEmpty) {
+          ToastService.instance.showSuccess(message);
+        }
+      },
+    );
   }
 }

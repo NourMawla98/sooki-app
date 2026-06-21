@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../backend_integration/dtos/notification/notification_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/notification_service.dart';
 import '../../../services/theme_service.dart';
@@ -185,7 +186,7 @@ class NotificationPanel extends StatelessWidget {
 class _PanelRow extends StatelessWidget {
   const _PanelRow({required this.item, required this.isDark, required this.onClose});
 
-  final AppNotification item;
+  final NotificationDto item;
   final bool isDark;
   final VoidCallback onClose;
 
@@ -194,9 +195,6 @@ class _PanelRow extends StatelessWidget {
     final unreadBg = isDark
         ? AppColors.auroraPurple.withValues(alpha: 0.06)
         : AppColors.auroraPurple.withValues(alpha: 0.045);
-    final removeColor = isDark
-        ? AppColors.white.withValues(alpha: 0.35)
-        : AppColors.auroraDeepBase.withValues(alpha: 0.45);
 
     return GestureDetector(
       onTap: () {
@@ -205,7 +203,7 @@ class _PanelRow extends StatelessWidget {
       },
       child: Container(
         color: item.isRead ? null : unreadBg,
-        padding: const EdgeInsets.fromLTRB(16, 11, 12, 11),
+        padding: const EdgeInsets.fromLTRB(16, 11, 16, 11),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -230,7 +228,7 @@ class _PanelRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    item.time,
+                    item.relativeLabel,
                     style: AppTextStyles.captionSmall.copyWith(
                       fontSize: 11,
                       color: isDark
@@ -239,22 +237,6 @@ class _PanelRow extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => NotificationService.instance.delete(item.id),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                width: 22,
-                height: 22,
-                alignment: Alignment.center,
-                color: Colors.transparent,
-                child: FaIcon(
-                  FontAwesomeIcons.xmark,
-                  size: 10,
-                  color: removeColor,
-                ),
               ),
             ),
           ],

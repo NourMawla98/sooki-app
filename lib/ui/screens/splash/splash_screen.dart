@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/language_service.dart';
+import '../../../services/push_notification_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
@@ -63,6 +67,11 @@ class _SplashScreenState extends State<SplashScreen>
     String? error;
     try {
       await authService.restoreSession();
+      // A JWT now exists (guest or customer) — persist the device-detected /
+      // cached language to the account so the DB matches the app.
+      unawaited(serviceLocator<LanguageService>().syncToBackend());
+      // Register this device for push now that we hold a JWT.
+      unawaited(PushNotificationService.instance.init());
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');
     }
