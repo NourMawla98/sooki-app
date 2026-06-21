@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'backend_integration/dio/interceptors/global_headers_interceptor.dart';
 import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
@@ -15,6 +18,22 @@ Future<void> main() async {
 
   // easy_localization requires this before any EasyLocalization widgets build.
   await EasyLocalization.ensureInitialized();
+
+  // Initialize Firebase (push notifications). Reads native config from
+  // android/app/google-services.json (and iOS GoogleService-Info.plist later).
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {
+    // App still runs without push if Firebase init fails (e.g. missing config).
+  }
+
+  // Capture app version once for the X-App-Version request header.
+  try {
+    final packageInfo = await PackageInfo.fromPlatform();
+    GlobalHeadersInterceptor.appVersion = packageInfo.version;
+  } catch (_) {
+    // Keep the default fallback version if lookup fails.
+  }
 
   final prefs = await SharedPreferences.getInstance();
   final languageService = await LanguageService.initialize(prefs);

@@ -59,6 +59,16 @@ class ProfileApi {
     );
   }
 
+  Future<Either<ApiFailure, String>> deleteAccount() {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.delete,
+      path: 'customer/profile',
+      operationName: 'deleteAccount',
+      successParser: (response) => (response.data['message'] as String?) ?? '',
+    );
+  }
+
   Future<Either<ApiFailure, String>> updateProfile({
     required String firstName,
     required String lastName,
@@ -73,7 +83,7 @@ class ProfileApi {
       body: {
         'firstName': firstName,
         'lastName': lastName,
-        if (phoneCountryCode != null) 'phoneCountryCode': phoneCountryCode,
+        'phoneCountryCode': ?phoneCountryCode,
         if (phoneNumber != null && phoneNumber.isNotEmpty) 'phoneNumber': phoneNumber,
       },
       successParser: (response) {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "531427896179",
+    "project_id": "sooki-bcab0",
+    "storage_bucket": "sooki-bcab0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531427896179:android:bd07c60779c5377239f306",
+        "android_client_info": {
+          "package_name": "com.sooki.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS87zagQKj1MeWv5Kf_aDHVypIvXTtUbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

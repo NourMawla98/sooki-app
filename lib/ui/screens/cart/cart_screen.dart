@@ -15,7 +15,7 @@ import 'widgets/cart_background.dart';
 import 'widgets/cart_empty_state.dart';
 import '../../reusable_components/cart_item_card.dart';
 import 'widgets/cart_summary.dart';
-import 'widgets/cash_on_delivery_pill.dart';
+import 'widgets/payment_method_picker.dart';
 import 'widgets/promo_row.dart';
 
 class CartScreen extends StatefulWidget {
@@ -89,7 +89,7 @@ class _CartScreenState extends State<CartScreen> {
                           const SizedBox(height: 8),
                           const PromoRow(),
                           const SizedBox(height: 8),
-                          const CashOnDeliveryPill(),
+                          const PaymentMethodPicker(),
                           const SizedBox(height: 12),
                         ],
                       ),

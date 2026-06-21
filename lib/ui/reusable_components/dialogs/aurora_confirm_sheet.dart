@@ -22,7 +22,7 @@ Future<bool> showAuroraConfirmSheet(
     barrierLabel: 'Dismiss',
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 260),
-    pageBuilder: (_, __, ___) => _AuroraConfirmSheet(
+    pageBuilder: (_, _, _) => _AuroraConfirmSheet(
       title: title,
       subtitle: subtitle,
       icon: icon,
@@ -32,7 +32,7 @@ Future<bool> showAuroraConfirmSheet(
       cancelLabel: cancelLabel,
       onConfirm: onConfirm,
     ),
-    transitionBuilder: (_, anim, __, child) {
+    transitionBuilder: (_, anim, _, child) {
       final slide = Tween<Offset>(
         begin: const Offset(0, 0.12),
         end: Offset.zero,

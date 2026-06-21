@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../backend_integration/apis/orders_api.dart';
 import '../../../backend_integration/dtos/order/place_order_request_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/address_service.dart';
@@ -12,6 +13,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../../reusable_components/skeleton/skeleton_shimmer.dart';
 import '../cart/widgets/address_pill.dart';
 import '../order_success/order_success_screen.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
@@ -27,9 +29,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _noteController = TextEditingController();
   bool _placing = false;
 
+  bool _loadingPayment = true;
+  List<PaymentMethodOption> _paymentMethods = const [];
+
   AddressService get _addressService => GetIt.instance<AddressService>();
   CartService get _cartService => GetIt.instance<CartService>();
   OrdersService get _ordersService => GetIt.instance<OrdersService>();
+  OrdersApi get _ordersApi => GetIt.instance<OrdersApi>();
+
+  /// The payment method applied to the order. BE currently offers one option.
+  PaymentMethodOption? get _selectedPayment =>
+      _paymentMethods.isNotEmpty ? _paymentMethods.first : null;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPaymentMethods();
+  }
+
+  Future<void> _loadPaymentMethods() async {
+    final result = await _ordersApi.getPaymentMethods();
+    if (!mounted) return;
+    result.fold(
+      (_) => setState(() => _loadingPayment = false),
+      (methods) => setState(() {
+        _paymentMethods = methods;
+        _loadingPayment = false;
+      }),
+    );
+  }
 
   @override
   void dispose() {
@@ -61,7 +89,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           orderId: result.orderId,
           orderNumber: result.trackingNumber,
           estimatedDelivery: '2–5 business days',
-          paymentMethod: 'Cash on delivery',
+          paymentMethod: _selectedPayment?.name ?? '',
         ),
       );
     }
@@ -141,7 +169,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ),
 
                             _SectionLabel(label: 'Payment method', isDark: isDark),
-                            _PaymentCard(isDark: isDark),
+                            _PaymentCard(
+                              isDark: isDark,
+                              loading: _loadingPayment,
+                              methods: _paymentMethods,
+                            ),
 
                             _SectionLabel(
                               label: 'Delivery note',
@@ -529,7 +561,14 @@ class _GradientThumb extends StatelessWidget {
 
 class _PaymentCard extends StatelessWidget {
   final bool isDark;
-  const _PaymentCard({required this.isDark});
+  final bool loading;
+  final List<PaymentMethodOption> methods;
+
+  const _PaymentCard({
+    required this.isDark,
+    required this.loading,
+    required this.methods,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -560,46 +599,84 @@ class _PaymentCard extends StatelessWidget {
                 ),
               ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.auroraPurple.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            alignment: Alignment.center,
-            child: FaIcon(
-              FontAwesomeIcons.moneyBill,
-              size: 15,
-              color: AppColors.auroraPurple,
-            ),
+      child: loading ? _buildLoading() : _buildContent(textColor, muteColor),
+    );
+  }
+
+  Widget _buildLoading() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 36,
+          height: 36,
+          child: SkeletonShimmer(borderRadius: BorderRadius.circular(10)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 130,
+                height: 13,
+                child: SkeletonShimmer(borderRadius: BorderRadius.circular(4)),
+              ),
+              const SizedBox(height: 6),
+              SizedBox(
+                width: 90,
+                height: 10,
+                child: SkeletonShimmer(borderRadius: BorderRadius.circular(4)),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Cash on delivery',
-                  style: AppTextStyles.dsBody.copyWith(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: textColor,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Pay when your order arrives',
-                  style: AppTextStyles.dsMuted.copyWith(
-                    fontSize: 10.5,
-                    color: muteColor,
-                  ),
-                ),
-              ],
-            ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(Color textColor, Color muteColor) {
+    final selected = methods.isNotEmpty ? methods.first : null;
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.auroraPurple.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
           ),
+          alignment: Alignment.center,
+          child: FaIcon(
+            FontAwesomeIcons.moneyBill,
+            size: 15,
+            color: AppColors.auroraPurple,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                selected?.name ?? 'Cash on delivery',
+                style: AppTextStyles.dsBody.copyWith(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Pay when your order arrives',
+                style: AppTextStyles.dsMuted.copyWith(
+                  fontSize: 10.5,
+                  color: muteColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (methods.length == 1)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -616,8 +693,7 @@ class _PaymentCard extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }

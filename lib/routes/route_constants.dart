@@ -20,7 +20,6 @@ const String helpSupportScreenRoute = 'help_support';
 const String orderDetailScreenRoute = 'order_detail';
 const String addAddressScreenRoute = 'add_address';
 const String editAddressScreenRoute = 'edit_address';
-const String addCardScreenRoute = 'add_card';
 const String changePasswordScreenRoute = 'change_password';
 const String privacySettingsScreenRoute = 'privacy_settings';
 const String shippingInfoScreenRoute = 'shipping_info';

@@ -15,7 +15,6 @@ import '../ui/screens/help_support/help_support_screen.dart';
 import '../ui/screens/orders/order_detail_screen.dart';
 import '../backend_integration/dtos/address/address_dto.dart';
 import '../ui/screens/address_form/address_form_screen.dart';
-import '../ui/screens/payment_methods/add_card_screen.dart';
 import '../ui/screens/settings/change_password_screen.dart';
 import '../ui/screens/settings/privacy_settings_screen.dart';
 import '../ui/screens/help_support/shipping_info_screen.dart';
@@ -84,7 +83,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       final address = settings.arguments as AddressDto;
       return AddressFormScreen(initialAddress: address);
     },
-    addCardScreenRoute: (_) => const AddCardScreen(),
     changePasswordScreenRoute: (_) => const ChangePasswordScreen(),
     privacySettingsScreenRoute: (_) => const PrivacySettingsScreen(),
     shippingInfoScreenRoute: (_) => const ShippingInfoScreen(),

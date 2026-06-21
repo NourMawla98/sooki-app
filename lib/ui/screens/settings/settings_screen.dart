@@ -6,8 +6,10 @@ import 'package:get_it/get_it.dart';
 import '../../../backend_integration/apis/notification_preferences_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../backend_integration/dtos/notification/notification_preferences_dto.dart';
+import '../../../backend_integration/apis/profile_api.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/toast_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -57,6 +59,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _refresh() async {
     await _loadPreferences();
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    final confirmed = await showAuroraConfirmSheet(
+      context,
+      title: 'Delete Account',
+      subtitle: 'This action is permanent and cannot be undone. All your data will be deleted.',
+      icon: FontAwesomeIcons.trashCan,
+      iconColor: AppColors.auroraRed,
+      confirmLabel: 'Delete',
+      confirmColor: AppColors.auroraRed,
+    );
+    if (confirmed != true || !mounted) return;
+
+    final result = await serviceLocator<ProfileApi>().deleteAccount();
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (message) async {
+        if (message.isNotEmpty) ToastService.instance.showSuccess(message);
+        await GetIt.instance<AuthService>().signOut();
+        if (!mounted) return;
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushNamedAndRemoveUntil(splashScreenRoute, (_) => false);
+      },
+    );
   }
 
   @override
@@ -192,18 +220,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     title: 'Delete Account',
                                     subtitle: 'Permanently delete your data',
                                     isDestructive: true,
-                                    onTap: () async {
-                                      await showAuroraConfirmSheet(
-                                        context,
-                                        title: 'Delete Account',
-                                        subtitle:
-                                            'This action is permanent and cannot be undone.',
-                                        icon: FontAwesomeIcons.trashCan,
-                                        iconColor: AppColors.auroraRed,
-                                        confirmLabel: 'Delete',
-                                        confirmColor: AppColors.auroraRed,
-                                      );
-                                    },
+                                    onTap: () => _deleteAccount(context),
                                   ),
                                 ],
                               ),

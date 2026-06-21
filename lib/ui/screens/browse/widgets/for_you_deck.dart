@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../backend_integration/apis/items_api.dart';
 import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
-import '../../../../data/mock_home_data.dart';
+import '../../../../models/for_you_pick.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/search_history_service.dart';
 import '../../../../services/viewed_items_service.dart';

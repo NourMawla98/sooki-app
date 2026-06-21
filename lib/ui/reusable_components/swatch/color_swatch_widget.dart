@@ -143,7 +143,7 @@ class _SwatchFill extends StatelessWidget {
         return Image.network(
           color.patternImageUrl!,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) =>
+          errorBuilder: (_, _, _) =>
               Container(color: _hexToColor(color.color1.hexCode)),
         );
       case ColorSwatchType.solid:

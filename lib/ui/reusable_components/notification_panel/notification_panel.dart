@@ -126,7 +126,7 @@ class NotificationPanel extends StatelessWidget {
                       shrinkWrap: true,
                       padding: EdgeInsets.zero,
                       itemCount: items.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (_, _) =>
                           Container(height: 1, color: divider),
                       itemBuilder: (context, i) =>
                           _PanelRow(item: items[i], isDark: isDark, onClose: onClose),

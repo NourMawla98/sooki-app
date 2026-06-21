@@ -14,6 +14,9 @@ typedef OrdersPage = ({
   bool isLastPage,
 });
 
+/// A payment method option offered at checkout (e.g. Cash on delivery).
+typedef PaymentMethodOption = ({int id, String name});
+
 @injectable
 class OrdersApi {
   final Dio _dio;
@@ -32,7 +35,7 @@ class OrdersApi {
       queryParameters: {
         'Skip': skip,
         'Take': take,
-        if (statusFilter != null) 'Status': statusFilter,
+        'Status': ?statusFilter,
       },
       operationName: 'listOrders',
       successParser: (response) {
@@ -103,6 +106,27 @@ class OrdersApi {
       operationName: 'confirmReceipt',
       successParser: (r) =>
           (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',
+    );
+  }
+
+  Future<Either<ApiFailure, List<PaymentMethodOption>>> getPaymentMethods() {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'customer/orders/payment-methods',
+      operationName: 'getPaymentMethods',
+      successParser: (r) {
+        final data = (r.data as Map<String, dynamic>?)?['data'];
+        return data is List
+            ? data
+                .whereType<Map<String, dynamic>>()
+                .map((m) => (
+                      id: m['id'] as int,
+                      name: m['name'] as String? ?? '',
+                    ))
+                .toList()
+            : <PaymentMethodOption>[];
+      },
     );
   }
 
