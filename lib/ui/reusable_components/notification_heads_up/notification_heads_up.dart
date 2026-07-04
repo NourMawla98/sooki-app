@@ -142,6 +142,9 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
         final xColor = isDark
             ? AppColors.white.withValues(alpha: 0.45)
             : AppColors.auroraPurple.withValues(alpha: 0.5);
+        final xChipBg = isDark
+            ? AppColors.white.withValues(alpha: 0.05)
+            : AppColors.auroraPurple.withValues(alpha: 0.06);
         final trackColor = isDark
             ? AppColors.white.withValues(alpha: 0.07)
             : AppColors.auroraPurple.withValues(alpha: 0.08);
@@ -180,9 +183,9 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(13, 13, 13, 13),
+                            padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Container(
                                   width: 40,
@@ -220,7 +223,7 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                                         Text(
                                           n.body,
                                           style: AppTextStyles.bodySmall.copyWith(
-                                            fontSize: 11.5,
+                                            fontSize: 11,
                                             color: bodyColor,
                                             height: 1.35,
                                           ),
@@ -231,15 +234,21 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 12),
                                 GestureDetector(
                                   behavior: HitTestBehavior.opaque,
                                   onTap: _dismiss,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2),
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: xChipBg,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                     child: FaIcon(
                                       FontAwesomeIcons.xmark,
-                                      size: 12,
+                                      size: 11,
                                       color: xColor,
                                     ),
                                   ),
@@ -249,6 +258,7 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                           ),
                           // Aurora progress bar — grey track, gradient fills L→R.
                           SizedBox(
+                            width: double.infinity,
                             height: 3,
                             child: Stack(
                               children: [

@@ -23,8 +23,7 @@ class AppHeader extends StatefulWidget {
 }
 
 class _AppHeaderState extends State<AppHeader> {
-  bool get _hasUnreadNotifications =>
-      NotificationService.instance.unreadCount > 0;
+  int get _unreadCount => NotificationService.instance.unreadCount;
   OverlayEntry? _overlay;
   final GlobalKey _notificationButtonKey = GlobalKey();
   final GlobalKey _menuButtonKey = GlobalKey();
@@ -126,7 +125,7 @@ class _AppHeaderState extends State<AppHeader> {
                             buttonKey: _notificationButtonKey,
                             icon: FontAwesomeIcons.bell,
                             iconColor: iconColor,
-                            badge: _hasUnreadNotifications,
+                            badgeCount: _unreadCount,
                             onTap: _showNotificationPanel,
                           ),
                           const SizedBox(width: 18),
@@ -157,14 +156,14 @@ class _PlainIconButton extends StatelessWidget {
   final FaIconData icon;
   final Color iconColor;
   final VoidCallback onTap;
-  final bool badge;
+  final int badgeCount;
 
   const _PlainIconButton({
     this.buttonKey,
     required this.icon,
     required this.iconColor,
     required this.onTap,
-    this.badge = false,
+    this.badgeCount = 0,
   });
 
   @override
@@ -180,11 +179,11 @@ class _PlainIconButton extends StatelessWidget {
             padding: const EdgeInsets.all(4),
             child: FaIcon(icon, size: 20, color: iconColor),
           ),
-          if (badge)
+          if (badgeCount > 0)
             Positioned(
-              top: 0,
-              right: 0,
-              child: NotificationDotBadge(show: true),
+              top: -3,
+              right: -4,
+              child: NotificationDotBadge(count: badgeCount),
             ),
         ],
       ),
