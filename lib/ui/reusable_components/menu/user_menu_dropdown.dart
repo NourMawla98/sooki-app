@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -58,13 +59,13 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
   Future<void> _showLogoutDialog(BuildContext context) async {
     await showAuroraConfirmSheet(
       context,
-      title: 'Logout',
-      subtitle: 'Are you sure you want to logout?',
+      title: 'common.logout'.tr(),
+      subtitle: 'user_menu_dropdown.logout_confirm'.tr(),
       icon: FontAwesomeIcons.rightFromBracket,
       iconColor: AppColors.auroraPink,
-      confirmLabel: 'Logout',
+      confirmLabel: 'common.logout'.tr(),
       confirmColor: AppColors.auroraPink,
-      cancelLabel: 'Cancel',
+      cancelLabel: 'common.cancel'.tr(),
       onConfirm: () async {
         final refreshToken = await TokenService.instance.getRefreshToken();
         String? toastMessage;
@@ -137,7 +138,8 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
   }
 
   Widget _buildTileGrid(BuildContext ctx, bool isDark) {
-    final themeValue = isDark ? 'DARK' : 'LIGHT';
+    final themeValue =
+        isDark ? 'user_menu_dropdown.dark'.tr() : 'user_menu_dropdown.light'.tr();
     final langValue = _languageService.currentLanguage.displayName;
     final mutedOnTile = AppColors.white.withValues(alpha: 0.7);
     final mutedOnTileLight = AppColors.primaryPurple.withValues(alpha: 0.7);
@@ -150,8 +152,8 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
             Expanded(
               child: _Tile(
                 icon: FontAwesomeIcons.user,
-                label: 'Profile',
-                sub: 'View account',
+                label: 'user_menu_dropdown.profile'.tr(),
+                sub: 'user_menu_dropdown.view_account'.tr(),
                 accent: AppColors.auroraElectricBlue,
                 isDark: isDark,
                 subColor: isDark ? mutedOnTile : mutedOnTileLight,
@@ -165,7 +167,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
             Expanded(
               child: _Tile(
                 icon: FontAwesomeIcons.globe,
-                label: 'Language',
+                label: 'user_menu_dropdown.language'.tr(),
                 sub: langValue,
                 accent: AppColors.auroraPurple,
                 isDark: isDark,
@@ -182,7 +184,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
             Expanded(
               child: _Tile(
                 icon: isDark ? FontAwesomeIcons.moon : FontAwesomeIcons.sun,
-                label: 'Theme',
+                label: 'user_menu_dropdown.theme'.tr(),
                 sub: themeValue,
                 accent: AppColors.verifiedGreen,
                 isDark: isDark,
@@ -195,7 +197,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
               child: _authService.isCustomer
                   ? _Tile(
                       icon: FontAwesomeIcons.rightFromBracket,
-                      label: 'Logout',
+                      label: 'common.logout'.tr(),
                       accent: AppColors.auroraPink,
                       isDark: isDark,
                       subColor: AppColors.auroraPink.withValues(alpha: 0.75),
@@ -207,7 +209,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                     )
                   : _Tile(
                       icon: FontAwesomeIcons.rightToBracket,
-                      label: 'Log in',
+                      label: 'user_menu_dropdown.log_in'.tr(),
                       sub: '',
                       accent: AppColors.auroraPink,
                       isDark: isDark,
@@ -228,13 +230,16 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
     final divider = isDark
         ? AppColors.white.withValues(alpha: 0.06)
         : AppColors.gray100;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _PickerRow(
-          icon: FontAwesomeIcons.chevronLeft,
-          label: 'Language',
+          icon: isRtl
+              ? FontAwesomeIcons.chevronRight
+              : FontAwesomeIcons.chevronLeft,
+          label: 'user_menu_dropdown.language'.tr(),
           color: textColor,
           onTap: () => setState(() => _showLanguagePicker = false),
         ),

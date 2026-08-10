@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../../enums/address_label_type.dart';
 import '../../../../backend_integration/dtos/address/address_dto.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/address_service.dart';
@@ -45,12 +47,16 @@ class _AddressPickerSheetState extends State<_AddressPickerSheet> {
     return ListenableBuilder(
       listenable: Listenable.merge([addressService, ThemeService.instance]),
       builder: (context, _) {
-        final c = CartSurfaceColors.of(isDark: ThemeService.instance.isDarkMode);
+        final c = CartSurfaceColors.of(
+          isDark: ThemeService.instance.isDarkMode,
+        );
         final addresses = addressService.addresses;
         final selectedId = addressService.selectedId;
 
         return ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
           child: Container(
             decoration: BoxDecoration(
               color: c.sheet,
@@ -61,12 +67,12 @@ class _AddressPickerSheetState extends State<_AddressPickerSheet> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 4),
+                  padding: const EdgeInsetsDirectional.fromSTEB(18, 20, 18, 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CHOOSE ADDRESS',
+                        'address_picker_sheet.choose_address'.tr(),
                         style: AppTextStyles.label.copyWith(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -76,7 +82,7 @@ class _AddressPickerSheetState extends State<_AddressPickerSheet> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Where to deliver',
+                        'address_picker_sheet.where_to_deliver'.tr(),
                         style: AppTextStyles.heading3.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
@@ -90,7 +96,12 @@ class _AddressPickerSheetState extends State<_AddressPickerSheet> {
                 Flexible(
                   child: ListView(
                     shrinkWrap: true,
-                    padding: const EdgeInsets.fromLTRB(18, 4, 18, 12),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      18,
+                      4,
+                      18,
+                      12,
+                    ),
                     children: [
                       ...addresses.map(
                         (a) => _AddressRow(
@@ -105,7 +116,7 @@ class _AddressPickerSheetState extends State<_AddressPickerSheet> {
                       ),
                       const SizedBox(height: 4),
                       AuroraPrimaryButton(
-                        text: '+ ADD NEW ADDRESS',
+                        text: 'address_picker_sheet.add_new_address'.tr(),
                         onPressed: () => _onAddNew(context),
                         height: 48,
                       ),
@@ -153,7 +164,9 @@ class _AddressRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final pink = AppColors.auroraPurple;
     final bg = selected ? pink.withValues(alpha: 0.10) : surfaceColors.chipFill;
-    final border = selected ? pink.withValues(alpha: 0.40) : surfaceColors.chipBorder;
+    final border = selected
+        ? pink.withValues(alpha: 0.40)
+        : surfaceColors.chipBorder;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -175,7 +188,7 @@ class _AddressRow extends StatelessWidget {
                   _RadioDot(selected: selected, surfaceColors: surfaceColors),
                   const SizedBox(width: 10),
                   Text(
-                    addr.label ?? '',
+                    localizedAddressLabel(addr.label),
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -185,13 +198,18 @@ class _AddressRow extends StatelessWidget {
                   if (addr.isDefault) ...[
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 1,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.auroraElectricBlue.withValues(alpha: 0.14),
+                        color: AppColors.auroraElectricBlue.withValues(
+                          alpha: 0.14,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'DEFAULT',
+                        'address_picker_sheet.default_badge'.tr(),
                         style: AppTextStyles.caption.copyWith(
                           fontSize: 9,
                           fontWeight: FontWeight.w800,
@@ -205,7 +223,7 @@ class _AddressRow extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Padding(
-                padding: const EdgeInsets.only(left: 28),
+                padding: const EdgeInsetsDirectional.only(start: 28),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -261,7 +279,10 @@ class _RadioDot extends StatelessWidget {
           ? Container(
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.white),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white,
+              ),
             )
           : null,
     );

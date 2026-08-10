@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -45,6 +46,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isLastPage = false;
   double _priceMin = 0;
   double _priceMax = 9999;
+  String? _suggestion;
 
   List<ColorDto> _allColors = [];
   List<SizeStandardDto> _allSizeStandards = [];
@@ -126,6 +128,7 @@ class _SearchScreenState extends State<SearchScreen> {
           _isLastPage = page.isLastPage;
           if (reset) {
             _items = page.items;
+            _suggestion = page.suggestion;
             _priceMin = page.priceMin;
             _priceMax = page.priceMax;
             _filterState = FilterState.initial(
@@ -213,6 +216,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
         final isTyping = _liveQuery.trim().isNotEmpty && _committedQuery != _liveQuery.trim();
         final isResults = _committedQuery.isNotEmpty;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
 
         return Scaffold(
           backgroundColor: bg,
@@ -220,7 +224,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+                  padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 16, 8),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -230,8 +234,12 @@ class _SearchScreenState extends State<SearchScreen> {
                           width: 44,
                           height: 44,
                           child: Center(
-                            child: FaIcon(FontAwesomeIcons.arrowLeft,
-                                size: 20, color: glyph),
+                            child: FaIcon(
+                                isRtl
+                                    ? FontAwesomeIcons.arrowRight
+                                    : FontAwesomeIcons.arrowLeft,
+                                size: 20,
+                                color: glyph),
                           ),
                         ),
                       ),
@@ -271,6 +279,8 @@ class _SearchScreenState extends State<SearchScreen> {
                               muted: muted,
                               sortOption: _sortOption,
                               filterCount: _filterCount,
+                              suggestion: _suggestion,
+                              onSuggestionTap: _commitSearch,
                               onFilter: _openFilterSheet,
                               onSort: _openSortSheet,
                               scrollController: _scrollController,
@@ -308,7 +318,7 @@ class _TypingState extends StatelessWidget {
           onTap: () => onSuggestionTap(query),
           behavior: HitTestBehavior.opaque,
           child: Container(
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            margin: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 32),
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
@@ -320,7 +330,7 @@ class _TypingState extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Search for "$query"',
+                  'search_screen.search_for'.tr(namedArgs: {'query': query}),
                   style: AppFonts.primary(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -328,8 +338,12 @@ class _TypingState extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const FaIcon(FontAwesomeIcons.arrowRight,
-                    size: 12, color: AppColors.white),
+                FaIcon(
+                    Directionality.of(context) == TextDirection.rtl
+                        ? FontAwesomeIcons.arrowLeft
+                        : FontAwesomeIcons.arrowRight,
+                    size: 12,
+                    color: AppColors.white),
               ],
             ),
           ),
@@ -350,6 +364,8 @@ class _ResultsState extends StatelessWidget {
   final Color muted;
   final SortOption sortOption;
   final int filterCount;
+  final String? suggestion;
+  final ValueChanged<String> onSuggestionTap;
   final VoidCallback onFilter;
   final VoidCallback onSort;
   final ScrollController scrollController;
@@ -363,6 +379,8 @@ class _ResultsState extends StatelessWidget {
     required this.muted,
     required this.sortOption,
     required this.filterCount,
+    required this.suggestion,
+    required this.onSuggestionTap,
     required this.onFilter,
     required this.onSort,
     required this.scrollController,
@@ -377,6 +395,7 @@ class _ResultsState extends StatelessWidget {
           sortOption: sortOption,
           filterCount: filterCount,
           productCount: items.length,
+          showSort: false,
           onFilter: onFilter,
           onSort: onSort,
         ),
@@ -386,10 +405,23 @@ class _ResultsState extends StatelessWidget {
         else if (items.isEmpty)
           Expanded(
             child: Center(
-              child: Text(
-                'No results for "$query"',
-                style: AppFonts.primary(
-                    fontSize: 14, fontWeight: FontWeight.w500, color: muted),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (suggestion != null) ...[
+                    _DidYouMeanRow(
+                      suggestion: suggestion!,
+                      isDark: isDark,
+                      onTap: () => onSuggestionTap(suggestion!),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                  Text(
+                    'search_screen.no_results'.tr(namedArgs: {'query': query}),
+                    style: AppFonts.primary(
+                        fontSize: 14, fontWeight: FontWeight.w500, color: muted),
+                  ),
+                ],
               ),
             ),
           )
@@ -398,7 +430,7 @@ class _ResultsState extends StatelessWidget {
             child: GridView.builder(
               controller: scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 12,
@@ -415,6 +447,50 @@ class _ResultsState extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+// ─── Did you mean ────────────────────────────────────────────────────────────
+
+/// Tappable spelling correction shown above the no-results message. Tapping it
+/// re-runs the search with the corrected term, keeping the active filters.
+class _DidYouMeanRow extends StatelessWidget {
+  final String suggestion;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _DidYouMeanRow({
+    required this.suggestion,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = isDark ? AppColors.white : AppColors.auroraPurple;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        child: ShaderMask(
+          shaderCallback: (b) =>
+              const LinearGradient(colors: AppColors.auroraGradient)
+                  .createShader(b),
+          blendMode: BlendMode.srcIn,
+          child: Text(
+            'search_screen.did_you_mean'.tr(namedArgs: {'term': suggestion}),
+            textAlign: TextAlign.center,
+            style: AppFonts.primary(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: textColor,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -445,7 +521,7 @@ class _EmptyState extends StatelessWidget {
     if (recents.isEmpty) return const SizedBox.shrink();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -453,7 +529,7 @@ class _EmptyState extends StatelessWidget {
           Row(
             children: [
               Text(
-                'RECENT',
+                'search_screen.recent'.tr(),
                 style: AppFonts.primary(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -471,7 +547,7 @@ class _EmptyState extends StatelessWidget {
                   ).createShader(b),
                   blendMode: BlendMode.srcIn,
                   child: Text(
-                    'Clear all',
+                    'search_screen.clear_all'.tr(),
                     style: AppFonts.primary(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -552,7 +628,7 @@ class _RecentRow extends StatelessWidget {
               onTap: onRemove,
               behavior: HitTestBehavior.opaque,
               child: Padding(
-                padding: const EdgeInsets.only(left: 12),
+                padding: const EdgeInsetsDirectional.only(start: 12),
                 child: FaIcon(FontAwesomeIcons.xmark, size: 12, color: iconColor),
               ),
             ),

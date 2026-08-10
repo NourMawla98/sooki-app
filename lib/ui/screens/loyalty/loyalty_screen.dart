@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -8,9 +9,9 @@ class LoyaltyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ComingSoonScreen(
-      featureName: 'LOYALTY',
-      tagline: 'Rewards that actually reward you. Almost here.',
+    return ComingSoonScreen(
+      featureName: 'loyalty_screen.feature_name'.tr(),
+      tagline: 'loyalty_screen.tagline'.tr(),
       icon: FontAwesomeIcons.gift,
       showBackButton: true,
     );

@@ -1,3 +1,5 @@
+import 'dart:ui' show TextDirection;
+
 /// Supported languages in the app
 ///
 /// Maps to backend LanguageEnum:
@@ -23,6 +25,23 @@ enum AppLanguage {
 
   /// Display name for UI
   final String displayName;
+
+  /// True when the language is written right-to-left.
+  ///
+  /// The app-wide `Directionality` is already flipped by
+  /// `GlobalWidgetsLocalizations` (supplied through
+  /// `context.localizationDelegates`), so widgets should normally rely on
+  /// `Directionality.of(context)`. Use this only where the direction is needed
+  /// outside a widget tree, or to build a `Directionality` island around
+  /// content that must stay left-to-right (order codes, emails, URLs).
+  bool get isRtl => this == AppLanguage.arabic;
+
+  /// Text direction for this language.
+  TextDirection get textDirection =>
+      isRtl ? TextDirection.rtl : TextDirection.ltr;
+
+  /// True when numbers should render with Arabic-Indic digits.
+  bool get usesArabicIndicDigits => this == AppLanguage.arabic;
 
   /// Get language from ISO code, defaults to English if not found
   static AppLanguage fromCode(String code) {

@@ -4,7 +4,7 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Subcategory tile — full-bleed image card with label below.
+/// Subcategory tile. Full-bleed image card with label below.
 /// Uses a network image URL; shows a grey placeholder when null or on error.
 class AuroraSubcategoryTile extends StatelessWidget {
   final String? imageUrl;

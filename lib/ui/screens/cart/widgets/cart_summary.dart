@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -8,6 +9,7 @@ import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
 import '_cart_surface_theme.dart';
 
@@ -99,7 +101,8 @@ class _CartSummaryState extends State<CartSummary>
   }
 
   double get _effectiveTotal {
-    final raw = widget.cartService.subtotal +
+    final raw =
+        widget.cartService.subtotal +
         _effectiveShipping -
         widget.cartService.promoDiscount;
     return raw < 0 ? 0 : raw;
@@ -134,20 +137,20 @@ class _CartSummaryState extends State<CartSummary>
             top: false,
             child: Stack(
               children: [
-                const Positioned(
+                const PositionedDirectional(
                   top: 0,
-                  left: 0,
-                  right: 0,
+                  start: 0,
+                  end: 0,
                   child: _AuroraBarLine(),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 36),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _SummaryRow(
-                        label: 'Subtotal',
-                        value: '\$${subtotal.toStringAsFixed(2)}',
+                        label: 'cart_summary.subtotal'.tr(),
+                        value: '\$${localizedPrice(subtotal)}',
                         labelColor: c.textMute,
                         valueColor: c.text,
                       ),
@@ -163,8 +166,12 @@ class _CartSummaryState extends State<CartSummary>
                       if (hasPromo) ...[
                         const SizedBox(height: 6),
                         _SummaryRow(
-                          label: 'Promo · ${widget.cartService.promoCode}',
-                          value: '−\$${promoDiscount.toStringAsFixed(2)}',
+                          label: 'cart_summary.promo_label'.tr(
+                            namedArgs: {
+                              'code': widget.cartService.promoCode ?? '',
+                            },
+                          ),
+                          value: '\u2212\$${localizedPrice(promoDiscount)}',
                           labelColor: c.textMute,
                           valueColor: AppColors.auroraPink,
                         ),
@@ -179,7 +186,7 @@ class _CartSummaryState extends State<CartSummary>
                       ),
                       const SizedBox(height: 12),
                       AuroraPrimaryButton(
-                        text: 'Proceed to checkout',
+                        text: 'cart_summary.proceed_to_checkout'.tr(),
                         onPressed: widget.onCheckout,
                         height: 40,
                         borderRadius: 10,
@@ -229,7 +236,9 @@ class _ShippingRow extends StatelessWidget {
       valueWidget = _DotsLoader(controller: dotsController, color: valueColor);
     } else {
       final fee = deliveryFee ?? fallback;
-      final text = fee == 0.0 ? 'Free' : '\$${fee.toStringAsFixed(2)}';
+      final text = fee == 0.0
+          ? 'cart_summary.free'.tr()
+          : '\$${localizedPrice(fee)}';
       valueWidget = Text(
         text,
         style: AppTextStyles.bodyMedium.copyWith(
@@ -245,7 +254,7 @@ class _ShippingRow extends StatelessWidget {
       children: [
         Flexible(
           child: Text(
-            'Shipping',
+            'cart_summary.shipping'.tr(),
             style: AppTextStyles.bodyMedium.copyWith(
               fontSize: 12.5,
               fontWeight: FontWeight.w500,
@@ -413,7 +422,14 @@ class _TotalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final itemLabel = itemCount == 1 ? 'item' : 'items';
+    final itemLabel = itemCount == 1
+        ? 'cart_summary.item'.tr()
+        : 'cart_summary.items'.tr();
+    // A middot sits right next to the count, and it is indistinguishable
+    // from the Arabic-Indic zero, so right-to-left separates with a comma.
+    final separator = Directionality.of(context) == TextDirection.rtl
+        ? '\u060c'
+        : '\u00b7';
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
@@ -421,7 +437,7 @@ class _TotalRow extends StatelessWidget {
         Expanded(
           child: Text.rich(
             TextSpan(
-              text: 'Total',
+              text: 'cart_summary.total'.tr(),
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
@@ -430,7 +446,7 @@ class _TotalRow extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: '   · $itemCount $itemLabel',
+                  text: '   $separator ${localizedNumber(itemCount)} $itemLabel',
                   style: AppTextStyles.bodySmall.copyWith(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -446,7 +462,7 @@ class _TotalRow extends StatelessWidget {
             colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
           ).createShader(rect),
           child: Text(
-            '\$${total.toStringAsFixed(2)}',
+            '\$${localizedPrice(total)}',
             style: AppTextStyles.heading2.copyWith(
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -481,9 +497,7 @@ class _DashedDivider extends StatelessWidget {
             (_) => SizedBox(
               width: dashWidth,
               height: 1,
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: color),
-              ),
+              child: DecoratedBox(decoration: BoxDecoration(color: color)),
             ),
           ),
         );
@@ -501,9 +515,9 @@ class _TrustRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (FontAwesomeIcons.shieldHalved, 'Secure'),
-      (FontAwesomeIcons.bolt, 'Fast'),
-      (FontAwesomeIcons.moneyBillWave, 'Cash on delivery'),
+      (FontAwesomeIcons.shieldHalved, 'cart_summary.secure'.tr()),
+      (FontAwesomeIcons.bolt, 'cart_summary.fast'.tr()),
+      (FontAwesomeIcons.moneyBillWave, 'cart_summary.cash_on_delivery'.tr()),
     ];
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

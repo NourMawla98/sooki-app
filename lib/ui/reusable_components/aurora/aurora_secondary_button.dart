@@ -4,7 +4,7 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Secondary button — transparent fill (matches surface), 1.5 px aurora
+/// Secondary button with transparent fill (matches surface), 1.5 px aurora
 /// gradient border, gradient text. The visual opposite of [AuroraPrimaryButton].
 class AuroraSecondaryButton extends StatelessWidget {
   final String text;

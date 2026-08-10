@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -6,6 +7,7 @@ import '../../../backend_integration/dependency_injection/dependency_injection.d
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/language_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -55,7 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
   void _onEmailBlur() {
     if (!_emailFocusNode.hasFocus && _emailController.text.isNotEmpty) {
       setState(() => _emailError =
-          !isValidEmail(_emailController.text) ? 'Enter a valid email address' : null);
+          !isValidEmail(_emailController.text) ? 'validation.invalid_email'.tr() : null);
     }
   }
 
@@ -119,7 +121,11 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      // Language changes must rebuild this screen too: `.tr()` is context-free,
+      // so switching the locale does not mark an already-built route dirty.
+      listenable: Listenable.merge(
+        [ThemeService.instance, serviceLocator<LanguageService>()],
+      ),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bgColor =
@@ -127,7 +133,11 @@ class _SignInScreenState extends State<SignInScreen> {
         final headingColor =
             isDark ? AppColors.white : AppColors.auroraPurple;
 
-        return Scaffold(
+        // Keyed on the language so a switch rebuilds the whole subtree: const
+        // children (the legal footer, for one) are skipped otherwise.
+        return KeyedSubtree(
+          key: ValueKey(serviceLocator<LanguageService>().currentLanguage),
+          child: Scaffold(
           body: Stack(
             children: [
               Container(
@@ -223,13 +233,13 @@ class _SignInScreenState extends State<SignInScreen> {
                               const SizedBox(height: 20),
 
                               Text(
-                                'Welcome Back!',
+                                'auth.welcome_back'.tr(),
                                 style: AppTextStyles.dsH1.copyWith(
                                     color: headingColor),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Log in to your account',
+                                'auth.login_subtitle'.tr(),
                                 style: AppTextStyles.dsBody.copyWith(
                                   color: isDark
                                       ? AppColors.mutedOnDark
@@ -248,9 +258,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AuroraInputField(
-                                        label: 'Email',
+                                        label: 'auth.email'.tr(),
                                         required: true,
-                                        hint: 'your@email.com',
+                                        hint: 'auth.email_hint'.tr(),
                                         controller: _emailController,
                                         focusNode: _emailFocusNode,
                                         errorText: _emailError,
@@ -264,7 +274,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ),
                                       const SizedBox(height: 16),
                                       AuroraInputField(
-                                        label: 'Password',
+                                        label: 'auth.password'.tr(),
                                         required: true,
                                         hint: '••••••••',
                                         controller: _passwordController,
@@ -274,18 +284,18 @@ class _SignInScreenState extends State<SignInScreen> {
                                             TextInputAction.done,
                                         validator: (value) {
                                           if ((value?.length ?? 0) < 6) {
-                                            return 'Minimum 6 characters';
+                                            return 'validation.min_6_chars'.tr();
                                           }
                                           return null;
                                         },
                                       ),
                                       const SizedBox(height: 10),
                                       Align(
-                                        alignment: Alignment.centerRight,
+                                        alignment: AlignmentDirectional.centerEnd,
                                         child: GestureDetector(
                                           onTap: _handleForgotPassword,
                                           child: Text(
-                                            'Forgot Password?',
+                                            'auth.forgot_password'.tr(),
                                             style: AppTextStyles.dsBody
                                                 .copyWith(
                                               fontSize: 14,
@@ -297,13 +307,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ),
                                       const SizedBox(height: 18),
                                       AuroraPrimaryButton(
-                                        text: 'Login',
+                                        text: 'auth.login'.tr(),
                                         onPressed: _canLogin ? _handleLogin : null,
                                         isLoading: _isLoading,
                                       ),
                                       const SizedBox(height: 12),
                                       AuroraSecondaryButton(
-                                        text: 'Continue as guest',
+                                        text: 'common.continue_as_guest'.tr(),
                                         onPressed: _handleContinueAsGuest,
                                         height: 48,
                                       ),
@@ -314,7 +324,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "Don't have an account? ",
+                                              'auth.no_account'.tr(),
                                               style: AppTextStyles.dsBody
                                                   .copyWith(
                                                       color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
@@ -323,7 +333,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                             GestureDetector(
                                               onTap: _navigateToSignUp,
                                               child: Text(
-                                                'Sign Up',
+                                                'common.sign_up'.tr(),
                                                 style: AppTextStyles.dsBody
                                                     .copyWith(
                                                   fontSize: 14,
@@ -355,6 +365,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
             ],
+          ),
           ),
         );
       },

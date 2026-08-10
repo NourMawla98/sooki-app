@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -136,6 +137,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             if (isLoggedIn) _SignOutRow(isDark: isDark),
                             const SizedBox(height: 12),
                             Center(
+                              // Version string is an identifier, not a quantity:
+                              // keep Western digits.
                               child: Text(
                                 'Sooki v1.0.0',
                                 style: AppTextStyles.captionSmall.copyWith(
@@ -172,14 +175,15 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconColor =
         isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
             icon: FaIcon(
-              FontAwesomeIcons.arrowLeft,
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
               size: 20,
               color: iconColor,
             ),
@@ -188,7 +192,7 @@ class _TopBar extends StatelessWidget {
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              'Profile',
+              'profile_screen.title'.tr(),
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -211,7 +215,7 @@ class _GuestHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 8),
       child: Column(
         children: [
           Container(
@@ -240,7 +244,7 @@ class _GuestHero extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            "You're not signed in",
+            'profile_screen.not_signed_in'.tr(),
             style: AppTextStyles.heading4.copyWith(
               color: isDark ? AppColors.white : AppColors.auroraDeepBase,
               fontWeight: FontWeight.w800,
@@ -249,7 +253,7 @@ class _GuestHero extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Sign in to access your orders, wishlist, addresses and loyalty points.',
+            'profile_screen.guest_subtitle'.tr(),
             textAlign: TextAlign.center,
             style: AppTextStyles.bodySmall.copyWith(
               color: isDark
@@ -264,7 +268,7 @@ class _GuestHero extends StatelessWidget {
             children: [
               Expanded(
                 child: AuroraPrimaryButton(
-                  text: 'Login',
+                  text: 'common.login'.tr(),
                   height: 42,
                   borderRadius: 100,
                   onPressed: () =>
@@ -274,7 +278,7 @@ class _GuestHero extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: AuroraSecondaryButton(
-                  text: 'Sign Up',
+                  text: 'common.sign_up'.tr(),
                   height: 42,
                   borderRadius: 100,
                   onPressed: () =>
@@ -305,10 +309,10 @@ class _SignOutRowState extends State<_SignOutRow> {
   Future<void> _handleSignOut() async {
     final confirmed = await showAuroraConfirmSheet(
       context,
-      title: 'Logout',
-      subtitle: 'Are you sure you want to logout?',
+      title: 'common.logout'.tr(),
+      subtitle: 'profile_screen.logout_confirm'.tr(),
       icon: FontAwesomeIcons.rightFromBracket,
-      confirmLabel: 'Logout',
+      confirmLabel: 'common.logout'.tr(),
     );
     if (!confirmed || !mounted) return;
 
@@ -340,7 +344,7 @@ class _SignOutRowState extends State<_SignOutRow> {
     return GestureDetector(
       onTap: _isLoading ? null : _handleSignOut,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        margin: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 0),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: AppColors.auroraRed.withValues(alpha: isDark ? 0.05 : 0.04),
@@ -379,7 +383,7 @@ class _SignOutRowState extends State<_SignOutRow> {
             ),
             const SizedBox(width: 14),
             Text(
-              'Logout',
+              'common.logout'.tr(),
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.auroraRed,
                 fontWeight: FontWeight.w700,

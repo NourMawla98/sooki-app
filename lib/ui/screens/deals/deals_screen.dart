@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -8,9 +9,9 @@ class DealsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ComingSoonScreen(
-      featureName: 'DEALS',
-      tagline: "We're lining up the best prices in town. Check back soon.",
+    return ComingSoonScreen(
+      featureName: 'deals_screen.feature_name'.tr(),
+      tagline: 'deals_screen.tagline'.tr(),
       icon: FontAwesomeIcons.bolt,
     );
   }

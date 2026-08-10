@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -8,9 +9,9 @@ class PaymentMethodsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ComingSoonScreen(
-      featureName: 'PAYMENT METHODS',
-      tagline: 'Securely save your cards for faster checkout. Almost here.',
+    return ComingSoonScreen(
+      featureName: 'payment_methods_screen.feature_name'.tr(),
+      tagline: 'payment_methods_screen.tagline'.tr(),
       icon: FontAwesomeIcons.creditCard,
       showBackButton: true,
     );

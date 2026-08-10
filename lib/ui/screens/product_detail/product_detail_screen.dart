@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -235,6 +236,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       listenable: Listenable.merge([ThemeService.instance, _wishlist]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
         final bgColor =
             isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final isWishlisted =
@@ -252,7 +254,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _HeaderIcon(
-                        icon: FontAwesomeIcons.arrowLeft,
+                        icon: isRtl
+                            ? FontAwesomeIcons.arrowRight
+                            : FontAwesomeIcons.arrowLeft,
                         isDark: isDark,
                         onTap: () => Navigator.pop(context),
                       ),
@@ -589,7 +593,7 @@ class _LoadingView extends StatelessWidget {
                 // Color swatches
                 Row(
                   children: List.generate(4, (i) => Padding(
-                    padding: const EdgeInsets.only(right: 10),
+                    padding: const EdgeInsetsDirectional.only(end: 10),
                     child: SizedBox(
                       width: 36, height: 36,
                       child: SkeletonShimmer(borderRadius: BorderRadius.circular(999)),
@@ -600,7 +604,7 @@ class _LoadingView extends StatelessWidget {
                 // Size chips
                 Row(
                   children: List.generate(5, (i) => Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsetsDirectional.only(end: 8),
                     child: SizedBox(
                       width: 48, height: 40,
                       child: SkeletonShimmer(borderRadius: BorderRadius.circular(10)),
@@ -666,7 +670,7 @@ class _ErrorView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
-                      'Try again',
+                      'product_detail_screen.try_again'.tr(),
                       style: AppFonts.primary(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,

@@ -93,10 +93,7 @@ class _CartBackgroundState extends State<CartBackground>
                       left: -100,
                       child: ScaleTransition(
                         scale: _pinkScale,
-                        child: _Blob(
-                          size: 280,
-                          color: AppColors.auroraPink,
-                        ),
+                        child: _Blob(size: 280, color: AppColors.auroraPink),
                       ),
                     ),
                   ],

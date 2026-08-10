@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../../backend_integration/apis/items_api.dart';
 import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
@@ -8,6 +9,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
@@ -20,12 +22,12 @@ class _HeatBadgeSpec {
 }
 
 const List<_HeatBadgeSpec> _heatBadges = [
-  _HeatBadgeSpec('🔥', 'ON FIRE',  AppColors.auroraRed),
-  _HeatBadgeSpec('⚡', 'VIRAL',    AppColors.auroraPink),
-  _HeatBadgeSpec('💥', 'HYPED',    AppColors.auroraPurple),
-  _HeatBadgeSpec('🚀', 'SURGING',  AppColors.auroraElectricBlue),
-  _HeatBadgeSpec('📈', 'PEAK',     AppColors.verifiedGreen),
-  _HeatBadgeSpec('✨', 'BUZZING',  AppColors.auroraPink),
+  _HeatBadgeSpec('🔥', 'trending_now_section.badge_on_fire',  AppColors.auroraRed),
+  _HeatBadgeSpec('⚡', 'trending_now_section.badge_viral',    AppColors.auroraPink),
+  _HeatBadgeSpec('💥', 'trending_now_section.badge_hyped',    AppColors.auroraPurple),
+  _HeatBadgeSpec('🚀', 'trending_now_section.badge_surging',  AppColors.auroraElectricBlue),
+  _HeatBadgeSpec('📈', 'trending_now_section.badge_peak',     AppColors.verifiedGreen),
+  _HeatBadgeSpec('✨', 'trending_now_section.badge_buzzing',  AppColors.auroraPink),
 ];
 
 class TrendingNowSection extends StatefulWidget {
@@ -72,7 +74,7 @@ class _TrendingNowSectionState extends State<TrendingNowSection>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AuroraGradientText(
-            'Trending Now',
+            'trending_now_section.trending_now'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontWeight: FontWeight.w900,
               fontSize: 20,
@@ -194,7 +196,7 @@ class _TrendingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '\$${item.price.toStringAsFixed(item.price.truncateToDouble() == item.price ? 0 : 2)}',
+                          '\$${localizedDigits(item.price.toStringAsFixed(item.price.truncateToDouble() == item.price ? 0 : 2))}',
                           style: AppTextStyles.auroraMonoPrice.copyWith(
                             color: AppColors.auroraElectricBlue,
                             fontSize: 12,
@@ -207,9 +209,9 @@ class _TrendingCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
+              PositionedDirectional(
                 top: 6,
-                right: 6,
+                end: 6,
                 child: _HeatBadge(
                   spec: _heatBadges[heatIndex % _heatBadges.length],
                 ),
@@ -350,7 +352,7 @@ class _HeatBadge extends StatelessWidget {
               ),
               const SizedBox(width: 3),
               Text(
-                spec.label,
+                spec.label.tr(),
                 style: AppTextStyles.captionSmall.copyWith(
                   color: AppColors.white,
                   fontSize: 8,

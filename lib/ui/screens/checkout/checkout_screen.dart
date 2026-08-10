@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -11,6 +12,7 @@ import '../../../services/orders_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../../reusable_components/skeleton/skeleton_shimmer.dart';
@@ -88,7 +90,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         arguments: OrderSuccessArgs(
           orderId: result.orderId,
           orderNumber: result.trackingNumber,
-          estimatedDelivery: '2–5 business days',
+          estimatedDelivery: 'checkout_screen.estimated_delivery'.tr(),
           paymentMethod: _selectedPayment?.name ?? '',
         ),
       );
@@ -108,6 +110,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
         final titleColor = isDark ? AppColors.white : AppColors.auroraPurple;
         final hasAddress = _addressService.selectedAddress != null;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
 
         return Scaffold(
           backgroundColor:
@@ -130,16 +133,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   children: [
                     // Top bar
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+                      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
                       child: Row(
                         children: [
                           IconButton(
-                            icon: FaIcon(FontAwesomeIcons.arrowLeft,
+                            icon: FaIcon(
+                                isRtl
+                                    ? FontAwesomeIcons.arrowRight
+                                    : FontAwesomeIcons.arrowLeft,
                                 size: 18, color: iconColor),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           Text(
-                            'Checkout',
+                            'checkout_screen.title'.tr(),
                             style: AppTextStyles.dsH2.copyWith(
                               color: titleColor,
                             ),
@@ -151,24 +157,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     // Scrollable content
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 130),
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 130),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _SectionLabel(label: 'Delivery address', isDark: isDark),
+                            _SectionLabel(
+                                label: 'checkout_screen.delivery_address'.tr(),
+                                isDark: isDark),
                             const AddressPill(),
                             if (!hasAddress) ...[
                               const SizedBox(height: 8),
                               _NoAddressWarning(),
                             ],
 
-                            _SectionLabel(label: 'Order summary', isDark: isDark),
+                            _SectionLabel(
+                                label: 'checkout_screen.order_summary'.tr(),
+                                isDark: isDark),
                             _OrderSummaryCard(
                               cartService: _cartService,
                               isDark: isDark,
                             ),
 
-                            _SectionLabel(label: 'Payment method', isDark: isDark),
+                            _SectionLabel(
+                                label: 'checkout_screen.payment_method'.tr(),
+                                isDark: isDark),
                             _PaymentCard(
                               isDark: isDark,
                               loading: _loadingPayment,
@@ -176,13 +188,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ),
 
                             _SectionLabel(
-                              label: 'Delivery note',
+                              label: 'checkout_screen.delivery_note'.tr(),
                               isDark: isDark,
                               optional: true,
                             ),
                             AuroraInputField(
                               controller: _noteController,
-                              hint: 'Any special instructions for delivery?',
+                              hint: 'checkout_screen.delivery_note_hint'.tr(),
                               maxLines: 3,
                               keyboardType: TextInputType.multiline,
                             ),
@@ -195,8 +207,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
 
               // Sticky bottom bar
-              Positioned(
-                bottom: 0, left: 0, right: 0,
+              PositionedDirectional(
+                bottom: 0, start: 0, end: 0,
                 child: _StickyBar(
                   isDark: isDark,
                   placing: _placing,
@@ -244,7 +256,7 @@ class _SectionLabel extends StatelessWidget {
           if (optional) ...[
             const SizedBox(width: 6),
             Text(
-              '(optional)',
+              'checkout_screen.optional'.tr(),
               style: AppTextStyles.dsMuted.copyWith(
                 fontSize: 10,
                 color: color.withValues(alpha: 0.65),
@@ -279,7 +291,7 @@ class _NoAddressWarning extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Please select a delivery address to continue',
+              'checkout_screen.no_address_warning'.tr(),
               style: AppTextStyles.dsMuted.copyWith(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -349,7 +361,7 @@ class _OrderSummaryCard extends StatelessWidget {
                   Divider(height: 1, thickness: 1, color: divider,
                       indent: 14, endIndent: 14),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                  padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 10),
                   child: Row(
                     children: [
                       // Thumbnail
@@ -386,7 +398,13 @@ class _OrderSummaryCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${item.colorName} · ${item.sizeName} · Qty ${item.quantity}',
+                              'checkout_screen.item_meta'.tr(namedArgs: {
+                                'color': item.colorName,
+                                // Size labels are identifiers (S, M, 38), not
+                                // quantities, so their digits stay Western.
+                                'size': item.sizeName,
+                                'qty': localizedNumber(item.quantity),
+                              }),
                               style: AppTextStyles.dsMuted.copyWith(
                                 fontSize: 10.5,
                                 color: muteColor,
@@ -397,7 +415,7 @@ class _OrderSummaryCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '\$${item.lineTotal.toStringAsFixed(2)}',
+                        '\$${localizedPrice(item.lineTotal)}',
                         style: AppTextStyles.dsBody.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -414,18 +432,18 @@ class _OrderSummaryCard extends StatelessWidget {
           // Totals
           Divider(height: 1, thickness: 1, color: divider),
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+            padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 14),
             child: Column(
               children: [
                 _TotalRow(
-                  label: 'Subtotal',
-                  value: '\$${cartService.subtotal.toStringAsFixed(2)}',
+                  label: 'checkout_screen.subtotal'.tr(),
+                  value: '\$${localizedPrice(cartService.subtotal)}',
                   isDark: isDark,
                 ),
                 const SizedBox(height: 5),
                 _TotalRow(
-                  label: 'Delivery fee',
-                  value: 'Free',
+                  label: 'checkout_screen.delivery_fee'.tr(),
+                  value: 'checkout_screen.free'.tr(),
                   valueColor: AppColors.verifiedGreen,
                   isDark: isDark,
                 ),
@@ -437,7 +455,7 @@ class _OrderSummaryCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Total',
+                      'checkout_screen.total'.tr(),
                       style: AppTextStyles.dsBody.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
@@ -449,7 +467,7 @@ class _OrderSummaryCard extends StatelessWidget {
                         colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
                       ).createShader(rect),
                       child: Text(
-                        '\$${cartService.subtotal.toStringAsFixed(2)}',
+                        '\$${localizedPrice(cartService.subtotal)}',
                         style: AppTextStyles.dsH2.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
@@ -667,7 +685,7 @@ class _PaymentCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'Pay when your order arrives',
+                'checkout_screen.payment_subtitle'.tr(),
                 style: AppTextStyles.dsMuted.copyWith(
                   fontSize: 10.5,
                   color: muteColor,
@@ -684,7 +702,7 @@ class _PaymentCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              'ONLY',
+              'checkout_screen.only_badge'.tr(),
               style: AppTextStyles.dsMuted.copyWith(
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
@@ -728,13 +746,13 @@ class _StickyBar extends StatelessWidget {
           stops: const [0.0, 0.45],
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 24),
       child: SafeArea(
         top: false,
         child: Opacity(
           opacity: enabled ? 1.0 : 0.45,
           child: AuroraPrimaryButton(
-            text: 'Place order',
+            text: 'checkout_screen.place_order'.tr(),
             isLoading: placing,
             onPressed: enabled ? onPlace : () {},
           ),

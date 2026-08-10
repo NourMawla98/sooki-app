@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Primary button rendered with the aurora gradient (blue → purple → pink).
+/// Primary button rendered with the aurora gradient (blue to purple to pink).
 /// Used on aurora surfaces in place of the flat [PrimaryButton].
 class AuroraPrimaryButton extends StatelessWidget {
   final String text;

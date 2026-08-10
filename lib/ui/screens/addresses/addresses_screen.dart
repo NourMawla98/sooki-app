@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../enums/address_label_type.dart';
 import '../../../backend_integration/dtos/address/address_dto.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/address_service.dart';
@@ -47,6 +49,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
         final isDark = ThemeService.instance.isDarkMode;
         final service = GetIt.instance<AddressService>();
         final addresses = service.addresses;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
 
         return Scaffold(
           backgroundColor: isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase,
@@ -67,19 +70,21 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+                      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
                       child: Row(
                         children: [
                           IconButton(
                             icon: FaIcon(
-                              FontAwesomeIcons.arrowLeft,
+                              isRtl
+                                  ? FontAwesomeIcons.arrowRight
+                                  : FontAwesomeIcons.arrowLeft,
                               size: 18,
                               color: isDark ? AppColors.white : AppColors.auroraPurple,
                             ),
                             onPressed: () => Navigator.pop(context),
                           ),
                           Text(
-                            'Addresses',
+                            'addresses_screen.title'.tr(),
                             style: AppTextStyles.dsH2.copyWith(
                               color: isDark ? AppColors.white : AppColors.auroraPurple,
                             ),
@@ -100,8 +105,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   ],
                 ),
               ),
-              Positioned(
-                bottom: 0, left: 0, right: 0,
+              PositionedDirectional(
+                bottom: 0, start: 0, end: 0,
                 child: _StickyAddButton(isDark: isDark, isEmpty: addresses.isEmpty),
               ),
             ],
@@ -119,7 +124,7 @@ class _AddressSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 120),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 120),
       itemCount: 3,
       separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (_, _) => _AddressCardSkeleton(isDark: isDark),
@@ -144,7 +149,7 @@ class _AddressCardSkeleton extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: borderColor, width: 1.5),
       ),
-      padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
+      padding: const EdgeInsetsDirectional.fromSTEB(14, 13, 14, 13),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -180,7 +185,7 @@ class _AddressList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 120),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 120),
       itemCount: addresses.length,
       separatorBuilder: (context, i) => const SizedBox(height: 10),
       itemBuilder: (context, i) => _AddressCard(address: addresses[i], isDark: isDark),
@@ -232,14 +237,14 @@ class _AddressCard extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 13, 42, 13),
+              padding: const EdgeInsetsDirectional.fromSTEB(14, 13, 42, 13),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Text(
-                        address.label ?? '',
+                        localizedAddressLabel(address.label),
                         style: AppTextStyles.dsBody.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -284,8 +289,8 @@ class _AddressCard extends StatelessWidget {
                 ],
               ),
             ),
-            Positioned(
-              top: 8, right: 8,
+            PositionedDirectional(
+              top: 8, end: 8,
               child: _DeleteButton(address: address, isDark: isDark),
             ),
           ],
@@ -309,7 +314,7 @@ class _DefaultBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        'Default',
+        'addresses_screen.default_badge'.tr(),
         style: AppTextStyles.caption.copyWith(
           fontSize: 9,
           fontWeight: FontWeight.w800,
@@ -335,7 +340,7 @@ class _SetDefaultButton extends StatelessWidget {
         if (msg.isNotEmpty) ToastService.instance.showSuccess(msg);
       },
       child: Text(
-        'Set as default',
+        'addresses_screen.set_as_default'.tr(),
         style: AppTextStyles.caption.copyWith(
           fontSize: 11,
           fontWeight: FontWeight.w700,
@@ -360,10 +365,16 @@ class _DeleteButton extends StatelessWidget {
       onTap: () async {
         final confirmed = await showAuroraConfirmSheet(
           context,
-          title: 'Delete "${address.label ?? 'address'}"?',
-          subtitle: 'This address will be permanently removed from your saved locations.',
+          title: 'addresses_screen.delete_title'.tr(
+            namedArgs: {
+              'label': address.label == null
+                  ? 'addresses_screen.delete_fallback_label'.tr()
+                  : localizedAddressLabel(address.label),
+            },
+          ),
+          subtitle: 'addresses_screen.delete_subtitle'.tr(),
           icon: FontAwesomeIcons.trash,
-          confirmLabel: 'Delete',
+          confirmLabel: 'common.delete'.tr(),
         );
         if (confirmed) {
           final msg = await GetIt.instance<AddressService>().deleteAddress(address.id);
@@ -411,7 +422,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No saved addresses',
+                  'addresses_screen.empty_title'.tr(),
                   style: AppTextStyles.dsH2.copyWith(
                     color: isDark
                         ? AppColors.white.withValues(alpha: 0.65)
@@ -420,7 +431,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Add your home, work or any delivery spot and we\'ll remember it.',
+                  'addresses_screen.empty_subtitle'.tr(),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.dsBody.copyWith(
                     color: isDark
@@ -457,11 +468,11 @@ class _StickyAddButton extends StatelessWidget {
           stops: const [0.0, 0.45],
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 24),
       child: SafeArea(
         top: false,
         child: AuroraPrimaryButton(
-          text: isEmpty ? 'Add your first address' : 'Add new address',
+          text: isEmpty ? 'addresses_screen.add_first'.tr() : 'addresses_screen.add_new'.tr(),
           onPressed: () => Navigator.pushNamed(context, addAddressScreenRoute),
         ),
       ),

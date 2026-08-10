@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -50,7 +51,7 @@ class StickyBottomBar extends StatelessWidget {
             color: bg,
             border: Border(top: BorderSide(color: divider)),
           ),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
           child: GestureDetector(
             onTap: _isEnabled ? () => _addToCart() : null,
             behavior: HitTestBehavior.opaque,
@@ -83,8 +84,8 @@ class StickyBottomBar extends StatelessWidget {
                 child: Center(
                   child: Text(
                     _requiresSize && selectedSizeValueId == null
-                        ? 'Select a size'
-                        : 'Add to cart',
+                        ? 'common.select_a_size'.tr()
+                        : 'common.add_to_cart'.tr(),
                     style: AppFonts.primary(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,

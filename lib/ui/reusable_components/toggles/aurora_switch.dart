@@ -5,7 +5,7 @@ import '../../../themes/app_colors.dart';
 /// Aurora-styled toggle switch.
 ///
 /// Pass [activeColor] for a solid on-state. Omit it (or pass null) to use
-/// the aurora gradient (auroraPurple → auroraElectricBlue).
+/// the aurora gradient (auroraPurple -> auroraElectricBlue).
 class AuroraSwitch extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
@@ -67,8 +67,9 @@ class AuroraSwitch extends StatelessWidget {
             AnimatedAlign(
               duration: const Duration(milliseconds: 180),
               curve: Curves.easeInOut,
-              alignment:
-                  value ? Alignment.centerRight : Alignment.centerLeft,
+              alignment: value
+                  ? AlignmentDirectional.centerEnd
+                  : AlignmentDirectional.centerStart,
               child: Container(
                 margin: const EdgeInsets.all(3),
                 width: 20,

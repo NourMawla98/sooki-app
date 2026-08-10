@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -7,8 +8,10 @@ import '../../../backend_integration/apis/notification_preferences_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../backend_integration/dtos/notification/notification_preferences_dto.dart';
 import '../../../backend_integration/apis/profile_api.dart';
+import '../../../enums/app_language.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/language_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
@@ -27,10 +30,12 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _pushNotifications = true;
   bool _emailNotifications = false;
-  String _language = 'English';
 
   NotificationPreferencesApi get _notifApi =>
       serviceLocator<NotificationPreferencesApi>();
+
+  LanguageService get _languageService => serviceLocator<LanguageService>();
+  AppLanguage get _language => _languageService.currentLanguage;
 
   @override
   void initState() {
@@ -64,11 +69,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _deleteAccount(BuildContext context) async {
     final confirmed = await showAuroraConfirmSheet(
       context,
-      title: 'Delete Account',
-      subtitle: 'This action is permanent and cannot be undone. All your data will be deleted.',
+      title: 'settings_screen.delete_account'.tr(),
+      subtitle: 'settings_screen.delete_account_confirm'.tr(),
       icon: FontAwesomeIcons.trashCan,
       iconColor: AppColors.auroraRed,
-      confirmLabel: 'Delete',
+      confirmLabel: 'common.delete'.tr(),
       confirmColor: AppColors.auroraRed,
     );
     if (confirmed != true || !mounted) return;
@@ -121,11 +126,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: AppColors.auroraPink,
                         child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _GroupLabel(label: 'Appearance', isDark: isDark),
+                            _GroupLabel(label: 'settings_screen.appearance'.tr(), isDark: isDark),
                             _GroupCard(
                               isDark: isDark,
                               children: [
@@ -135,8 +141,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       alpha: isDark ? 0.15 : 0.10),
                                   iconColor: AppColors.auroraPurple,
                                   icon: FontAwesomeIcons.moon,
-                                  title: 'Dark Mode',
-                                  subtitle: 'Switch to dark theme',
+                                  title: 'settings_screen.dark_mode'.tr(),
+                                  subtitle: 'settings_screen.dark_mode_subtitle'.tr(),
                                   value: isDark,
                                   onChanged: (_) =>
                                       ThemeService.instance.toggle(),
@@ -148,15 +154,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       alpha: isDark ? 0.15 : 0.10),
                                   iconColor: AppColors.auroraPurple,
                                   icon: FontAwesomeIcons.globe,
-                                  title: 'Language',
-                                  subtitle: _language,
+                                  title: 'settings_screen.language'.tr(),
+                                  subtitle: _language.displayName,
                                   onTap: () => _showLanguagePicker(isDark),
                                 ),
                               ],
                             ),
                             if (isSignedIn) ...[
                               const SizedBox(height: 20),
-                              _GroupLabel(label: 'Notifications', isDark: isDark),
+                              _GroupLabel(label: 'settings_screen.notifications'.tr(), isDark: isDark),
                               _GroupCard(
                                 isDark: isDark,
                                 children: [
@@ -166,8 +172,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         alpha: isDark ? 0.15 : 0.12),
                                     iconColor: AppColors.auroraGold,
                                     icon: FontAwesomeIcons.bell,
-                                    title: 'Push Notifications',
-                                    subtitle: 'Order updates & offers',
+                                    title: 'settings_screen.push_notifications'.tr(),
+                                    subtitle: 'settings_screen.push_notifications_subtitle'.tr(),
                                     value: _pushNotifications,
                                     onChanged: (v) {
                                       setState(() => _pushNotifications = v);
@@ -182,8 +188,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             alpha: isDark ? 0.15 : 0.10),
                                     iconColor: AppColors.auroraElectricBlue,
                                     icon: FontAwesomeIcons.envelope,
-                                    title: 'Email Notifications',
-                                    subtitle: 'Receipts & newsletters',
+                                    title: 'settings_screen.email_notifications'.tr(),
+                                    subtitle: 'settings_screen.email_notifications_subtitle'.tr(),
                                     value: _emailNotifications,
                                     onChanged: (v) {
                                       setState(() => _emailNotifications = v);
@@ -195,7 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ],
                             if (isSignedIn) ...[
                               const SizedBox(height: 20),
-                              _GroupLabel(label: 'Account', isDark: isDark),
+                              _GroupLabel(label: 'settings_screen.account'.tr(), isDark: isDark),
                               _GroupCard(
                                 isDark: isDark,
                                 children: [
@@ -205,8 +211,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         alpha: isDark ? 0.15 : 0.12),
                                     iconColor: const Color(0xFFFB923C),
                                     icon: FontAwesomeIcons.lock,
-                                    title: 'Change Password',
-                                    subtitle: 'Update your password',
+                                    title: 'settings_screen.change_password'.tr(),
+                                    subtitle: 'settings_screen.change_password_subtitle'.tr(),
                                     onTap: () => Navigator.pushNamed(
                                         context, changePasswordScreenRoute),
                                   ),
@@ -217,8 +223,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         alpha: isDark ? 0.12 : 0.10),
                                     iconColor: AppColors.auroraRed,
                                     icon: FontAwesomeIcons.trashCan,
-                                    title: 'Delete Account',
-                                    subtitle: 'Permanently delete your data',
+                                    title: 'settings_screen.delete_account'.tr(),
+                                    subtitle: 'settings_screen.delete_account_subtitle'.tr(),
                                     isDestructive: true,
                                     onTap: () => _deleteAccount(context),
                                   ),
@@ -227,6 +233,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ],
                             const SizedBox(height: 32),
                             Center(
+                              // Version string is an identifier, not a
+                              // quantity: keep Western digits.
                               child: Text(
                                 'Sooki v1.0.0',
                                 style: AppTextStyles.caption.copyWith(
@@ -255,6 +263,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Future<void> _pickLanguage(AppLanguage language) async {
+    Navigator.pop(context);
+    await _languageService.setLanguage(language, context: context);
+    if (mounted) setState(() {});
+  }
+
   void _showLanguagePicker(bool isDark) {
     showDialog<void>(
       context: context,
@@ -265,17 +279,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: _LanguageSheet(
           isDark: isDark,
           selected: _language,
-          onSelect: (lang) {
-            setState(() => _language = lang);
-            Navigator.pop(context);
-          },
+          onSelect: _pickLanguage,
         ),
       ),
     );
   }
 }
 
-// ─── Top bar ─────────────────────────────────────────────────────────────────
+// --- Top bar -----------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final bool isDark;
@@ -285,17 +296,22 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconColor =
         isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: iconColor),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: iconColor,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Text(
-            'Settings',
+            'common.settings'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w900,
@@ -308,7 +324,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// --- Section label ------------------------------------------------------------
 
 class _GroupLabel extends StatelessWidget {
   final String label;
@@ -318,7 +334,7 @@ class _GroupLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(2, 0, 2, 8),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.dsSectionLabel.copyWith(
@@ -332,7 +348,7 @@ class _GroupLabel extends StatelessWidget {
   }
 }
 
-// ─── Glass group card ─────────────────────────────────────────────────────────
+// --- Glass group card ---------------------------------------------------------
 
 class _GroupCard extends StatelessWidget {
   final bool isDark;
@@ -358,7 +374,7 @@ class _GroupCard extends StatelessWidget {
   }
 }
 
-// ─── Divider ──────────────────────────────────────────────────────────────────
+// --- Divider ------------------------------------------------------------------
 
 class _Divider extends StatelessWidget {
   final bool isDark;
@@ -378,7 +394,7 @@ class _Divider extends StatelessWidget {
   }
 }
 
-// ─── Toggle row ───────────────────────────────────────────────────────────────
+// --- Toggle row ---------------------------------------------------------------
 
 class _ToggleRow extends StatelessWidget {
   final bool isDark;
@@ -454,7 +470,7 @@ class _ToggleRow extends StatelessWidget {
   }
 }
 
-// ─── Chevron row ─────────────────────────────────────────────────────────────
+// --- Chevron row -------------------------------------------------------------
 
 class _ChevronRow extends StatelessWidget {
   final bool isDark;
@@ -494,6 +510,7 @@ class _ChevronRow extends StatelessWidget {
         : isDark
             ? AppColors.white.withValues(alpha: 0.25)
             : AppColors.auroraPurple.withValues(alpha: 0.35);
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return GestureDetector(
       onTap: onTap,
@@ -536,7 +553,13 @@ class _ChevronRow extends StatelessWidget {
                 ],
               ),
             ),
-            FaIcon(FontAwesomeIcons.chevronRight, size: 12, color: chevronColor),
+            FaIcon(
+              isRtl
+                  ? FontAwesomeIcons.chevronLeft
+                  : FontAwesomeIcons.chevronRight,
+              size: 12,
+              color: chevronColor,
+            ),
           ],
         ),
       ),
@@ -544,14 +567,12 @@ class _ChevronRow extends StatelessWidget {
   }
 }
 
-// ─── Language picker sheet ────────────────────────────────────────────────────
+// --- Language picker sheet ----------------------------------------------------
 
 class _LanguageSheet extends StatelessWidget {
   final bool isDark;
-  final String selected;
-  final ValueChanged<String> onSelect;
-
-  static const _options = ['English', 'العربية', 'Français'];
+  final AppLanguage selected;
+  final ValueChanged<AppLanguage> onSelect;
 
   const _LanguageSheet({
     required this.isDark,
@@ -579,13 +600,13 @@ class _LanguageSheet extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: borderColor),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Language',
+            'settings_screen.language'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w900,
@@ -593,17 +614,17 @@ class _LanguageSheet extends StatelessWidget {
             ),
           ),
           Text(
-            'Choose your preferred language',
+            'settings_screen.choose_language'.tr(),
             style: AppTextStyles.caption.copyWith(
               color: mutedColor,
               fontSize: 12,
             ),
           ),
           const SizedBox(height: 16),
-          ..._options.map(
+          ...AppLanguage.values.map(
             (lang) => _LanguageOption(
               isDark: isDark,
-              label: lang,
+              label: lang.displayName,
               isSelected: lang == selected,
               onTap: () => onSelect(lang),
             ),

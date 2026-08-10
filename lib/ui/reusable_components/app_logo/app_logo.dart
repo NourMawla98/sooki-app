@@ -25,48 +25,53 @@ class AppLogo extends StatelessWidget {
               ? AppTextStyles.logoMedium
               : AppTextStyles.logoSmall);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('S', style: _glow(textStyle, AppColors.auroraElectricBlue)),
-        _AnimatedIconCircle(
-          icon: FontAwesomeIcons.bagShopping,
-          backgroundColor: AppColors.logoShoppingBag,
-          iconSize: config.iconSize,
-          circleSize: config.circleSize,
-          containerWidth: config.containerWidth,
-          containerHeight: config.containerHeight,
-          animationDistance: config.animationDistance,
-          animationType: _AnimationType.upDown,
-        ),
+    // The wordmark is laid out letter by letter, so an RTL ambient direction
+    // would reverse it into "IKOS". A brand mark never mirrors.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('S', style: _glow(textStyle, AppColors.auroraElectricBlue)),
+          _AnimatedIconCircle(
+            icon: FontAwesomeIcons.bagShopping,
+            backgroundColor: AppColors.logoShoppingBag,
+            iconSize: config.iconSize,
+            circleSize: config.circleSize,
+            containerWidth: config.containerWidth,
+            containerHeight: config.containerHeight,
+            animationDistance: config.animationDistance,
+            animationType: _AnimationType.upDown,
+          ),
 
-        _AnimatedIconCircle(
-          icon: FontAwesomeIcons.truck,
-          backgroundColor: AppColors.logoDeliveryTruck,
-          iconSize: config.iconSize,
-          circleSize: config.circleSize,
-          containerWidth: config.containerWidth,
-          containerHeight: config.containerHeight,
-          animationDistance: config.animationDistance,
-          animationType: _AnimationType.downUp,
-        ),
+          _AnimatedIconCircle(
+            icon: FontAwesomeIcons.truck,
+            backgroundColor: AppColors.logoDeliveryTruck,
+            iconSize: config.iconSize,
+            circleSize: config.circleSize,
+            containerWidth: config.containerWidth,
+            containerHeight: config.containerHeight,
+            animationDistance: config.animationDistance,
+            animationType: _AnimationType.downUp,
+          ),
 
-        Text('K', style: _glow(textStyle, AppColors.auroraPurple)),
+          Text('K', style: _glow(textStyle, AppColors.auroraPurple)),
 
-        Text('I', style: _glow(textStyle, AppColors.auroraPink)),
-      ],
+          Text('I', style: _glow(textStyle, AppColors.auroraPink)),
+        ],
+      ),
     );
   }
 
   /// Recolors a logo letter and adds a matching aurora glow.
   TextStyle _glow(TextStyle base, Color color) => base.copyWith(
-        color: color,
-        shadows: [
-          Shadow(color: color.withValues(alpha: 0.7), blurRadius: 14),
-          Shadow(color: color.withValues(alpha: 0.4), blurRadius: 24),
-        ],
-      );
+    color: color,
+    shadows: [
+      Shadow(color: color.withValues(alpha: 0.7), blurRadius: 14),
+      Shadow(color: color.withValues(alpha: 0.4), blurRadius: 24),
+    ],
+  );
 
   _LogoConfig _getLogoConfig(LogoSize size) {
     switch (size) {

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -7,13 +8,14 @@ import 'package:get_it/get_it.dart';
 import '../../services/cart_service.dart';
 import '../../services/theme_service.dart';
 import '../../themes/themes.dart';
+import '../../utils/number_localization.dart';
 import '../reusable_components/aurora/aurora_bar_line.dart';
 
 /// Bottom navigation bar with the Electric Aurora "Glow Bar" treatment:
 /// aurora glass background, animated 2px aurora gradient line on top, 5
 /// slots (Browse / Deals / Shop-FAB-gap / Loyalty / Cart). The Shop FAB
 /// itself is rendered in the Scaffold's `floatingActionButton` slot with
-/// `FloatingActionButtonLocation.centerDocked` — the middle tab is a
+/// `FloatingActionButtonLocation.centerDocked` - the middle tab is a
 /// visual gap so the FAB can dock over it with full hit-test coverage.
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -71,7 +73,7 @@ class CustomBottomNavBar extends StatelessWidget {
                         children: [
                           _NavTab(
                             icon: FontAwesomeIcons.house,
-                            label: 'Browse',
+                            label: 'nav.browse'.tr(),
                             isActive: currentIndex == 0,
                             activeColor: activeColor,
                             inactiveColor: inactiveColor,
@@ -80,7 +82,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           ),
                           _NavTab(
                             icon: FontAwesomeIcons.bolt,
-                            label: 'Deals',
+                            label: 'nav.deals'.tr(),
                             isActive: currentIndex == 1,
                             activeColor: activeColor,
                             inactiveColor: inactiveColor,
@@ -91,7 +93,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           const Expanded(child: SizedBox.shrink()),
                           _NavTab(
                             icon: FontAwesomeIcons.gavel,
-                            label: 'Auction',
+                            label: 'nav.auction'.tr(),
                             isActive: currentIndex == 3,
                             activeColor: activeColor,
                             inactiveColor: inactiveColor,
@@ -100,7 +102,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           ),
                           _NavTab(
                             icon: FontAwesomeIcons.cartShopping,
-                            label: 'Cart',
+                            label: 'nav.cart'.tr(),
                             isActive: currentIndex == 4,
                             activeColor: activeColor,
                             inactiveColor: inactiveColor,
@@ -224,9 +226,9 @@ class _NavTabState extends State<_NavTab>
                           shadows: widget.isActive ? [glowShadow] : null,
                         ),
                         if (widget.badgeCount != null)
-                          Positioned(
+                          PositionedDirectional(
                             top: -2,
-                            right: 0,
+                            end: 0,
                             child: _NavBadge(
                               count: widget.badgeCount!,
                               cutoutColor: cutoutColor,
@@ -280,7 +282,7 @@ class _NavBadge extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          count > 99 ? '99+' : '$count',
+          count > 99 ? localizedDigits('99+') : localizedNumber(count),
           style: AppTextStyles.captionSmall.copyWith(
             color: AppColors.white,
             fontSize: 8,

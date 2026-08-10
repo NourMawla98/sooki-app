@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -10,7 +11,7 @@ import '../../screens/splash/widgets/aurora_glow_blob.dart';
 /// tabs that won't ship on day one (Deals, Loyalty). Aurora glow blobs in
 /// the corners, a pulsing aurora orb with a feature icon, the feature name
 /// as a kicker, a big aurora-gradient "Coming Soon" heading, and a short
-/// tagline. Theme-aware — reads on both dark and light backgrounds.
+/// tagline. Theme-aware, reads on both dark and light backgrounds.
 class ComingSoonScreen extends StatefulWidget {
   /// All-caps feature kicker above the heading (e.g. "DEALS", "LOYALTY").
   final String featureName;
@@ -69,6 +70,7 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
             ? AppColors.white.withValues(alpha: 0.70)
             : AppColors.primaryPurple.withValues(alpha: 0.80);
         final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
 
         return Scaffold(
           backgroundColor: bgColor,
@@ -95,7 +97,12 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                   children: [
                     if (widget.showBackButton)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 4, 16, 0),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          4,
+                          4,
+                          16,
+                          0,
+                        ),
                         child: Row(
                           children: [
                             GestureDetector(
@@ -104,7 +111,9 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                               child: Padding(
                                 padding: const EdgeInsets.all(12),
                                 child: FaIcon(
-                                  FontAwesomeIcons.arrowLeft,
+                                  isRtl
+                                      ? FontAwesomeIcons.arrowRight
+                                      : FontAwesomeIcons.arrowLeft,
                                   size: 18,
                                   color: iconColor,
                                 ),
@@ -142,7 +151,7 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                                 ).createShader(bounds),
                                 blendMode: BlendMode.srcIn,
                                 child: Text(
-                                  'Coming Soon',
+                                  'coming_soon_screen.coming_soon'.tr(),
                                   style: AppTextStyles.heading1.copyWith(
                                     color: AppColors.white,
                                     fontSize: 38,

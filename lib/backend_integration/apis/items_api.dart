@@ -23,6 +23,7 @@ typedef ItemsPage = ({
   double priceMin,
   double priceMax,
   List<int> availableSizeStandardIds,
+  String? suggestion,
 });
 
 @injectable
@@ -55,7 +56,8 @@ class ItemsApi {
         'MainCategoryId': ?mainCategoryId,
         'SubCategoryId': ?subCategoryId,
         'DetailCategoryId': ?detailCategoryId,
-        if (searchQuery != null && searchQuery.isNotEmpty) 'Search': searchQuery,
+        if (searchQuery != null && searchQuery.isNotEmpty)
+          'SearchElement': searchQuery,
         'MinPrice': ?minPrice,
         'MaxPrice': ?maxPrice,
         if (colorIds.isNotEmpty) 'ColorIds': colorIds,
@@ -86,6 +88,11 @@ class ItemsApi {
           priceMin: priceMin,
           priceMax: priceMax,
           availableSizeStandardIds: availableSizeStandardIds,
+          // Spelling correction for a search that returned nothing. The backend
+          // only sends it when the corrected term actually has results.
+          suggestion: (data['suggestion'] as String?)?.trim().isNotEmpty == true
+              ? (data['suggestion'] as String).trim()
+              : null,
         );
       },
     );

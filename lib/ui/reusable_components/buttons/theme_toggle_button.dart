@@ -16,8 +16,8 @@ class ThemeToggleButton extends StatelessWidget {
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final iconColor = isDark
-            ? const Color(0xFFFBBF24) // sun → yellow
-            : AppColors.white;        // moon → white
+            ? const Color(0xFFFBBF24) // sun icon is yellow
+            : AppColors.white;        // moon icon is white
         final bg = isDark
             ? AppColors.white.withValues(alpha: 0.12)
             : AppColors.auroraPurple.withValues(alpha: 0.72);

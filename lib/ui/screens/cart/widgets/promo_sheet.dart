@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -42,7 +43,7 @@ class _PromoSheetState extends State<_PromoSheet> {
     if (ok) {
       Navigator.of(context).pop();
     } else {
-      setState(() => _error = 'Invalid code');
+      setState(() => _error = 'promo_sheet.invalid_code'.tr());
     }
   }
 
@@ -64,13 +65,13 @@ class _PromoSheetState extends State<_PromoSheet> {
               borderRadius: BorderRadius.circular(22),
               border: Border.all(color: c.sheetTop, width: 1),
             ),
-            padding: const EdgeInsets.fromLTRB(18, 20, 18, 28),
+            padding: const EdgeInsetsDirectional.fromSTEB(18, 20, 18, 28),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'PROMO CODE',
+                  'promo_sheet.promo_code'.tr(),
                   style: AppTextStyles.label.copyWith(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -80,7 +81,7 @@ class _PromoSheetState extends State<_PromoSheet> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Enter your code',
+                  'promo_sheet.enter_your_code'.tr(),
                   style: AppTextStyles.heading3.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -120,7 +121,7 @@ class _PromoSheetState extends State<_PromoSheet> {
                             letterSpacing: 1,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'e.g. AURORA20',
+                            hintText: 'promo_sheet.code_hint'.tr(),
                             hintStyle: AppTextStyles.bodyMedium.copyWith(
                               fontSize: 14,
                               color: c.textMute2,
@@ -158,7 +159,7 @@ class _PromoSheetState extends State<_PromoSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          'APPLY',
+                          'promo_sheet.apply'.tr(),
                           style: AppTextStyles.buttonSmall.copyWith(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,

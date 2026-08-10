@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -94,6 +95,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             isDark ? AppColors.white : AppColors.auroraPurple;
         final titleColor =
             isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
 
         return Scaffold(
           backgroundColor: bg,
@@ -118,12 +120,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     // Top bar
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
                       child: Row(
                         children: [
                           IconButton(
                             icon: FaIcon(
-                              FontAwesomeIcons.arrowLeft,
+                              isRtl
+                                  ? FontAwesomeIcons.arrowRight
+                                  : FontAwesomeIcons.arrowLeft,
                               size: 18,
                               color: iconColor,
                             ),
@@ -131,7 +136,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Edit Profile',
+                            'edit_profile_screen.title'.tr(),
                             style: AppTextStyles.heading3.copyWith(
                               color: titleColor,
                               fontWeight: FontWeight.w800,
@@ -144,7 +149,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 32),
                         child: Form(
                           key: _formKey,
                           child: Column(
@@ -217,16 +223,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        _SectionLabel(label: 'First name', isDark: isDark),
+                                        _SectionLabel(label: 'edit_profile_screen.first_name'.tr(), isDark: isDark),
                                         const SizedBox(height: 8),
                                         AuroraInputField(
                                           controller: _firstNameCtrl,
-                                          hint: 'Jane',
+                                          hint: 'edit_profile_screen.first_name_hint'.tr(),
                                           prefixIcon: FontAwesomeIcons.user,
                                           textInputAction: TextInputAction.next,
                                           validator: (v) =>
                                               (v == null || v.trim().isEmpty)
-                                                  ? 'Required'
+                                                  ? 'validation.required'.tr()
                                                   : null,
                                         ),
                                       ],
@@ -237,16 +243,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        _SectionLabel(label: 'Last name', isDark: isDark),
+                                        _SectionLabel(label: 'edit_profile_screen.last_name'.tr(), isDark: isDark),
                                         const SizedBox(height: 8),
                                         AuroraInputField(
                                           controller: _lastNameCtrl,
-                                          hint: 'Doe',
+                                          hint: 'edit_profile_screen.last_name_hint'.tr(),
                                           prefixIcon: FontAwesomeIcons.user,
                                           textInputAction: TextInputAction.next,
                                           validator: (v) =>
                                               (v == null || v.trim().isEmpty)
-                                                  ? 'Required'
+                                                  ? 'validation.required'.tr()
                                                   : null,
                                         ),
                                       ],
@@ -258,23 +264,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               const SizedBox(height: 20),
 
                               _SectionLabel(
-                                  label: 'Email Address', isDark: isDark),
+                                  label: 'edit_profile_screen.email_address'.tr(), isDark: isDark),
                               const SizedBox(height: 8),
                               AuroraInputField(
                                 controller: _emailCtrl,
-                                hint: 'your@email.com',
+                                hint: 'edit_profile_screen.email_hint'.tr(),
                                 keyboardType: TextInputType.emailAddress,
                                 prefixIcon: FontAwesomeIcons.envelope,
                                 validator: (v) =>
                                     (v == null || v.trim().isEmpty)
-                                        ? 'Email is required'
+                                        ? 'validation.email_required'.tr()
                                         : null,
                               ),
 
                               const SizedBox(height: 20),
 
                               _SectionLabel(
-                                  label: 'Phone Number', isDark: isDark),
+                                  label: 'edit_profile_screen.phone_number'.tr(), isDark: isDark),
                               const SizedBox(height: 8),
                               AuroraPhoneField(
                                 controller: _phoneCtrl,
@@ -286,7 +292,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               const SizedBox(height: 36),
 
                               AuroraPrimaryButton(
-                                text: 'SAVE CHANGES',
+                                text: 'edit_profile_screen.save_changes'.tr(),
                                 isLoading: _saving,
                                 onPressed: _save,
                               ),

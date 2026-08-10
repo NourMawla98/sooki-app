@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -5,6 +6,7 @@ import '../../../../backend_integration/dtos/item/item_detail_dto.dart';
 import '../../../../models/review.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';
 import 'aurora_review_card.dart';
 
@@ -112,7 +114,7 @@ class _CustomTabBar extends StatelessWidget {
         children: [
           Expanded(
             child: _TabButton(
-              label: 'DETAILS',
+              label: 'product_tabs.tab_details'.tr(),
               isActive: activeIndex == 0,
               isDark: isDark,
               onTap: () => onTap(0),
@@ -120,7 +122,7 @@ class _CustomTabBar extends StatelessWidget {
           ),
           Expanded(
             child: _TabButton(
-              label: 'REVIEWS',
+              label: 'product_tabs.tab_reviews'.tr(),
               count: reviewCount,
               isActive: activeIndex == 1,
               isDark: isDark,
@@ -213,7 +215,7 @@ class _TabButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  '$count',
+                  localizedNumber(count!),
                   style: AppFonts.primary(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -259,12 +261,15 @@ class _DetailsTab extends StatelessWidget {
         : AppColors.primaryPurple.withValues(alpha: 0.18);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (labels.isNotEmpty) ...[
-            _SectionLabel(label: 'CERTIFICATIONS', color: mutedLabel),
+            _SectionLabel(
+              label: 'product_tabs.certifications'.tr(),
+              color: mutedLabel,
+            ),
             const SizedBox(height: 10),
             ...labels.map(
               (l) => Padding(
@@ -292,7 +297,10 @@ class _DetailsTab extends StatelessWidget {
             const SizedBox(height: 14),
           ],
           if (attributes.isNotEmpty) ...[
-            _SectionLabel(label: 'SPECIFICATIONS', color: mutedLabel),
+            _SectionLabel(
+              label: 'product_tabs.specifications'.tr(),
+              color: mutedLabel,
+            ),
             const SizedBox(height: 10),
             _SpecsTileGrid(
               specs: {
@@ -369,7 +377,10 @@ class _MeasurementsTable extends StatelessWidget {
       children: [
         Row(
           children: [
-            _SectionLabel(label: 'MEASUREMENTS', color: mutedLabel),
+            _SectionLabel(
+              label: 'product_tabs.measurements'.tr(),
+              color: mutedLabel,
+            ),
             const SizedBox(width: 6),
             Text(
               '(cm)',
@@ -403,9 +414,12 @@ class _MeasurementsTable extends StatelessWidget {
                         _MCell(
                           width: 90,
                           bg: Colors.transparent,
-                          border: Border(right: BorderSide(color: divider)),
+                          border: BorderDirectional(
+                              end: BorderSide(color: divider)),
                           child: const SizedBox.shrink(),
                         ),
+                        // Column headers are size labels (38, XL). They stay in
+                        // Western digits so they match the size chips.
                         ...groups.map((g) {
                           final isSelected =
                               g.sizeValueId == selectedSizeValueId;
@@ -414,7 +428,8 @@ class _MeasurementsTable extends StatelessWidget {
                             bg: isSelected
                                 ? AppColors.auroraPurple.withValues(alpha: 0.08)
                                 : Colors.transparent,
-                            border: Border(right: BorderSide(color: divider)),
+                            border: BorderDirectional(
+                                end: BorderSide(color: divider)),
                             child: isSelected
                                 ? ShaderMask(
                                     shaderCallback: (b) =>
@@ -461,7 +476,7 @@ class _MeasurementsTable extends StatelessWidget {
                               width: 90,
                               bg: cellBg,
                               border:
-                                  Border(right: BorderSide(color: divider)),
+                                  BorderDirectional(end: BorderSide(color: divider)),
                               child: Text(
                                 type.toUpperCase(),
                                 style: AppFonts.primary(
@@ -479,8 +494,9 @@ class _MeasurementsTable extends StatelessWidget {
                               final m = g.measurements
                                   .where((m) => m.measurementType == type)
                                   .firstOrNull;
-                              final val =
-                                  m != null ? m.value.toStringAsFixed(1) : '—';
+                              final val = m != null
+                                  ? localizedNumber(m.value, decimals: 1)
+                                  : '—';
                               return _MCell(
                                 width: 56,
                                 bg: isSelected
@@ -488,7 +504,7 @@ class _MeasurementsTable extends StatelessWidget {
                                         .withValues(alpha: 0.06)
                                     : Colors.transparent,
                                 border:
-                                    Border(right: BorderSide(color: divider)),
+                                    BorderDirectional(end: BorderSide(color: divider)),
                                 child: Text(
                                   val,
                                   textAlign: TextAlign.center,
@@ -530,7 +546,7 @@ class _MCell extends StatelessWidget {
 
   final double width;
   final Color bg;
-  final Border border;
+  final BoxBorder border;
   final Widget child;
 
   @override
@@ -614,7 +630,7 @@ class _ReviewsTab extends StatelessWidget {
     final itemCount = 1 + reviews.length + (isLoadingMore ? 1 : 0);
     return ListView.builder(
       controller: controller ?? ScrollController(),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 20),
       itemCount: itemCount,
       itemBuilder: (context, i) {
         if (i == 0) {
@@ -673,7 +689,7 @@ class _ReviewSummary extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                rating > 0 ? rating.toStringAsFixed(1) : '—',
+                rating > 0 ? localizedNumber(rating, decimals: 1) : '—',
                 style: AppFonts.primary(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -692,8 +708,12 @@ class _ReviewSummary extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       reviewCount > 0
-                          ? 'Based on $reviewCount reviews'
-                          : 'No reviews yet',
+                          ? 'product_tabs.based_on_reviews'.tr(
+                              namedArgs: {
+                                'count': localizedNumber(reviewCount),
+                              },
+                            )
+                          : 'product_tabs.no_reviews_yet'.tr(),
                       style: AppFonts.primary(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,

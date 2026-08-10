@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../themes/themes.dart';
+import '../../../utils/number_localization.dart';
 
 class StarRating extends StatelessWidget {
   final double rating;
@@ -33,14 +34,14 @@ class StarRating extends StatelessWidget {
           }
 
           return Padding(
-            padding: const EdgeInsets.only(right: 2),
+            padding: const EdgeInsetsDirectional.only(end: 2),
             child: FaIcon(icon, size: size, color: color),
           );
         }),
         if (showValue) ...[
           const SizedBox(width: 4),
           Text(
-            rating.toStringAsFixed(1),
+            localizedNumber(rating, decimals: 1),
             style: AppTextStyles.ratingValue.copyWith(fontSize: size),
           ),
         ],

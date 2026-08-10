@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,29 +22,29 @@ class HelpSupportScreen extends StatefulWidget {
 class _HelpSupportScreenState extends State<HelpSupportScreen> {
   int? _expandedFaq;
 
-  static const _faqItems = [
+  List<_FaqItem> get _faqItems => [
     _FaqItem(
-      question: 'How do I track my order?',
-      answer: 'Go to Profile → Orders and tap the order you want to track. You\'ll see the latest status and any updates from the carrier.',
+      question: 'help_support_screen.faq_track_order_q'.tr(),
+      answer: 'help_support_screen.faq_track_order_a'.tr(),
     ),
     _FaqItem(
-      question: 'Can I cancel my order?',
-      answer: 'You can cancel your order while it\'s in Processing or Packaged status. Once it moves to Out for Delivery, cancellation is no longer available. Contact us via email support if you need help.',
+      question: 'help_support_screen.faq_cancel_order_q'.tr(),
+      answer: 'help_support_screen.faq_cancel_order_a'.tr(),
     ),
     _FaqItem(
-      question: 'What payment methods are available?',
-      answer: 'We currently support cash on delivery only. More payment options are coming soon.',
+      question: 'help_support_screen.faq_payment_methods_q'.tr(),
+      answer: 'help_support_screen.faq_payment_methods_a'.tr(),
     ),
     _FaqItem(
-      question: 'How do I change my shipping address?',
-      answer: 'Go to Profile → Addresses to add, edit, or remove shipping addresses. You can also set a default address for faster checkout.',
+      question: 'help_support_screen.faq_shipping_address_q'.tr(),
+      answer: 'help_support_screen.faq_shipping_address_a'.tr(),
     ),
   ];
 
   Future<void> _launchWhatsApp() async {
     final uri = Uri.parse(_kWhatsAppUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      ToastService.instance.showError('Could not open WhatsApp');
+      ToastService.instance.showError('help_support_screen.could_not_open_whatsapp'.tr());
     }
   }
 
@@ -73,7 +74,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     _TopBar(isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -82,7 +83,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                               onWhatsApp: _launchWhatsApp,
                               onEmail: () => Navigator.pushNamed(context, emailSupportScreenRoute),
                             ),
-                            _GroupLabel(label: 'Quick Links', isDark: isDark),
+                            _GroupLabel(label: 'help_support_screen.quick_links'.tr(), isDark: isDark),
                             _GroupCard(
                               isDark: isDark,
                               children: [
@@ -91,8 +92,8 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                   iconBg: AppColors.auroraTeal.withValues(alpha: isDark ? 0.14 : 0.10),
                                   iconColor: AppColors.auroraTeal,
                                   icon: FontAwesomeIcons.book,
-                                  title: 'Shipping Information',
-                                  subtitle: 'Delivery times & fees',
+                                  title: 'help_support_screen.shipping_information'.tr(),
+                                  subtitle: 'help_support_screen.shipping_information_sub'.tr(),
                                   onTap: () => Navigator.pushNamed(context, shippingInfoScreenRoute),
                                 ),
                                 _Divider(isDark: isDark),
@@ -101,8 +102,8 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                   iconBg: AppColors.auroraPurple.withValues(alpha: isDark ? 0.15 : 0.10),
                                   iconColor: AppColors.auroraPurple,
                                   icon: FontAwesomeIcons.fileLines,
-                                  title: 'Terms & Conditions',
-                                  subtitle: 'Usage & purchase terms',
+                                  title: 'help_support_screen.terms_conditions'.tr(),
+                                  subtitle: 'help_support_screen.terms_conditions_sub'.tr(),
                                   onTap: () => Navigator.pushNamed(context, termsConditionsScreenRoute),
                                 ),
                                 _Divider(isDark: isDark),
@@ -111,14 +112,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                   iconBg: AppColors.verifiedGreen.withValues(alpha: isDark ? 0.12 : 0.10),
                                   iconColor: AppColors.verifiedGreen,
                                   icon: FontAwesomeIcons.shieldHalved,
-                                  title: 'Privacy Policy',
-                                  subtitle: 'How we handle your data',
+                                  title: 'help_support_screen.privacy_policy'.tr(),
+                                  subtitle: 'help_support_screen.privacy_policy_sub'.tr(),
                                   onTap: () => Navigator.pushNamed(context, privacyPolicyScreenRoute),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 20),
-                            _GroupLabel(label: 'Frequently Asked', isDark: isDark),
+                            _GroupLabel(label: 'help_support_screen.frequently_asked'.tr(), isDark: isDark),
                             _GroupCard(
                               isDark: isDark,
                               children: [
@@ -159,17 +160,22 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: color,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Text(
-            'Help & Support',
+            'help_support_screen.title'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w900,
@@ -198,7 +204,7 @@ class _HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 20, 0, 28),
+      padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 28),
       child: Column(
         children: [
           // Glowing icon
@@ -260,7 +266,7 @@ class _HeroSection extends StatelessWidget {
             ).createShader(bounds),
             blendMode: BlendMode.srcIn,
             child: Text(
-              'Need Help?',
+              'help_support_screen.need_help'.tr(),
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
@@ -272,7 +278,7 @@ class _HeroSection extends StatelessWidget {
           const SizedBox(height: 6),
 
           Text(
-            'Our team is here for you 24/7',
+            'help_support_screen.team_here_for_you'.tr(),
             style: AppTextStyles.bodySmall.copyWith(
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.40)
@@ -351,7 +357,7 @@ class _HeroSection extends StatelessWidget {
                         ),
                         const SizedBox(width: 7),
                         Text(
-                          'Email Us',
+                          'help_support_screen.email_us'.tr(),
                           style: AppTextStyles.dsCTA.copyWith(
                             fontSize: 13,
                             color: isDark
@@ -382,7 +388,7 @@ class _GroupLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(2, 0, 2, 8),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.dsSectionLabel.copyWith(
@@ -462,6 +468,7 @@ class _ChevronRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -502,7 +509,7 @@ class _ChevronRow extends StatelessWidget {
               ),
             ),
             FaIcon(
-              FontAwesomeIcons.chevronRight,
+              isRtl ? FontAwesomeIcons.chevronLeft : FontAwesomeIcons.chevronRight,
               size: 11,
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.20)
@@ -573,7 +580,7 @@ class _FaqTile extends StatelessWidget {
           curve: Curves.easeOut,
           child: isExpanded
               ? Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                  padding: const EdgeInsetsDirectional.fromSTEB(14, 0, 14, 14),
                   child: Text(
                     item.answer,
                     style: AppTextStyles.captionSmall.copyWith(

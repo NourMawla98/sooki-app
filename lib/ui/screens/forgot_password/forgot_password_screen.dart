@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -5,6 +6,7 @@ import '../../../backend_integration/apis/auth_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/language_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -62,7 +64,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      // Language changes must rebuild this screen too: `.tr()` is context-free,
+      // so switching the locale does not mark an already-built route dirty.
+      listenable: Listenable.merge(
+        [ThemeService.instance, serviceLocator<LanguageService>()],
+      ),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bgColor =
@@ -72,7 +78,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         final subtitleColor =
             isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase;
 
-        return Scaffold(
+        // Keyed on the language so a switch rebuilds the whole subtree: const
+        // children (the legal footer, for one) are skipped otherwise.
+        return KeyedSubtree(
+          key: ValueKey(serviceLocator<LanguageService>().currentLanguage),
+          child: Scaffold(
           backgroundColor: bgColor,
           body: Stack(
             children: [
@@ -157,13 +167,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ),
                               const SizedBox(height: 20),
                               Text(
-                                'Forgot Password?',
+                                'auth.forgot_title'.tr(),
                                 style: AppTextStyles.dsH1
                                     .copyWith(color: headingColor),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Enter your email to receive a reset link',
+                                'auth.forgot_subtitle'.tr(),
                                 style: AppTextStyles.dsBody
                                     .copyWith(color: subtitleColor),
                               ),
@@ -177,9 +187,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AuroraInputField(
-                                        label: 'Email',
+                                        label: 'auth.email'.tr(),
                                         required: true,
-                                        hint: 'your@email.com',
+                                        hint: 'auth.email_hint'.tr(),
                                         controller: _emailController,
                                         keyboardType:
                                             TextInputType.emailAddress,
@@ -190,7 +200,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                       ),
                                       const SizedBox(height: 20),
                                       AuroraPrimaryButton(
-                                        text: 'Send reset link',
+                                        text: 'auth.send_reset_link'.tr(),
                                         onPressed: _handleSendResetLink,
                                         isLoading: _isLoading,
                                       ),
@@ -201,7 +211,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Remember your password? ',
+                                              'auth.remember_password'.tr(),
                                               style: AppTextStyles.dsBody
                                                   .copyWith(
                                                 color: subtitleColor,
@@ -212,7 +222,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                               onTap: () =>
                                                   Navigator.pop(context),
                                               child: Text(
-                                                'Log In',
+                                                'auth.log_in'.tr(),
                                                 style: AppTextStyles.dsBody
                                                     .copyWith(
                                                   fontSize: 14,
@@ -242,6 +252,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
             ],
+          ),
           ),
         );
       },

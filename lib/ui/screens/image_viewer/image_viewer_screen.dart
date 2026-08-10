@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../themes/themes.dart';
+import '../../../utils/number_localization.dart';
 
 class ImageViewerArgs {
   const ImageViewerArgs({
@@ -192,10 +194,10 @@ class _ImageViewerScreenState extends State<ImageViewerScreen>
                 );
               },
             ),
-            Positioned(
+            PositionedDirectional(
               top: 0,
-              left: 0,
-              right: 0,
+              start: 0,
+              end: 0,
               child: SafeArea(
                 child: IgnorePointer(
                   ignoring: !_chromeVisible,
@@ -204,7 +206,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen>
                     opacity: chromeOpacity,
                     child: Padding(
                       padding:
-                          const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                          const EdgeInsetsDirectional.fromSTEB(12, 12, 12, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -220,7 +222,12 @@ class _ImageViewerScreenState extends State<ImageViewerScreen>
                             _GlassPill(
                               onTap: null,
                               child: Text(
-                                '${_currentIndex + 1} / $total',
+                                'image_viewer_screen.counter'.tr(
+                                  namedArgs: {
+                                    'current': localizedNumber(_currentIndex + 1),
+                                    'total': localizedNumber(total),
+                                  },
+                                ),
                                 style: AppFonts.primary(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -238,10 +245,10 @@ class _ImageViewerScreenState extends State<ImageViewerScreen>
               ),
             ),
             if (total > 1)
-              Positioned(
+              PositionedDirectional(
                 bottom: 0,
-                left: 0,
-                right: 0,
+                start: 0,
+                end: 0,
                 child: SafeArea(
                   child: IgnorePointer(
                     child: AnimatedOpacity(

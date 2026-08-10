@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../backend_integration/dtos/order/order_list_item_dto.dart';
@@ -5,14 +6,13 @@ import '../../../enums/order_status.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 
-const _months = [
-  '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-];
-
-String _formatDate(DateTime dt) =>
-    '${_months[dt.month]} ${dt.day}, ${dt.year}';
+String _formatDate(DateTime dt) => 'time.long_date'.tr(namedArgs: {
+      'day': localizedNumber(dt.day),
+      'month': 'time.month_short.${dt.month}'.tr(),
+      'year': localizedNumber(dt.year),
+    });
 
 class OrderCard extends StatelessWidget {
   final OrderListItemDto dto;
@@ -69,14 +69,14 @@ class OrderCard extends StatelessWidget {
               child: IntrinsicHeight(
                 child: Row(
                   children: [
-                    // Left accent bar
+                    // Leading accent bar
                     Container(
                       width: 3,
                       margin: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
                         color: accent.withValues(alpha: 0.75),
-                        borderRadius: const BorderRadius.horizontal(
-                          right: Radius.circular(3),
+                        borderRadius: const BorderRadiusDirectional.horizontal(
+                          end: Radius.circular(3),
                         ),
                       ),
                     ),
@@ -84,7 +84,7 @@ class OrderCard extends StatelessWidget {
                     // Card content
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 11, 12, 11),
+                        padding: const EdgeInsetsDirectional.fromSTEB(12, 11, 12, 11),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -96,6 +96,9 @@ class OrderCard extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      // Tracking number keeps Western digits:
+                                      // it is an identifier the shopper reads
+                                      // back to support.
                                       Text(
                                         dto.trackingNumber,
                                         style: AppTextStyles.dsBodyBold.copyWith(
@@ -129,7 +132,7 @@ class OrderCard extends StatelessWidget {
                               children: [
                                 ...visibleItems.asMap().entries.map(
                                   (e) => Padding(
-                                    padding: const EdgeInsets.only(right: 6),
+                                    padding: const EdgeInsetsDirectional.only(end: 6),
                                     child: _Thumbnail(
                                       imageUrl: e.value.imageUrl,
                                       index: e.key,
@@ -152,7 +155,10 @@ class OrderCard extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${dto.items.length} item${dto.items.length == 1 ? '' : 's'}',
+                                  'order_card.item_count'.plural(
+                                    dto.items.length,
+                                    args: [localizedNumber(dto.items.length)],
+                                  ),
                                   style: AppTextStyles.dsMuted.copyWith(
                                     color: itemCountColor,
                                     fontSize: 11,
@@ -160,7 +166,7 @@ class OrderCard extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '\$${dto.totalAmount.toStringAsFixed(2)}',
+                                  '\$${localizedPrice(dto.totalAmount)}',
                                   style: AppTextStyles.dsBodyBold.copyWith(
                                     color: totalColor,
                                     fontSize: 15,
@@ -288,7 +294,7 @@ class _OverflowChip extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Text(
-        '+$count',
+        '+${localizedNumber(count)}',
         style: AppTextStyles.dsCTA.copyWith(
           color: isDark
               ? AppColors.white.withValues(alpha: 0.50)

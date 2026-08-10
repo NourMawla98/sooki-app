@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
@@ -196,7 +197,7 @@ class _SplashScreenState extends State<SplashScreen>
                         child: FadeTransition(opacity: _fadeAnimation, child: child),
                       ),
                       child: Text(
-                        'YOUR SHOPPING DESTINATION',
+                        'splash_screen.tagline'.tr(),
                         style: AppTextStyles.auroraTagline.copyWith(color: taglineColor),
                         textAlign: TextAlign.center,
                       ),
@@ -209,7 +210,7 @@ class _SplashScreenState extends State<SplashScreen>
                               child: GestureDetector(
                                 onTap: _startup,
                                 child: Text(
-                                  'Try again',
+                                  'splash_screen.try_again'.tr(),
                                   style: AppTextStyles.bodySmall.copyWith(
                                     color: isDark
                                         ? AppColors.white.withValues(alpha: 0.55)

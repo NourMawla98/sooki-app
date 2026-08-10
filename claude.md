@@ -16,10 +16,11 @@ Magic Patterns: https://www.magicpatterns.com/c/4lgkv1vah8hx3nb4ke46t7 — use t
 Check `lib/ui/reusable_components/` before building. New reusables go there.
 
 ### 2. Theme consistency (CRITICAL)
-- **Colors**: only via `AppColors.*` from `lib/themes/app_colors.dart`. Never `Color(0xFF…)`, `Colors.red`, or hex literals in component files.
-- **Text**: only via `AppTextStyles.*` from `lib/themes/app_text_styles.dart`. Use `.copyWith()` to modify.
-- **Opacity**: use `.withValues(alpha: x)`. Never `.withOpacity()` (deprecated).
-- **Both themes must render**: every widget must work in light AND dark. Don't hardcode `AppColors.white` on a light-mode surface or `AppColors.black` on dark. Watch theme via `ListenableBuilder(listenable: ThemeService.instance, …)` and branch on `ThemeService.instance.isDarkMode`. Pair theme-dependent fg/bg/border together. Aurora tokens (`auroraPink`, `auroraElectricBlue`, `auroraPurple`, `primaryPurple`) read on both backgrounds.
+The rule is the global `frontend-theme-tokens` skill. This repo's specifics:
+- **Colors**: `AppColors.*` from `lib/themes/app_colors.dart`.
+- **Text**: `AppTextStyles.*` from `lib/themes/app_text_styles.dart`, modified with `.copyWith()`.
+- **Theme signal**: `ListenableBuilder(listenable: ThemeService.instance, …)`, branch on `ThemeService.instance.isDarkMode`.
+- Aurora tokens (`auroraPink`, `auroraElectricBlue`, `auroraPurple`, `primaryPurple`) read on both backgrounds.
 
 Common theme-aware pairings:
 - Neutral accent: dark → `white`, light → `primaryPurple`
@@ -53,21 +54,10 @@ Named routes only, via the centralized generator.
 - When designing section N, every mockup must stack sections 0..N-1 above it using the locked variants. Never show a section in isolation.
 
 ### 7. Planning workflow
-When asked to plan a feature:
-1. Create `{feature}_plan.md` in the root folder immediately.
-2. For clarifications, use **AskUserQuestion ONE question at a time** with 2–4 options. Record answers in the plan as they arrive.
-3. Document steps, file changes, decisions, components to reuse, theme considerations.
-4. **Wait for explicit approval** ("Execute the plan", "Proceed", "Implement it") before coding.
-5. Split into phases. Execute one phase → run `flutter analyze` → wait for approval → next phase. Track in `{FEATURE}_EXECUTION.md`.
+Follow the global `general-plan-feature` skill. The only thing this repo adds: the verification run
+after each phase is `flutter analyze`.
 
-**Thinking effort:**
-- Planning & design decisions → use extended thinking. Getting the plan right is the hard part.
-- Executing an approved phase → default to no/low thinking; mechanical code changes don't need it. Escalate only on real unknowns (subtle bug, architectural ambiguity).
-
-### 8. Skill usage (token discipline)
-Don't invoke skills for simple questions, small edits, or status checks. Only invoke superpowers skills for: feature planning, real debugging sessions, completion verification before merging, or when I explicitly ask. This overrides the "1% match → must invoke" rule from `using-superpowers`.
-
-### 9. Screen layout structure (CRITICAL)
+### 8. Screen layout structure (CRITICAL)
 Every new screen must follow the address form pattern — not a standard `AppBar` + plain `Scaffold`:
 - **No `AppBar`**. Use a custom `_TopBar` widget inside the body: `IconButton(arrowLeft)` + `Text` in a `Row` with `Padding(fromLTRB(4, 4, 16, 8))`. Icon/title color: `white` dark / `auroraPurple` light.
 - **Background**: `Scaffold(backgroundColor: isDark ? auroraDeepBase : auroraLightBase)`.
@@ -77,8 +67,8 @@ Every new screen must follow the address form pattern — not a standard `AppBar
 
 Reference implementation: `lib/ui/screens/address_form/address_form_screen.dart`.
 
-### 10. Store name — hard ban
+### 9. Store name — hard ban
 `storeName` (and any equivalent field) must **never** appear anywhere in the customer-facing UI — not on product cards, wishlist cards, search results, product detail, or any other screen. It is an admin-only field.
 
-### 11. General
+### 10. General
 - Semantic naming. Follow existing patterns. Keep widgets focused and composable. Extract repeated patterns into reusables.

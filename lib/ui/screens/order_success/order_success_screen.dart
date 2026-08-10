@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,7 @@ import '../../../services/cart_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_secondary_button.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
@@ -22,7 +24,7 @@ class OrderSuccessArgs {
   const OrderSuccessArgs({
     this.orderId,
     this.orderNumber = '',
-    this.estimatedDelivery = '2–5 business days',
+    this.estimatedDelivery = '2-5 business days',
     this.paymentMethod = 'Cash on delivery',
   });
 }
@@ -241,7 +243,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                   children: [
                     // Close button row
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+                      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
                       child: Row(
                         children: [
                           IconButton(
@@ -258,7 +260,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
 
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 32),
                         child: Column(
                           children: [
                             const SizedBox(height: 16),
@@ -280,7 +282,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                               ),
                               blendMode: BlendMode.srcIn,
                               child: Text(
-                                'ORDER CONFIRMED',
+                                'order_success_screen.order_confirmed'.tr(),
                                 style: AppTextStyles.dsSectionLabel.copyWith(
                                   color: AppColors.white,
                                 ),
@@ -290,7 +292,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                             const SizedBox(height: 10),
 
                             Text(
-                              'Your order is\non its way!',
+                              'order_success_screen.on_its_way_title'.tr(),
                               textAlign: TextAlign.center,
                               style: AppTextStyles.dsH2.copyWith(
                                 color: headingColor,
@@ -300,7 +302,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                             const SizedBox(height: 10),
 
                             Text(
-                              "We've received your order and will start\npreparing it right away.",
+                              'order_success_screen.received_subtitle'.tr(),
                               textAlign: TextAlign.center,
                               style: AppTextStyles.dsMuted.copyWith(
                                 color: subColor,
@@ -324,7 +326,10 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                               child: Column(
                                 children: [
                                   _OrderRow(
-                                    label: 'Order number',
+                                    label: 'order_success_screen.order_number'.tr(),
+                                    // Tracking number is an identifier the
+                                    // shopper reads back to support, so its
+                                    // digits stay Western.
                                     value: widget.args.orderNumber,
                                     valueColor: AppColors.auroraPurple,
                                     labelColor: labelColor,
@@ -332,14 +337,15 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                                     isFirst: true,
                                   ),
                                   _OrderRow(
-                                    label: 'Estimated delivery',
-                                    value: widget.args.estimatedDelivery,
+                                    label: 'order_success_screen.estimated_delivery'.tr(),
+                                    value: localizedDigits(
+                                        widget.args.estimatedDelivery),
                                     valueColor: valueColor,
                                     labelColor: labelColor,
                                     dividerColor: dividerColor,
                                   ),
                                   _OrderRow(
-                                    label: 'Payment',
+                                    label: 'order_success_screen.payment'.tr(),
                                     value: widget.args.paymentMethod,
                                     valueColor: AppColors.verifiedGreen,
                                     labelColor: labelColor,
@@ -352,12 +358,12 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                             const SizedBox(height: 28),
 
                             AuroraPrimaryButton(
-                              text: 'Track my order',
+                              text: 'order_success_screen.track_my_order'.tr(),
                               onPressed: _trackOrder,
                             ),
                             const SizedBox(height: 12),
                             AuroraSecondaryButton(
-                              text: 'Continue shopping',
+                              text: 'order_success_screen.continue_shopping'.tr(),
                               onPressed: _continueShopping,
                             ),
                           ],

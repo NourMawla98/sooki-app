@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Renders [text] with the aurora pink→purple→blue gradient applied via
-/// [ShaderMask]. Defaults to [AppTextStyles.dsH2] — pass a custom [style]
+/// Renders [text] with the aurora pink to purple to blue gradient applied via
+/// [ShaderMask]. Defaults to [AppTextStyles.dsH2]. Pass a custom [style]
 /// to override size, weight, or any other property.
 class AuroraGradientText extends StatelessWidget {
   final String text;

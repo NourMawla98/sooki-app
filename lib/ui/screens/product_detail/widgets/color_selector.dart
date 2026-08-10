@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../backend_integration/dtos/item/item_detail_dto.dart';
@@ -31,7 +32,7 @@ class ColorSelector extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'COLOR',
+              'color_selector.color_label'.tr(),
               style: AppFonts.primary(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,

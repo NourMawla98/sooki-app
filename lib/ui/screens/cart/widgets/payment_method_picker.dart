@@ -91,8 +91,9 @@ class _MethodRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor =
-        selected ? AppColors.auroraPink.withValues(alpha: 0.55) : colors.glassBorder;
+    final borderColor = selected
+        ? AppColors.auroraPink.withValues(alpha: 0.55)
+        : colors.glassBorder;
 
     return GestureDetector(
       onTap: onTap,

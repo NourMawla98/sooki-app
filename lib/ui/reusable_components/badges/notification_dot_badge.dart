@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 
 /// Small badge indicator for notifications, positioned on the top-right corner
 /// of a parent widget.
@@ -80,7 +81,9 @@ class _CountBadgeState extends State<_CountBadge>
   Widget build(BuildContext context) {
     final isDark = ThemeService.instance.isDarkMode;
     final ringColor = isDark ? AppColors.auroraDeepBase : AppColors.white;
-    final label = widget.value > 99 ? '99+' : '${widget.value}';
+    final label = widget.value > 99
+        ? '${localizedNumber(99)}+'
+        : localizedNumber(widget.value);
 
     return AnimatedBuilder(
       animation: _ctrl,

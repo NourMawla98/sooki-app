@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,12 +8,14 @@ import 'package:latlong2/latlong.dart';
 import '../../../backend_integration/dtos/address/address_dto.dart';
 import '../../../backend_integration/dtos/address/address_request_dto.dart';
 import '../../../backend_integration/dtos/location/location_item_dto.dart';
+import '../../../enums/address_label_type.dart';
 import '../../../services/address_service.dart';
 import '../../../services/location_service.dart';
 import '../../../services/places_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../../reusable_components/toggles/aurora_switch.dart';
@@ -76,15 +79,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
     // Pre-populate from existing address before cities load
     final a = widget.initialAddress;
     if (a != null) {
-      final label = (a.label ?? '').toLowerCase();
-      if (label == 'home') {
-        _labelType = AddressLabelType.home;
-      } else if (label == 'office' || label == 'work') {
-        _labelType = AddressLabelType.office;
-      } else {
-        _labelType = AddressLabelType.other;
-        _customLabelController.text = a.label ?? '';
-      }
+      final preset = AddressLabelType.fromStorageValue(a.label);
+      _labelType = preset ?? AddressLabelType.other;
+      if (preset == null) _customLabelController.text = a.label ?? '';
       _fullNameController.text = a.fullName;
       _streetController.text = a.street;
       _buildingController.text = a.building ?? '';
@@ -155,16 +152,11 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   }
 
   String get _effectiveLabel {
-    switch (_labelType) {
-      case AddressLabelType.home:
-        return 'Home';
-      case AddressLabelType.office:
-        return 'Office';
-      case AddressLabelType.other:
-        return _customLabelController.text.trim().isEmpty
-            ? 'Other'
-            : _customLabelController.text.trim();
+    if (_labelType == AddressLabelType.other) {
+      final custom = _customLabelController.text.trim();
+      if (custom.isNotEmpty) return custom;
     }
+    return _labelType.storageValue;
   }
 
   bool get _canSave =>
@@ -204,14 +196,14 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       setState(() {
         _loadingLocation = false;
         _locationError = e.reason.contains('disabled')
-            ? 'Turn on location services to use this.'
-            : 'Location permission denied. Drag the map to set the pin.';
+            ? 'address_form_screen.location_services_off'.tr()
+            : 'address_form_screen.location_permission_denied'.tr();
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _loadingLocation = false;
-        _locationError = 'Could not get your location. Drag the map instead.';
+        _locationError = 'address_form_screen.location_unavailable'.tr();
       });
     }
   }
@@ -227,7 +219,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
     if (result == null) {
       setState(() {
         _searchLoading = false;
-        _locationError = 'No place found. Try a different search.';
+        _locationError = 'address_form_screen.no_place_found'.tr();
       });
       return;
     }
@@ -336,11 +328,11 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                     ),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _sectionLabel('Label', isDark),
+                            _sectionLabel('address_form_screen.label'.tr(), isDark),
                             LabelChooser(
                               selected: _labelType,
                               onChanged: (t) => setState(() => _labelType = t),
@@ -349,25 +341,27 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               const SizedBox(height: 10),
                               AuroraInputField(
                                 controller: _customLabelController,
-                                hint: 'Custom label',
+                                hint: 'address_form_screen.custom_label'.tr(),
                                 prefixIcon: FontAwesomeIcons.bookmark,
                                 onChanged: (_) => setState(() {}),
                               ),
                             ],
                             const SizedBox(height: 18),
-                            _sectionLabel('Full Name', isDark),
+                            _sectionLabel('address_form_screen.full_name'.tr(), isDark),
                             AuroraInputField(
                               controller: _fullNameController,
-                              hint: 'Recipient\'s full name',
+                              hint: 'address_form_screen.recipient_full_name'.tr(),
                               prefixIcon: FontAwesomeIcons.user,
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 18),
-                            _sectionLabel('City', isDark),
+                            _sectionLabel('address_form_screen.city'.tr(), isDark),
                             AuroraSelect(
                               value: _city?.name,
-                              hint: _loadingCities ? 'Loading…' : 'Pick your city',
-                              sheetTitle: 'Select city',
+                              hint: _loadingCities
+                                  ? 'address_form_screen.loading'.tr()
+                                  : 'address_form_screen.pick_your_city'.tr(),
+                              sheetTitle: 'address_form_screen.select_city'.tr(),
                               options: _cities.map((c) => c.name).toList(),
                               prefixIcon: FontAwesomeIcons.city,
                               enabled: !_loadingCities && _cities.isNotEmpty,
@@ -383,15 +377,15 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               },
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('Area', isDark),
+                            _sectionLabel('address_form_screen.area'.tr(), isDark),
                             AuroraSelect(
                               value: _area?.name,
                               hint: _city == null
-                                  ? 'Pick a city first'
+                                  ? 'address_form_screen.pick_city_first'.tr()
                                   : _loadingAreas
-                                      ? 'Loading…'
-                                      : 'Pick your area',
-                              sheetTitle: 'Select area',
+                                      ? 'address_form_screen.loading'.tr()
+                                      : 'address_form_screen.pick_your_area'.tr(),
+                              sheetTitle: 'address_form_screen.select_area'.tr(),
                               options: _areas.map((a) => a.name).toList(),
                               prefixIcon: FontAwesomeIcons.map,
                               enabled: _city != null && !_loadingAreas && _areas.isNotEmpty,
@@ -402,18 +396,18 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               },
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('Street', isDark),
+                            _sectionLabel('address_form_screen.street'.tr(), isDark),
                             AuroraInputField(
                               controller: _streetController,
-                              hint: 'Street name',
+                              hint: 'address_form_screen.street_name'.tr(),
                               prefixIcon: FontAwesomeIcons.road,
                               onChanged: (_) => setState(() {}),
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('Building', isDark),
+                            _sectionLabel('address_form_screen.building'.tr(), isDark),
                             AuroraInputField(
                               controller: _buildingController,
-                              hint: 'Building name or number (optional)',
+                              hint: 'address_form_screen.building_hint'.tr(),
                               prefixIcon: FontAwesomeIcons.building,
                               onChanged: (_) => setState(() {}),
                             ),
@@ -425,10 +419,10 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      _sectionLabel('Floor', isDark),
+                                      _sectionLabel('address_form_screen.floor'.tr(), isDark),
                                       AuroraInputField(
                                         controller: _floorController,
-                                        hint: 'e.g. 3',
+                                        hint: 'address_form_screen.floor_hint'.tr(),
                                         keyboardType: TextInputType.number,
                                         onChanged: (_) => setState(() {}),
                                       ),
@@ -440,10 +434,10 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      _sectionLabel('Apartment', isDark),
+                                      _sectionLabel('address_form_screen.apartment'.tr(), isDark),
                                       AuroraInputField(
                                         controller: _aptController,
-                                        hint: 'e.g. 3B',
+                                        hint: 'address_form_screen.apartment_hint'.tr(),
                                         onChanged: (_) => setState(() {}),
                                       ),
                                     ],
@@ -452,10 +446,10 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                               ],
                             ),
                             const SizedBox(height: 14),
-                            _sectionLabel('Directions (optional)', isDark),
+                            _sectionLabel('address_form_screen.directions'.tr(), isDark),
                             AuroraInputField(
                               controller: _instructionsController,
-                              hint: 'Landmark, gate code, delivery notes…',
+                              hint: 'address_form_screen.directions_hint'.tr(),
                               prefixIcon: FontAwesomeIcons.noteSticky,
                               maxLines: 3,
                               keyboardType: TextInputType.multiline,
@@ -492,8 +486,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                                 )
                               else
                                 Text(
-                                  'Drag the pin, search a place, or tap the '
-                                  'crosshair to use your current location.',
+                                  'address_form_screen.map_hint'.tr(),
                                   style: AppTextStyles.caption.copyWith(
                                     fontSize: 11,
                                     color: c.textMute2,
@@ -513,7 +506,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 16),
                       decoration: BoxDecoration(
                         color: isDark ? AppColors.auroraDeepBase : AppColors.white,
                         border: Border(
@@ -530,7 +523,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                         child: AbsorbPointer(
                           absorbing: !_canSave,
                           child: AuroraPrimaryButton(
-                            text: 'Save address',
+                            text: 'address_form_screen.save_address'.tr(),
                             height: 52,
                             isLoading: _saving,
                             onPressed: _save,
@@ -601,7 +594,7 @@ class _IncludeLocationToggle extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Pin on map',
+                    'address_form_screen.pin_on_map'.tr(),
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -610,7 +603,7 @@ class _IncludeLocationToggle extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Help us find you faster. Off by default.',
+                    'address_form_screen.pin_on_map_subtitle'.tr(),
                     style: AppTextStyles.bodySmall.copyWith(
                       fontSize: 11,
                       color: surfaceColors.textMute,
@@ -636,18 +629,25 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: iconColor),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: iconColor,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              isEdit ? 'Edit address' : 'Add a new address',
+              isEdit
+                  ? 'address_form_screen.edit_address'.tr()
+                  : 'address_form_screen.add_new_address'.tr(),
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -680,7 +680,10 @@ class _LatLngReadout extends StatelessWidget {
         FaIcon(FontAwesomeIcons.locationCrosshairs, size: 11, color: surfaceColors.textMute2),
         const SizedBox(width: 6),
         Text(
-          'Pinned: ${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}',
+          'address_form_screen.pinned_coords'.tr(namedArgs: {
+            'lat': localizedNumber(latitude, decimals: 5),
+            'lng': localizedNumber(longitude, decimals: 5),
+          }),
           style: AppTextStyles.caption.copyWith(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -731,7 +734,7 @@ class _DefaultToggle extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Set as default',
+                    'address_form_screen.set_as_default'.tr(),
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -740,7 +743,7 @@ class _DefaultToggle extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Use this address for every order',
+                    'address_form_screen.default_subtitle'.tr(),
                     style: AppTextStyles.bodySmall.copyWith(
                       fontSize: 11,
                       color: surfaceColors.textMute,

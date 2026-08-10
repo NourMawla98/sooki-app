@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -14,6 +15,7 @@ import '../../../../services/toast_service.dart';
 import '../../../../services/wishlist_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
@@ -206,7 +208,7 @@ class _ForYouDeckState extends State<ForYouDeck>
     return ListenableBuilder(
       listenable: _wishlist,
       builder: (context, _) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -313,7 +315,7 @@ class _SectionHeader extends StatelessWidget {
           ).createShader(bounds),
           blendMode: BlendMode.srcIn,
           child: Text(
-            'For You',
+            'for_you_deck.section_title'.tr(),
             style: AppTextStyles.heading3.copyWith(
               color: AppColors.white,
               fontWeight: FontWeight.w900,
@@ -347,7 +349,7 @@ class _SectionHeader extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                'AI PICKED',
+                'for_you_deck.ai_picked'.tr(),
                 style: AppTextStyles.captionSmall.copyWith(
                   color: AppColors.white,
                   fontSize: 9,
@@ -451,28 +453,28 @@ class _ForYouCard extends StatelessWidget {
               ),
             ),
             // Inline progress bar — top edge, story-style.
-            Positioned(
+            PositionedDirectional(
               top: 0,
-              left: 0,
-              right: 0,
+              start: 0,
+              end: 0,
               child: _InlineProgressBar(controller: progressController),
             ),
-            Positioned(
+            PositionedDirectional(
               top: 12,
-              left: 12,
+              start: 12,
               child: _CountPill(index: index, total: total),
             ),
-            Positioned(
+            PositionedDirectional(
               top: 12,
-              right: 12,
+              end: 12,
               child: _HeartButton(
                 isActive: isWishlisted,
                 onTap: onHeartTap,
               ),
             ),
-            Positioned(
-              left: 14,
-              right: 14,
+            PositionedDirectional(
+              start: 14,
+              end: 14,
               bottom: 14,
               child: _InfoBlock(pick: pick),
             ),
@@ -495,7 +497,7 @@ class _InlineProgressBar extends StatelessWidget {
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, _) => FractionallySizedBox(
-          alignment: Alignment.centerLeft,
+          alignment: AlignmentDirectional.centerStart,
           widthFactor: controller.value.clamp(0.0, 1.0),
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -534,7 +536,7 @@ class _CountPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${index + 1}',
+            localizedNumber(index + 1),
             style: AppTextStyles.captionSmall.copyWith(
               color: AppColors.auroraPink,
               fontSize: 9,
@@ -544,7 +546,7 @@ class _CountPill extends StatelessWidget {
             ),
           ),
           Text(
-            ' / $total',
+            ' / ${localizedNumber(total)}',
             style: AppTextStyles.captionSmall.copyWith(
               color: AppColors.white.withValues(alpha: 0.85),
               fontSize: 9,
@@ -599,7 +601,7 @@ class ForYouDeckSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -637,7 +639,7 @@ class _InfoBlock extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          '\$${pick.price.toStringAsFixed(pick.price.truncateToDouble() == pick.price ? 0 : 2)}',
+          '\$${localizedDigits(pick.price.toStringAsFixed(pick.price.truncateToDouble() == pick.price ? 0 : 2))}',
           style: AppTextStyles.auroraMonoPrice.copyWith(
             color: AppColors.white,
             fontSize: 13,

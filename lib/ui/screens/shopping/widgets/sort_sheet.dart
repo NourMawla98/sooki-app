@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -21,7 +22,7 @@ class SortSheet extends StatelessWidget {
         final bg = isDark ? AppColors.auroraDeepBase : AppColors.white;
 
         return Container(
-          padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 18, 12, 16),
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(24),
@@ -38,7 +39,7 @@ class SortSheet extends StatelessWidget {
                   ).createShader(bounds),
                   blendMode: BlendMode.srcIn,
                   child: Text(
-                    'Sort by',
+                    'sort_sheet.sort_by'.tr(),
                     style: AppTextStyles.heading3.copyWith(
                       color: AppColors.white,
                       fontWeight: FontWeight.w900,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -15,6 +16,7 @@ import '../../../enums/sort_option.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/bars/sort_filter_bar.dart';
 import '../../reusable_components/category_pill/aurora_category_l1_pill.dart';
 import '../../reusable_components/category_pill/l1_pill_row_skeleton.dart';
@@ -430,7 +432,8 @@ class _LoadedBody extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            '$totalCount styles',
+            'shopping_screen.style_count'
+                .tr(namedArgs: {'count': localizedNumber(totalCount)}),
             style: AppTextStyles.captionSmall.copyWith(
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.55)
@@ -479,7 +482,7 @@ class _LoadedBody extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
           sliver: SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (_, i) => ProductGridCard(item: items[i]),
@@ -948,7 +951,7 @@ class _SkeletonGrid extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 10,
@@ -983,7 +986,7 @@ class _ErrorState extends StatelessWidget {
             children: [
               FaIcon(FontAwesomeIcons.arrowsRotate, size: 32, color: color),
               const SizedBox(height: 10),
-              Text('Tap to retry',
+              Text('shopping_screen.tap_to_retry'.tr(),
                   style: AppTextStyles.caption.copyWith(color: color)),
             ],
           ),
@@ -1014,7 +1017,7 @@ class _EmptyState extends StatelessWidget {
             FaIcon(FontAwesomeIcons.boxOpen, size: 48, color: mutedIcon),
             const SizedBox(height: 16),
             Text(
-              'No products in this category yet',
+              'shopping_screen.empty_category'.tr(),
               style: AppTextStyles.bodyMedium.copyWith(color: mutedText),
             ),
           ],
@@ -1037,7 +1040,7 @@ class _EndLabel extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Center(
         child: Text(
-          "— You're all caught up —",
+          'shopping_screen.all_caught_up'.tr(),
           style: AppTextStyles.captionSmall.copyWith(
             color: color,
             letterSpacing: 0.8,

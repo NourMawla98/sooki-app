@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -11,15 +12,15 @@ Future<bool> showAuroraConfirmSheet(
   String? subtitle,
   required FaIconData icon,
   Color iconColor = AppColors.auroraRed,
-  String confirmLabel = 'Confirm',
+  String? confirmLabel,
   Color confirmColor = AppColors.auroraRed,
-  String cancelLabel = 'Cancel',
+  String? cancelLabel,
   Future<void> Function()? onConfirm,
 }) async {
   final result = await showGeneralDialog<bool>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Dismiss',
+    barrierLabel: 'aurora_confirm_sheet.dismiss'.tr(),
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 260),
     pageBuilder: (_, _, _) => _AuroraConfirmSheet(
@@ -27,9 +28,9 @@ Future<bool> showAuroraConfirmSheet(
       subtitle: subtitle,
       icon: icon,
       iconColor: iconColor,
-      confirmLabel: confirmLabel,
+      confirmLabel: confirmLabel ?? 'common.confirm'.tr(),
       confirmColor: confirmColor,
-      cancelLabel: cancelLabel,
+      cancelLabel: cancelLabel ?? 'common.cancel'.tr(),
       onConfirm: onConfirm,
     ),
     transitionBuilder: (_, anim, _, child) {

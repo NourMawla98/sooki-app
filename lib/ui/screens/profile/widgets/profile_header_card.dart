@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -7,6 +8,7 @@ import '../../../../services/theme_service.dart';
 import '../../../../services/user_profile_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
   final int? ordersCount;
@@ -32,7 +34,7 @@ class ProfileHeaderCard extends StatelessWidget {
         final profile = GetIt.instance<UserProfileService>();
 
         return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 8),
           child: Column(
             children: [
               // Avatar with edit button
@@ -81,9 +83,9 @@ class ProfileHeaderCard extends StatelessWidget {
                   ),
 
                   // Edit badge
-                  Positioned(
+                  PositionedDirectional(
                     bottom: 0,
-                    right: 0,
+                    end: 0,
                     child: GestureDetector(
                       onTap: () => Navigator.pushNamed(
                           context, editProfileScreenRoute),
@@ -156,20 +158,24 @@ class ProfileHeaderCard extends StatelessWidget {
                   child: Row(
                     children: [
                       _StatCell(
-                        value: ordersCount?.toString() ?? '—',
-                        label: 'Orders',
+                        value: ordersCount == null
+                            ? '-'
+                            : localizedNumber(ordersCount!),
+                        label: 'profile_header_card.orders'.tr(),
                         isDark: isDark,
                       ),
                       _VerticalDivider(isDark: isDark),
                       _StatCell(
-                        value: wishlistCount?.toString() ?? '—',
-                        label: 'Wishlist',
+                        value: wishlistCount == null
+                            ? '-'
+                            : localizedNumber(wishlistCount!),
+                        label: 'common.wishlist'.tr(),
                         isDark: isDark,
                       ),
                       _VerticalDivider(isDark: isDark),
                       _StatCell(
-                        value: points?.toString() ?? '—',
-                        label: 'Points',
+                        value: points == null ? '-' : localizedNumber(points!),
+                        label: 'profile_header_card.points'.tr(),
                         isDark: isDark,
                       ),
                     ],

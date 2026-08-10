@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/number_localization.dart';
 
 class ImageGallery extends StatefulWidget {
   final List<String> imageUrls;
@@ -79,7 +80,7 @@ class ImageGalleryState extends State<ImageGallery> {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 0),
               child: Stack(
                 children: [
                   ClipRRect(
@@ -107,15 +108,15 @@ class ImageGalleryState extends State<ImageGallery> {
                     ),
                   ),
                 if (widget.isVerified)
-                  Positioned(
+                  PositionedDirectional(
                     bottom: 12,
-                    left: 12,
+                    start: 12,
                     child: _VerifiedPill(isDark: isDark),
                   ),
                 if (widget.discountPercentage != null)
-                  Positioned(
+                  PositionedDirectional(
                     bottom: 12,
-                    right: 12,
+                    end: 12,
                     child: _DiscountPill(
                       percent: widget.discountPercentage!,
                       isDark: isDark,
@@ -140,7 +141,7 @@ class ImageGalleryState extends State<ImageGallery> {
                 height: 50,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 6),
+                  padding: const EdgeInsetsDirectional.fromSTEB(14, 4, 14, 6),
                   itemCount: count,
                   separatorBuilder: (_, _) => const SizedBox(width: 6),
                   itemBuilder: (context, i) {
@@ -334,7 +335,7 @@ class _DiscountPill extends StatelessWidget {
         ),
       ),
       child: Text(
-        '-$percent%',
+        '-${localizedNumber(percent)}%',
         style: AppFonts.primary(
           fontSize: 10,
           fontWeight: FontWeight.w800,

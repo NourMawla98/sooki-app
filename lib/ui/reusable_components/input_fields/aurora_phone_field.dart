@@ -1,4 +1,5 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -205,7 +206,7 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField>
                                     color: textColor,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: 'Search country…',
+                                    hintText: 'aurora_phone_field.search_country'.tr(),
                                     hintStyle: AppTextStyles.dsBody.copyWith(
                                       fontSize: 13,
                                       color: hintColor,
@@ -298,6 +299,8 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField>
                                               ),
                                             ),
                                             const SizedBox(width: 6),
+                                            // Dial code stays in Western digits:
+                                            // it is a phone identifier, not a quantity.
                                             Text(
                                               '+${c.phoneCode}',
                                               style: AppTextStyles.dsBody
@@ -376,6 +379,8 @@ class _AuroraPhoneFieldState extends State<AuroraPhoneField>
                       style: const TextStyle(fontSize: 18, height: 1),
                     ),
                     const SizedBox(width: 5),
+                    // Dial code stays in Western digits: it is a phone
+                    // identifier, not a quantity.
                     Text(
                       '+${_country.phoneCode}',
                       style: AppTextStyles.dsBody.copyWith(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +19,11 @@ import 'toast_service.dart';
 /// - Provides the current language for API calls (via `languageBackendValue`).
 /// - Keeps `easy_localization`'s live locale in sync when the caller supplies
 ///   a [BuildContext] to [setLanguage].
-class LanguageService {
+/// Notifies listeners on every language change. Screens that stay mounted while
+/// the language is switched (the auth screens, settings) listen to this so their
+/// `.tr()` calls are re-evaluated: `.tr()` is context-free, so a locale change
+/// alone does not mark an already-built route dirty.
+class LanguageService extends ChangeNotifier {
   static const String _languageKey = 'app_language';
 
   final SharedPreferences _prefs;
@@ -71,6 +76,7 @@ class LanguageService {
     if (context != null && context.mounted) {
       await context.setLocale(I18nBootstrap.localeFor(language));
     }
+    notifyListeners();
 
     // Persist the choice to the customer's account (fire-and-forget) and
     // surface the backend's confirmation message.

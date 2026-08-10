@@ -4,8 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 
-/// Glass-style action button — icon + label row, optional pink badge.
+/// Glass-style action button. Icon + label row, optional pink badge.
 ///
 /// Used in filter/sort rows. Matches the `_GlassButton` design from
 /// the Shopping screen:
@@ -73,8 +74,8 @@ class AuroraGlassActionButton extends StatelessWidget {
                   ],
                 ),
                 if (badgeCount > 0)
-                  Positioned(
-                    right: 8,
+                  PositionedDirectional(
+                    end: 8,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 6,
@@ -85,7 +86,7 @@ class AuroraGlassActionButton extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '$badgeCount',
+                        localizedNumber(badgeCount),
                         style: AppTextStyles.captionSmall.copyWith(
                           color: AppColors.white,
                           fontSize: 10,

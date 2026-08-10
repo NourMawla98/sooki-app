@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,19 +14,22 @@ import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 /// italic headline, and a white CTA chip. Taps route to the item-details stub.
 class EditorialCover extends StatelessWidget {
   final String imageUrl;
-  final String kicker;
-  final String title;
-  final String ctaLabel;
+  final String? kicker;
+  final String? title;
+  final String? ctaLabel;
   final String ctaRoute;
+
+  /// Decorative issue stamp. Kept in Western digits because it is typography,
+  /// not a quantity the shopper reads.
   final String numberStamp;
 
   const EditorialCover({
     super.key,
     this.imageUrl =
         'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=900&h=1200&fit=crop',
-    this.kicker = "TONIGHT'S EDIT",
-    this.title = 'Your shopping,\nafter dark.',
-    this.ctaLabel = 'EXPLORE',
+    this.kicker,
+    this.title,
+    this.ctaLabel,
     this.ctaRoute = itemDetailsScreenRoute,
     this.numberStamp = '04',
   });
@@ -78,10 +82,10 @@ class EditorialCover extends StatelessWidget {
                   ),
                 ),
 
-                // Pink radial glow top-right
-                Positioned(
+                // Pink radial glow, top trailing corner
+                PositionedDirectional(
                   top: 10,
-                  right: 10,
+                  end: 10,
                   child: IgnorePointer(
                     child: Container(
                       width: 120,
@@ -100,10 +104,10 @@ class EditorialCover extends StatelessWidget {
                   ),
                 ),
 
-                // Giant italic number top-left
-                Positioned(
+                // Giant italic number, top leading corner
+                PositionedDirectional(
                   top: 10,
-                  left: 20,
+                  start: 20,
                   child: Text(
                     numberStamp,
                     style: AppFonts.editorial(
@@ -124,7 +128,7 @@ class EditorialCover extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        kicker,
+                        kicker ?? 'editorial_cover.tonights_edit'.tr(),
                         style: AppTextStyles.editorialKicker.copyWith(
                           fontSize: 10,
                           letterSpacing: 2.8,
@@ -132,14 +136,14 @@ class EditorialCover extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        title,
+                        title ?? 'editorial_cover.title'.tr(),
                         style: AppTextStyles.editorialTitle.copyWith(
                           fontSize: 28,
                           height: 1.1,
                         ),
                       ),
                       const SizedBox(height: 14),
-                      _ExploreCta(label: ctaLabel),
+                      _ExploreCta(label: ctaLabel ?? 'editorial_cover.explore'.tr()),
                     ],
                   ),
                 ),
@@ -225,6 +229,7 @@ class _ExploreCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
@@ -245,8 +250,8 @@ class _ExploreCta extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const FaIcon(
-            FontAwesomeIcons.arrowRight,
+          FaIcon(
+            isRtl ? FontAwesomeIcons.arrowLeft : FontAwesomeIcons.arrowRight,
             size: 11,
             color: AppColors.auroraDeepBase,
           ),

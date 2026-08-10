@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../models/review.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';
 
 class AuroraReviewCard extends StatelessWidget {
@@ -60,7 +62,7 @@ class AuroraReviewCard extends StatelessWidget {
                   ],
                   const Spacer(),
                   Text(
-                    review.date,
+                    localizedDigits(review.date),
                     style: AppFonts.primary(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -93,7 +95,11 @@ class AuroraReviewCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      '${review.helpfulCount} helpful',
+                      'aurora_review_card.helpful_count'.tr(
+                        namedArgs: {
+                          'count': localizedNumber(review.helpfulCount),
+                        },
+                      ),
                       style: AppFonts.primary(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -136,7 +142,7 @@ class _VerifiedPill extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            'VERIFIED',
+            'aurora_review_card.verified'.tr(),
             style: AppFonts.primary(
               fontSize: 8,
               fontWeight: FontWeight.w800,

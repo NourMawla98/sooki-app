@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../backend_integration/apis/banner_api.dart';
 import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../../backend_integration/dtos/banner/banner_dto.dart';
+import '../../../../enums/app_language.dart';
 import '../../../../enums/banner_type.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
@@ -86,6 +88,15 @@ class _RotatingSmartHeroState extends State<RotatingSmartHero>
 
   @override
   Widget build(BuildContext context) {
+    // The carousel keeps a left-to-right layout in every language, so its
+    // paddings, dots and swipe direction never mirror.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
     if (_isError) {
       return _HeroRetry(height: widget.height, onRetry: _fetch);
     }
@@ -201,7 +212,7 @@ class _HeroRetry extends StatelessWidget {
                   FaIcon(FontAwesomeIcons.rotateRight, size: 24, color: iconColor),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap to retry',
+                    'rotating_smart_hero.tap_to_retry'.tr(),
                     style: AppTextStyles.bodySmall.copyWith(color: iconColor),
                   ),
                 ],
@@ -217,6 +228,12 @@ class _HeroRetry extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Banner card
 // ---------------------------------------------------------------------------
+
+/// The carousel layout is pinned left-to-right, so a sentence in a
+/// right-to-left language would otherwise have its punctuation flipped to the
+/// wrong end. Text keeps the direction of the active language.
+TextDirection _localeTextDirection(BuildContext context) =>
+    AppLanguage.fromCode(context.locale.languageCode).textDirection;
 
 class _BannerCard extends StatelessWidget {
   final BannerDto banner;
@@ -269,6 +286,7 @@ class _BannerCard extends StatelessWidget {
                 if (banner.title != null && banner.title!.isNotEmpty)
                   Text(
                     banner.title!.toUpperCase(),
+                    textDirection: _localeTextDirection(context),
                     style: AppTextStyles.editorialKicker.copyWith(
                       color: AppColors.white,
                       letterSpacing: 2.5,
@@ -285,6 +303,7 @@ class _BannerCard extends StatelessWidget {
                         banner.subtitle!.isNotEmpty) ...[
                       Text(
                         banner.subtitle!,
+                        textDirection: _localeTextDirection(context),
                         style: AppTextStyles.heading2.copyWith(
                           color: AppColors.white,
                           fontSize: 24,
@@ -303,6 +322,7 @@ class _BannerCard extends StatelessWidget {
                         banner.description!.isNotEmpty) ...[
                       Text(
                         banner.description!,
+                        textDirection: _localeTextDirection(context),
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.white.withValues(alpha: 0.9),
                         ),
@@ -358,7 +378,7 @@ class _CtaChip extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Shop now',
+              'common.shop_now'.tr(),
               style: AppTextStyles.buttonSmall.copyWith(
                 color: AppColors.white,
                 fontWeight: FontWeight.w700,

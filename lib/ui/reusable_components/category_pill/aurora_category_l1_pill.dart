@@ -207,8 +207,8 @@ class _AuroraCategoryL1PillState extends State<AuroraCategoryL1Pill>
 }
 
 /// Paints a rounded-rect outline using a [SweepGradient] whose rotation is
-/// driven by [angle]. Animating `angle` from 0 → 2π on repeat makes the
-/// gradient colors appear to travel around the perimeter.
+/// driven by [angle]. Animating `angle` from 0 to a full turn on repeat
+/// makes the gradient colors appear to travel around the perimeter.
 class _RotatingBorderPainter extends CustomPainter {
   final double angle;
   static const double _borderRadius = 6;

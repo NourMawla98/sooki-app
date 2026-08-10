@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -169,9 +170,9 @@ class _MapPickerCardState extends State<MapPickerCard> {
                 ),
               ),
               // Zoom controls (top-right)
-              Positioned(
+              PositionedDirectional(
                 top: 10,
-                right: 10,
+                end: 10,
                 child: Column(
                   children: [
                     _ZoomButton(
@@ -189,8 +190,8 @@ class _MapPickerCardState extends State<MapPickerCard> {
                 ),
               ),
               // Use-my-location FAB (bottom-right)
-              Positioned(
-                right: 10,
+              PositionedDirectional(
+                end: 10,
                 bottom: 10,
                 child: _UseMyLocationFab(
                   loading: widget.locationLoading,
@@ -260,7 +261,7 @@ class _MapAttribution extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.bottomLeft,
+      alignment: AlignmentDirectional.bottomStart,
       child: Container(
         margin: const EdgeInsets.all(6),
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -350,7 +351,7 @@ class _SearchFieldState extends State<_SearchField> {
             height: 1.0,
           ),
           decoration: InputDecoration(
-            hintText: 'Search a place, street, or area',
+            hintText: 'map_picker_card.search_hint'.tr(),
             hintStyle: AppTextStyles.dsBody.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.normal,
@@ -358,7 +359,7 @@ class _SearchFieldState extends State<_SearchField> {
               height: 1.0,
             ),
             prefixIcon: Padding(
-              padding: const EdgeInsets.only(left: 14, right: 10),
+              padding: const EdgeInsetsDirectional.only(start: 14, end: 10),
               child: FaIcon(
                 FontAwesomeIcons.magnifyingGlass,
                 size: 16,
@@ -369,7 +370,7 @@ class _SearchFieldState extends State<_SearchField> {
                 const BoxConstraints(minWidth: 0, minHeight: 0),
             suffixIcon: widget.loading
                 ? Padding(
-                    padding: const EdgeInsets.only(right: 14),
+                    padding: const EdgeInsetsDirectional.only(end: 14),
                     child: SizedBox(
                       width: 16,
                       height: 16,
@@ -385,7 +386,7 @@ class _SearchFieldState extends State<_SearchField> {
                         behavior: HitTestBehavior.opaque,
                         onTap: () => widget.controller.clear(),
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 14),
+                          padding: const EdgeInsetsDirectional.only(end: 14),
                           child: FaIcon(
                             FontAwesomeIcons.xmark,
                             size: 12,

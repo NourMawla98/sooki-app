@@ -50,6 +50,8 @@ class _AppHeaderState extends State<AppHeader> {
               child: const SizedBox.shrink(),
             ),
           ),
+          // The header buttons sit on the right in every language, so the
+          // panel they open is anchored to the right rather than to the end.
           Positioned(
             top: pos.dy + size.height + 8,
             right: 16,
@@ -87,8 +89,10 @@ class _AppHeaderState extends State<AppHeader> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge(
-          [ThemeService.instance, NotificationService.instance]),
+      listenable: Listenable.merge([
+        ThemeService.instance,
+        NotificationService.instance,
+      ]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final bg = isDark
@@ -97,8 +101,7 @@ class _AppHeaderState extends State<AppHeader> {
         final borderBottom = isDark
             ? AppColors.white.withValues(alpha: 0.04)
             : AppColors.gray100;
-        final iconColor =
-            isDark ? AppColors.white : AppColors.auroraPurple;
+        final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
 
         return ClipRect(
           child: BackdropFilter(
@@ -113,29 +116,34 @@ class _AppHeaderState extends State<AppHeader> {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 6, 16, 12),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          const AppLogo(size: LogoSize.small),
-                          const Spacer(),
-                          _PlainIconButton(
-                            buttonKey: _notificationButtonKey,
-                            icon: FontAwesomeIcons.bell,
-                            iconColor: iconColor,
-                            badgeCount: _unreadCount,
-                            onTap: _showNotificationPanel,
-                          ),
-                          const SizedBox(width: 18),
-                          _PlainIconButton(
-                            buttonKey: _menuButtonKey,
-                            icon: FontAwesomeIcons.bars,
-                            iconColor: iconColor,
-                            onTap: _showMenu,
-                          ),
-                        ],
+                      // The logo and the two icon buttons keep the same
+                      // positions in every language, so this row never mirrors.
+                      Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Row(
+                          children: [
+                            const AppLogo(size: LogoSize.small),
+                            const Spacer(),
+                            _PlainIconButton(
+                              buttonKey: _notificationButtonKey,
+                              icon: FontAwesomeIcons.bell,
+                              iconColor: iconColor,
+                              badgeCount: _unreadCount,
+                              onTap: _showNotificationPanel,
+                            ),
+                            const SizedBox(width: 18),
+                            _PlainIconButton(
+                              buttonKey: _menuButtonKey,
+                              icon: FontAwesomeIcons.bars,
+                              iconColor: iconColor,
+                              onTap: _showMenu,
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 10),
                       const CustomSearchBar(readOnly: true),
@@ -180,9 +188,9 @@ class _PlainIconButton extends StatelessWidget {
             child: FaIcon(icon, size: 20, color: iconColor),
           ),
           if (badgeCount > 0)
-            Positioned(
+            PositionedDirectional(
               top: -3,
-              right: -4,
+              end: -4,
               child: NotificationDotBadge(count: badgeCount),
             ),
         ],

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 
 import '../../../backend_integration/apis/categories_api.dart';
@@ -132,7 +133,7 @@ class _SkeletonBody extends StatelessWidget {
         Container(
           width: 84,
           decoration: BoxDecoration(
-            border: Border(right: BorderSide(color: divider)),
+            border: BorderDirectional(end: BorderSide(color: divider)),
           ),
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -163,7 +164,7 @@ class _SkeletonBody extends StatelessWidget {
         // Content skeleton
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(12, 14, 12, 24),
+            padding: const EdgeInsetsDirectional.fromSTEB(12, 14, 12, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -233,7 +234,7 @@ class _ErrorBody extends StatelessWidget {
             Icon(Icons.refresh_rounded, color: mutedText, size: 36),
             const SizedBox(height: 8),
             Text(
-              'Tap to retry',
+              'category_browse_screen.tap_to_retry'.tr(),
               style: AppTextStyles.caption.copyWith(color: mutedText),
             ),
           ],
@@ -267,7 +268,7 @@ class _Sidebar extends StatelessWidget {
     return Container(
       width: 84,
       decoration: BoxDecoration(
-        border: Border(right: BorderSide(color: divider)),
+        border: BorderDirectional(end: BorderSide(color: divider)),
       ),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -475,13 +476,14 @@ class _ContentPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final nameColor = isDark ? AppColors.white : AppColors.auroraPurple;
     final subcategories = category.subCategories;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return RefreshIndicator(
       onRefresh: onRefresh,
       color: AppColors.auroraPink,
       child: SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(12, 14, 12, 24),
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 14, 12, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -511,7 +513,7 @@ class _ContentPanel extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Browse all',
+                        'category_browse_screen.browse_all'.tr(),
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.white,
                           fontSize: 11,
@@ -519,8 +521,10 @@ class _ContentPanel extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const FaIcon(
-                        FontAwesomeIcons.chevronRight,
+                      FaIcon(
+                        isRtl
+                            ? FontAwesomeIcons.chevronLeft
+                            : FontAwesomeIcons.chevronRight,
                         size: 10,
                         color: AppColors.white,
                       ),
@@ -534,7 +538,7 @@ class _ContentPanel extends StatelessWidget {
             const SizedBox(height: 32),
             Center(
               child: Text(
-                'No subcategories yet',
+                'category_browse_screen.no_subcategories_yet'.tr(),
                 style: AppTextStyles.caption.copyWith(
                   color: isDark
                       ? AppColors.white.withValues(alpha: 0.35)

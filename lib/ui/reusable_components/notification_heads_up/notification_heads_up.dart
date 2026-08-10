@@ -10,8 +10,8 @@ import '../../../themes/app_text_styles.dart';
 /// In-app heads-up card shown when a push arrives while the app is open.
 ///
 /// Aurora glass card that slides down from the top with a type icon, title +
-/// body, an X to dismiss, and an aurora progress bar that fills left→right over
-/// the display window before auto-dismissing. Tapping it runs [onTap]
+/// body, an X to dismiss, and an aurora progress bar that fills from the start
+/// edge over the display window before auto-dismissing. Tapping it runs [onTap]
 /// (deep-link) and dismisses.
 class NotificationHeadsUp {
   NotificationHeadsUp._();
@@ -151,10 +151,10 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
 
         final n = widget.notification;
 
-        return Positioned(
+        return PositionedDirectional(
           top: topPad + 8,
-          left: 14,
-          right: 14,
+          start: 14,
+          end: 14,
           child: SlideTransition(
             position: _slideAnim,
             child: FadeTransition(
@@ -183,7 +183,8 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
+                            padding:
+                                const EdgeInsetsDirectional.fromSTEB(14, 13, 14, 13),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -256,7 +257,8 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                               ],
                             ),
                           ),
-                          // Aurora progress bar — grey track, gradient fills L→R.
+                          // Aurora progress bar: grey track, gradient fills from
+                          // the start edge toward the end edge.
                           SizedBox(
                             width: double.infinity,
                             height: 3,
@@ -267,7 +269,7 @@ class _HeadsUpCardState extends State<_HeadsUpCard>
                                   child: AnimatedBuilder(
                                     animation: _progressCtrl,
                                     builder: (context, child) => Align(
-                                      alignment: Alignment.centerLeft,
+                                      alignment: AlignmentDirectional.centerStart,
                                       child: FractionallySizedBox(
                                         widthFactor: _progressCtrl.value,
                                         child: const DecoratedBox(

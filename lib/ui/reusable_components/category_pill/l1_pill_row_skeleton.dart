@@ -7,10 +7,10 @@ import '../skeleton/skeleton_shimmer.dart';
 /// Renders four pill-shaped shimmer blocks with varied widths so the row
 /// reads as "real content is about to appear here" rather than "I am a
 /// row of identical chips." Widths match the footprint of real L1 labels
-/// (Women · Men · Electronics · Sale) to keep the layout stable once the
+/// (Women, Men, Electronics, Sale) to keep the layout stable once the
 /// taxonomy resolves.
 ///
-/// L2 and L3 rows are not rendered during taxonomy loading — they can't
+/// L2 and L3 rows are not rendered during taxonomy loading. They can't
 /// exist without a selected L1 parent, so we leave their space to the grid
 /// skeleton below.
 class L1PillRowSkeleton extends StatelessWidget {

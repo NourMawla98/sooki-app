@@ -1,6 +1,116 @@
 {
   "common": {
-    "app_name": "سوكي"
+    "app_name": "سوكي",
+    "add_to_cart": "أضف إلى السلة",
+    "select_a_size": "اختر المقاس",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "retry": "إعادة المحاولة",
+    "continue_as_guest": "المتابعة كزائر",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "sign_up": "إنشاء حساب",
+    "shop_now": "تسوق الآن",
+    "view_all": "عرض الكل",
+    "done": "تم",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "in_stock": "متوفر",
+    "out_of_stock": "غير متوفر",
+    "wishlist": "المفضلة",
+    "settings": "الإعدادات",
+    "search": "بحث",
+    "back": "رجوع"
+  },
+  "enums": {
+    "order_status": {
+      "processing": "قيد المعالجة",
+      "out_for_delivery": "قيد التوصيل",
+      "delivered": "تم التوصيل",
+      "received": "تم الاستلام",
+      "cancelled": "ملغي",
+      "rejected": "مرفوض",
+      "refunded": "تم الاسترجاع",
+      "packaged": "تم التغليف",
+      "delivery_failed": "فشل التوصيل"
+    },
+    "report_category": {
+      "bug": "خلل تقني",
+      "payment": "الدفع",
+      "order_issue": "مشكلة في الطلب",
+      "account": "الحساب",
+      "suggestion": "اقتراح",
+      "other": "أخرى"
+    }
+  },
+  "auth": {
+    "welcome_back": "أهلاً بعودتك!",
+    "login_subtitle": "سجّل الدخول إلى حسابك",
+    "email": "البريد الإلكتروني",
+    "email_hint": "your@email.com",
+    "password": "كلمة المرور",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "login": "تسجيل الدخول",
+    "no_account": "ليس لديك حساب؟ ",
+    "create_account": "إنشاء حساب",
+    "signup_subtitle": "سجّل الآن وابدأ التسوق",
+    "first_name": "الاسم الأول",
+    "first_name_hint": "محمد",
+    "last_name": "اسم العائلة",
+    "last_name_hint": "العلي",
+    "mobile_number": "رقم الهاتف",
+    "confirm_password": "تأكيد كلمة المرور",
+    "signup": "إنشاء حساب",
+    "have_account": "لديك حساب بالفعل؟ ",
+    "log_in": "تسجيل الدخول",
+    "forgot_title": "نسيت كلمة المرور؟",
+    "forgot_subtitle": "أدخل بريدك الإلكتروني لاستلام رابط إعادة التعيين",
+    "send_reset_link": "إرسال الرابط",
+    "remember_password": "تتذكر كلمة المرور؟ ",
+    "verify_title": "تأكيد بريدك الإلكتروني",
+    "verify_sent_to": "أرسلنا رابط تأكيد إلى",
+    "verify_spam_hint": "لم تجد الرسالة؟ تحقق من مجلد البريد غير المرغوب فيه.",
+    "verify_done": "لقد أكدت بريدي الإلكتروني",
+    "didnt_receive": "لم تستلم الرسالة؟ ",
+    "resend": "إعادة الإرسال",
+    "legal_prefix": "بالمتابعة، فإنك توافق على ",
+    "terms": "شروط الاستخدام",
+    "legal_middle": " و",
+    "privacy": "سياسة الخصوصية"
+  },
+  "validation": {
+    "required_field": "هذا الحقل مطلوب.",
+    "required": "مطلوب",
+    "subject_required": "يرجى إدخال الموضوع.",
+    "description_required": "يرجى إدخال الوصف.",
+    "invalid_email": "يرجى إدخال بريد إلكتروني صالح.",
+    "email_required": "يرجى إدخال بريدك الإلكتروني",
+    "min_6_chars": "٦ أحرف على الأقل",
+    "passwords_no_match": "كلمتا المرور غير متطابقتين",
+    "invalid_phone": "أدخل رقم هاتف صالح",
+    "password_too_short": "كلمة المرور قصيرة جدًا."
+  },
+  "time": {
+    "just_now": "الآن",
+    "minutes_ago": "قبل {n} د",
+    "hours_ago": "قبل {n} س",
+    "yesterday": "أمس",
+    "short_date": "{day} {month}",
+    "month_short": {
+      "1": "يناير",
+      "2": "فبراير",
+      "3": "مارس",
+      "4": "أبريل",
+      "5": "مايو",
+      "6": "يونيو",
+      "7": "يوليو",
+      "8": "أغسطس",
+      "9": "سبتمبر",
+      "10": "أكتوبر",
+      "11": "نوفمبر",
+      "12": "ديسمبر"
+    },
+    "long_date": "{day} {month} {year}"
   },
   "error": {
     "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
@@ -9,5 +119,674 @@
   },
   "ticker": {
     "no_announcements": "ترقبوا — عروض مثيرة في الطريق!"
+  },
+  "nav": {
+    "browse": "الرئيسية",
+    "deals": "العروض",
+    "auction": "المزاد",
+    "cart": "السلة"
+  },
+  "deals_screen": {
+    "feature_name": "العروض",
+    "tagline": "نجهّز لك أفضل الأسعار. عد إلينا قريبًا."
+  },
+  "auction_screen": {
+    "feature_name": "المزاد",
+    "tagline": "زايد، اربح، واقتنِ ما تريد. المزادات المباشرة في الطريق."
+  },
+  "image_viewer_screen": {
+    "counter": "{current} / {total}"
+  },
+  "loyalty_screen": {
+    "feature_name": "الولاء",
+    "tagline": "مكافآت تستحقها فعلًا. قريبًا جدًا."
+  },
+  "for_you_deck": {
+    "section_title": "مختارات لك",
+    "ai_picked": "اختيار ذكي"
+  },
+  "rotating_smart_hero": {
+    "tap_to_retry": "اضغط لإعادة المحاولة"
+  },
+  "quick_actions": {
+    "title": "إجراءات سريعة",
+    "track": "تتبع",
+    "reorder": "إعادة الطلب"
+  },
+  "categories_arrivals_section": {
+    "new_arrivals": "وصل حديثًا",
+    "no_items_in_category": "لا توجد منتجات في هذه الفئة بعد",
+    "all_caught_up": "- شاهدت كل الجديد -"
+  },
+  "sort_sheet": {
+    "sort_by": "ترتيب حسب"
+  },
+  "trending_now_section": {
+    "trending_now": "الأكثر رواجًا",
+    "badge_on_fire": "الأكثر طلبًا",
+    "badge_viral": "منتشر",
+    "badge_hyped": "مميز",
+    "badge_surging": "في صعود",
+    "badge_peak": "في القمة",
+    "badge_buzzing": "حديث الجميع"
+  },
+  "category_browse_screen": {
+    "tap_to_retry": "اضغط لإعادة المحاولة",
+    "browse_all": "عرض الكل",
+    "no_subcategories_yet": "لا توجد فئات فرعية بعد"
+  },
+  "product_detail_screen": {
+    "try_again": "إعادة المحاولة"
+  },
+  "change_password_screen": {
+    "title": "تغيير كلمة المرور",
+    "current_password": "كلمة المرور الحالية",
+    "enter_current_password": "أدخل كلمة المرور الحالية",
+    "new_password": "كلمة المرور الجديدة",
+    "enter_new_password": "أدخل كلمة المرور الجديدة",
+    "at_least_8_characters": "٨ أحرف على الأقل",
+    "confirm_new_password": "تأكيد كلمة المرور الجديدة",
+    "reenter_new_password": "أعد إدخال كلمة المرور الجديدة",
+    "update_password": "تحديث كلمة المرور"
+  },
+  "color_selector": {
+    "color_label": "اللون"
+  },
+  "price_quantity_row": {
+    "price_per_unit": "{price} / القطعة"
+  },
+  "size_selector": {
+    "size": "المقاس",
+    "size_guide": "دليل المقاسات"
+  },
+  "editorial_cover": {
+    "tonights_edit": "مختارات الليلة",
+    "title": "تسوقك،\nبعد حلول الظلام.",
+    "explore": "استكشف"
+  },
+  "category_detail_screen": {
+    "breadcrumb_categories": "الفئات",
+    "tap_to_retry": "اضغط لإعادة المحاولة",
+    "empty_state": "لا توجد منتجات في هذه الفئة حتى الآن",
+    "all_caught_up": "شاهدت كل شيء"
+  },
+  "shopping_screen": {
+    "style_count": "{count} إطلالة",
+    "tap_to_retry": "اضغط لإعادة المحاولة",
+    "empty_category": "لا توجد منتجات في هذه الفئة حتى الآن",
+    "all_caught_up": "شاهدت كل شيء"
+  },
+  "privacy_settings_screen": {
+    "title": "الخصوصية",
+    "data_collection": "جمع البيانات",
+    "analytics": "التحليلات",
+    "analytics_subtitle": "ساعدنا على التحسين بمشاركة بيانات الاستخدام",
+    "personalized_ads": "إعلانات مخصصة",
+    "personalized_ads_subtitle": "عرض إعلانات تناسب اهتماماتك",
+    "data_sharing_partners": "مشاركة البيانات مع الشركاء",
+    "data_sharing_partners_subtitle": "مشاركة البيانات مع شركاء موثوقين",
+    "location_tracking": "تتبع الموقع",
+    "location_tracking_subtitle": "السماح بالتوصيات حسب موقعك",
+    "your_data": "بياناتك",
+    "download_my_data": "تنزيل بياناتي",
+    "download_my_data_subtitle": "احصل على نسخة من بياناتك الشخصية",
+    "clear_search_history": "مسح سجل البحث",
+    "clear_search_history_subtitle": "حذف كل سجل البحث",
+    "clear_browsing_data": "مسح بيانات التصفح",
+    "clear_browsing_data_subtitle": "حذف المنتجات المحفوظة مؤقتا",
+    "coming_soon": "{title} - قريبا"
+  },
+  "aurora_review_card": {
+    "helpful_count": "{count} وجدوه مفيدا",
+    "verified": "موثق"
+  },
+  "edit_profile_screen": {
+    "title": "تعديل الملف الشخصي",
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "email_address": "البريد الإلكتروني",
+    "phone_number": "رقم الهاتف",
+    "first_name_hint": "سارة",
+    "last_name_hint": "أحمد",
+    "email_hint": "your@email.com",
+    "save_changes": "حفظ التغييرات"
+  },
+  "product_info": {
+    "only_n_left": "بقي {count} فقط",
+    "brand": "الماركة",
+    "about_this_item": "عن هذا المنتج",
+    "read_more": "اقرأ المزيد",
+    "show_less": "عرض أقل"
+  },
+  "cart_screen": {
+    "remove_item_title": "إزالة المنتج؟",
+    "remove": "إزالة"
+  },
+  "cart_empty_state": {
+    "your_cart": "سلتك",
+    "nothing_here_yet": "لا يوجد شيء هنا بعد",
+    "add_items_hint": "أضف المنتجات التي تعجبك\nوستظهر هنا."
+  },
+  "settings_screen": {
+    "delete_account": "حذف الحساب",
+    "delete_account_confirm": "هذا الإجراء نهائي ولا يمكن التراجع عنه. سيتم حذف جميع بياناتك.",
+    "appearance": "المظهر",
+    "dark_mode": "الوضع الداكن",
+    "dark_mode_subtitle": "التبديل إلى المظهر الداكن",
+    "language": "اللغة",
+    "notifications": "الإشعارات",
+    "push_notifications": "الإشعارات الفورية",
+    "push_notifications_subtitle": "تحديثات الطلبات والعروض",
+    "email_notifications": "إشعارات البريد الإلكتروني",
+    "email_notifications_subtitle": "الإيصالات والنشرات البريدية",
+    "account": "الحساب",
+    "change_password": "تغيير كلمة المرور",
+    "change_password_subtitle": "حدّث كلمة المرور الخاصة بك",
+    "delete_account_subtitle": "حذف بياناتك نهائياً",
+    "choose_language": "اختر لغتك المفضلة"
+  },
+  "filter_sheet": {
+    "filters": "الفلاتر",
+    "reset_all": "إعادة تعيين الكل",
+    "price": "السعر",
+    "color": "اللون",
+    "search_colors": "ابحث عن لون...",
+    "search_sizes": "ابحث عن مقاس...",
+    "apply": "تطبيق",
+    "no_results": "لا توجد نتائج",
+    "all_colors": "كل الألوان",
+    "all_sizes": "كل المقاسات"
+  },
+  "promo_row": {
+    "code_applied": "تم تطبيق {code}",
+    "discount_hint": "خصم ٢٠% على الطلب بالكامل",
+    "have_promo": "لديك كود خصم؟",
+    "tap_to_enter": "اضغط لإدخال الكود",
+    "remove": "إزالة",
+    "apply": "تطبيق"
+  },
+  "promo_sheet": {
+    "promo_code": "كود الخصم",
+    "enter_your_code": "أدخل الكود",
+    "code_hint": "مثال: AURORA20",
+    "apply": "تطبيق",
+    "invalid_code": "كود غير صالح"
+  },
+  "address_picker_sheet": {
+    "choose_address": "اختر العنوان",
+    "where_to_deliver": "أين نوصل الطلب",
+    "add_new_address": "+ إضافة عنوان جديد",
+    "default_badge": "الافتراضي"
+  },
+  "aurora_login_gate_dialog": {
+    "one_more_step": "خطوة أخيرة",
+    "log_in_to_checkout": "سجّل الدخول لإتمام الطلب",
+    "body": "نحتفظ بمشترياتك أثناء تسجيل الدخول. تبقى سلتك وقائمة رغباتك كما هي.",
+    "log_in": "تسجيل الدخول",
+    "continue_shopping": "متابعة التسوق"
+  },
+  "product_tabs": {
+    "tab_details": "التفاصيل",
+    "tab_reviews": "التقييمات",
+    "certifications": "الشهادات",
+    "specifications": "المواصفات",
+    "measurements": "القياسات",
+    "based_on_reviews": "استناداً إلى {count} تقييم",
+    "no_reviews_yet": "لا توجد تقييمات بعد"
+  },
+  "address_pill": {
+    "no_delivery_address": "لا يوجد عنوان توصيل",
+    "tap_to_add_one": "اضغط لإضافة عنوان",
+    "change": "تغيير",
+    "deliver_to_prefix": "التوصيل إلى ",
+    "default_badge": "الافتراضي"
+  },
+  "label_chooser": {
+    "home": "المنزل",
+    "office": "المكتب",
+    "other": "أخرى"
+  },
+  "map_picker_card": {
+    "search_hint": "ابحث عن مكان أو شارع أو منطقة"
+  },
+  "orders_screen": {
+    "title": "الطلبات",
+    "tab_in_progress": "قيد التنفيذ",
+    "tab_closed": "المغلقة",
+    "empty_title": "لا توجد طلبات هنا",
+    "empty_subtitle": "ستظهر طلبات هذه الفئة هنا.",
+    "tab_delivered": "المسلّمة"
+  },
+  "size_guide_sheet": {
+    "title": "دليل المقاسات",
+    "no_guide_available": "لا يوجد دليل مقاسات لهذا المنتج.",
+    "bra_step1_title": "قيسي محيط الصدر السفلي",
+    "bra_step1_body": "لفّي شريط القياس حول القفص الصدري، مباشرة تحت الصدر. ازفري ثم اقرئي القياس بالسنتيمتر. قرّبي الرقم إلى أقرب مضاعف للعدد ٥ (مثال: ٧٨ سم -> ٨٠).",
+    "bra_step2_title": "حددي مقاس الكوب",
+    "bra_step2_body": "قيسي حول أوسع جزء من الصدر. اطرحي محيط الصدر السفلي من هذا الرقم للحصول على فرق الكوب.",
+    "bra_step3_title": "اجمعي الاثنين",
+    "bra_step3_body": "اجمعي المحيط مع الكوب، مثال: محيط 80 + كوب B = 80B.",
+    "step_label": "الخطوة {step}",
+    "cup_header": "الكوب",
+    "difference_header": "الفرق",
+    "unit_in": "بوصة",
+    "unit_cm": "سم"
+  },
+  "profile_header_card": {
+    "orders": "الطلبات",
+    "points": "النقاط"
+  },
+  "order_success_screen": {
+    "order_confirmed": "تم تأكيد الطلب",
+    "on_its_way_title": "طلبك\nفي الطريق إليك!",
+    "received_subtitle": "استلمنا طلبك وسنبدأ\nبتجهيزه على الفور.",
+    "order_number": "رقم الطلب",
+    "estimated_delivery": "موعد التوصيل المتوقع",
+    "payment": "الدفع",
+    "track_my_order": "تتبع طلبي",
+    "continue_shopping": "متابعة التسوق"
+  },
+  "search_screen": {
+    "search_for": "البحث عن \"{query}\"",
+    "no_results": "لا توجد نتائج لـ \"{query}\"",
+    "recent": "الأخيرة",
+    "clear_all": "مسح الكل",
+    "did_you_mean": "هل تقصد \"{term}\"؟"
+  },
+  "cart_summary": {
+    "subtotal": "المجموع الفرعي",
+    "promo_label": "خصم {code}",
+    "proceed_to_checkout": "إتمام الشراء",
+    "free": "مجاني",
+    "shipping": "التوصيل",
+    "total": "الإجمالي",
+    "item": "منتج",
+    "items": "منتجات",
+    "secure": "آمن",
+    "fast": "سريع",
+    "cash_on_delivery": "الدفع عند الاستلام"
+  },
+  "profile_screen": {
+    "title": "الملف الشخصي",
+    "not_signed_in": "لم تسجّل الدخول بعد",
+    "guest_subtitle": "سجّل الدخول للوصول إلى طلباتك وقائمة أمنياتك وعناوينك ونقاط الولاء.",
+    "logout_confirm": "هل تريد تسجيل الخروج؟"
+  },
+  "wishlist_screen": {
+    "empty_section_label": "قائمة أمنياتك",
+    "empty_title": "لم تحفظ أي منتج بعد",
+    "empty_subtitle": "اضغط على القلب في أي منتج\nوسيظهر لك هنا."
+  },
+  "payment_methods_screen": {
+    "feature_name": "طرق الدفع",
+    "tagline": "احفظ بطاقاتك بأمان لإتمام الشراء بشكل أسرع. قريباً جداً."
+  },
+  "addresses_screen": {
+    "title": "العناوين",
+    "default_badge": "افتراضي",
+    "set_as_default": "تعيين كافتراضي",
+    "delete_title": "حذف \"{label}\"؟",
+    "delete_fallback_label": "العنوان",
+    "delete_subtitle": "سيتم حذف هذا العنوان نهائياً من عناوينك المحفوظة.",
+    "empty_title": "لا توجد عناوين محفوظة",
+    "empty_subtitle": "أضف عنوان المنزل أو العمل أو أي مكان للتوصيل وسنحفظه لك.",
+    "add_first": "أضف عنوانك الأول",
+    "add_new": "إضافة عنوان جديد"
+  },
+  "profile_menu_list": {
+    "my_orders": "طلباتي",
+    "orders_subtitle": "تتبع طلباتك وإدارتها",
+    "sign_in_to_view": "سجّل الدخول للعرض",
+    "loyalty": "الولاء",
+    "loyalty_subtitle": "النقاط والمكافآت والمستويات",
+    "wishlist_subtitle": "العناصر التي حفظتها",
+    "addresses": "العناوين",
+    "addresses_subtitle": "إدارة العناوين المحفوظة",
+    "settings_subtitle": "التفضيلات والأمان",
+    "help_support": "المساعدة والدعم",
+    "help_support_subtitle": "الأسئلة الشائعة، تواصل معنا",
+    "section_shopping": "التسوق",
+    "section_account": "الحساب",
+    "section_general": "عام"
+  },
+  "splash_screen": {
+    "tagline": "وجهتك للتسوق",
+    "try_again": "حاول مرة أخرى"
+  },
+  "coming_soon_screen": {
+    "coming_soon": "قريبًا"
+  },
+  "notifications_screen": {
+    "title": "الإشعارات",
+    "mark_all_read": "تعليم الكل كمقروء",
+    "today": "اليوم",
+    "earlier": "سابقًا",
+    "empty": "لا توجد إشعارات"
+  },
+  "checkout_screen": {
+    "title": "إتمام الشراء",
+    "delivery_address": "عنوان التوصيل",
+    "order_summary": "ملخص الطلب",
+    "payment_method": "طريقة الدفع",
+    "delivery_note": "ملاحظة التوصيل",
+    "delivery_note_hint": "هل لديك تعليمات خاصة للتوصيل؟",
+    "optional": "(اختياري)",
+    "no_address_warning": "الرجاء اختيار عنوان التوصيل للمتابعة",
+    "item_meta": "{color}، {size}، الكمية {qty}",
+    "subtotal": "المجموع الفرعي",
+    "delivery_fee": "رسوم التوصيل",
+    "free": "مجاني",
+    "total": "الإجمالي",
+    "payment_subtitle": "ادفع عند استلام طلبك",
+    "only_badge": "فقط",
+    "place_order": "تأكيد الطلب",
+    "estimated_delivery": "٢-٥ أيام عمل"
+  },
+  "shipping_info_screen": {
+    "title": "معلومات الشحن",
+    "delivery": "التوصيل",
+    "estimated_delivery": "التوصيل المتوقع",
+    "from_order_confirmation": "من تاريخ تأكيد الطلب",
+    "estimated_delivery_value": "٢-٥ أيام",
+    "delivery_fee": "رسوم التوصيل",
+    "calculated_based_on_location": "تُحتسب حسب الموقع",
+    "delivery_fee_value": "-",
+    "notes": "ملاحظات",
+    "notice_peak_periods": "قد تختلف مدة التوصيل خلال فترات الذروة أو العطل الرسمية. سيبقيك فريقنا على اطلاع عبر التطبيق.",
+    "notice_address_accurate": "تأكد من أن عنوانك كامل ودقيق قبل تأكيد الطلب لتجنب أي تأخير."
+  },
+  "order_card": {
+    "item_count": {
+      "zero": "لا توجد عناصر",
+      "one": "عنصر واحد",
+      "two": "عنصران",
+      "few": "{} عناصر",
+      "many": "{} عنصرًا",
+      "other": "{} عنصر"
+    }
+  },
+  "cart_item_card": {
+    "size": "المقاس {name}",
+    "only_left": "بقي {count} فقط",
+    "unavailable": "غير متوفر"
+  },
+  "notification_panel": {
+    "title": "الإشعارات",
+    "mark_all_read": "تعليم الكل كمقروء",
+    "empty": "لا توجد إشعارات",
+    "view_all": "عرض كل الإشعارات"
+  },
+  "email_support_screen": {
+    "title": "الدعم عبر البريد",
+    "reply_notice": "نرد عادة خلال ساعات قليلة في أيام العمل.",
+    "category_label": "الفئة",
+    "your_message_label": "رسالتك",
+    "subject_field_label": "الموضوع",
+    "subject_field_hint": "وصف مختصر لمشكلتك",
+    "order_number_label": "رقم الطلب (اختياري)",
+    "message_field_label": "الرسالة",
+    "message_field_hint": "اشرح مشكلتك بالتفصيل...",
+    "send_message_button": "إرسال الرسالة",
+    "enter_subject_error": "الرجاء إدخال الموضوع",
+    "enter_message_error": "الرجاء إدخال الرسالة",
+    "subject_too_long_error": "يجب ألا يتجاوز الموضوع {max} حرفا",
+    "message_too_long_error": "الرسالة طويلة جدا"
+  },
+  "custom_search_bar": {
+    "start_typing_to_search": "ابدأ الكتابة للبحث عن المنتجات",
+    "recent": "الأخيرة",
+    "clear_all": "مسح الكل",
+    "see_all_results": "عرض كل النتائج",
+    "search_products_hint": "ابحث عن منتجات..."
+  },
+  "aurora_confirm_sheet": {
+    "dismiss": "إغلاق"
+  },
+  "aurora_phone_field": {
+    "search_country": "ابحث عن دولة..."
+  },
+  "help_support_screen": {
+    "title": "المساعدة والدعم",
+    "need_help": "تحتاج مساعدة؟",
+    "team_here_for_you": "فريقنا في خدمتك على مدار الساعة",
+    "email_us": "راسلنا",
+    "could_not_open_whatsapp": "تعذر فتح واتساب",
+    "quick_links": "روابط سريعة",
+    "shipping_information": "معلومات الشحن",
+    "shipping_information_sub": "مدة التوصيل والرسوم",
+    "terms_conditions": "الشروط والأحكام",
+    "terms_conditions_sub": "شروط الاستخدام والشراء",
+    "privacy_policy": "سياسة الخصوصية",
+    "privacy_policy_sub": "كيف نتعامل مع بياناتك",
+    "frequently_asked": "الأسئلة الشائعة",
+    "faq_track_order_q": "كيف أتتبع طلبي؟",
+    "faq_track_order_a": "اذهب إلى الملف الشخصي -> الطلبات واضغط على الطلب الذي تريد تتبعه. ستظهر لك آخر حالة وأي تحديثات من شركة التوصيل.",
+    "faq_cancel_order_q": "هل يمكنني إلغاء طلبي؟",
+    "faq_cancel_order_a": "يمكنك إلغاء طلبك طالما أنه في حالة قيد المعالجة أو تم التغليف. وبمجرد تحوله إلى قيد التوصيل لا يعود الإلغاء متاحا. تواصل معنا عبر الدعم بالبريد إذا احتجت المساعدة.",
+    "faq_payment_methods_q": "ما طرق الدفع المتاحة؟",
+    "faq_payment_methods_a": "ندعم حاليا الدفع عند الاستلام فقط. وسنضيف خيارات دفع أخرى قريبا.",
+    "faq_shipping_address_q": "كيف أغير عنوان الشحن؟",
+    "faq_shipping_address_a": "اذهب إلى الملف الشخصي -> العناوين لإضافة عناوين الشحن أو تعديلها أو حذفها. يمكنك أيضا تعيين عنوان افتراضي لإتمام الطلب بشكل أسرع."
+  },
+  "sort_filter_bar": {
+    "filter": "تصفية",
+    "sort": "ترتيب: {label}",
+    "item_count": "{count} منتج"
+  },
+  "user_menu_dropdown": {
+    "logout_confirm": "هل تريد تسجيل الخروج؟",
+    "profile": "الملف الشخصي",
+    "view_account": "عرض الحساب",
+    "language": "اللغة",
+    "theme": "المظهر",
+    "dark": "داكن",
+    "light": "فاتح",
+    "log_in": "تسجيل الدخول"
+  },
+  "legal_page_screen": {
+    "terms_acceptance_title": "قبول الشروط",
+    "terms_acceptance_content": "باستخدامك Sooki فإنك توافق على هذه الشروط. يرجى قراءتها بعناية قبل تنفيذ أي طلب. إذا كنت لا توافق على أي جزء من هذه الشروط، فلا يجوز لك استخدام التطبيق.",
+    "terms_orders_title": "الطلبات والدفع",
+    "terms_orders_content": "تخضع جميع الطلبات لتوفر المنتجات. نحتفظ بالحق في إلغاء أي طلب يتعذر تنفيذه. ندعم حالياً الدفع عند الاستلام كطريقة دفع وحيدة.",
+    "terms_account_title": "الحساب",
+    "terms_account_content": "أنت مسؤول عن الحفاظ على سرية بيانات دخول حسابك. وتوافق على إبلاغنا فوراً بأي استخدام غير مصرح به لحسابك.",
+    "terms_cancellation_title": "إلغاء الطلب",
+    "terms_cancellation_content": "يمكن إلغاء الطلبات فقط أثناء مرحلة قيد المعالجة أو تم التغليف. وبمجرد خروج الطلب للتوصيل لا يمكن إلغاؤه. تواصل مع فريق الدعم عبر البريد الإلكتروني للمساعدة.",
+    "terms_ip_title": "الملكية الفكرية",
+    "terms_ip_content": "جميع المحتويات على منصة Sooki، بما في ذلك الشعارات والصور والنصوص، هي ملك لـ Sooki ولا يجوز إعادة إنتاجها دون إذن كتابي.",
+    "terms_changes_title": "تعديل الشروط",
+    "terms_changes_content": "قد نقوم بتحديث هذه الشروط من وقت لآخر. ويُعد استمرارك في استخدام التطبيق بعد التعديلات موافقة على الشروط الجديدة.",
+    "privacy_collect_title": "المعلومات التي نجمعها",
+    "privacy_collect_content": "نجمع المعلومات التي تقدمها مباشرة: اسمك ورقم هاتفك وبريدك الإلكتروني وعناوين التوصيل المحفوظة. كما نجمع سجل الطلبات لتحسين تجربة التسوق لديك.",
+    "privacy_use_title": "كيف نستخدمها",
+    "privacy_use_content": "تُستخدم معلوماتك فقط لمعالجة الطلبات وإرسال تحديثات التوصيل وتحسين خدماتنا. نحن لا نبيع بياناتك الشخصية لأي طرف ثالث.",
+    "privacy_security_title": "أمان البيانات",
+    "privacy_security_content": "نطبق إجراءات أمان وفق معايير القطاع لحماية معلوماتك. والوصول إلى البيانات الشخصية مقتصر تماماً على الموظفين المصرح لهم.",
+    "privacy_rights_title": "حقوقك",
+    "privacy_rights_content": "يمكنك طلب الاطلاع على بياناتك الشخصية أو تصحيحها أو حذفها في أي وقت. كما يمكنك حذف حسابك مباشرة من الإعدادات -> حذف الحساب.",
+    "privacy_changes_title": "تعديل السياسة",
+    "privacy_changes_content": "قد نقوم بتحديث هذه السياسة من وقت لآخر. وسنبلغك بالتغييرات المهمة عبر التطبيق. ويُعد استمرارك في الاستخدام موافقة على السياسة المحدثة."
+  },
+  "address_form_screen": {
+    "location_services_off": "فعّل خدمات الموقع لاستخدام هذه الميزة.",
+    "location_permission_denied": "تم رفض إذن الموقع. حرّك الخريطة لتحديد الدبوس.",
+    "location_unavailable": "تعذر تحديد موقعك. حرّك الخريطة بدلاً من ذلك.",
+    "no_place_found": "لا توجد نتائج. جرّب بحثاً آخر.",
+    "label": "التسمية",
+    "custom_label": "تسمية مخصصة",
+    "full_name": "الاسم الكامل",
+    "recipient_full_name": "الاسم الكامل للمستلم",
+    "city": "المدينة",
+    "loading": "جاري التحميل...",
+    "pick_your_city": "اختر مدينتك",
+    "select_city": "اختر المدينة",
+    "area": "المنطقة",
+    "pick_city_first": "اختر المدينة أولاً",
+    "pick_your_area": "اختر منطقتك",
+    "select_area": "اختر المنطقة",
+    "street": "الشارع",
+    "street_name": "اسم الشارع",
+    "building": "المبنى",
+    "building_hint": "اسم المبنى أو رقمه (اختياري)",
+    "floor": "الطابق",
+    "floor_hint": "مثال: ٣",
+    "apartment": "الشقة",
+    "apartment_hint": "مثال: 3B",
+    "directions": "إرشادات (اختياري)",
+    "directions_hint": "معلم قريب، رمز البوابة، ملاحظات التوصيل...",
+    "map_hint": "حرّك الدبوس أو ابحث عن مكان أو اضغط على أيقونة التحديد لاستخدام موقعك الحالي.",
+    "save_address": "حفظ العنوان",
+    "pin_on_map": "تحديد على الخريطة",
+    "pin_on_map_subtitle": "ساعدنا في الوصول إليك أسرع. معطّل افتراضياً.",
+    "edit_address": "تعديل العنوان",
+    "add_new_address": "إضافة عنوان جديد",
+    "pinned_coords": "المحدد: {lat}, {lng}",
+    "set_as_default": "تعيين كافتراضي",
+    "default_subtitle": "استخدم هذا العنوان لكل طلب"
+  },
+  "order_detail_screen": {
+    "title": "تفاصيل الطلب",
+    "cancel_order_question": "إلغاء الطلب؟",
+    "action_cannot_be_undone": "لا يمكن التراجع عن هذا الإجراء.",
+    "cancel_order": "إلغاء الطلب",
+    "cancel_order_button": "إلغاء الطلب",
+    "confirm_receipt": "تأكيد الاستلام",
+    "hero_meta": "{date}، {count} منتج",
+    "items_ordered": "المنتجات المطلوبة",
+    "item_variant": "{color}، {size}، الكمية {qty}",
+    "write_review": "اكتب تقييماً",
+    "order_summary": "ملخص الطلب",
+    "subtotal": "المجموع الفرعي",
+    "delivery_fee": "رسوم التوصيل",
+    "free": "مجاني",
+    "discount": "الخصم",
+    "total": "الإجمالي",
+    "delivery_address": "عنوان التوصيل",
+    "floor": "الطابق {floor}",
+    "payment": "الدفع",
+    "cash_on_delivery": "الدفع عند الاستلام",
+    "unknown": "غير معروف",
+    "payment_pending": "قيد الانتظار",
+    "payment_paid": "مدفوع",
+    "payment_failed": "فشل",
+    "delivery_note": "ملاحظة التوصيل",
+    "error_title": "تعذر تحميل الطلب",
+    "error_subtitle": "اسحب للتحديث أو اضغط إعادة المحاولة",
+    "review_hint": "شاركنا رأيك (اختياري)",
+    "submit_review": "إرسال التقييم",
+    "step_processing": "قيد المعالجة",
+    "step_packaged": "تم التغليف",
+    "step_out_for_delivery": "قيد التوصيل",
+    "step_delivered": "تم التوصيل"
+  },
+  "size_guide": {
+    "column": {
+      "size": "المقاس",
+      "chest": "الصدر",
+      "waist": "الخصر",
+      "hip": "الورك",
+      "eu": "EU",
+      "chest_cm": "الصدر (سم)",
+      "waist_cm": "الخصر (سم)",
+      "hip_cm": "الورك (سم)",
+      "foot_cm": "القدم (سم)",
+      "age": "العمر",
+      "age_approx": "العمر (تقريبا)",
+      "weight_kg": "الوزن (كجم)",
+      "height_cm": "الطول (سم)",
+      "circumference_mm": "المحيط (مم)",
+      "diameter_mm": "القطر (مم)",
+      "dimensions": "الأبعاد",
+      "best_for": "الأنسب لـ",
+      "belt_size": "مقاس الحزام",
+      "fits_trouser_waist": "يناسب خصر البنطال"
+    },
+    "international_letter": {
+      "subtitle": "قياسات الجسم للمقاسات الدولية بالحروف"
+    },
+    "womens_apparel": {
+      "subtitle": "قياسات الجسم لمقاسات الملابس النسائية الأوروبية"
+    },
+    "kids_shoes": {
+      "subtitle": "مقاسات أحذية الأطفال الأوروبية حسب طول القدم"
+    },
+    "baby_sizes": {
+      "subtitle": "المقاس حسب العمر والوزن والطول"
+    },
+    "kids_sizes": {
+      "subtitle": "المقاس حسب العمر والطول والوزن"
+    },
+    "bra": {
+      "subtitle": "اعرفي مقاس صدريتك في ٣ خطوات"
+    },
+    "ring_sizes": {
+      "subtitle": "مقاسات الخواتم الأوروبية حسب المحيط والقطر"
+    },
+    "bed_sizes": {
+      "subtitle": "أبعاد المرتبة والاستخدام الموصى به"
+    },
+    "belt_size": {
+      "subtitle": "مقاس الحزام حسب قياس خصر البنطال"
+    },
+    "how_to_measure": {
+      "body": "الصدر - حول أوسع جزء من الصدر، مع إبقاء شريط القياس موازيا للأرض.\nالخصر - حول أضيق جزء، عادة فوق السرة مباشرة.\nالورك - حول أوسع جزء من الوركين، على بعد ٢٠ سم تقريبا تحت الخصر.",
+      "kids_shoes": "ضع قدم طفلك مسطحة على ورقة، ارسم حدودها وقس المسافة من الكعب إلى أطول إصبع بالسنتيمتر. أضف ٠.٥ سم لمساحة النمو.",
+      "baby": "الرضع ينمون بسرعة، وإذا كان المقاس بين قياسين اختر الأكبر ليدوم فترة أطول.",
+      "kids_height": "قس طول طفلك وهو واقف مستقيما بجانب الحائط وبدون حذاء.",
+      "ring": "لف شريطا من الورق حول قاعدة إصبعك. علم نقطة التقاء الطرفين وقس الطول بالمليمتر، وهذا هو محيط إصبعك.",
+      "bed": "المقاس يشير إلى المرتبة. أما مفروشات السرير (الشراشف واللحف والأغطية) فاختر لها المقاس نفسه الخاص بمرتبتك.",
+      "belt": "قس محيط خصر البنطال بالسنتيمتر (حيث ترتدي الحزام). مقاس الحزام = قياس الخصر + ٥ سم."
+    },
+    "age": {
+      "newborn": "حديث الولادة",
+      "months_0_3": "٠-٣ أشهر",
+      "months_3_6": "٣-٦ أشهر",
+      "months_0_6": "٠-٦ أشهر",
+      "months_6_9": "٦-٩ أشهر",
+      "months_9_12": "٩-١٢ شهرا",
+      "months_12_18": "١٢-١٨ شهرا",
+      "months_18_24": "١٨-٢٤ شهرا",
+      "years_2": "سنتان",
+      "years_2_3": "٢-٣ سنوات",
+      "years_3": "٣ سنوات",
+      "years_3_4": "٣-٤ سنوات",
+      "years_4": "٤ سنوات",
+      "years_4_5": "٤-٥ سنوات",
+      "years_5": "٥ سنوات",
+      "years_5_6": "٥-٦ سنوات",
+      "years_6_7": "٦-٧ سنوات",
+      "years_7_8": "٧-٨ سنوات",
+      "years_8_9": "٨-٩ سنوات",
+      "years_9_10": "٩-١٠ سنوات",
+      "years_10_11": "١٠-١١ سنة",
+      "years_11_12": "١١-١٢ سنة",
+      "years_12_14": "١٢-١٤ سنة",
+      "years_14_16": "١٤-١٦ سنة"
+    },
+    "bed": {
+      "single": "مفرد",
+      "single_use": "شخص واحد / غرف الأطفال",
+      "small_double": "مزدوج صغير",
+      "small_double_use": "شخص واحد بعرض إضافي",
+      "double": "مزدوج",
+      "double_use": "للأزواج في الغرف الصغيرة",
+      "queen": "كوين",
+      "queen_use": "للأزواج، المقاس الأكثر شيوعا",
+      "king": "كينج",
+      "king_use": "للأزواج الراغبين بمساحة أوسع",
+      "super_king": "سوبر كينج",
+      "super_king_use": "أقصى راحة للأزواج"
+    },
+    "standard_name": {
+      "international_letter": "المقاسات الدولية بالحروف",
+      "womens_apparel": "مقاسات الملابس النسائية",
+      "kids_shoes": "أحذية الأطفال",
+      "baby_sizes": "مقاسات الرضع (بالأشهر)",
+      "kids_sizes": "مقاسات الأطفال (حسب العمر)",
+      "bra": "مقاس الصدرية",
+      "ring_sizes": "مقاسات الخواتم",
+      "bed_sizes": "مقاسات الأسرّة",
+      "belt_size": "مقاس الحزام (سم)"
+    }
   }
 }

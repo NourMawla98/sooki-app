@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,6 +14,7 @@ import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_secondary_button.dart';
@@ -119,7 +121,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   String get _timerLabel {
     final m = _secondsLeft ~/ 60;
     final s = _secondsLeft % 60;
-    return '$m:${s.toString().padLeft(2, '0')}';
+    return localizedDigits('$m:${s.toString().padLeft(2, '0')}');
   }
 
   @override
@@ -156,7 +158,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     children: [
                       const SizedBox(height: 12),
                       Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: AlignmentDirectional.centerStart,
                         child: AppLogo(
                           size: LogoSize.medium,
                           isWhiteText: isDark,
@@ -196,7 +198,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       const SizedBox(height: 24),
 
                       Text(
-                        'Verify your email',
+                        'auth.verify_title'.tr(),
                         style: AppTextStyles.dsH1.copyWith(
                           color: headingColor,
                         ),
@@ -204,7 +206,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'We sent a verification link to',
+                        'auth.verify_sent_to'.tr(),
                         style: AppTextStyles.dsBody.copyWith(
                           color: bodyColor,
                           fontSize: 14,
@@ -223,7 +225,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        "Can't find it? Check your spam or junk folder.",
+                        'auth.verify_spam_hint'.tr(),
                         style: AppTextStyles.dsBody.copyWith(
                           fontSize: 12,
                           color: isDark
@@ -237,14 +239,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                       if (widget.password.isNotEmpty) ...[
                         AuroraPrimaryButton(
-                          text: "I've verified my email",
+                          text: 'auth.verify_done'.tr(),
                           isLoading: _isVerifying,
                           onPressed: _handleDoneVerification,
                         ),
                         const SizedBox(height: 12),
                       ],
                       AuroraSecondaryButton(
-                        text: 'Continue as guest',
+                        text: 'common.continue_as_guest'.tr(),
                         height: 52,
                         onPressed: () async {
                           await serviceLocator<AuthService>().signOut();
@@ -260,7 +262,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Didn't receive it? ",
+                            'auth.didnt_receive'.tr(),
                             style: AppTextStyles.dsBody.copyWith(
                               fontSize: 13,
                               color: bodyColor,
@@ -271,7 +273,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             child: Opacity(
                               opacity: (_secondsLeft > 0 || _isResending) ? 0.45 : 1.0,
                               child: Text(
-                                'Resend',
+                                'auth.resend'.tr(),
                                 style: AppTextStyles.dsBody.copyWith(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,

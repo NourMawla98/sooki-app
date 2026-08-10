@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -5,6 +6,7 @@ import '../../../backend_integration/apis/auth_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
+import '../../../services/language_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../themes/app_colors.dart';
@@ -82,7 +84,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _onEmailBlur() {
     if (!_emailFocusNode.hasFocus && _emailController.text.isNotEmpty) {
       setState(() => _emailError =
-          !isValidEmail(_emailController.text) ? 'Enter a valid email address' : null);
+          !isValidEmail(_emailController.text) ? 'validation.invalid_email'.tr() : null);
     }
   }
 
@@ -96,14 +98,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_confirmFocusNode.hasFocus) {
       final mismatch = _confirmController.text.isNotEmpty &&
           _confirmController.text != _passwordController.text;
-      setState(() => _confirmError = mismatch ? 'Passwords do not match' : null);
+      setState(() => _confirmError = mismatch ? 'validation.passwords_no_match'.tr() : null);
     }
   }
 
   void _onPasswordBlur() {
     if (!_passwordFocusNode.hasFocus && _passwordController.text.isNotEmpty) {
       final tooShort = _passwordController.text.length < 6;
-      setState(() => _passwordError = tooShort ? 'Minimum 6 characters' : null);
+      setState(() => _passwordError = tooShort ? 'validation.min_6_chars'.tr() : null);
     }
   }
 
@@ -113,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
     if (_confirmController.text.isNotEmpty) {
       final match = _confirmController.text == _passwordController.text;
-      final newErr = match ? null : 'Passwords do not match';
+      final newErr = match ? null : 'validation.passwords_no_match'.tr();
       if (newErr != _confirmError) setState(() => _confirmError = newErr);
     }
   }
@@ -121,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _onPhoneBlur() {
     final digits = _phoneController.text.replaceAll(RegExp(r'[^\d]'), '');
     if (_phoneController.text.isNotEmpty && digits.length < 5) {
-      setState(() => _phoneError = 'Enter a valid phone number');
+      setState(() => _phoneError = 'validation.invalid_phone'.tr());
     }
   }
 
@@ -196,13 +198,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: ThemeService.instance,
+      // Language changes must rebuild this screen too: `.tr()` is context-free,
+      // so switching the locale does not mark an already-built route dirty.
+      listenable: Listenable.merge(
+        [ThemeService.instance, serviceLocator<LanguageService>()],
+      ),
       builder: (context, _) {
         final isDark       = ThemeService.instance.isDarkMode;
         final bgColor      = isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
         final headingColor = isDark ? AppColors.white : AppColors.auroraPurple;
 
-        return Scaffold(
+        // Keyed on the language so a switch rebuilds the whole subtree: const
+        // children (the legal footer, for one) are skipped otherwise.
+        return KeyedSubtree(
+          key: ValueKey(serviceLocator<LanguageService>().currentLanguage),
+          child: Scaffold(
           body: Stack(
             children: [
               Container(width: double.infinity, height: double.infinity, color: bgColor),
@@ -236,10 +246,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: 24),
                             AppLogo(size: LogoSize.medium, isWhiteText: isDark),
                             const SizedBox(height: 20),
-                            Text('Create Account',
+                            Text('auth.create_account'.tr(),
                                 style: AppTextStyles.dsH1.copyWith(color: headingColor)),
                             const SizedBox(height: 8),
-                            Text('Sign up to start shopping',
+                            Text('auth.signup_subtitle'.tr(),
                                 style: AppTextStyles.dsBody.copyWith(
                                   color: isDark ? AppColors.mutedOnDark : AppColors.auroraDeepBase,
                                 )),
@@ -255,8 +265,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                                     // ── Email ──
                                     AuroraInputField(
-                                      label: 'Email', required: true,
-                                      hint: 'your@email.com',
+                                      label: 'auth.email'.tr(), required: true,
+                                      hint: 'auth.email_hint'.tr(),
                                       controller: _emailController,
                                       focusNode: _emailFocusNode,
                                       errorText: _emailError,
@@ -274,8 +284,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       children: [
                                         Expanded(
                                           child: AuroraInputField(
-                                            label: 'First name', required: true,
-                                            hint: 'Jane',
+                                            label: 'auth.first_name'.tr(), required: true,
+                                            hint: 'auth.first_name_hint'.tr(),
                                             controller: _firstNameController,
                                             focusNode: _firstNameFocusNode,
                                             keyboardType: TextInputType.name,
@@ -283,7 +293,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             textInputAction: TextInputAction.next,
                                             validator: (v) =>
                                                 (v == null || v.trim().isEmpty)
-                                                    ? 'Required'
+                                                    ? 'validation.required'.tr()
                                                     : null,
                                             onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_lastNameFocusNode),
                                           ),
@@ -291,8 +301,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         const SizedBox(width: 10),
                                         Expanded(
                                           child: AuroraInputField(
-                                            label: 'Last name', required: true,
-                                            hint: 'Doe',
+                                            label: 'auth.last_name'.tr(), required: true,
+                                            hint: 'auth.last_name_hint'.tr(),
                                             controller: _lastNameController,
                                             focusNode: _lastNameFocusNode,
                                             keyboardType: TextInputType.name,
@@ -300,7 +310,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             textInputAction: TextInputAction.next,
                                             validator: (v) =>
                                                 (v == null || v.trim().isEmpty)
-                                                    ? 'Required'
+                                                    ? 'validation.required'.tr()
                                                     : null,
                                             onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_phoneFocusNode),
                                           ),
@@ -311,7 +321,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                                     // ── Mobile Number ──
                                     AuroraPhoneField(
-                                      label: 'Mobile Number',
+                                      label: 'auth.mobile_number'.tr(),
                                       required: true,
                                       controller: _phoneController,
                                       focusNode: _phoneFocusNode,
@@ -327,7 +337,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                                     // ── Password ──
                                     AuroraInputField(
-                                      label: 'Password', required: true,
+                                      label: 'auth.password'.tr(), required: true,
                                       hint: '••••••••',
                                       controller: _passwordController,
                                       focusNode: _passwordFocusNode,
@@ -336,7 +346,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       prefixIcon: FontAwesomeIcons.lock,
                                       textInputAction: TextInputAction.next,
                                       validator: (v) {
-                                        if ((v?.length ?? 0) < 6) return 'Minimum 6 characters';
+                                        if ((v?.length ?? 0) < 6) return 'validation.min_6_chars'.tr();
                                         return null;
                                       },
                                       onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_confirmFocusNode),
@@ -345,7 +355,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                                     // ── Confirm Password ──
                                     AuroraInputField(
-                                      label: 'Confirm Password', required: true,
+                                      label: 'auth.confirm_password'.tr(), required: true,
                                       hint: '••••••••',
                                       controller: _confirmController,
                                       focusNode: _confirmFocusNode,
@@ -354,20 +364,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       textInputAction: TextInputAction.done,
                                       errorText: _confirmError,
                                       validator: (v) {
-                                        if (v != _passwordController.text) return 'Passwords do not match';
+                                        if (v != _passwordController.text) return 'validation.passwords_no_match'.tr();
                                         return null;
                                       },
                                     ),
                                     const SizedBox(height: 20),
 
                                     AuroraPrimaryButton(
-                                      text: 'Sign up',
+                                      text: 'auth.signup'.tr(),
                                       onPressed: _canSignUp ? _handleSignUp : null,
                                       isLoading: _isLoading,
                                     ),
                                     const SizedBox(height: 12),
                                     AuroraSecondaryButton(
-                                      text: 'Continue as guest',
+                                      text: 'common.continue_as_guest'.tr(),
                                       onPressed: _handleContinueAsGuest,
                                       height: 48,
                                     ),
@@ -377,7 +387,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'Already have an account? ',
+                                            'auth.have_account'.tr(),
                                             style: AppTextStyles.dsBody.copyWith(
                                               color: isDark
                                                   ? AppColors.mutedOnDark
@@ -387,7 +397,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                           GestureDetector(
                                             onTap: _navigateToSignIn,
-                                            child: Text('Log in',
+                                            child: Text('auth.log_in'.tr(),
                                               style: AppTextStyles.dsBody.copyWith(
                                                 fontSize: 14,
                                                 color: AppColors.auroraPink,
@@ -416,6 +426,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 }),
               ),
             ],
+          ),
           ),
         );
       },

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -80,74 +81,83 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     _TopBar(isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 32),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _SectionLabel(
-                                label: 'Current password',
+                                label: 'change_password_screen.current_password'
+                                    .tr(),
                                 isDark: isDark,
                               ),
                               const SizedBox(height: 8),
                               AuroraInputField(
                                 controller: _currentCtrl,
-                                hint: 'Enter current password',
+                                hint: 'change_password_screen.enter_current_password'
+                                    .tr(),
                                 isPassword: true,
                                 prefixIcon: FontAwesomeIcons.lock,
                                 textInputAction: TextInputAction.next,
                                 validator: (v) => (v == null || v.isEmpty)
-                                    ? 'Required'
+                                    ? 'validation.required'.tr()
                                     : null,
                               ),
                               const SizedBox(height: 20),
                               _SectionLabel(
-                                label: 'New password',
+                                label:
+                                    'change_password_screen.new_password'.tr(),
                                 isDark: isDark,
                               ),
                               const SizedBox(height: 8),
                               AuroraInputField(
                                 controller: _newCtrl,
-                                hint: 'Enter new password',
+                                hint: 'change_password_screen.enter_new_password'
+                                    .tr(),
                                 isPassword: true,
                                 prefixIcon: FontAwesomeIcons.lockOpen,
                                 textInputAction: TextInputAction.next,
                                 validator: (v) {
                                   if (v == null || v.isEmpty) {
-                                    return 'Required';
+                                    return 'validation.required'.tr();
                                   }
                                   if (v.length < 8) {
-                                    return 'At least 8 characters';
+                                    return 'change_password_screen.at_least_8_characters'
+                                        .tr();
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 20),
                               _SectionLabel(
-                                label: 'Confirm new password',
+                                label: 'change_password_screen.confirm_new_password'
+                                    .tr(),
                                 isDark: isDark,
                               ),
                               const SizedBox(height: 8),
                               AuroraInputField(
                                 controller: _confirmCtrl,
-                                hint: 'Re-enter new password',
+                                hint: 'change_password_screen.reenter_new_password'
+                                    .tr(),
                                 isPassword: true,
                                 prefixIcon: FontAwesomeIcons.lockOpen,
                                 textInputAction: TextInputAction.done,
                                 validator: (v) {
                                   if (v == null || v.isEmpty) {
-                                    return 'Required';
+                                    return 'validation.required'.tr();
                                   }
                                   if (v != _newCtrl.text) {
-                                    return 'Passwords do not match';
+                                    return 'validation.passwords_no_match'.tr();
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 32),
                               AuroraPrimaryButton(
-                                text: 'Update Password',
+                                text: 'change_password_screen.update_password'
+                                    .tr(),
                                 onPressed: _submit,
                                 isLoading: _loading,
                               ),
@@ -167,7 +177,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 }
 
-// ─── Top bar ──────────────────────────────────────────────────────────────────
+// --- Top bar ------------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final bool isDark;
@@ -176,17 +186,22 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: color,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Text(
-            'Change Password',
+            'change_password_screen.title'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w900,
@@ -199,7 +214,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// --- Section label ------------------------------------------------------------
 
 class _SectionLabel extends StatelessWidget {
   final String label;
@@ -209,7 +224,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 2),
+      padding: const EdgeInsetsDirectional.only(start: 2),
       child: Text(
         label,
         style: AppTextStyles.dsFieldLabel.copyWith(

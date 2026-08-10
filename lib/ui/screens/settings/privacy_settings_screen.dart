@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -20,6 +21,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
@@ -27,14 +29,14 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: FaIcon(
-            FontAwesomeIcons.arrowLeft,
+            isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
             size: 20,
             color: AppColors.primaryPurple,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Privacy',
+          'privacy_settings_screen.title'.tr(),
           style: AppTextStyles.heading4.copyWith(
             color: AppColors.primaryPurple,
           ),
@@ -46,61 +48,61 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Data Collection'),
+            _buildSectionTitle('privacy_settings_screen.data_collection'.tr()),
             const SizedBox(height: 8),
             _buildToggleTile(
               icon: FontAwesomeIcons.chartLine,
               iconColor: AppColors.profileIconTeal,
-              title: 'Analytics',
-              subtitle: 'Help us improve by sharing usage data',
+              title: 'privacy_settings_screen.analytics'.tr(),
+              subtitle: 'privacy_settings_screen.analytics_subtitle'.tr(),
               value: _analytics,
               onChanged: (v) => setState(() => _analytics = v),
             ),
             _buildToggleTile(
               icon: FontAwesomeIcons.bullhorn,
               iconColor: AppColors.profileIconYellow,
-              title: 'Personalized Ads',
-              subtitle: 'Show ads based on your interests',
+              title: 'privacy_settings_screen.personalized_ads'.tr(),
+              subtitle: 'privacy_settings_screen.personalized_ads_subtitle'.tr(),
               value: _personalizedAds,
               onChanged: (v) => setState(() => _personalizedAds = v),
             ),
             _buildToggleTile(
               icon: FontAwesomeIcons.handshake,
               iconColor: AppColors.profileIconOrange,
-              title: 'Data Sharing with Partners',
-              subtitle: 'Share data with trusted partners',
+              title: 'privacy_settings_screen.data_sharing_partners'.tr(),
+              subtitle: 'privacy_settings_screen.data_sharing_partners_subtitle'.tr(),
               value: _dataSharingPartners,
               onChanged: (v) => setState(() => _dataSharingPartners = v),
             ),
             _buildToggleTile(
               icon: FontAwesomeIcons.locationCrosshairs,
               iconColor: AppColors.profileIconGreen,
-              title: 'Location Tracking',
-              subtitle: 'Allow location-based recommendations',
+              title: 'privacy_settings_screen.location_tracking'.tr(),
+              subtitle: 'privacy_settings_screen.location_tracking_subtitle'.tr(),
               value: _locationTracking,
               onChanged: (v) => setState(() => _locationTracking = v),
             ),
             const SizedBox(height: 24),
 
-            _buildSectionTitle('Your Data'),
+            _buildSectionTitle('privacy_settings_screen.your_data'.tr()),
             const SizedBox(height: 8),
             _buildActionTile(
               icon: FontAwesomeIcons.download,
               iconColor: AppColors.primaryPurple,
-              title: 'Download My Data',
-              subtitle: 'Get a copy of your personal data',
+              title: 'privacy_settings_screen.download_my_data'.tr(),
+              subtitle: 'privacy_settings_screen.download_my_data_subtitle'.tr(),
             ),
             _buildActionTile(
               icon: FontAwesomeIcons.clockRotateLeft,
               iconColor: AppColors.profileIconGray,
-              title: 'Clear Search History',
-              subtitle: 'Remove all search history',
+              title: 'privacy_settings_screen.clear_search_history'.tr(),
+              subtitle: 'privacy_settings_screen.clear_search_history_subtitle'.tr(),
             ),
             _buildActionTile(
               icon: FontAwesomeIcons.broom,
               iconColor: AppColors.profileIconPink,
-              title: 'Clear Browsing Data',
-              subtitle: 'Remove cached product views',
+              title: 'privacy_settings_screen.clear_browsing_data'.tr(),
+              subtitle: 'privacy_settings_screen.clear_browsing_data_subtitle'.tr(),
             ),
             const SizedBox(height: 100),
           ],
@@ -111,7 +113,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsetsDirectional.only(start: 4),
       child: Text(
         title,
         style: AppTextStyles.label.copyWith(
@@ -184,6 +186,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     required String title,
     required String subtitle,
   }) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -193,7 +196,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          ToastService.instance.showSuccess('$title — coming soon');
+          ToastService.instance.showSuccess(
+            'privacy_settings_screen.coming_soon'.tr(namedArgs: {'title': title}),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -226,7 +231,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                 ),
               ),
               FaIcon(
-                FontAwesomeIcons.chevronRight,
+                isRtl
+                    ? FontAwesomeIcons.chevronLeft
+                    : FontAwesomeIcons.chevronRight,
                 size: 14,
                 color: AppColors.gray400,
               ),

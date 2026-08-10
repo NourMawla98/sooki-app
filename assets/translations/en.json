@@ -1,6 +1,116 @@
 {
   "common": {
-    "app_name": "Sooki"
+    "app_name": "Sooki",
+    "add_to_cart": "Add to cart",
+    "select_a_size": "Select a size",
+    "cancel": "Cancel",
+    "save": "Save",
+    "retry": "Retry",
+    "continue_as_guest": "Continue as guest",
+    "login": "Log in",
+    "logout": "Logout",
+    "sign_up": "Sign Up",
+    "shop_now": "Shop now",
+    "view_all": "View all",
+    "done": "Done",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "in_stock": "In stock",
+    "out_of_stock": "Out of stock",
+    "wishlist": "Wishlist",
+    "settings": "Settings",
+    "search": "Search",
+    "back": "Back"
+  },
+  "enums": {
+    "order_status": {
+      "processing": "Processing",
+      "out_for_delivery": "Out for delivery",
+      "delivered": "Delivered",
+      "received": "Received",
+      "cancelled": "Cancelled",
+      "rejected": "Rejected",
+      "refunded": "Refunded",
+      "packaged": "Packaged",
+      "delivery_failed": "Delivery failed"
+    },
+    "report_category": {
+      "bug": "Bug",
+      "payment": "Payment",
+      "order_issue": "Order Issue",
+      "account": "Account",
+      "suggestion": "Suggestion",
+      "other": "Other"
+    }
+  },
+  "auth": {
+    "welcome_back": "Welcome Back!",
+    "login_subtitle": "Log in to your account",
+    "email": "Email",
+    "email_hint": "your@email.com",
+    "password": "Password",
+    "forgot_password": "Forgot Password?",
+    "login": "Login",
+    "no_account": "Don't have an account? ",
+    "create_account": "Create Account",
+    "signup_subtitle": "Sign up to start shopping",
+    "first_name": "First name",
+    "first_name_hint": "Jane",
+    "last_name": "Last name",
+    "last_name_hint": "Doe",
+    "mobile_number": "Mobile Number",
+    "confirm_password": "Confirm Password",
+    "signup": "Sign up",
+    "have_account": "Already have an account? ",
+    "log_in": "Log in",
+    "forgot_title": "Forgot Password?",
+    "forgot_subtitle": "Enter your email to receive a reset link",
+    "send_reset_link": "Send reset link",
+    "remember_password": "Remember your password? ",
+    "verify_title": "Verify your email",
+    "verify_sent_to": "We sent a verification link to",
+    "verify_spam_hint": "Can't find it? Check your spam or junk folder.",
+    "verify_done": "I've verified my email",
+    "didnt_receive": "Didn't receive it? ",
+    "resend": "Resend",
+    "legal_prefix": "By continuing, you agree to our ",
+    "terms": "Terms of Service",
+    "legal_middle": " and ",
+    "privacy": "Privacy Policy"
+  },
+  "validation": {
+    "required_field": "This field is required.",
+    "required": "Required",
+    "subject_required": "Please enter a subject.",
+    "description_required": "Please enter a description.",
+    "invalid_email": "Please enter a valid email.",
+    "email_required": "Please enter your email",
+    "min_6_chars": "Minimum 6 characters",
+    "passwords_no_match": "Passwords do not match",
+    "invalid_phone": "Enter a valid phone number",
+    "password_too_short": "Password is too short."
+  },
+  "time": {
+    "just_now": "Just now",
+    "minutes_ago": "{n}m ago",
+    "hours_ago": "{n}h ago",
+    "yesterday": "Yesterday",
+    "short_date": "{month} {day}",
+    "month_short": {
+      "1": "Jan",
+      "2": "Feb",
+      "3": "Mar",
+      "4": "Apr",
+      "5": "May",
+      "6": "Jun",
+      "7": "Jul",
+      "8": "Aug",
+      "9": "Sep",
+      "10": "Oct",
+      "11": "Nov",
+      "12": "Dec"
+    },
+    "long_date": "{month} {day}, {year}"
   },
   "error": {
     "generic": "Something went wrong. Please try again.",
@@ -8,6 +118,671 @@
     "timeout": "Request timed out. Please try again."
   },
   "ticker": {
-    "no_announcements": "Stay tuned — exciting offers on the way!"
+    "no_announcements": "Stay tuned, exciting offers on the way!"
+  },
+  "nav": {
+    "browse": "Browse",
+    "deals": "Deals",
+    "auction": "Auction",
+    "cart": "Cart"
+  },
+  "deals_screen": {
+    "feature_name": "DEALS",
+    "tagline": "We're lining up the best prices in town. Check back soon."
+  },
+  "auction_screen": {
+    "feature_name": "AUCTION",
+    "tagline": "Bid, win, and own it. Live auctions are on their way."
+  },
+  "image_viewer_screen": {
+    "counter": "{current} / {total}"
+  },
+  "loyalty_screen": {
+    "feature_name": "LOYALTY",
+    "tagline": "Rewards that actually reward you. Almost here."
+  },
+  "for_you_deck": {
+    "section_title": "For You",
+    "ai_picked": "AI PICKED"
+  },
+  "rotating_smart_hero": {
+    "tap_to_retry": "Tap to retry"
+  },
+  "quick_actions": {
+    "title": "Quick Actions",
+    "track": "Track",
+    "reorder": "Reorder"
+  },
+  "categories_arrivals_section": {
+    "new_arrivals": "New Arrivals",
+    "no_items_in_category": "No items in this category yet",
+    "all_caught_up": "- You're all caught up -"
+  },
+  "sort_sheet": {
+    "sort_by": "Sort by"
+  },
+  "trending_now_section": {
+    "trending_now": "Trending Now",
+    "badge_on_fire": "ON FIRE",
+    "badge_viral": "VIRAL",
+    "badge_hyped": "HYPED",
+    "badge_surging": "SURGING",
+    "badge_peak": "PEAK",
+    "badge_buzzing": "BUZZING"
+  },
+  "category_browse_screen": {
+    "tap_to_retry": "Tap to retry",
+    "browse_all": "Browse all",
+    "no_subcategories_yet": "No subcategories yet"
+  },
+  "product_detail_screen": {
+    "try_again": "Try again"
+  },
+  "change_password_screen": {
+    "title": "Change Password",
+    "current_password": "Current password",
+    "enter_current_password": "Enter current password",
+    "new_password": "New password",
+    "enter_new_password": "Enter new password",
+    "at_least_8_characters": "At least 8 characters",
+    "confirm_new_password": "Confirm new password",
+    "reenter_new_password": "Re-enter new password",
+    "update_password": "Update Password"
+  },
+  "color_selector": {
+    "color_label": "COLOR"
+  },
+  "price_quantity_row": {
+    "price_per_unit": "{price} / unit"
+  },
+  "size_selector": {
+    "size": "SIZE",
+    "size_guide": "SIZE GUIDE"
+  },
+  "editorial_cover": {
+    "tonights_edit": "TONIGHT'S EDIT",
+    "title": "Your shopping,\nafter dark.",
+    "explore": "EXPLORE"
+  },
+  "category_detail_screen": {
+    "breadcrumb_categories": "Categories",
+    "tap_to_retry": "Tap to retry",
+    "empty_state": "No products in this category yet",
+    "all_caught_up": "You're all caught up"
+  },
+  "shopping_screen": {
+    "style_count": "{count} styles",
+    "tap_to_retry": "Tap to retry",
+    "empty_category": "No products in this category yet",
+    "all_caught_up": "You're all caught up"
+  },
+  "privacy_settings_screen": {
+    "title": "Privacy",
+    "data_collection": "Data Collection",
+    "analytics": "Analytics",
+    "analytics_subtitle": "Help us improve by sharing usage data",
+    "personalized_ads": "Personalized Ads",
+    "personalized_ads_subtitle": "Show ads based on your interests",
+    "data_sharing_partners": "Data Sharing with Partners",
+    "data_sharing_partners_subtitle": "Share data with trusted partners",
+    "location_tracking": "Location Tracking",
+    "location_tracking_subtitle": "Allow location-based recommendations",
+    "your_data": "Your Data",
+    "download_my_data": "Download My Data",
+    "download_my_data_subtitle": "Get a copy of your personal data",
+    "clear_search_history": "Clear Search History",
+    "clear_search_history_subtitle": "Remove all search history",
+    "clear_browsing_data": "Clear Browsing Data",
+    "clear_browsing_data_subtitle": "Remove cached product views",
+    "coming_soon": "{title} - coming soon"
+  },
+  "aurora_review_card": {
+    "helpful_count": "{count} helpful",
+    "verified": "VERIFIED"
+  },
+  "edit_profile_screen": {
+    "title": "Edit Profile",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "email_address": "Email Address",
+    "phone_number": "Phone Number",
+    "first_name_hint": "Jane",
+    "last_name_hint": "Doe",
+    "email_hint": "your@email.com",
+    "save_changes": "SAVE CHANGES"
+  },
+  "product_info": {
+    "only_n_left": "Only {count} left",
+    "brand": "BRAND",
+    "about_this_item": "ABOUT THIS ITEM",
+    "read_more": "Read more",
+    "show_less": "Show less"
+  },
+  "cart_screen": {
+    "remove_item_title": "Remove item?",
+    "remove": "Remove"
+  },
+  "cart_empty_state": {
+    "your_cart": "YOUR CART",
+    "nothing_here_yet": "Nothing here yet",
+    "add_items_hint": "Add items you love and\nthey'll show up right here."
+  },
+  "settings_screen": {
+    "delete_account": "Delete Account",
+    "delete_account_confirm": "This action is permanent and cannot be undone. All your data will be deleted.",
+    "appearance": "Appearance",
+    "dark_mode": "Dark Mode",
+    "dark_mode_subtitle": "Switch to dark theme",
+    "language": "Language",
+    "notifications": "Notifications",
+    "push_notifications": "Push Notifications",
+    "push_notifications_subtitle": "Order updates & offers",
+    "email_notifications": "Email Notifications",
+    "email_notifications_subtitle": "Receipts & newsletters",
+    "account": "Account",
+    "change_password": "Change Password",
+    "change_password_subtitle": "Update your password",
+    "delete_account_subtitle": "Permanently delete your data",
+    "choose_language": "Choose your preferred language"
+  },
+  "filter_sheet": {
+    "filters": "Filters",
+    "reset_all": "Reset all",
+    "price": "Price",
+    "color": "COLOR",
+    "search_colors": "Search colors...",
+    "search_sizes": "Search sizes...",
+    "apply": "Apply",
+    "no_results": "No results",
+    "all_colors": "All colors",
+    "all_sizes": "All sizes"
+  },
+  "promo_row": {
+    "code_applied": "{code} applied",
+    "discount_hint": "20% off entire order",
+    "have_promo": "Have a promo code?",
+    "tap_to_enter": "Tap to enter code",
+    "remove": "REMOVE",
+    "apply": "APPLY"
+  },
+  "promo_sheet": {
+    "promo_code": "PROMO CODE",
+    "enter_your_code": "Enter your code",
+    "code_hint": "e.g. AURORA20",
+    "apply": "APPLY",
+    "invalid_code": "Invalid code"
+  },
+  "address_picker_sheet": {
+    "choose_address": "CHOOSE ADDRESS",
+    "where_to_deliver": "Where to deliver",
+    "add_new_address": "+ ADD NEW ADDRESS",
+    "default_badge": "DEFAULT"
+  },
+  "aurora_login_gate_dialog": {
+    "one_more_step": "ONE MORE STEP",
+    "log_in_to_checkout": "Log in to checkout",
+    "body": "We keep your bag while you sign in. Your cart and wishlist stay where they are.",
+    "log_in": "LOG IN",
+    "continue_shopping": "Continue shopping"
+  },
+  "product_tabs": {
+    "tab_details": "DETAILS",
+    "tab_reviews": "REVIEWS",
+    "certifications": "CERTIFICATIONS",
+    "specifications": "SPECIFICATIONS",
+    "measurements": "MEASUREMENTS",
+    "based_on_reviews": "Based on {count} reviews",
+    "no_reviews_yet": "No reviews yet"
+  },
+  "address_pill": {
+    "no_delivery_address": "No delivery address",
+    "tap_to_add_one": "Tap to add one",
+    "change": "CHANGE",
+    "deliver_to_prefix": "Deliver to · ",
+    "default_badge": "DEFAULT"
+  },
+  "label_chooser": {
+    "home": "Home",
+    "office": "Office",
+    "other": "Other"
+  },
+  "map_picker_card": {
+    "search_hint": "Search a place, street, or area"
+  },
+  "orders_screen": {
+    "title": "Orders",
+    "tab_in_progress": "In Progress",
+    "tab_closed": "Closed",
+    "empty_title": "No orders here",
+    "empty_subtitle": "Orders in this category will appear here.",
+    "tab_delivered": "Delivered"
+  },
+  "size_guide_sheet": {
+    "title": "Size Guide",
+    "no_guide_available": "No size guide available for this item.",
+    "bra_step1_title": "Measure your band",
+    "bra_step1_body": "Wrap a tape measure around your ribcage, directly under your bust. Breathe out and measure in cm. Round up to the nearest 5 (e.g. 78 cm -> 80).",
+    "bra_step2_title": "Find your cup size",
+    "bra_step2_body": "Measure around the fullest part of your bust. Subtract your band from this number to find the cup difference.",
+    "bra_step3_title": "Combine",
+    "bra_step3_body": "Combine your band and cup - e.g. band 80 + cup B = 80B.",
+    "step_label": "Step {step}",
+    "cup_header": "CUP",
+    "difference_header": "DIFFERENCE",
+    "unit_in": "IN",
+    "unit_cm": "CM"
+  },
+  "profile_header_card": {
+    "orders": "Orders",
+    "points": "Points"
+  },
+  "order_success_screen": {
+    "order_confirmed": "ORDER CONFIRMED",
+    "on_its_way_title": "Your order is\non its way!",
+    "received_subtitle": "We've received your order and will start\npreparing it right away.",
+    "order_number": "Order number",
+    "estimated_delivery": "Estimated delivery",
+    "payment": "Payment",
+    "track_my_order": "Track my order",
+    "continue_shopping": "Continue shopping"
+  },
+  "search_screen": {
+    "search_for": "Search for \"{query}\"",
+    "no_results": "No results for \"{query}\"",
+    "recent": "RECENT",
+    "clear_all": "Clear all",
+    "did_you_mean": "Did you mean \"{term}\"?"
+  },
+  "cart_summary": {
+    "subtotal": "Subtotal",
+    "promo_label": "Promo · {code}",
+    "proceed_to_checkout": "Proceed to checkout",
+    "free": "Free",
+    "shipping": "Shipping",
+    "total": "Total",
+    "item": "item",
+    "items": "items",
+    "secure": "Secure",
+    "fast": "Fast",
+    "cash_on_delivery": "Cash on delivery"
+  },
+  "profile_screen": {
+    "title": "Profile",
+    "not_signed_in": "You're not signed in",
+    "guest_subtitle": "Sign in to access your orders, wishlist, addresses and loyalty points.",
+    "logout_confirm": "Are you sure you want to logout?"
+  },
+  "wishlist_screen": {
+    "empty_section_label": "YOUR WISHLIST",
+    "empty_title": "Nothing saved yet",
+    "empty_subtitle": "Tap the heart on any item\nand it'll appear right here."
+  },
+  "payment_methods_screen": {
+    "feature_name": "PAYMENT METHODS",
+    "tagline": "Securely save your cards for faster checkout. Almost here."
+  },
+  "addresses_screen": {
+    "title": "Addresses",
+    "default_badge": "Default",
+    "set_as_default": "Set as default",
+    "delete_title": "Delete \"{label}\"?",
+    "delete_fallback_label": "address",
+    "delete_subtitle": "This address will be permanently removed from your saved locations.",
+    "empty_title": "No saved addresses",
+    "empty_subtitle": "Add your home, work or any delivery spot and we'll remember it.",
+    "add_first": "Add your first address",
+    "add_new": "Add new address"
+  },
+  "profile_menu_list": {
+    "my_orders": "My Orders",
+    "orders_subtitle": "Track and manage your orders",
+    "sign_in_to_view": "Sign in to view",
+    "loyalty": "Loyalty",
+    "loyalty_subtitle": "Points, rewards & tiers",
+    "wishlist_subtitle": "Items you've saved",
+    "addresses": "Addresses",
+    "addresses_subtitle": "Manage saved locations",
+    "settings_subtitle": "Preferences and security",
+    "help_support": "Help & Support",
+    "help_support_subtitle": "FAQs, contact us",
+    "section_shopping": "Shopping",
+    "section_account": "Account",
+    "section_general": "General"
+  },
+  "splash_screen": {
+    "tagline": "YOUR SHOPPING DESTINATION",
+    "try_again": "Try again"
+  },
+  "coming_soon_screen": {
+    "coming_soon": "Coming Soon"
+  },
+  "notifications_screen": {
+    "title": "Notifications",
+    "mark_all_read": "Mark all read",
+    "today": "Today",
+    "earlier": "Earlier",
+    "empty": "No notifications"
+  },
+  "checkout_screen": {
+    "title": "Checkout",
+    "delivery_address": "Delivery address",
+    "order_summary": "Order summary",
+    "payment_method": "Payment method",
+    "delivery_note": "Delivery note",
+    "delivery_note_hint": "Any special instructions for delivery?",
+    "optional": "(optional)",
+    "no_address_warning": "Please select a delivery address to continue",
+    "item_meta": "{color} · {size} · Qty {qty}",
+    "subtotal": "Subtotal",
+    "delivery_fee": "Delivery fee",
+    "free": "Free",
+    "total": "Total",
+    "payment_subtitle": "Pay when your order arrives",
+    "only_badge": "ONLY",
+    "place_order": "Place order",
+    "estimated_delivery": "2-5 business days"
+  },
+  "shipping_info_screen": {
+    "title": "Shipping Information",
+    "delivery": "Delivery",
+    "estimated_delivery": "Estimated Delivery",
+    "from_order_confirmation": "From order confirmation",
+    "estimated_delivery_value": "2-5 days",
+    "delivery_fee": "Delivery Fee",
+    "calculated_based_on_location": "Calculated based on location",
+    "delivery_fee_value": "-",
+    "notes": "Notes",
+    "notice_peak_periods": "Delivery times may vary during peak periods or public holidays. Our team will keep you updated via the app.",
+    "notice_address_accurate": "Make sure your address is complete and accurate before placing an order to avoid delays."
+  },
+  "order_card": {
+    "item_count": {
+      "one": "{} item",
+      "other": "{} items"
+    }
+  },
+  "cart_item_card": {
+    "size": "Size {name}",
+    "only_left": "Only {count} left",
+    "unavailable": "Unavailable"
+  },
+  "notification_panel": {
+    "title": "Notifications",
+    "mark_all_read": "Mark all read",
+    "empty": "No notifications",
+    "view_all": "VIEW ALL NOTIFICATIONS"
+  },
+  "email_support_screen": {
+    "title": "Email Support",
+    "reply_notice": "We typically reply within a few hours during business days.",
+    "category_label": "Category",
+    "your_message_label": "Your Message",
+    "subject_field_label": "Subject",
+    "subject_field_hint": "Brief description of your issue",
+    "order_number_label": "Order Number (optional)",
+    "message_field_label": "Message",
+    "message_field_hint": "Describe your issue in detail...",
+    "send_message_button": "Send Message",
+    "enter_subject_error": "Please enter a subject",
+    "enter_message_error": "Please enter a message",
+    "subject_too_long_error": "Subject must be {max} characters or less",
+    "message_too_long_error": "Message is too long"
+  },
+  "custom_search_bar": {
+    "start_typing_to_search": "Start typing to search products",
+    "recent": "RECENT",
+    "clear_all": "CLEAR ALL",
+    "see_all_results": "SEE ALL RESULTS",
+    "search_products_hint": "Search for products..."
+  },
+  "aurora_confirm_sheet": {
+    "dismiss": "Dismiss"
+  },
+  "aurora_phone_field": {
+    "search_country": "Search country..."
+  },
+  "help_support_screen": {
+    "title": "Help & Support",
+    "need_help": "Need Help?",
+    "team_here_for_you": "Our team is here for you 24/7",
+    "email_us": "Email Us",
+    "could_not_open_whatsapp": "Could not open WhatsApp",
+    "quick_links": "Quick Links",
+    "shipping_information": "Shipping Information",
+    "shipping_information_sub": "Delivery times & fees",
+    "terms_conditions": "Terms & Conditions",
+    "terms_conditions_sub": "Usage & purchase terms",
+    "privacy_policy": "Privacy Policy",
+    "privacy_policy_sub": "How we handle your data",
+    "frequently_asked": "Frequently Asked",
+    "faq_track_order_q": "How do I track my order?",
+    "faq_track_order_a": "Go to Profile → Orders and tap the order you want to track. You'll see the latest status and any updates from the carrier.",
+    "faq_cancel_order_q": "Can I cancel my order?",
+    "faq_cancel_order_a": "You can cancel your order while it's in Processing or Packaged status. Once it moves to Out for Delivery, cancellation is no longer available. Contact us via email support if you need help.",
+    "faq_payment_methods_q": "What payment methods are available?",
+    "faq_payment_methods_a": "We currently support cash on delivery only. More payment options are coming soon.",
+    "faq_shipping_address_q": "How do I change my shipping address?",
+    "faq_shipping_address_a": "Go to Profile → Addresses to add, edit, or remove shipping addresses. You can also set a default address for faster checkout."
+  },
+  "sort_filter_bar": {
+    "filter": "FILTER",
+    "sort": "SORT · {label}",
+    "item_count": "{count} items"
+  },
+  "user_menu_dropdown": {
+    "logout_confirm": "Are you sure you want to logout?",
+    "profile": "Profile",
+    "view_account": "View account",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "DARK",
+    "light": "LIGHT",
+    "log_in": "Log in"
+  },
+  "legal_page_screen": {
+    "terms_acceptance_title": "Acceptance of Terms",
+    "terms_acceptance_content": "By using Sooki, you agree to these terms. Please read them carefully before placing any orders. If you do not agree with any part of these terms, you must not use the app.",
+    "terms_orders_title": "Orders & Payments",
+    "terms_orders_content": "All orders are subject to product availability. We reserve the right to cancel any order that cannot be fulfilled. We currently support cash on delivery as the only payment method.",
+    "terms_account_title": "Account",
+    "terms_account_content": "You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized use of your account.",
+    "terms_cancellation_title": "Order Cancellation",
+    "terms_cancellation_content": "Orders can only be cancelled while in the Processing or Packaged stage. Once an order is Out for Delivery, it can no longer be cancelled. Contact our support team via email for assistance.",
+    "terms_ip_title": "Intellectual Property",
+    "terms_ip_content": "All content on the Sooki platform - including logos, images, and text - is the property of Sooki and may not be reproduced without written permission.",
+    "terms_changes_title": "Changes to Terms",
+    "terms_changes_content": "We may update these terms from time to time. Continued use of the app after changes constitutes acceptance of the new terms.",
+    "privacy_collect_title": "Information We Collect",
+    "privacy_collect_content": "We collect information you provide directly: your name, phone number, email address, and saved delivery addresses. We also collect order history to improve your shopping experience.",
+    "privacy_use_title": "How We Use It",
+    "privacy_use_content": "Your information is used solely to process orders, send delivery updates, and improve our services. We do not sell your personal data to third parties.",
+    "privacy_security_title": "Data Security",
+    "privacy_security_content": "We apply industry-standard security measures to protect your information. Access to personal data is strictly limited to authorized personnel.",
+    "privacy_rights_title": "Your Rights",
+    "privacy_rights_content": "You may request access to, correction of, or deletion of your personal data at any time. You can also delete your account directly from Settings -> Delete Account.",
+    "privacy_changes_title": "Changes to Policy",
+    "privacy_changes_content": "We may update this policy from time to time. We will notify you of significant changes via the app. Continued use constitutes acceptance of the updated policy."
+  },
+  "address_form_screen": {
+    "location_services_off": "Turn on location services to use this.",
+    "location_permission_denied": "Location permission denied. Drag the map to set the pin.",
+    "location_unavailable": "Could not get your location. Drag the map instead.",
+    "no_place_found": "No place found. Try a different search.",
+    "label": "Label",
+    "custom_label": "Custom label",
+    "full_name": "Full Name",
+    "recipient_full_name": "Recipient's full name",
+    "city": "City",
+    "loading": "Loading...",
+    "pick_your_city": "Pick your city",
+    "select_city": "Select city",
+    "area": "Area",
+    "pick_city_first": "Pick a city first",
+    "pick_your_area": "Pick your area",
+    "select_area": "Select area",
+    "street": "Street",
+    "street_name": "Street name",
+    "building": "Building",
+    "building_hint": "Building name or number (optional)",
+    "floor": "Floor",
+    "floor_hint": "e.g. 3",
+    "apartment": "Apartment",
+    "apartment_hint": "e.g. 3B",
+    "directions": "Directions (optional)",
+    "directions_hint": "Landmark, gate code, delivery notes...",
+    "map_hint": "Drag the pin, search a place, or tap the crosshair to use your current location.",
+    "save_address": "Save address",
+    "pin_on_map": "Pin on map",
+    "pin_on_map_subtitle": "Help us find you faster. Off by default.",
+    "edit_address": "Edit address",
+    "add_new_address": "Add a new address",
+    "pinned_coords": "Pinned: {lat}, {lng}",
+    "set_as_default": "Set as default",
+    "default_subtitle": "Use this address for every order"
+  },
+  "order_detail_screen": {
+    "title": "Order detail",
+    "cancel_order_question": "Cancel order?",
+    "action_cannot_be_undone": "This action cannot be undone.",
+    "cancel_order": "Cancel order",
+    "cancel_order_button": "CANCEL ORDER",
+    "confirm_receipt": "Confirm receipt",
+    "hero_meta": "{date} · {count} items",
+    "items_ordered": "ITEMS ORDERED",
+    "item_variant": "{color} · {size} · Qty {qty}",
+    "write_review": "Write a review",
+    "order_summary": "ORDER SUMMARY",
+    "subtotal": "Subtotal",
+    "delivery_fee": "Delivery fee",
+    "free": "Free",
+    "discount": "Discount",
+    "total": "Total",
+    "delivery_address": "DELIVERY ADDRESS",
+    "floor": "Floor {floor}",
+    "payment": "PAYMENT",
+    "cash_on_delivery": "Cash on delivery",
+    "unknown": "Unknown",
+    "payment_pending": "Pending",
+    "payment_paid": "Paid",
+    "payment_failed": "Failed",
+    "delivery_note": "DELIVERY NOTE",
+    "error_title": "Failed to load order",
+    "error_subtitle": "Pull to refresh or tap retry",
+    "review_hint": "Share your thoughts (optional)",
+    "submit_review": "Submit review",
+    "step_processing": "Processing",
+    "step_packaged": "Packed",
+    "step_out_for_delivery": "Shipping",
+    "step_delivered": "Delivered"
+  },
+  "size_guide": {
+    "column": {
+      "size": "Size",
+      "chest": "Chest",
+      "waist": "Waist",
+      "hip": "Hip",
+      "eu": "EU",
+      "chest_cm": "Chest (cm)",
+      "waist_cm": "Waist (cm)",
+      "hip_cm": "Hip (cm)",
+      "foot_cm": "Foot (cm)",
+      "age": "Age",
+      "age_approx": "Age (approx)",
+      "weight_kg": "Weight (kg)",
+      "height_cm": "Height (cm)",
+      "circumference_mm": "Circumference (mm)",
+      "diameter_mm": "Diameter (mm)",
+      "dimensions": "Dimensions",
+      "best_for": "Best for",
+      "belt_size": "Belt size",
+      "fits_trouser_waist": "Fits trouser waist"
+    },
+    "international_letter": {
+      "subtitle": "Body measurements for international letter sizes"
+    },
+    "womens_apparel": {
+      "subtitle": "Body measurements for EU women's apparel sizes"
+    },
+    "kids_shoes": {
+      "subtitle": "EU kids' shoe sizes by foot length"
+    },
+    "baby_sizes": {
+      "subtitle": "Size by age, weight and height"
+    },
+    "kids_sizes": {
+      "subtitle": "Size by age, height and weight"
+    },
+    "bra": {
+      "subtitle": "Find your bra size in 3 steps"
+    },
+    "ring_sizes": {
+      "subtitle": "EU ring sizes by circumference and diameter"
+    },
+    "bed_sizes": {
+      "subtitle": "Mattress dimensions and recommended use"
+    },
+    "belt_size": {
+      "subtitle": "Belt size by trouser waist measurement"
+    },
+    "how_to_measure": {
+      "body": "Chest - around the fullest part of your bust, tape parallel to the floor.\nWaist - around the narrowest part, usually just above the belly button.\nHip - around the fullest part of your hips, about 20 cm below your waist.",
+      "kids_shoes": "Place your child's foot flat on paper, trace it and measure heel to toe in cm. Add 0.5 cm for growing room.",
+      "baby": "Babies grow quickly - if between sizes, size up for longer wear.",
+      "kids_height": "Measure your child's height standing straight against a wall without shoes.",
+      "ring": "Wrap a strip of paper around the base of your finger. Mark where it overlaps and measure the length in mm - that is your circumference.",
+      "bed": "The size refers to the mattress. For bedding (sheets, duvets, covers), choose the same size as your mattress.",
+      "belt": "Measure around your trouser waist in cm (where you wear your belt). Your belt size = your waist measurement + 5 cm."
+    },
+    "age": {
+      "newborn": "Newborn",
+      "months_0_3": "0-3 months",
+      "months_3_6": "3-6 months",
+      "months_0_6": "0-6 months",
+      "months_6_9": "6-9 months",
+      "months_9_12": "9-12 months",
+      "months_12_18": "12-18 months",
+      "months_18_24": "18-24 months",
+      "years_2": "2 years",
+      "years_2_3": "2-3 years",
+      "years_3": "3 years",
+      "years_3_4": "3-4 years",
+      "years_4": "4 years",
+      "years_4_5": "4-5 years",
+      "years_5": "5 years",
+      "years_5_6": "5-6 years",
+      "years_6_7": "6-7 years",
+      "years_7_8": "7-8 years",
+      "years_8_9": "8-9 years",
+      "years_9_10": "9-10 years",
+      "years_10_11": "10-11 years",
+      "years_11_12": "11-12 years",
+      "years_12_14": "12-14 years",
+      "years_14_16": "14-16 years"
+    },
+    "bed": {
+      "single": "Single",
+      "single_use": "One person / children's rooms",
+      "small_double": "Small Double",
+      "small_double_use": "One person with extra width",
+      "double": "Double",
+      "double_use": "Couples in smaller rooms",
+      "queen": "Queen",
+      "queen_use": "Couples, most popular size",
+      "king": "King",
+      "king_use": "Couples wanting extra space",
+      "super_king": "Super King",
+      "super_king_use": "Maximum comfort for couples"
+    },
+    "standard_name": {
+      "international_letter": "International Letter",
+      "womens_apparel": "Women's Apparel",
+      "kids_shoes": "Kids' Shoes",
+      "baby_sizes": "Baby Sizes (Months)",
+      "kids_sizes": "Kids Sizes (Age)",
+      "bra": "Bra Size",
+      "ring_sizes": "Ring Sizes",
+      "bed_sizes": "Bed Sizes",
+      "belt_size": "Belt Size (CM)"
+    }
   }
 }

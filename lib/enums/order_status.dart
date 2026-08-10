@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -47,15 +48,15 @@ enum OrderStatus {
 
   String get label {
     switch (this) {
-      case processing:    return 'Processing';
-      case outForDelivery: return 'Out for delivery';
-      case delivered:     return 'Delivered';
-      case received:      return 'Received';
-      case cancelled:     return 'Cancelled';
-      case rejected:      return 'Rejected';
-      case refunded:      return 'Refunded';
-      case packaged:      return 'Packaged';
-      case deliveryFailed: return 'Delivery failed';
+      case processing:    return 'enums.order_status.processing'.tr();
+      case outForDelivery: return 'enums.order_status.out_for_delivery'.tr();
+      case delivered:     return 'enums.order_status.delivered'.tr();
+      case received:      return 'enums.order_status.received'.tr();
+      case cancelled:     return 'enums.order_status.cancelled'.tr();
+      case rejected:      return 'enums.order_status.rejected'.tr();
+      case refunded:      return 'enums.order_status.refunded'.tr();
+      case packaged:      return 'enums.order_status.packaged'.tr();
+      case deliveryFailed: return 'enums.order_status.delivery_failed'.tr();
     }
   }
 

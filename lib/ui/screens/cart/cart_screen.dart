@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -53,7 +54,12 @@ class _CartScreenState extends State<CartScreen> {
                       color: AppColors.auroraPink,
                       child: ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          14,
+                          12,
+                          14,
+                          8,
+                        ),
                         children: [
                           ...items.map(
                             (item) => CartItemCard(
@@ -68,11 +74,11 @@ class _CartScreenState extends State<CartScreen> {
                               onRemove: () async {
                                 final confirmed = await showAuroraConfirmSheet(
                                   context,
-                                  title: 'Remove item?',
+                                  title: 'cart_screen.remove_item_title'.tr(),
                                   subtitle: item.title,
                                   icon: FontAwesomeIcons.trashCan,
                                   iconColor: AppColors.auroraRed,
-                                  confirmLabel: 'Remove',
+                                  confirmLabel: 'cart_screen.remove'.tr(),
                                   confirmColor: AppColors.auroraRed,
                                 );
                                 if (confirmed) {
@@ -102,8 +108,9 @@ class _CartScreenState extends State<CartScreen> {
                 ],
               );
 
-        final bgColor =
-            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+        final bgColor = isDark
+            ? AppColors.auroraDeepBase
+            : AppColors.auroraLightBase;
 
         return Stack(
           children: [

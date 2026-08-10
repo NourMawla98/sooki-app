@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -7,6 +8,7 @@ import '../../../../backend_integration/dtos/item/size_value_dto.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
 import 'filter_state.dart';
 
@@ -94,7 +96,7 @@ class _FilterSheetState extends State<FilterSheet> {
                       ).createShader(b),
                       blendMode: BlendMode.srcIn,
                       child: Text(
-                        'Filters',
+                        'filter_sheet.filters'.tr(),
                         style: AppTextStyles.heading3.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.w900,
@@ -137,7 +139,7 @@ class _FilterSheetState extends State<FilterSheet> {
                                   ).createShader(b),
                                   blendMode: BlendMode.srcIn,
                                   child: Text(
-                                    'Reset all',
+                                    'filter_sheet.reset_all'.tr(),
                                     style: AppTextStyles.caption.copyWith(
                                       color: AppColors.white,
                                       fontWeight: FontWeight.w800,
@@ -160,11 +162,11 @@ class _FilterSheetState extends State<FilterSheet> {
               ConstrainedBox(
                 constraints: BoxConstraints(maxHeight: maxScrollHeight),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _SectionHeading('Price', isDark: isDark),
+                      _SectionHeading('filter_sheet.price'.tr(), isDark: isDark),
                       _PriceSection(
                         min: widget.priceMin,
                         max: widget.priceMax,
@@ -175,10 +177,10 @@ class _FilterSheetState extends State<FilterSheet> {
                       if (widget.availableColors.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         _FilterDropdown(
-                          label: 'COLOR',
+                          label: 'filter_sheet.color'.tr(),
                           isDark: isDark,
                           searchable: true,
-                          searchHint: 'Search colors…',
+                          searchHint: 'filter_sheet.search_colors'.tr(),
                           preview: _ColorTriggerPreview(
                             colors: widget.availableColors,
                             selectedIds: _draft.colorIds,
@@ -210,7 +212,7 @@ class _FilterSheetState extends State<FilterSheet> {
                           label: standard.name.toUpperCase(),
                           isDark: isDark,
                           searchable: true,
-                          searchHint: 'Search sizes…',
+                          searchHint: 'filter_sheet.search_sizes'.tr(),
                           preview: _SizeTriggerPreview(
                             standard: standard,
                             selectedIds: _draft.sizeValueIds,
@@ -241,9 +243,9 @@ class _FilterSheetState extends State<FilterSheet> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 6, 20, 20),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 6, 20, 20),
                 child: AuroraPrimaryButton(
-                  text: 'Apply',
+                  text: 'filter_sheet.apply'.tr(),
                   height: 48,
                   onPressed: () => Navigator.of(context).pop(_draft),
                 ),
@@ -352,7 +354,7 @@ class _GradientPriceText extends StatelessWidget {
       ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       blendMode: BlendMode.srcIn,
       child: Text(
-        '\$${value.toStringAsFixed(0)}',
+        '\$${localizedNumber(value, decimals: 0)}',
         style: AppTextStyles.auroraMonoPrice.copyWith(
           color: AppColors.white,
           fontSize: 13,
@@ -379,7 +381,7 @@ class _FilterDropdown extends StatefulWidget {
     required this.preview,
     required this.childrenBuilder,
     this.searchable = false,
-    this.searchHint = 'Search…',
+    this.searchHint = 'Search...',
   });
 
   @override
@@ -471,7 +473,7 @@ class _FilterDropdownState extends State<_FilterDropdown> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Center(
                     child: Text(
-                      'No results',
+                      'filter_sheet.no_results'.tr(),
                       style: AppTextStyles.caption.copyWith(
                         color: widget.isDark
                             ? AppColors.white.withValues(alpha: 0.35)
@@ -532,7 +534,7 @@ class _SearchField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 8),
           child: Container(
             height: 36,
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -651,7 +653,7 @@ class _ColorTriggerPreview extends StatelessWidget {
 
     if (selected.isEmpty) {
       return Text(
-        'All colors',
+        'filter_sheet.all_colors'.tr(),
         style: AppTextStyles.caption.copyWith(
           color: isDark
               ? AppColors.white.withValues(alpha: 0.38)
@@ -671,7 +673,7 @@ class _ColorTriggerPreview extends StatelessWidget {
       children: [
         for (var i = 0; i < visible.length; i++)
           Padding(
-            padding: EdgeInsets.only(left: i == 0 ? 0 : 5),
+            padding: EdgeInsetsDirectional.only(start: i == 0 ? 0 : 5),
             child: Container(
               width: 14,
               height: 14,
@@ -687,9 +689,9 @@ class _ColorTriggerPreview extends StatelessWidget {
           ),
         if (overflow > 0)
           Padding(
-            padding: const EdgeInsets.only(left: 5),
+            padding: const EdgeInsetsDirectional.only(start: 5),
             child: Text(
-              '+$overflow',
+              '+${localizedNumber(overflow)}',
               style: AppTextStyles.captionSmall.copyWith(
                 color: AppColors.auroraPink,
                 fontWeight: FontWeight.w800,
@@ -794,7 +796,7 @@ class _SizeTriggerPreview extends StatelessWidget {
 
     if (selected.isEmpty) {
       return Text(
-        'All sizes',
+        'filter_sheet.all_sizes'.tr(),
         style: AppTextStyles.caption.copyWith(
           color: isDark
               ? AppColors.white.withValues(alpha: 0.38)
@@ -805,6 +807,7 @@ class _SizeTriggerPreview extends StatelessWidget {
       );
     }
 
+    // Size labels (XS, S, 38) are identifiers, so their digits stay Western.
     final labels = selected.map((v) => v.displayValue).toList();
     final preview = labels.take(3).join(', ');
     final overflow = labels.length - 3;
@@ -823,7 +826,7 @@ class _SizeTriggerPreview extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
-            '${labels.length}',
+            localizedNumber(labels.length),
             style: AppTextStyles.captionSmall.copyWith(
               color: AppColors.white,
               fontSize: 10,
@@ -833,7 +836,7 @@ class _SizeTriggerPreview extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          overflow > 0 ? '$preview +$overflow' : preview,
+          overflow > 0 ? '$preview +${localizedNumber(overflow)}' : preview,
           style: AppTextStyles.caption.copyWith(
             color: isDark
                 ? AppColors.white.withValues(alpha: 0.75)

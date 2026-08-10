@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../services/theme_service.dart';
@@ -54,17 +55,20 @@ class _CartEmptyStateState extends State<CartEmptyState>
       duration: const Duration(milliseconds: 3800),
     )..repeat();
 
-    _floatY = Tween<double>(begin: 0, end: -8).animate(
-      CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut),
-    );
+    _floatY = Tween<double>(
+      begin: 0,
+      end: -8,
+    ).animate(CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
 
-    _glowScale = Tween<double>(begin: 1.0, end: 1.10).animate(
-      CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut),
-    );
+    _glowScale = Tween<double>(
+      begin: 1.0,
+      end: 1.10,
+    ).animate(CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut));
 
-    _glowOpacity = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut),
-    );
+    _glowOpacity = Tween<double>(
+      begin: 0.6,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut));
   }
 
   @override
@@ -83,8 +87,9 @@ class _CartEmptyStateState extends State<CartEmptyState>
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final headingColor =
-            isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final headingColor = isDark
+            ? AppColors.white
+            : AppColors.auroraDeepBase;
         final subColor = isDark
             ? AppColors.white.withValues(alpha: 0.40)
             : AppColors.auroraDeepBase.withValues(alpha: 0.40);
@@ -107,25 +112,27 @@ class _CartEmptyStateState extends State<CartEmptyState>
                 const SizedBox(height: 28),
 
                 ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: AppColors.auroraGradient,
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ).createShader(
-                    Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-                  ),
+                  shaderCallback: (bounds) =>
+                      const LinearGradient(
+                        colors: AppColors.auroraGradient,
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ).createShader(
+                        Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                      ),
                   blendMode: BlendMode.srcIn,
                   child: Text(
-                    'YOUR CART',
-                    style: AppTextStyles.dsSectionLabel
-                        .copyWith(color: AppColors.white),
+                    'cart_empty_state.your_cart'.tr(),
+                    style: AppTextStyles.dsSectionLabel.copyWith(
+                      color: AppColors.white,
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: 8),
 
                 Text(
-                  'Nothing here yet',
+                  'cart_empty_state.nothing_here_yet'.tr(),
                   style: AppTextStyles.dsH2.copyWith(
                     color: headingColor,
                     fontSize: 24,
@@ -136,7 +143,7 @@ class _CartEmptyStateState extends State<CartEmptyState>
                 const SizedBox(height: 8),
 
                 Text(
-                  "Add items you love and\nthey'll show up right here.",
+                  'cart_empty_state.add_items_hint'.tr(),
                   style: AppTextStyles.dsMuted.copyWith(
                     color: subColor,
                     fontSize: 13,

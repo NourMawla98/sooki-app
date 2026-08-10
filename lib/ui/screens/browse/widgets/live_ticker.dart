@@ -143,7 +143,7 @@ class _LiveTickerState extends State<LiveTicker>
                       );
                     },
                     layoutBuilder: (currentChild, previousChildren) => Stack(
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       children: <Widget>[...previousChildren, ?currentChild],
                     ),
                     child: Text(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../themes/app_colors.dart';
 
-/// Thin animated aurora gradient line (blue → purple → pink → blue) that
+/// Thin animated aurora gradient line (blue to purple to pink to blue) that
 /// slowly pans horizontally. Used on top of the bottom nav bar to replace
 /// the old rainbow accent.
 class AuroraBarLine extends StatefulWidget {

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -42,7 +43,7 @@ class LegalPageScreen extends StatelessWidget {
                     _TopBar(title: title, isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -84,55 +85,55 @@ class LegalPageScreen extends StatelessWidget {
 
   // ── Terms & Conditions content ───────────────────────────────────────────────
 
-  static const termsAndConditions = [
+  static List<LegalSection> get termsAndConditions => [
     LegalSection(
-      title: 'Acceptance of Terms',
-      content: 'By using Sooki, you agree to these terms. Please read them carefully before placing any orders. If you do not agree with any part of these terms, you must not use the app.',
+      title: 'legal_page_screen.terms_acceptance_title'.tr(),
+      content: 'legal_page_screen.terms_acceptance_content'.tr(),
     ),
     LegalSection(
-      title: 'Orders & Payments',
-      content: 'All orders are subject to product availability. We reserve the right to cancel any order that cannot be fulfilled. We currently support cash on delivery as the only payment method.',
+      title: 'legal_page_screen.terms_orders_title'.tr(),
+      content: 'legal_page_screen.terms_orders_content'.tr(),
     ),
     LegalSection(
-      title: 'Account',
-      content: 'You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized use of your account.',
+      title: 'legal_page_screen.terms_account_title'.tr(),
+      content: 'legal_page_screen.terms_account_content'.tr(),
     ),
     LegalSection(
-      title: 'Order Cancellation',
-      content: 'Orders can only be cancelled while in the Processing or Packaged stage. Once an order is Out for Delivery, it can no longer be cancelled. Contact our support team via email for assistance.',
+      title: 'legal_page_screen.terms_cancellation_title'.tr(),
+      content: 'legal_page_screen.terms_cancellation_content'.tr(),
     ),
     LegalSection(
-      title: 'Intellectual Property',
-      content: 'All content on the Sooki platform — including logos, images, and text — is the property of Sooki and may not be reproduced without written permission.',
+      title: 'legal_page_screen.terms_ip_title'.tr(),
+      content: 'legal_page_screen.terms_ip_content'.tr(),
     ),
     LegalSection(
-      title: 'Changes to Terms',
-      content: 'We may update these terms from time to time. Continued use of the app after changes constitutes acceptance of the new terms.',
+      title: 'legal_page_screen.terms_changes_title'.tr(),
+      content: 'legal_page_screen.terms_changes_content'.tr(),
     ),
   ];
 
   // ── Privacy Policy content ───────────────────────────────────────────────────
 
-  static const privacyPolicy = [
+  static List<LegalSection> get privacyPolicy => [
     LegalSection(
-      title: 'Information We Collect',
-      content: 'We collect information you provide directly: your name, phone number, email address, and saved delivery addresses. We also collect order history to improve your shopping experience.',
+      title: 'legal_page_screen.privacy_collect_title'.tr(),
+      content: 'legal_page_screen.privacy_collect_content'.tr(),
     ),
     LegalSection(
-      title: 'How We Use It',
-      content: 'Your information is used solely to process orders, send delivery updates, and improve our services. We do not sell your personal data to third parties.',
+      title: 'legal_page_screen.privacy_use_title'.tr(),
+      content: 'legal_page_screen.privacy_use_content'.tr(),
     ),
     LegalSection(
-      title: 'Data Security',
-      content: 'We apply industry-standard security measures to protect your information. Access to personal data is strictly limited to authorized personnel.',
+      title: 'legal_page_screen.privacy_security_title'.tr(),
+      content: 'legal_page_screen.privacy_security_content'.tr(),
     ),
     LegalSection(
-      title: 'Your Rights',
-      content: 'You may request access to, correction of, or deletion of your personal data at any time. You can also delete your account directly from Settings → Delete Account.',
+      title: 'legal_page_screen.privacy_rights_title'.tr(),
+      content: 'legal_page_screen.privacy_rights_content'.tr(),
     ),
     LegalSection(
-      title: 'Changes to Policy',
-      content: 'We may update this policy from time to time. We will notify you of significant changes via the app. Continued use constitutes acceptance of the updated policy.',
+      title: 'legal_page_screen.privacy_changes_title'.tr(),
+      content: 'legal_page_screen.privacy_changes_content'.tr(),
     ),
   ];
 }
@@ -153,12 +154,17 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: color,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
@@ -189,7 +195,7 @@ class _GroupLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(2, 0, 2, 8),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.dsSectionLabel.copyWith(

@@ -12,6 +12,7 @@ import '../../../services/toast_service.dart';
 import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../skeleton/skeleton_shimmer.dart';
 
 // ─── Tag helpers ─────────────────────────────────────────────────────────────
@@ -130,8 +131,8 @@ class _ImageArea extends StatelessWidget {
           else
             _placeholder(),
           if (tags.isNotEmpty)
-            Positioned(
-              bottom: 0, left: 0, right: 0,
+            PositionedDirectional(
+              bottom: 0, start: 0, end: 0,
               height: 52,
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -144,16 +145,16 @@ class _ImageArea extends StatelessWidget {
               ),
             ),
           if (hasDiscount)
-            Positioned(
-              top: 8, left: 8,
+            PositionedDirectional(
+              top: 8, start: 8,
               child: _PillBadge(
-                '-${((1 - item.discountedPrice! / item.originalPrice) * 100).round()}%',
+                '-${localizedNumber(((1 - item.discountedPrice! / item.originalPrice) * 100).round())}%',
                 AppColors.auroraRed,
               ),
             ),
           if (tags.isNotEmpty)
-            Positioned(
-              bottom: 6, left: 6,
+            PositionedDirectional(
+              bottom: 6, start: 6,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,8 +167,8 @@ class _ImageArea extends StatelessWidget {
                 ],
               ),
             ),
-          Positioned(
-            top: 7, right: 7,
+          PositionedDirectional(
+            top: 7, end: 7,
             child: _HeartButton(itemId: item.id),
           ),
         ],
@@ -207,7 +208,7 @@ class _InfoArea extends StatelessWidget {
     final hasDiscount = item.discountedPrice != null;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(9, 8, 9, 9),
+      padding: const EdgeInsetsDirectional.fromSTEB(9, 8, 9, 9),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -257,7 +258,7 @@ class _InfoArea extends StatelessWidget {
 
   String _fmt(double p) {
     final hasDecimals = p.truncateToDouble() != p;
-    return '\$${p.toStringAsFixed(hasDecimals ? 2 : 0)}';
+    return '\$${localizedNumber(p, decimals: hasDecimals ? 2 : 0)}';
   }
 }
 

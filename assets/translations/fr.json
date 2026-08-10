@@ -1,13 +1,788 @@
 {
   "common": {
-    "app_name": "Sooki"
+    "app_name": "Sooki",
+    "add_to_cart": "Ajouter au panier",
+    "select_a_size": "Choisir une taille",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "retry": "Réessayer",
+    "continue_as_guest": "Continuer en tant qu'invité",
+    "login": "Se connecter",
+    "logout": "Déconnexion",
+    "sign_up": "S'inscrire",
+    "shop_now": "Acheter maintenant",
+    "view_all": "Voir tout",
+    "done": "Terminé",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "in_stock": "En stock",
+    "out_of_stock": "Rupture de stock",
+    "wishlist": "Favoris",
+    "settings": "Paramètres",
+    "search": "Rechercher",
+    "back": "Retour"
+  },
+  "enums": {
+    "order_status": {
+      "processing": "En cours de traitement",
+      "out_for_delivery": "En cours de livraison",
+      "delivered": "Livré",
+      "received": "Reçu",
+      "cancelled": "Annulé",
+      "rejected": "Rejeté",
+      "refunded": "Remboursé",
+      "packaged": "Emballé",
+      "delivery_failed": "Échec de la livraison"
+    },
+    "report_category": {
+      "bug": "Bug",
+      "payment": "Paiement",
+      "order_issue": "Problème de commande",
+      "account": "Compte",
+      "suggestion": "Suggestion",
+      "other": "Autre"
+    }
+  },
+  "auth": {
+    "welcome_back": "Bon retour !",
+    "login_subtitle": "Connectez-vous à votre compte",
+    "email": "E-mail",
+    "email_hint": "votre@email.com",
+    "password": "Mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "login": "Se connecter",
+    "no_account": "Vous n'avez pas de compte ? ",
+    "create_account": "Créer un compte",
+    "signup_subtitle": "Inscrivez-vous pour commencer vos achats",
+    "first_name": "Prénom",
+    "first_name_hint": "Jeanne",
+    "last_name": "Nom",
+    "last_name_hint": "Dupont",
+    "mobile_number": "Numéro de téléphone",
+    "confirm_password": "Confirmer le mot de passe",
+    "signup": "S'inscrire",
+    "have_account": "Vous avez déjà un compte ? ",
+    "log_in": "Se connecter",
+    "forgot_title": "Mot de passe oublié ?",
+    "forgot_subtitle": "Saisissez votre e-mail pour recevoir un lien de réinitialisation",
+    "send_reset_link": "Envoyer le lien",
+    "remember_password": "Vous vous souvenez de votre mot de passe ? ",
+    "verify_title": "Vérifiez votre e-mail",
+    "verify_sent_to": "Nous avons envoyé un lien de vérification à",
+    "verify_spam_hint": "Vous ne le trouvez pas ? Vérifiez vos courriers indésirables.",
+    "verify_done": "J'ai vérifié mon e-mail",
+    "didnt_receive": "Vous ne l'avez pas reçu ? ",
+    "resend": "Renvoyer",
+    "legal_prefix": "En continuant, vous acceptez nos ",
+    "terms": "Conditions d'utilisation",
+    "legal_middle": " et notre ",
+    "privacy": "Politique de confidentialité"
+  },
+  "validation": {
+    "required_field": "Ce champ est obligatoire.",
+    "required": "Requis",
+    "subject_required": "Veuillez saisir un sujet.",
+    "description_required": "Veuillez saisir une description.",
+    "invalid_email": "Veuillez saisir une adresse e-mail valide.",
+    "email_required": "Veuillez saisir votre e-mail",
+    "min_6_chars": "6 caractères minimum",
+    "passwords_no_match": "Les mots de passe ne correspondent pas",
+    "invalid_phone": "Saisissez un numéro de téléphone valide",
+    "password_too_short": "Le mot de passe est trop court."
+  },
+  "time": {
+    "just_now": "À l'instant",
+    "minutes_ago": "il y a {n} min",
+    "hours_ago": "il y a {n} h",
+    "yesterday": "Hier",
+    "short_date": "{day} {month}",
+    "month_short": {
+      "1": "janv.",
+      "2": "févr.",
+      "3": "mars",
+      "4": "avr.",
+      "5": "mai",
+      "6": "juin",
+      "7": "juil.",
+      "8": "août",
+      "9": "sept.",
+      "10": "oct.",
+      "11": "nov.",
+      "12": "déc."
+    },
+    "long_date": "{day} {month} {year}"
   },
   "error": {
     "generic": "Une erreur s'est produite. Veuillez réessayer.",
-    "no_internet": "Pas de connexion internet.",
+    "no_internet": "Pas de connexion Internet.",
     "timeout": "La requête a expiré. Veuillez réessayer."
   },
   "ticker": {
-    "no_announcements": "Restez à l'écoute — des offres incroyables arrivent !"
+    "no_announcements": "Restez à l'écoute, des offres intéressantes arrivent !"
+  },
+  "nav": {
+    "browse": "Accueil",
+    "deals": "Offres",
+    "auction": "Enchères",
+    "cart": "Panier"
+  },
+  "deals_screen": {
+    "feature_name": "OFFRES",
+    "tagline": "Nous préparons les meilleurs prix de la ville. Revenez bientôt."
+  },
+  "auction_screen": {
+    "feature_name": "ENCHÈRES",
+    "tagline": "Enchérissez, gagnez et devenez propriétaire. Les enchères en direct arrivent bientôt."
+  },
+  "image_viewer_screen": {
+    "counter": "{current} / {total}"
+  },
+  "loyalty_screen": {
+    "feature_name": "FIDÉLITÉ",
+    "tagline": "Des récompenses qui vous récompensent vraiment. Bientôt disponible."
+  },
+  "for_you_deck": {
+    "section_title": "Pour vous",
+    "ai_picked": "CHOIX IA"
+  },
+  "rotating_smart_hero": {
+    "tap_to_retry": "Appuyez pour réessayer"
+  },
+  "quick_actions": {
+    "title": "Actions rapides",
+    "track": "Suivre",
+    "reorder": "Recommander"
+  },
+  "categories_arrivals_section": {
+    "new_arrivals": "Nouveautés",
+    "no_items_in_category": "Aucun article dans cette catégorie pour le moment",
+    "all_caught_up": "- Vous êtes à jour -"
+  },
+  "sort_sheet": {
+    "sort_by": "Trier par"
+  },
+  "trending_now_section": {
+    "trending_now": "Tendances",
+    "badge_on_fire": "EN FEU",
+    "badge_viral": "VIRAL",
+    "badge_hyped": "EN VOGUE",
+    "badge_surging": "EN HAUSSE",
+    "badge_peak": "AU SOMMET",
+    "badge_buzzing": "POPULAIRE"
+  },
+  "category_browse_screen": {
+    "tap_to_retry": "Appuyez pour réessayer",
+    "browse_all": "Voir tout",
+    "no_subcategories_yet": "Aucune sous-catégorie pour le moment"
+  },
+  "product_detail_screen": {
+    "try_again": "Réessayer"
+  },
+  "change_password_screen": {
+    "title": "Changer le mot de passe",
+    "current_password": "Mot de passe actuel",
+    "enter_current_password": "Saisir le mot de passe actuel",
+    "new_password": "Nouveau mot de passe",
+    "enter_new_password": "Saisir le nouveau mot de passe",
+    "at_least_8_characters": "Au moins 8 caractères",
+    "confirm_new_password": "Confirmer le nouveau mot de passe",
+    "reenter_new_password": "Saisir à nouveau le nouveau mot de passe",
+    "update_password": "Mettre à jour le mot de passe"
+  },
+  "color_selector": {
+    "color_label": "COULEUR"
+  },
+  "price_quantity_row": {
+    "price_per_unit": "{price} / unité"
+  },
+  "size_selector": {
+    "size": "TAILLE",
+    "size_guide": "GUIDE DES TAILLES"
+  },
+  "editorial_cover": {
+    "tonights_edit": "LA SÉLECTION DU SOIR",
+    "title": "Votre shopping,\naprès la tombée de la nuit.",
+    "explore": "EXPLORER"
+  },
+  "category_detail_screen": {
+    "breadcrumb_categories": "Catégories",
+    "tap_to_retry": "Appuyez pour réessayer",
+    "empty_state": "Aucun produit dans cette catégorie pour le moment",
+    "all_caught_up": "Vous avez tout vu"
+  },
+  "shopping_screen": {
+    "style_count": "{count} styles",
+    "tap_to_retry": "Appuyez pour réessayer",
+    "empty_category": "Aucun produit dans cette catégorie pour l'instant",
+    "all_caught_up": "Vous avez tout vu"
+  },
+  "privacy_settings_screen": {
+    "title": "Confidentialité",
+    "data_collection": "Collecte de données",
+    "analytics": "Analytique",
+    "analytics_subtitle": "Aidez-nous à nous améliorer en partageant vos données d'utilisation",
+    "personalized_ads": "Publicités personnalisées",
+    "personalized_ads_subtitle": "Afficher des publicités selon vos centres d'intérêt",
+    "data_sharing_partners": "Partage de données avec des partenaires",
+    "data_sharing_partners_subtitle": "Partager des données avec des partenaires de confiance",
+    "location_tracking": "Suivi de la localisation",
+    "location_tracking_subtitle": "Autoriser les recommandations basées sur la localisation",
+    "your_data": "Vos données",
+    "download_my_data": "Télécharger mes données",
+    "download_my_data_subtitle": "Obtenez une copie de vos données personnelles",
+    "clear_search_history": "Effacer l'historique de recherche",
+    "clear_search_history_subtitle": "Supprimer tout l'historique de recherche",
+    "clear_browsing_data": "Effacer les données de navigation",
+    "clear_browsing_data_subtitle": "Supprimer les produits consultés en cache",
+    "coming_soon": "{title} - bientôt disponible"
+  },
+  "aurora_review_card": {
+    "helpful_count": "{count} utile",
+    "verified": "VÉRIFIÉ"
+  },
+  "edit_profile_screen": {
+    "title": "Modifier le profil",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "email_address": "Adresse e-mail",
+    "phone_number": "Numéro de téléphone",
+    "first_name_hint": "Marie",
+    "last_name_hint": "Dupont",
+    "email_hint": "votre@email.com",
+    "save_changes": "Enregistrer les modifications"
+  },
+  "product_info": {
+    "only_n_left": "Plus que {count}",
+    "brand": "MARQUE",
+    "about_this_item": "À PROPOS DE CET ARTICLE",
+    "read_more": "Lire plus",
+    "show_less": "Voir moins"
+  },
+  "cart_screen": {
+    "remove_item_title": "Retirer l'article ?",
+    "remove": "Retirer"
+  },
+  "cart_empty_state": {
+    "your_cart": "VOTRE PANIER",
+    "nothing_here_yet": "Rien ici pour le moment",
+    "add_items_hint": "Ajoutez les articles que vous aimez\net ils apparaîtront ici."
+  },
+  "settings_screen": {
+    "delete_account": "Supprimer le compte",
+    "delete_account_confirm": "Cette action est définitive et irréversible. Toutes vos données seront supprimées.",
+    "appearance": "Apparence",
+    "dark_mode": "Mode sombre",
+    "dark_mode_subtitle": "Passer au thème sombre",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "push_notifications": "Notifications push",
+    "push_notifications_subtitle": "Suivi des commandes et offres",
+    "email_notifications": "Notifications par e-mail",
+    "email_notifications_subtitle": "Reçus et newsletters",
+    "account": "Compte",
+    "change_password": "Changer le mot de passe",
+    "change_password_subtitle": "Mettez à jour votre mot de passe",
+    "delete_account_subtitle": "Supprimer définitivement vos données",
+    "choose_language": "Choisissez votre langue préférée"
+  },
+  "filter_sheet": {
+    "filters": "Filtres",
+    "reset_all": "Tout réinitialiser",
+    "price": "Prix",
+    "color": "COULEUR",
+    "search_colors": "Rechercher des couleurs...",
+    "search_sizes": "Rechercher des tailles...",
+    "apply": "Appliquer",
+    "no_results": "Aucun résultat",
+    "all_colors": "Toutes les couleurs",
+    "all_sizes": "Toutes les tailles"
+  },
+  "promo_row": {
+    "code_applied": "{code} appliqué",
+    "discount_hint": "20 % de réduction sur toute la commande",
+    "have_promo": "Vous avez un code promo ?",
+    "tap_to_enter": "Appuyez pour saisir le code",
+    "remove": "RETIRER",
+    "apply": "APPLIQUER"
+  },
+  "promo_sheet": {
+    "promo_code": "CODE PROMO",
+    "enter_your_code": "Saisissez votre code",
+    "code_hint": "ex. AURORA20",
+    "apply": "APPLIQUER",
+    "invalid_code": "Code invalide"
+  },
+  "address_picker_sheet": {
+    "choose_address": "Choisir une adresse",
+    "where_to_deliver": "Où livrer",
+    "add_new_address": "+ Ajouter une adresse",
+    "default_badge": "Par défaut"
+  },
+  "aurora_login_gate_dialog": {
+    "one_more_step": "ENCORE UNE ÉTAPE",
+    "log_in_to_checkout": "Connectez-vous pour commander",
+    "body": "Nous gardons votre panier pendant votre connexion. Votre panier et votre liste de souhaits restent intacts.",
+    "log_in": "SE CONNECTER",
+    "continue_shopping": "Continuer les achats"
+  },
+  "product_tabs": {
+    "tab_details": "DÉTAILS",
+    "tab_reviews": "AVIS",
+    "certifications": "CERTIFICATIONS",
+    "specifications": "SPÉCIFICATIONS",
+    "measurements": "MESURES",
+    "based_on_reviews": "Basé sur {count} avis",
+    "no_reviews_yet": "Aucun avis pour le moment"
+  },
+  "address_pill": {
+    "no_delivery_address": "Aucune adresse de livraison",
+    "tap_to_add_one": "Appuyez pour en ajouter une",
+    "change": "MODIFIER",
+    "deliver_to_prefix": "Livrer à · ",
+    "default_badge": "PAR DÉFAUT"
+  },
+  "label_chooser": {
+    "home": "Domicile",
+    "office": "Bureau",
+    "other": "Autre"
+  },
+  "map_picker_card": {
+    "search_hint": "Rechercher un lieu, une rue ou une zone"
+  },
+  "orders_screen": {
+    "title": "Commandes",
+    "tab_in_progress": "En cours",
+    "tab_closed": "Clôturées",
+    "empty_title": "Aucune commande ici",
+    "empty_subtitle": "Les commandes de cette catégorie apparaîtront ici.",
+    "tab_delivered": "Livrées"
+  },
+  "size_guide_sheet": {
+    "title": "Guide des tailles",
+    "no_guide_available": "Aucun guide des tailles disponible pour cet article.",
+    "bra_step1_title": "Mesurez votre tour de dos",
+    "bra_step1_body": "Placez un mètre ruban autour de votre cage thoracique, juste sous la poitrine. Expirez et mesurez en cm. Arrondissez au multiple de 5 le plus proche (par ex. 78 cm -> 80).",
+    "bra_step2_title": "Trouvez votre bonnet",
+    "bra_step2_body": "Mesurez autour de la partie la plus forte de votre poitrine. Soustrayez votre tour de dos de ce chiffre pour obtenir la différence du bonnet.",
+    "bra_step3_title": "Combinez",
+    "bra_step3_body": "Combinez votre tour de dos et votre bonnet, par ex. tour 80 + bonnet B = 80B.",
+    "step_label": "Étape {step}",
+    "cup_header": "BONNET",
+    "difference_header": "DIFFÉRENCE",
+    "unit_in": "PO",
+    "unit_cm": "CM"
+  },
+  "profile_header_card": {
+    "orders": "Commandes",
+    "points": "Points"
+  },
+  "order_success_screen": {
+    "order_confirmed": "COMMANDE CONFIRMÉE",
+    "on_its_way_title": "Votre commande est\nen route !",
+    "received_subtitle": "Nous avons bien reçu votre commande et\nallons la préparer immédiatement.",
+    "order_number": "Numéro de commande",
+    "estimated_delivery": "Livraison estimée",
+    "payment": "Paiement",
+    "track_my_order": "Suivre ma commande",
+    "continue_shopping": "Continuer mes achats"
+  },
+  "search_screen": {
+    "search_for": "Rechercher \"{query}\"",
+    "no_results": "Aucun résultat pour \"{query}\"",
+    "recent": "RÉCENTS",
+    "clear_all": "Tout effacer",
+    "did_you_mean": "Vouliez-vous dire \"{term}\" ?"
+  },
+  "cart_summary": {
+    "subtotal": "Sous-total",
+    "promo_label": "Promo · {code}",
+    "proceed_to_checkout": "Passer la commande",
+    "free": "Gratuit",
+    "shipping": "Livraison",
+    "total": "Total",
+    "item": "article",
+    "items": "articles",
+    "secure": "Sécurisé",
+    "fast": "Rapide",
+    "cash_on_delivery": "Paiement à la livraison"
+  },
+  "profile_screen": {
+    "title": "Profil",
+    "not_signed_in": "Vous n'êtes pas connecté",
+    "guest_subtitle": "Connectez-vous pour accéder à vos commandes, votre liste de souhaits, vos adresses et vos points de fidélité.",
+    "logout_confirm": "Voulez-vous vraiment vous déconnecter ?"
+  },
+  "wishlist_screen": {
+    "empty_section_label": "VOTRE LISTE DE SOUHAITS",
+    "empty_title": "Rien d'enregistré pour l'instant",
+    "empty_subtitle": "Touchez le coeur sur un article\net il apparaîtra ici."
+  },
+  "payment_methods_screen": {
+    "feature_name": "MOYENS DE PAIEMENT",
+    "tagline": "Enregistrez vos cartes en toute sécurité pour un paiement plus rapide. Bientôt disponible."
+  },
+  "addresses_screen": {
+    "title": "Adresses",
+    "default_badge": "Par défaut",
+    "set_as_default": "Définir par défaut",
+    "delete_title": "Supprimer \"{label}\" ?",
+    "delete_fallback_label": "adresse",
+    "delete_subtitle": "Cette adresse sera définitivement supprimée de vos emplacements enregistrés.",
+    "empty_title": "Aucune adresse enregistrée",
+    "empty_subtitle": "Ajoutez votre domicile, votre travail ou tout lieu de livraison et nous le retiendrons.",
+    "add_first": "Ajouter votre première adresse",
+    "add_new": "Ajouter une nouvelle adresse"
+  },
+  "profile_menu_list": {
+    "my_orders": "Mes commandes",
+    "orders_subtitle": "Suivez et gérez vos commandes",
+    "sign_in_to_view": "Connectez-vous pour voir",
+    "loyalty": "Fidélité",
+    "loyalty_subtitle": "Points, récompenses et niveaux",
+    "wishlist_subtitle": "Articles enregistrés",
+    "addresses": "Adresses",
+    "addresses_subtitle": "Gérez les adresses enregistrées",
+    "settings_subtitle": "Préférences et sécurité",
+    "help_support": "Aide et assistance",
+    "help_support_subtitle": "FAQ, nous contacter",
+    "section_shopping": "Achats",
+    "section_account": "Compte",
+    "section_general": "Général"
+  },
+  "splash_screen": {
+    "tagline": "VOTRE DESTINATION SHOPPING",
+    "try_again": "Réessayer"
+  },
+  "coming_soon_screen": {
+    "coming_soon": "Bientôt disponible"
+  },
+  "notifications_screen": {
+    "title": "Notifications",
+    "mark_all_read": "Tout marquer comme lu",
+    "today": "Aujourd'hui",
+    "earlier": "Plus tôt",
+    "empty": "Aucune notification"
+  },
+  "checkout_screen": {
+    "title": "Paiement",
+    "delivery_address": "Adresse de livraison",
+    "order_summary": "Récapitulatif de commande",
+    "payment_method": "Mode de paiement",
+    "delivery_note": "Note de livraison",
+    "delivery_note_hint": "Des instructions particulières pour la livraison ?",
+    "optional": "(facultatif)",
+    "no_address_warning": "Veuillez sélectionner une adresse de livraison pour continuer",
+    "item_meta": "{color} · {size} · Qté {qty}",
+    "subtotal": "Sous-total",
+    "delivery_fee": "Frais de livraison",
+    "free": "Gratuit",
+    "total": "Total",
+    "payment_subtitle": "Payez à la réception de votre commande",
+    "only_badge": "UNIQUE",
+    "place_order": "Passer la commande",
+    "estimated_delivery": "2 à 5 jours ouvrables"
+  },
+  "shipping_info_screen": {
+    "title": "Informations de livraison",
+    "delivery": "Livraison",
+    "estimated_delivery": "Livraison estimée",
+    "from_order_confirmation": "À partir de la confirmation de commande",
+    "estimated_delivery_value": "2-5 jours",
+    "delivery_fee": "Frais de livraison",
+    "calculated_based_on_location": "Calculés selon la localisation",
+    "delivery_fee_value": "-",
+    "notes": "Remarques",
+    "notice_peak_periods": "Les délais de livraison peuvent varier pendant les périodes de forte affluence ou les jours fériés. Notre équipe vous tiendra informé via l'application.",
+    "notice_address_accurate": "Assurez-vous que votre adresse est complète et exacte avant de passer une commande pour éviter tout retard."
+  },
+  "order_card": {
+    "item_count": {
+      "one": "{} article",
+      "other": "{} articles"
+    }
+  },
+  "cart_item_card": {
+    "size": "Taille {name}",
+    "only_left": "Plus que {count} en stock",
+    "unavailable": "Indisponible"
+  },
+  "notification_panel": {
+    "title": "Notifications",
+    "mark_all_read": "Tout marquer comme lu",
+    "empty": "Aucune notification",
+    "view_all": "VOIR TOUTES LES NOTIFICATIONS"
+  },
+  "email_support_screen": {
+    "title": "Assistance par e-mail",
+    "reply_notice": "Nous répondons généralement en quelques heures les jours ouvrables.",
+    "category_label": "Catégorie",
+    "your_message_label": "Votre message",
+    "subject_field_label": "Objet",
+    "subject_field_hint": "Brève description de votre problème",
+    "order_number_label": "Numéro de commande (facultatif)",
+    "message_field_label": "Message",
+    "message_field_hint": "Décrivez votre problème en détail...",
+    "send_message_button": "Envoyer le message",
+    "enter_subject_error": "Veuillez saisir un objet",
+    "enter_message_error": "Veuillez saisir un message",
+    "subject_too_long_error": "L'objet ne doit pas dépasser {max} caractères",
+    "message_too_long_error": "Le message est trop long"
+  },
+  "custom_search_bar": {
+    "start_typing_to_search": "Commencez à taper pour rechercher des produits",
+    "recent": "RÉCENTS",
+    "clear_all": "TOUT EFFACER",
+    "see_all_results": "VOIR TOUS LES RÉSULTATS",
+    "search_products_hint": "Rechercher des produits..."
+  },
+  "aurora_confirm_sheet": {
+    "dismiss": "Fermer"
+  },
+  "aurora_phone_field": {
+    "search_country": "Rechercher un pays..."
+  },
+  "help_support_screen": {
+    "title": "Aide et assistance",
+    "need_help": "Besoin d'aide ?",
+    "team_here_for_you": "Notre équipe est là pour vous 24h/24 et 7j/7",
+    "email_us": "Nous écrire",
+    "could_not_open_whatsapp": "Impossible d'ouvrir WhatsApp",
+    "quick_links": "Liens rapides",
+    "shipping_information": "Informations de livraison",
+    "shipping_information_sub": "Délais et frais de livraison",
+    "terms_conditions": "Conditions générales",
+    "terms_conditions_sub": "Conditions d'utilisation et d'achat",
+    "privacy_policy": "Politique de confidentialité",
+    "privacy_policy_sub": "Comment nous gérons vos données",
+    "frequently_asked": "Questions fréquentes",
+    "faq_track_order_q": "Comment suivre ma commande ?",
+    "faq_track_order_a": "Allez dans Profil -> Commandes et touchez la commande à suivre. Vous verrez le dernier statut et les mises à jour du transporteur.",
+    "faq_cancel_order_q": "Puis-je annuler ma commande ?",
+    "faq_cancel_order_a": "Vous pouvez annuler votre commande tant qu'elle est au statut En traitement ou Emballée. Une fois passée à En cours de livraison, l'annulation n'est plus possible. Contactez-nous par e-mail si besoin.",
+    "faq_payment_methods_q": "Quels modes de paiement sont disponibles ?",
+    "faq_payment_methods_a": "Nous acceptons actuellement uniquement le paiement à la livraison. D'autres options arrivent bientôt.",
+    "faq_shipping_address_q": "Comment modifier mon adresse de livraison ?",
+    "faq_shipping_address_a": "Allez dans Profil -> Adresses pour ajouter, modifier ou supprimer des adresses de livraison. Vous pouvez aussi définir une adresse par défaut pour un paiement plus rapide."
+  },
+  "sort_filter_bar": {
+    "filter": "FILTRER",
+    "sort": "TRIER · {label}",
+    "item_count": "{count} articles"
+  },
+  "user_menu_dropdown": {
+    "logout_confirm": "Voulez-vous vraiment vous déconnecter ?",
+    "profile": "Profil",
+    "view_account": "Voir le compte",
+    "language": "Langue",
+    "theme": "Thème",
+    "dark": "SOMBRE",
+    "light": "CLAIR",
+    "log_in": "Connexion"
+  },
+  "legal_page_screen": {
+    "terms_acceptance_title": "Acceptation des conditions",
+    "terms_acceptance_content": "En utilisant Sooki, vous acceptez ces conditions. Veuillez les lire attentivement avant de passer une commande. Si vous n'acceptez pas une partie de ces conditions, vous ne devez pas utiliser l'application.",
+    "terms_orders_title": "Commandes et paiements",
+    "terms_orders_content": "Toutes les commandes sont soumises à la disponibilité des produits. Nous nous réservons le droit d'annuler toute commande ne pouvant être honorée. Nous acceptons actuellement le paiement à la livraison comme seul mode de paiement.",
+    "terms_account_title": "Compte",
+    "terms_account_content": "Vous êtes responsable de la confidentialité de vos identifiants de compte. Vous vous engagez à nous informer immédiatement de toute utilisation non autorisée de votre compte.",
+    "terms_cancellation_title": "Annulation de commande",
+    "terms_cancellation_content": "Les commandes ne peuvent être annulées qu'aux étapes En traitement ou Emballée. Une fois qu'une commande est En cours de livraison, elle ne peut plus être annulée. Contactez notre équipe d'assistance par e-mail pour obtenir de l'aide.",
+    "terms_ip_title": "Propriété intellectuelle",
+    "terms_ip_content": "Tout le contenu de la plateforme Sooki, y compris les logos, les images et les textes, est la propriété de Sooki et ne peut être reproduit sans autorisation écrite.",
+    "terms_changes_title": "Modifications des conditions",
+    "terms_changes_content": "Nous pouvons mettre à jour ces conditions de temps à autre. En continuant à utiliser l'application après des modifications, vous acceptez les nouvelles conditions.",
+    "privacy_collect_title": "Informations que nous collectons",
+    "privacy_collect_content": "Nous collectons les informations que vous fournissez directement : votre nom, votre numéro de téléphone, votre adresse e-mail et vos adresses de livraison enregistrées. Nous collectons également l'historique des commandes pour améliorer votre expérience d'achat.",
+    "privacy_use_title": "Comment nous les utilisons",
+    "privacy_use_content": "Vos informations sont utilisées uniquement pour traiter les commandes, envoyer des mises à jour de livraison et améliorer nos services. Nous ne vendons pas vos données personnelles à des tiers.",
+    "privacy_security_title": "Sécurité des données",
+    "privacy_security_content": "Nous appliquons des mesures de sécurité conformes aux normes du secteur pour protéger vos informations. L'accès aux données personnelles est strictement limité au personnel autorisé.",
+    "privacy_rights_title": "Vos droits",
+    "privacy_rights_content": "Vous pouvez demander l'accès à vos données personnelles, leur correction ou leur suppression à tout moment. Vous pouvez également supprimer votre compte directement depuis Paramètres -> Supprimer le compte.",
+    "privacy_changes_title": "Modifications de la politique",
+    "privacy_changes_content": "Nous pouvons mettre à jour cette politique de temps à autre. Nous vous informerons des changements importants via l'application. En continuant à l'utiliser, vous acceptez la politique mise à jour."
+  },
+  "address_form_screen": {
+    "location_services_off": "Activez les services de localisation pour utiliser cette option.",
+    "location_permission_denied": "Autorisation de localisation refusée. Déplacez la carte pour placer le repère.",
+    "location_unavailable": "Impossible d'obtenir votre position. Déplacez la carte à la place.",
+    "no_place_found": "Aucun lieu trouvé. Essayez une autre recherche.",
+    "label": "Étiquette",
+    "custom_label": "Étiquette personnalisée",
+    "full_name": "Nom complet",
+    "recipient_full_name": "Nom complet du destinataire",
+    "city": "Ville",
+    "loading": "Chargement...",
+    "pick_your_city": "Choisissez votre ville",
+    "select_city": "Sélectionner une ville",
+    "area": "Zone",
+    "pick_city_first": "Choisissez d'abord une ville",
+    "pick_your_area": "Choisissez votre zone",
+    "select_area": "Sélectionner une zone",
+    "street": "Rue",
+    "street_name": "Nom de la rue",
+    "building": "Immeuble",
+    "building_hint": "Nom ou numéro de l'immeuble (facultatif)",
+    "floor": "Étage",
+    "floor_hint": "ex. 3",
+    "apartment": "Appartement",
+    "apartment_hint": "ex. 3B",
+    "directions": "Indications (facultatif)",
+    "directions_hint": "Point de repère, code du portail, notes de livraison...",
+    "map_hint": "Déplacez le repère, recherchez un lieu ou appuyez sur le viseur pour utiliser votre position actuelle.",
+    "save_address": "Enregistrer l'adresse",
+    "pin_on_map": "Placer sur la carte",
+    "pin_on_map_subtitle": "Aidez-nous à vous trouver plus vite. Désactivé par défaut.",
+    "edit_address": "Modifier l'adresse",
+    "add_new_address": "Ajouter une nouvelle adresse",
+    "pinned_coords": "Repéré : {lat}, {lng}",
+    "set_as_default": "Définir par défaut",
+    "default_subtitle": "Utiliser cette adresse pour chaque commande"
+  },
+  "order_detail_screen": {
+    "title": "Détail de la commande",
+    "cancel_order_question": "Annuler la commande ?",
+    "action_cannot_be_undone": "Cette action est irréversible.",
+    "cancel_order": "Annuler la commande",
+    "cancel_order_button": "ANNULER LA COMMANDE",
+    "confirm_receipt": "Confirmer la réception",
+    "hero_meta": "{date} · {count} articles",
+    "items_ordered": "ARTICLES COMMANDÉS",
+    "item_variant": "{color} · {size} · Qté {qty}",
+    "write_review": "Rédiger un avis",
+    "order_summary": "RÉCAPITULATIF",
+    "subtotal": "Sous-total",
+    "delivery_fee": "Frais de livraison",
+    "free": "Gratuit",
+    "discount": "Remise",
+    "total": "Total",
+    "delivery_address": "ADRESSE DE LIVRAISON",
+    "floor": "Étage {floor}",
+    "payment": "PAIEMENT",
+    "cash_on_delivery": "Paiement à la livraison",
+    "unknown": "Inconnu",
+    "payment_pending": "En attente",
+    "payment_paid": "Payé",
+    "payment_failed": "Échoué",
+    "delivery_note": "NOTE DE LIVRAISON",
+    "error_title": "Échec du chargement de la commande",
+    "error_subtitle": "Tirez pour actualiser ou appuyez sur réessayer",
+    "review_hint": "Partagez votre avis (facultatif)",
+    "submit_review": "Envoyer l'avis",
+    "step_processing": "Traitement",
+    "step_packaged": "Emballé",
+    "step_out_for_delivery": "Livraison",
+    "step_delivered": "Livré"
+  },
+  "size_guide": {
+    "column": {
+      "size": "Taille",
+      "chest": "Poitrine",
+      "waist": "Tour de taille",
+      "hip": "Hanches",
+      "eu": "EU",
+      "chest_cm": "Poitrine (cm)",
+      "waist_cm": "Tour de taille (cm)",
+      "hip_cm": "Hanches (cm)",
+      "foot_cm": "Pied (cm)",
+      "age": "Âge",
+      "age_approx": "Âge (environ)",
+      "weight_kg": "Poids (kg)",
+      "height_cm": "Hauteur (cm)",
+      "circumference_mm": "Circonférence (mm)",
+      "diameter_mm": "Diamètre (mm)",
+      "dimensions": "Dimensions",
+      "best_for": "Idéal pour",
+      "belt_size": "Taille de ceinture",
+      "fits_trouser_waist": "Convient au tour de taille"
+    },
+    "international_letter": {
+      "subtitle": "Mensurations pour les tailles lettres internationales"
+    },
+    "womens_apparel": {
+      "subtitle": "Mensurations pour les tailles de vêtements femme EU"
+    },
+    "kids_shoes": {
+      "subtitle": "Pointures enfant EU selon la longueur du pied"
+    },
+    "baby_sizes": {
+      "subtitle": "Taille selon l'âge, le poids et la hauteur"
+    },
+    "kids_sizes": {
+      "subtitle": "Taille selon l'âge, la hauteur et le poids"
+    },
+    "bra": {
+      "subtitle": "Trouvez votre taille de soutien-gorge en 3 étapes"
+    },
+    "ring_sizes": {
+      "subtitle": "Tailles de bagues EU selon la circonférence et le diamètre"
+    },
+    "bed_sizes": {
+      "subtitle": "Dimensions du matelas et usage recommandé"
+    },
+    "belt_size": {
+      "subtitle": "Taille de ceinture selon le tour de taille du pantalon"
+    },
+    "how_to_measure": {
+      "body": "Poitrine - autour de la partie la plus forte, mètre parallèle au sol.\nTaille - autour de la partie la plus fine, juste au-dessus du nombril.\nHanches - autour de la partie la plus forte, environ 20 cm sous la taille.",
+      "kids_shoes": "Posez le pied de votre enfant à plat sur une feuille, tracez-le et mesurez du talon aux orteils en cm. Ajoutez 0,5 cm pour la croissance.",
+      "baby": "Les bébés grandissent vite. En cas d'hésitation entre deux tailles, prenez la plus grande.",
+      "kids_height": "Mesurez la taille de votre enfant debout, dos droit contre un mur, sans chaussures.",
+      "ring": "Enroulez une bande de papier autour de la base de votre doigt. Marquez le point de chevauchement et mesurez la longueur en mm : c'est votre circonférence.",
+      "bed": "La taille correspond au matelas. Pour le linge de lit (draps, couettes, housses), choisissez la même taille que votre matelas.",
+      "belt": "Mesurez le tour de taille de votre pantalon en cm (là où vous portez votre ceinture). Taille de ceinture = tour de taille + 5 cm."
+    },
+    "age": {
+      "newborn": "Nouveau-né",
+      "months_0_3": "0-3 mois",
+      "months_3_6": "3-6 mois",
+      "months_0_6": "0-6 mois",
+      "months_6_9": "6-9 mois",
+      "months_9_12": "9-12 mois",
+      "months_12_18": "12-18 mois",
+      "months_18_24": "18-24 mois",
+      "years_2": "2 ans",
+      "years_2_3": "2-3 ans",
+      "years_3": "3 ans",
+      "years_3_4": "3-4 ans",
+      "years_4": "4 ans",
+      "years_4_5": "4-5 ans",
+      "years_5": "5 ans",
+      "years_5_6": "5-6 ans",
+      "years_6_7": "6-7 ans",
+      "years_7_8": "7-8 ans",
+      "years_8_9": "8-9 ans",
+      "years_9_10": "9-10 ans",
+      "years_10_11": "10-11 ans",
+      "years_11_12": "11-12 ans",
+      "years_12_14": "12-14 ans",
+      "years_14_16": "14-16 ans"
+    },
+    "bed": {
+      "single": "Simple",
+      "single_use": "Une personne / chambres d'enfant",
+      "small_double": "Petit double",
+      "small_double_use": "Une personne avec plus de largeur",
+      "double": "Double",
+      "double_use": "Couples dans des chambres plus petites",
+      "queen": "Queen",
+      "queen_use": "Couples, la taille la plus populaire",
+      "king": "King",
+      "king_use": "Couples souhaitant plus d'espace",
+      "super_king": "Super King",
+      "super_king_use": "Confort maximal pour les couples"
+    },
+    "standard_name": {
+      "international_letter": "Tailles Internationales",
+      "womens_apparel": "Vêtements Femme",
+      "kids_shoes": "Chaussures Enfants",
+      "baby_sizes": "Tailles Bébé (Mois)",
+      "kids_sizes": "Tailles Enfant (Âge)",
+      "bra": "Taille de Soutien-gorge",
+      "ring_sizes": "Tailles de Bague",
+      "bed_sizes": "Tailles de Lit",
+      "belt_size": "Taille de Ceinture (CM)"
+    }
   }
 }

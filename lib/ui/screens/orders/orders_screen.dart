@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -66,6 +67,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       listenable: Listenable.merge([ThemeService.instance, _service]),
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
         final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
         final titleColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
         final filtered = _filtered(_service.orders);
@@ -91,17 +93,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   children: [
                     // Top bar
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+                      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
                       child: Row(
                         children: [
                           IconButton(
-                            icon: FaIcon(FontAwesomeIcons.arrowLeft,
+                            icon: FaIcon(
+                                isRtl
+                                    ? FontAwesomeIcons.arrowRight
+                                    : FontAwesomeIcons.arrowLeft,
                                 size: 18, color: iconColor),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Orders',
+                            'orders_screen.title'.tr(),
                             style: AppTextStyles.dsH2.copyWith(
                               color: titleColor,
                               fontWeight: FontWeight.w800,
@@ -114,23 +119,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
                     // Filter tabs
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 14),
                       child: Row(
                         children: [
                           _FilterTab(
-                            label: 'In Progress',
+                            label: 'orders_screen.tab_in_progress'.tr(),
                             isActive: _tab == _Tab.inProgress,
                             onTap: () => setState(() => _tab = _Tab.inProgress),
                           ),
                           const SizedBox(width: 8),
                           _FilterTab(
-                            label: 'Delivered',
+                            label: 'orders_screen.tab_delivered'.tr(),
                             isActive: _tab == _Tab.delivered,
                             onTap: () => setState(() => _tab = _Tab.delivered),
                           ),
                           const SizedBox(width: 8),
                           _FilterTab(
-                            label: 'Closed',
+                            label: 'orders_screen.tab_closed'.tr(),
                             isActive: _tab == _Tab.closed,
                             onTap: () => setState(() => _tab = _Tab.closed),
                           ),
@@ -159,8 +165,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     controller: _scrollController,
                                     physics:
                                         const AlwaysScrollableScrollPhysics(),
-                                    padding: const EdgeInsets.fromLTRB(
-                                        14, 0, 14, 24),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            14, 0, 14, 24),
                                     itemCount: filtered.length +
                                         (_service.isLoading ? 1 : 0),
                                     separatorBuilder: (_, _) =>
@@ -275,7 +282,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'No orders here',
+              'orders_screen.empty_title'.tr(),
               style: AppTextStyles.dsH2.copyWith(
                 color: isDark ? AppColors.white : AppColors.auroraDeepBase,
                 fontSize: 20,
@@ -283,7 +290,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Orders in this category will appear here.',
+              'orders_screen.empty_subtitle'.tr(),
               style: AppTextStyles.dsMuted.copyWith(
                   color: subColor, fontSize: 13),
             ),

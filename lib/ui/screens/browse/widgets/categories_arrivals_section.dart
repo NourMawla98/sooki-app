@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../backend_integration/apis/categories_api.dart';
@@ -138,7 +139,7 @@ class _CategoriesArrivalsSectionState extends State<CategoriesArrivalsSection>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: AuroraGradientText(
-              'New Arrivals',
+              'categories_arrivals_section.new_arrivals'.tr(),
               style: AppTextStyles.heading3.copyWith(
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
@@ -229,7 +230,7 @@ class _CategoriesArrivalsSectionState extends State<CategoriesArrivalsSection>
             height: 160,
             child: Center(
               child: Text(
-                'No items in this category yet',
+                'categories_arrivals_section.no_items_in_category'.tr(),
                 style: AppTextStyles.caption.copyWith(color: color),
               ),
             ),
@@ -283,7 +284,7 @@ class _ItemCardSkeleton extends StatelessWidget {
                 child: SkeletonShimmer(borderRadius: BorderRadius.circular(11)),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 7, 8, 8),
+                padding: const EdgeInsetsDirectional.fromSTEB(8, 7, 8, 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -340,7 +341,7 @@ class _EndOfFeedLabel extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Center(
             child: Text(
-              '— You\'re all caught up —',
+              'categories_arrivals_section.all_caught_up'.tr(),
               style: AppTextStyles.captionSmall.copyWith(
                 color: color,
                 letterSpacing: 0.8,

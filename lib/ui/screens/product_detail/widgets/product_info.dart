@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/number_localization.dart';
 
 class ProductInfo extends StatelessWidget {
   const ProductInfo({
@@ -130,9 +132,13 @@ class _StockPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (stockCount) {
-      <= 0 => ('Out of stock', AppColors.accentRed),
-      < 5 => ('Only $stockCount left', AppColors.accentYellow),
-      _ => ('In stock', AppColors.verifiedGreen),
+      <= 0 => ('common.out_of_stock'.tr(), AppColors.accentRed),
+      < 5 => (
+          'product_info.only_n_left'
+              .tr(namedArgs: {'count': localizedNumber(stockCount)}),
+          AppColors.accentYellow,
+        ),
+      _ => ('common.in_stock'.tr(), AppColors.verifiedGreen),
     };
 
     return Row(
@@ -188,7 +194,7 @@ class _BrandPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'BRAND',
+            'product_info.brand'.tr(),
             style: AppFonts.primary(
               fontSize: 8,
               fontWeight: FontWeight.w800,
@@ -238,7 +244,7 @@ class _AboutGlass extends StatefulWidget {
 class _AboutGlassState extends State<_AboutGlass> {
   bool _expanded = false;
 
-  bool _overflows(double maxWidth) {
+  bool _overflows(double maxWidth, TextDirection direction) {
     final tp = TextPainter(
       text: TextSpan(
         text: widget.description,
@@ -250,7 +256,7 @@ class _AboutGlassState extends State<_AboutGlass> {
         ),
       ),
       maxLines: 3,
-      textDirection: TextDirection.ltr,
+      textDirection: direction,
     )..layout(maxWidth: maxWidth);
     return tp.didExceedMaxLines;
   }
@@ -265,7 +271,10 @@ class _AboutGlassState extends State<_AboutGlass> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final needsToggle = _overflows(constraints.maxWidth - 32);
+        final needsToggle = _overflows(
+          constraints.maxWidth - 32,
+          Directionality.of(context),
+        );
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
@@ -278,7 +287,7 @@ class _AboutGlassState extends State<_AboutGlass> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'ABOUT THIS ITEM',
+                'product_info.about_this_item'.tr(),
                 style: AppFonts.primary(
                   fontSize: 9,
                   fontWeight: FontWeight.w800,
@@ -314,7 +323,9 @@ class _AboutGlassState extends State<_AboutGlass> {
                         Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
                     blendMode: BlendMode.srcIn,
                     child: Text(
-                      _expanded ? 'Show less' : 'Read more',
+                      _expanded
+                          ? 'product_info.show_less'.tr()
+                          : 'product_info.read_more'.tr(),
                       style: AppFonts.primary(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../enums/address_label_type.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
-
-enum AddressLabelType { home, office, other }
 
 class LabelChooser extends StatelessWidget {
   final AddressLabelType selected;
@@ -24,11 +23,11 @@ class LabelChooser extends StatelessWidget {
         final isDark = ThemeService.instance.isDarkMode;
         return Row(
           children: [
-            Expanded(child: _pill(AddressLabelType.home, 'Home', isDark)),
+            Expanded(child: _pill(AddressLabelType.home, AddressLabelType.home.label, isDark)),
             const SizedBox(width: 8),
-            Expanded(child: _pill(AddressLabelType.office, 'Office', isDark)),
+            Expanded(child: _pill(AddressLabelType.office, AddressLabelType.office.label, isDark)),
             const SizedBox(width: 8),
-            Expanded(child: _pill(AddressLabelType.other, 'Other', isDark)),
+            Expanded(child: _pill(AddressLabelType.other, AddressLabelType.other.label, isDark)),
           ],
         );
       },

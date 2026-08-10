@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -67,7 +68,9 @@ class PromoRow extends StatelessWidget {
                   children: applied
                       ? [
                           Text(
-                            '${cartService.promoCode} applied',
+                            'promo_row.code_applied'.tr(
+                              namedArgs: {'code': '${cartService.promoCode}'},
+                            ),
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
@@ -77,7 +80,7 @@ class PromoRow extends StatelessWidget {
                           ),
                           const SizedBox(height: 1),
                           Text(
-                            '20% off entire order',
+                            'promo_row.discount_hint'.tr(),
                             style: AppTextStyles.bodySmall.copyWith(
                               fontSize: 10.5,
                               color: c.textMute,
@@ -86,7 +89,7 @@ class PromoRow extends StatelessWidget {
                         ]
                       : [
                           Text(
-                            'Have a promo code?',
+                            'promo_row.have_promo'.tr(),
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -96,7 +99,7 @@ class PromoRow extends StatelessWidget {
                           ),
                           const SizedBox(height: 1),
                           Text(
-                            'Tap to enter code',
+                            'promo_row.tap_to_enter'.tr(),
                             style: AppTextStyles.bodySmall.copyWith(
                               fontSize: 10.5,
                               color: c.textMute,
@@ -154,7 +157,7 @@ class _PromoActionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          isApplied ? 'REMOVE' : 'APPLY',
+          isApplied ? 'promo_row.remove'.tr() : 'promo_row.apply'.tr(),
           style: AppTextStyles.caption.copyWith(
             fontSize: 11,
             fontWeight: FontWeight.w800,

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -11,6 +12,7 @@ import '../../../../services/theme_service.dart';
 import '../../../../services/wishlist_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 import '../../cart/widgets/aurora_login_gate_dialog.dart';
 
@@ -37,12 +39,12 @@ class QuickActions extends StatelessWidget {
         final wishlistCount = _wishlist.items.length;
 
         return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AuroraGradientText(
-                'Quick Actions',
+                'quick_actions.title'.tr(),
                 style: AppTextStyles.heading3.copyWith(
                   fontWeight: FontWeight.w900,
                   fontSize: 20,
@@ -54,7 +56,7 @@ class QuickActions extends StatelessWidget {
                   Expanded(
                     child: _Bubble(
                       icon: FontAwesomeIcons.locationCrosshairs,
-                      label: 'Track',
+                      label: 'quick_actions.track'.tr(),
                       accent: AppColors.auroraElectricBlue,
                       isDark: isDark,
                       anim: _BubbleAnim.pulseGlow,
@@ -64,7 +66,7 @@ class QuickActions extends StatelessWidget {
                   Expanded(
                     child: _Bubble(
                       icon: FontAwesomeIcons.heart,
-                      label: 'Wishlist',
+                      label: 'common.wishlist'.tr(),
                       accent: AppColors.auroraPink,
                       isDark: isDark,
                       badgeCount: wishlistCount,
@@ -75,7 +77,7 @@ class QuickActions extends StatelessWidget {
                   Expanded(
                     child: _Bubble(
                       icon: FontAwesomeIcons.rotate,
-                      label: 'Reorder',
+                      label: 'quick_actions.reorder'.tr(),
                       accent: AppColors.verifiedGreen,
                       isDark: isDark,
                       anim: _BubbleAnim.slowRotate,
@@ -85,7 +87,7 @@ class QuickActions extends StatelessWidget {
                   Expanded(
                     child: _Bubble(
                       icon: FontAwesomeIcons.gear,
-                      label: 'Settings',
+                      label: 'common.settings'.tr(),
                       accent: AppColors.auroraGold,
                       isDark: isDark,
                       anim: _BubbleAnim.breathe,
@@ -197,9 +199,9 @@ class _BubbleState extends State<_Bubble>
               children: [
                 _buildBubble(bubbleSize),
                 if (widget.badgeCount != null && widget.badgeCount! > 0)
-                  Positioned(
+                  PositionedDirectional(
                     top: 0,
-                    right: 6,
+                    end: 6,
                     child: _buildBadge(),
                   ),
               ],
@@ -364,7 +366,7 @@ class _Badge extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          '$count',
+          localizedNumber(count),
           style: AppTextStyles.captionSmall.copyWith(
             color: AppColors.white,
             fontSize: 9,

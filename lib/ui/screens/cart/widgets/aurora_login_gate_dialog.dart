@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -32,8 +33,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
         final border = isDark
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.auroraPurple.withValues(alpha: 0.12);
-        final textColor =
-            isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
         final subColor = isDark
             ? AppColors.white.withValues(alpha: 0.45)
             : AppColors.auroraDeepBase.withValues(alpha: 0.50);
@@ -63,7 +63,8 @@ class _AuroraLoginGateSheet extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.auroraPurple.withValues(
-                          alpha: isDark ? 0.40 : 0.20),
+                        alpha: isDark ? 0.40 : 0.20,
+                      ),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -80,7 +81,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
 
               // Label
               Text(
-                'ONE MORE STEP',
+                'aurora_login_gate_dialog.one_more_step'.tr(),
                 style: AppTextStyles.dsSectionLabel.copyWith(
                   color: AppColors.auroraPink,
                   letterSpacing: 2.0,
@@ -90,7 +91,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
 
               // Title
               Text(
-                'Log in to checkout',
+                'aurora_login_gate_dialog.log_in_to_checkout'.tr(),
                 style: AppTextStyles.heading3.copyWith(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
@@ -104,7 +105,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Text(
-                  'We keep your bag while you sign in. Your cart and wishlist stay where they are.',
+                  'aurora_login_gate_dialog.body'.tr(),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontSize: 13,
@@ -119,7 +120,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: AuroraPrimaryButton(
-                  text: 'LOG IN',
+                  text: 'aurora_login_gate_dialog.log_in'.tr(),
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pushNamed(signInScreenRoute);
@@ -136,7 +137,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
                   height: 44,
                   alignment: Alignment.center,
                   child: Text(
-                    'Continue shopping',
+                    'aurora_login_gate_dialog.continue_shopping'.tr(),
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,

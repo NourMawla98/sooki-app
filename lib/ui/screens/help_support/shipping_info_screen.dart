@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -35,11 +36,11 @@ class ShippingInfoScreen extends StatelessWidget {
                     _TopBar(isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _GroupLabel(label: 'Delivery', isDark: isDark),
+                            _GroupLabel(label: 'shipping_info_screen.delivery'.tr(), isDark: isDark),
                             _GroupCard(
                               isDark: isDark,
                               children: [
@@ -48,9 +49,9 @@ class ShippingInfoScreen extends StatelessWidget {
                                   iconBg: AppColors.verifiedGreen.withValues(alpha: isDark ? 0.13 : 0.10),
                                   iconColor: AppColors.verifiedGreen,
                                   icon: FontAwesomeIcons.clock,
-                                  title: 'Estimated Delivery',
-                                  subtitle: 'From order confirmation',
-                                  value: '2–5 days',
+                                  title: 'shipping_info_screen.estimated_delivery'.tr(),
+                                  subtitle: 'shipping_info_screen.from_order_confirmation'.tr(),
+                                  value: 'shipping_info_screen.estimated_delivery_value'.tr(),
                                 ),
                                 _Divider(isDark: isDark),
                                 _InfoRow(
@@ -58,25 +59,25 @@ class ShippingInfoScreen extends StatelessWidget {
                                   iconBg: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.10),
                                   iconColor: AppColors.auroraPink,
                                   icon: FontAwesomeIcons.tag,
-                                  title: 'Delivery Fee',
-                                  subtitle: 'Calculated based on location',
-                                  value: '—',
+                                  title: 'shipping_info_screen.delivery_fee'.tr(),
+                                  subtitle: 'shipping_info_screen.calculated_based_on_location'.tr(),
+                                  value: 'shipping_info_screen.delivery_fee_value'.tr(),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 20),
-                            _GroupLabel(label: 'Notes', isDark: isDark),
+                            _GroupLabel(label: 'shipping_info_screen.notes'.tr(), isDark: isDark),
                             _GroupCard(
                               isDark: isDark,
                               children: [
                                 _NoticeRow(
                                   isDark: isDark,
-                                  text: 'Delivery times may vary during peak periods or public holidays. Our team will keep you updated via the app.',
+                                  text: 'shipping_info_screen.notice_peak_periods'.tr(),
                                 ),
                                 _Divider(isDark: isDark),
                                 _NoticeRow(
                                   isDark: isDark,
-                                  text: 'Make sure your address is complete and accurate before placing an order to avoid delays.',
+                                  text: 'shipping_info_screen.notice_address_accurate'.tr(),
                                 ),
                               ],
                             ),
@@ -104,17 +105,22 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: color,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Text(
-            'Shipping Information',
+            'shipping_info_screen.title'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w900,
@@ -137,7 +143,7 @@ class _GroupLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(2, 0, 2, 8),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.dsSectionLabel.copyWith(

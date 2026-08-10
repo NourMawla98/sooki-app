@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -12,19 +13,26 @@ import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
-const _kStepLabels = ['Processing', 'Packaged', 'Out for delivery', 'Delivered'];
-
-const _months = [
-  '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+// Short forms, not the full status labels: the tracker gives each step about
+// 110px and the full French labels run off the card.
+const _kStepLabels = [
+  'order_detail_screen.step_processing',
+  'order_detail_screen.step_packaged',
+  'order_detail_screen.step_out_for_delivery',
+  'order_detail_screen.step_delivered',
 ];
 
-String _fmtDate(DateTime dt) => '${_months[dt.month]} ${dt.day}, ${dt.year}';
+String _fmtDate(DateTime dt) => 'time.long_date'.tr(namedArgs: {
+      'day': localizedNumber(dt.day),
+      'month': 'time.month_short.${dt.month}'.tr(),
+      'year': localizedNumber(dt.year),
+    });
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -66,10 +74,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     if (detail == null || _cancelling) return;
     final confirmed = await showAuroraConfirmSheet(
       context,
-      title: 'Cancel order?',
-      subtitle: 'This action cannot be undone.',
+      title: 'order_detail_screen.cancel_order_question'.tr(),
+      subtitle: 'order_detail_screen.action_cannot_be_undone'.tr(),
       icon: FontAwesomeIcons.ban,
-      confirmLabel: 'Cancel order',
+      confirmLabel: 'order_detail_screen.cancel_order'.tr(),
       confirmColor: AppColors.auroraRed,
     );
     if (!confirmed || !mounted) return;
@@ -104,6 +112,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         final isDark = ThemeService.instance.isDarkMode;
         final iconColor = isDark ? AppColors.white : AppColors.auroraPurple;
         final titleColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
 
         return Scaffold(
           backgroundColor:
@@ -125,17 +134,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     // Top bar
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+                      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
                       child: Row(
                         children: [
                           IconButton(
-                            icon: FaIcon(FontAwesomeIcons.arrowLeft,
+                            icon: FaIcon(
+                                isRtl
+                                    ? FontAwesomeIcons.arrowRight
+                                    : FontAwesomeIcons.arrowLeft,
                                 size: 18, color: iconColor),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Order detail',
+                            'order_detail_screen.title'.tr(),
                             style: AppTextStyles.dsBodyBold.copyWith(
                               color: titleColor,
                               fontWeight: FontWeight.w800,
@@ -161,8 +173,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   child: SingleChildScrollView(
                                     physics:
                                         const AlwaysScrollableScrollPhysics(),
-                                    padding: const EdgeInsets.fromLTRB(
-                                        14, 0, 14, 32),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            14, 0, 14, 32),
                                     child: _Body(
                                       detail: _detail!,
                                       isDark: isDark,
@@ -233,7 +246,7 @@ class _Body extends StatelessWidget {
         if (status == OrderStatus.outForDelivery) ...[
           const SizedBox(height: 20),
           AuroraPrimaryButton(
-            text: 'Confirm receipt',
+            text: 'order_detail_screen.confirm_receipt'.tr(),
             isLoading: confirming,
             onPressed: onConfirmReceipt,
           ),
@@ -292,6 +305,8 @@ class _HeroCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      // Tracking number is an identifier, so its digits stay
+                      // Western for lookup and copy.
                       detail.trackingNumber,
                       style: AppTextStyles.dsBodyBold.copyWith(
                         color: numColor,
@@ -302,7 +317,10 @@ class _HeroCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '${_fmtDate(detail.createdAt)} · ${detail.items.length} items',
+                      'order_detail_screen.hero_meta'.tr(namedArgs: {
+                        'date': _fmtDate(detail.createdAt),
+                        'count': localizedNumber(detail.items.length),
+                      }),
                       style: AppTextStyles.dsMuted.copyWith(
                         color: metaColor,
                         fontSize: 11,
@@ -431,19 +449,20 @@ class _HorizontalTracker extends StatelessWidget {
               child: FaIcon(_stepIcon(i), size: 11, color: iconColor),
             ),
           ),
-          Positioned(
+          PositionedDirectional(
             top: 33,
-            left: -40,
-            right: -40,
+            start: -40,
+            end: -40,
             child: Text(
-              _kStepLabels[i],
+              _kStepLabels[i].tr(),
               style: AppTextStyles.dsMuted.copyWith(
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
                 color: labelColor,
               ),
               textAlign: TextAlign.center,
-              softWrap: false,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -518,7 +537,7 @@ class _ItemsCard extends StatelessWidget {
         : AppColors.auroraPurple.withValues(alpha: 0.07);
 
     return _SectionCard(
-      title: 'ITEMS ORDERED',
+      title: 'order_detail_screen.items_ordered'.tr(),
       isDark: isDark,
       child: Column(
         children: items.asMap().entries.map((entry) {
@@ -564,7 +583,13 @@ class _ItemsCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${item.colorName} · ${item.sizeName} · Qty ${item.quantity}',
+                          'order_detail_screen.item_variant'.tr(namedArgs: {
+                            'color': item.colorName,
+                            // Size labels are identifiers (S, M, 38), not
+                            // quantities, so their digits stay Western.
+                            'size': item.sizeName,
+                            'qty': localizedNumber(item.quantity),
+                          }),
                           style: AppTextStyles.dsMuted.copyWith(
                             color: muteColor,
                             fontSize: 11,
@@ -575,7 +600,7 @@ class _ItemsCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '\$${item.totalPrice.toStringAsFixed(2)}',
+                    '\$${localizedPrice(item.totalPrice)}',
                     style: AppTextStyles.dsBodyBold.copyWith(
                       color: textColor,
                       fontSize: 14,
@@ -588,7 +613,7 @@ class _ItemsCard extends StatelessWidget {
               if (_canReview) ...[
                 const SizedBox(height: 10),
                 Align(
-                  alignment: Alignment.bottomRight,
+                  alignment: AlignmentDirectional.bottomEnd,
                   child: GestureDetector(
                     onTap: () => _showReviewDialog(context, item),
                     child: Container(
@@ -603,7 +628,7 @@ class _ItemsCard extends StatelessWidget {
                           FaIcon(FontAwesomeIcons.solidStar, size: 11, color: AppColors.auroraGold),
                           const SizedBox(width: 6),
                           Text(
-                            'Write a review',
+                            'order_detail_screen.write_review'.tr(),
                             style: AppTextStyles.dsMuted.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -666,19 +691,19 @@ class _SummaryCard extends StatelessWidget {
         : AppColors.auroraPurple.withValues(alpha: 0.07);
 
     return _SectionCard(
-      title: 'ORDER SUMMARY',
+      title: 'order_detail_screen.order_summary'.tr(),
       isDark: isDark,
       child: Column(
         children: [
-          _PriceRow(label: 'Subtotal',
-              value: '\$${detail.subtotal.toStringAsFixed(2)}',
+          _PriceRow(label: 'order_detail_screen.subtotal'.tr(),
+              value: '\$${localizedPrice(detail.subtotal)}',
               labelColor: labelColor, valColor: valColor),
           const SizedBox(height: 6),
           _PriceRow(
-              label: 'Delivery fee',
+              label: 'order_detail_screen.delivery_fee'.tr(),
               value: detail.deliveryFee == 0.0
-                  ? 'Free'
-                  : '\$${detail.deliveryFee.toStringAsFixed(2)}',
+                  ? 'order_detail_screen.free'.tr()
+                  : '\$${localizedPrice(detail.deliveryFee)}',
               labelColor: labelColor,
               valColor: detail.deliveryFee == 0.0
                   ? AppColors.verifiedGreen
@@ -686,8 +711,8 @@ class _SummaryCard extends StatelessWidget {
           if (detail.discountAmount > 0) ...[
             const SizedBox(height: 6),
             _PriceRow(
-                label: 'Discount',
-                value: '−\$${detail.discountAmount.toStringAsFixed(2)}',
+                label: 'order_detail_screen.discount'.tr(),
+                value: '-\$${localizedPrice(detail.discountAmount)}',
                 labelColor: labelColor,
                 valColor: AppColors.auroraPink),
           ],
@@ -697,7 +722,7 @@ class _SummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total',
+              Text('order_detail_screen.total'.tr(),
                   style: AppTextStyles.dsBodyBold.copyWith(
                       color: isDark ? AppColors.white : AppColors.auroraDeepBase,
                       fontSize: 13, fontWeight: FontWeight.w800)),
@@ -710,7 +735,7 @@ class _SummaryCard extends StatelessWidget {
                     Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
                 blendMode: BlendMode.srcIn,
                 child: Text(
-                  '\$${detail.totalAmount.toStringAsFixed(2)}',
+                  '\$${localizedPrice(detail.totalAmount)}',
                   style: AppTextStyles.dsBodyBold.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
@@ -766,7 +791,10 @@ class _AddressCard extends StatelessWidget {
     final parts = <String>[];
     if (detail.street != null) parts.add(detail.street!);
     if (detail.building != null) parts.add(detail.building!);
-    if (detail.floor != null) parts.add('Floor ${detail.floor}');
+    if (detail.floor != null) {
+      parts.add('order_detail_screen.floor'
+          .tr(namedArgs: {'floor': localizedDigits(detail.floor!)}));
+    }
     final cityLine = [detail.city, if (detail.area != null) detail.area!].join(', ');
     parts.add(cityLine);
     return parts.join(', ');
@@ -780,7 +808,7 @@ class _AddressCard extends StatelessWidget {
         : AppColors.auroraDeepBase.withValues(alpha: 0.38);
 
     return _SectionCard(
-      title: 'DELIVERY ADDRESS',
+      title: 'order_detail_screen.delivery_address'.tr(),
       isDark: isDark,
       child: Row(
         children: [
@@ -852,16 +880,17 @@ class _PaymentCard extends StatelessWidget {
   final OrderDetailDto detail;
   final bool isDark;
 
-  String get _methodLabel =>
-      detail.paymentMethod == 1 ? 'Cash on delivery' : 'Unknown';
+  String get _methodLabel => detail.paymentMethod == 1
+      ? 'order_detail_screen.cash_on_delivery'.tr()
+      : 'order_detail_screen.unknown'.tr();
 
   String get _statusLabel {
     switch (detail.paymentStatus) {
-      case 1: return 'Pending';
-      case 2: return 'Paid';
-      case 3: return 'Failed';
-      case 4: return 'Refunded';
-      default: return 'Unknown';
+      case 1: return 'order_detail_screen.payment_pending'.tr();
+      case 2: return 'order_detail_screen.payment_paid'.tr();
+      case 3: return 'order_detail_screen.payment_failed'.tr();
+      case 4: return 'enums.order_status.refunded'.tr();
+      default: return 'order_detail_screen.unknown'.tr();
     }
   }
 
@@ -879,7 +908,7 @@ class _PaymentCard extends StatelessWidget {
     final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
 
     return _SectionCard(
-      title: 'PAYMENT',
+      title: 'order_detail_screen.payment'.tr(),
       isDark: isDark,
       child: Row(
         children: [
@@ -939,7 +968,7 @@ class _NoteCard extends StatelessWidget {
         : AppColors.auroraDeepBase.withValues(alpha: 0.55);
 
     return _SectionCard(
-      title: 'DELIVERY NOTE',
+      title: 'order_detail_screen.delivery_note'.tr(),
       isDark: isDark,
       child: Text(
         note,
@@ -986,7 +1015,7 @@ class _CancelButton extends StatelessWidget {
                   ),
                 )
               : Text(
-                  'CANCEL ORDER',
+                  'order_detail_screen.cancel_order_button'.tr(),
                   style: AppTextStyles.dsCTA.copyWith(
                     color: AppColors.auroraRed,
                     fontSize: 13,
@@ -1024,17 +1053,17 @@ class _ErrorState extends StatelessWidget {
                     ? AppColors.white.withValues(alpha: 0.18)
                     : AppColors.auroraPurple.withValues(alpha: 0.18)),
             const SizedBox(height: 16),
-            Text('Failed to load order',
+            Text('order_detail_screen.error_title'.tr(),
                 style: AppTextStyles.dsBodyBold.copyWith(
                     color: isDark ? AppColors.white : AppColors.auroraDeepBase,
                     fontSize: 16,
                     fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            Text('Pull to refresh or tap retry',
+            Text('order_detail_screen.error_subtitle'.tr(),
                 style: AppTextStyles.dsMuted
                     .copyWith(color: muteColor, fontSize: 13)),
             const SizedBox(height: 20),
-            AuroraPrimaryButton(text: 'Retry', onPressed: onRetry),
+            AuroraPrimaryButton(text: 'common.retry'.tr(), onPressed: onRetry),
           ],
         ),
       ),
@@ -1151,7 +1180,7 @@ class _WriteReviewDialogState extends State<_WriteReviewDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Write a review',
+                  'order_detail_screen.write_review'.tr(),
                   style: AppTextStyles.heading3.copyWith(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -1176,7 +1205,7 @@ class _WriteReviewDialogState extends State<_WriteReviewDialog> {
                     return GestureDetector(
                       onTap: () => setState(() => _rating = i + 1),
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsetsDirectional.only(end: 8),
                         child: FaIcon(
                           filled ? FontAwesomeIcons.solidStar : FontAwesomeIcons.star,
                           size: 28,
@@ -1189,14 +1218,14 @@ class _WriteReviewDialogState extends State<_WriteReviewDialog> {
                 const SizedBox(height: 16),
                 AuroraInputField(
                   controller: _bodyCtrl,
-                  hint: 'Share your thoughts (optional)',
+                  hint: 'order_detail_screen.review_hint'.tr(),
                   maxLines: 4,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
                 ),
                 const SizedBox(height: 20),
                 AuroraPrimaryButton(
-                  text: 'Submit review',
+                  text: 'order_detail_screen.submit_review'.tr(),
                   onPressed: _rating > 0 ? _submit : null,
                   isLoading: _loading,
                 ),

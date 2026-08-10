@@ -168,17 +168,18 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
                 color: hintColor,
                 height: 1.0,
               ),
-              // Single-line: icon in the dedicated prefixIcon slot (left-edge, vertically centered).
+              // Single-line: icon in the dedicated prefixIcon slot (leading edge, vertically centered).
               // Multi-line: icon as an inline prefix so it sits on the same baseline as the cursor.
               prefixIcon: (widget.prefixIcon != null && widget.maxLines == 1)
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 14, right: 10),
+                      padding:
+                          const EdgeInsetsDirectional.only(start: 14, end: 10),
                       child: FaIcon(widget.prefixIcon!, size: 16, color: iconColor),
                     )
                   : null,
               prefix: (widget.prefixIcon != null && widget.maxLines > 1)
                   ? Padding(
-                      padding: const EdgeInsets.only(right: 10),
+                      padding: const EdgeInsetsDirectional.only(end: 10),
                       child: FaIcon(widget.prefixIcon!, size: 16, color: iconColor),
                     )
                   : null,
@@ -189,7 +190,7 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
                       onTap: () =>
                           setState(() => _obscureText = !_obscureText),
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 14),
+                        padding: const EdgeInsetsDirectional.only(end: 14),
                         child: FaIcon(
                           _obscureText
                               ? FontAwesomeIcons.eyeSlash

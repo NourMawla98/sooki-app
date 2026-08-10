@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,10 +13,10 @@ import '../../../themes/app_text_styles.dart';
 
 /// Cohesive search pill.
 ///
-/// [readOnly] — renders a non-editable tappable pill that navigates to the
+/// [readOnly] - renders a non-editable tappable pill that navigates to the
 /// search screen. Use this in the app header.
 ///
-/// [autofocus] — immediately focuses the TextField when the widget mounts.
+/// [autofocus] - immediately focuses the TextField when the widget mounts.
 /// Use this on the SearchScreen so the keyboard appears on entry.
 class CustomSearchBar extends StatefulWidget {
   const CustomSearchBar({
@@ -33,7 +34,7 @@ class CustomSearchBar extends StatefulWidget {
   final String? initialValue;
 
   /// Whether to show the autocomplete overlay dropdown when focused.
-  /// Set to false on the SearchScreen — it manages its own results.
+  /// Set to false on the SearchScreen - it manages its own results.
   final bool showOverlay;
 
   /// Called when the user submits a query (keyboard search action).
@@ -212,6 +213,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             final recents = _history.recents;
             final showRecents = _query.trim().isEmpty;
 
+            // `left` is a physical screen coordinate from localToGlobal, so it
+            // stays physical in both directions. Mirroring it would misplace it.
             return Positioned(
               top: top + pillHeight,
               left: left,
@@ -221,11 +224,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: _dropdownFill(isDark),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(22),
-                      bottomRight: Radius.circular(22),
+                    borderRadius: const BorderRadiusDirectional.only(
+                      bottomStart: Radius.circular(22),
+                      bottomEnd: Radius.circular(22),
                     ),
-                    // No shadow — a shadow at the pill/dropdown boundary
+                    // No shadow - a shadow at the pill/dropdown boundary
                     // reads as a seam. One clean fill, nothing else.
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -255,9 +258,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
     if (recents.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
         child: Text(
-          'Start typing to search products',
+          'custom_search_bar.start_typing_to_search'.tr(),
           style: AppFonts.primary(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -272,9 +275,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 16, 4),
           child: Text(
-            'RECENT',
+            'custom_search_bar.recent'.tr(),
             style: AppFonts.primary(
               fontSize: 9.5,
               fontWeight: FontWeight.w800,
@@ -296,9 +299,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           onTap: () async => _history.clearAll(),
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 14),
             child: Align(
-              alignment: Alignment.centerRight,
+              alignment: AlignmentDirectional.centerEnd,
               child: ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
                   colors: [
@@ -311,7 +314,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'CLEAR ALL',
+                      'custom_search_bar.clear_all'.tr(),
                       style: AppFonts.primary(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
@@ -336,6 +339,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   }
 
   Widget _buildMatches(bool isDark) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -358,7 +362,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'SEE ALL RESULTS',
+                      'custom_search_bar.see_all_results'.tr(),
                       style: AppFonts.primary(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
@@ -367,8 +371,10 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const FaIcon(
-                      FontAwesomeIcons.arrowRight,
+                    FaIcon(
+                      isRtl
+                          ? FontAwesomeIcons.arrowLeft
+                          : FontAwesomeIcons.arrowRight,
                       size: 13,
                       color: AppColors.white,
                     ),
@@ -502,7 +508,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Search for products...',
+                'custom_search_bar.search_products_hint'.tr(),
                 style: AppFonts.primary(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -574,7 +580,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 focusedErrorBorder: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
-                hintText: 'Search for products...',
+                hintText: 'custom_search_bar.search_products_hint'.tr(),
                 hintStyle: AppTextStyles.inputHint.copyWith(
                   color: placeholder,
                   fontSize: 14,
@@ -590,7 +596,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               },
               behavior: HitTestBehavior.opaque,
               child: Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: const EdgeInsetsDirectional.only(start: 8),
                 child: FaIcon(
                   FontAwesomeIcons.xmark,
                   size: 13,

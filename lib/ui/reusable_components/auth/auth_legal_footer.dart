@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -29,17 +30,17 @@ class AuthLegalFooter extends StatelessWidget {
           fontSize: 12,
         ),
         children: [
-          const TextSpan(text: 'By continuing, you agree to our '),
+          TextSpan(text: 'auth.legal_prefix'.tr()),
           TextSpan(
-            text: 'Terms of Service',
+            text: 'auth.terms'.tr(),
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
                   Navigator.pushNamed(context, termsConditionsScreenRoute),
           ),
-          const TextSpan(text: ' and '),
+          TextSpan(text: 'auth.legal_middle'.tr()),
           TextSpan(
-            text: 'Privacy Policy',
+            text: 'auth.privacy'.tr(),
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () =>

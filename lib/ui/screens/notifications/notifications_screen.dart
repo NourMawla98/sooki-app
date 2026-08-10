@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -6,6 +7,7 @@ import '../../../services/notification_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -110,19 +112,24 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: color,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              'Notifications',
+              'notifications_screen.title'.tr(),
               style: AppTextStyles.heading3.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -136,7 +143,7 @@ class _TopBar extends StatelessWidget {
               onTap: NotificationService.instance.markAllRead,
               behavior: HitTestBehavior.opaque,
               child: Text(
-                'Mark all read',
+                'notifications_screen.mark_all_read'.tr(),
                 style: AppTextStyles.captionSmall.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -173,11 +180,11 @@ class _NotificationList extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 32),
       children: [
         if (today.isNotEmpty) ...[
-          _GroupLabel(label: 'Today', isDark: isDark),
+          _GroupLabel(label: 'notifications_screen.today'.tr(), isDark: isDark),
           _NotifGroup(items: today, isDark: isDark),
         ],
         if (earlier.isNotEmpty) ...[
-          _GroupLabel(label: 'Earlier', isDark: isDark),
+          _GroupLabel(label: 'notifications_screen.earlier'.tr(), isDark: isDark),
           _NotifGroup(items: earlier, isDark: isDark),
         ],
       ],
@@ -194,7 +201,7 @@ class _GroupLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.dsSectionLabel.copyWith(
@@ -224,7 +231,7 @@ class _NotifGroup extends StatelessWidget {
     );
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      margin: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.white.withValues(alpha: 0.03)
@@ -271,7 +278,7 @@ class _NotifRow extends StatelessWidget {
       onTap: () => NotificationService.instance.markRead(item.id),
       child: Container(
         color: item.isRead ? null : unreadBg,
-        padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
+        padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 16, 14),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -318,7 +325,8 @@ class _NotifRow extends StatelessWidget {
                   ],
                   const SizedBox(height: 4),
                   Text(
-                    item.relativeLabel,
+                    // The label carries its own digits ("5m ago", "Jun 12").
+                    localizedDigits(item.relativeLabel),
                     style: AppTextStyles.captionSmall.copyWith(
                       fontSize: 12,
                       color: isDark
@@ -356,7 +364,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No notifications',
+            'notifications_screen.empty'.tr(),
             style: AppTextStyles.heading4.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w700,

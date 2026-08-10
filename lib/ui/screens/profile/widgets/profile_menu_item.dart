@@ -28,6 +28,7 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -93,7 +94,9 @@ class ProfileMenuItem extends StatelessWidget {
               const SizedBox(width: 8),
             ],
             FaIcon(
-              FontAwesomeIcons.chevronRight,
+              isRtl
+                  ? FontAwesomeIcons.chevronLeft
+                  : FontAwesomeIcons.chevronRight,
               size: 12,
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.2)

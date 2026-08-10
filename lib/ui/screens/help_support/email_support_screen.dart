@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,7 @@ import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_selectable_chip.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
@@ -61,15 +63,18 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
     final subject = _subjectController.text.trim();
     final message = _messageController.text.trim();
     if (subject.isEmpty) {
-      ToastService.instance.showError('Please enter a subject');
+      ToastService.instance.showError('email_support_screen.enter_subject_error'.tr());
       return;
     }
     if (message.isEmpty) {
-      ToastService.instance.showError('Please enter a message');
+      ToastService.instance.showError('email_support_screen.enter_message_error'.tr());
       return;
     }
     if (subject.length > _subjectMax) {
-      ToastService.instance.showError('Subject must be $_subjectMax characters or less');
+      ToastService.instance.showError(
+        'email_support_screen.subject_too_long_error'
+            .tr(namedArgs: {'max': localizedNumber(_subjectMax)}),
+      );
       return;
     }
 
@@ -77,7 +82,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
     final order = _orderController.text.trim();
     final description = order.isEmpty ? message : 'Order: $order\n\n$message';
     if (description.length > _descriptionMax) {
-      ToastService.instance.showError('Message is too long');
+      ToastService.instance.showError('email_support_screen.message_too_long_error'.tr());
       return;
     }
 
@@ -128,7 +133,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                     _TopBar(isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 32),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -154,7 +159,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
-                                      'We typically reply within a few hours during business days.',
+                                      'email_support_screen.reply_notice'.tr(),
                                       style: AppTextStyles.captionSmall.copyWith(
                                         color: isDark
                                             ? AppColors.auroraElectricBlue.withValues(alpha: 0.80)
@@ -169,7 +174,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            _SectionLabel(label: 'Category', isDark: isDark),
+                            _SectionLabel(label: 'email_support_screen.category_label'.tr(), isDark: isDark),
                             const SizedBox(height: 10),
                             Wrap(
                               spacing: 8,
@@ -184,18 +189,18 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            _SectionLabel(label: 'Your Message', isDark: isDark),
+                            _SectionLabel(label: 'email_support_screen.your_message_label'.tr(), isDark: isDark),
                             const SizedBox(height: 10),
                             AuroraInputField(
-                              label: 'Subject',
-                              hint: 'Brief description of your issue',
+                              label: 'email_support_screen.subject_field_label'.tr(),
+                              hint: 'email_support_screen.subject_field_hint'.tr(),
                               controller: _subjectController,
                               prefixIcon: FontAwesomeIcons.pen,
                               textInputAction: TextInputAction.next,
                             ),
                             const SizedBox(height: 12),
                             AuroraInputField(
-                              label: 'Order Number (optional)',
+                              label: 'email_support_screen.order_number_label'.tr(),
                               hint: '#ORD-XXXX',
                               controller: _orderController,
                               prefixIcon: FontAwesomeIcons.hashtag,
@@ -203,8 +208,8 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                             ),
                             const SizedBox(height: 12),
                             AuroraInputField(
-                              label: 'Message',
-                              hint: 'Describe your issue in detail...',
+                              label: 'email_support_screen.message_field_label'.tr(),
+                              hint: 'email_support_screen.message_field_hint'.tr(),
                               controller: _messageController,
                               maxLines: 6,
                               keyboardType: TextInputType.multiline,
@@ -213,7 +218,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
                             const SizedBox(height: 28),
 
                             AuroraPrimaryButton(
-                              text: 'Send Message',
+                              text: 'email_support_screen.send_message_button'.tr(),
                               isLoading: _submitting,
                               onPressed: _submit,
                             ),
@@ -241,17 +246,22 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 20, color: color),
+            icon: FaIcon(
+              isRtl ? FontAwesomeIcons.arrowRight : FontAwesomeIcons.arrowLeft,
+              size: 20,
+              color: color,
+            ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const SizedBox(width: 4),
           Text(
-            'Email Support',
+            'email_support_screen.title'.tr(),
             style: AppTextStyles.heading3.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w900,

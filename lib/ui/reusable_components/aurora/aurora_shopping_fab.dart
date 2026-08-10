@@ -5,7 +5,7 @@ import '../../../themes/app_colors.dart';
 
 /// Circular aurora-gradient FAB used as the center "Shop" button on the
 /// bottom nav bar. Pulses via a subtle scale + glow-shadow loop. No border
-/// ring — pure gradient circle.
+/// ring, just a pure gradient circle.
 class AuroraShoppingFab extends StatefulWidget {
   final VoidCallback onTap;
   final bool isSelected;

@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/number_localization.dart';
 
 class PriceQuantityRow extends StatelessWidget {
   const PriceQuantityRow({
@@ -49,7 +51,7 @@ class PriceQuantityRow extends StatelessWidget {
                       ],
                     ).createShader(bounds),
                     child: Text(
-                      '\$${total.toStringAsFixed(2)}',
+                      '\$${localizedPrice(total)}',
                       style: AppFonts.primary(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
@@ -65,7 +67,7 @@ class PriceQuantityRow extends StatelessWidget {
                       children: [
                         if (originalTotal != null)
                           Text(
-                            '\$${originalTotal.toStringAsFixed(2)}',
+                            '\$${localizedPrice(originalTotal)}',
                             style: AppFonts.primary(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -79,7 +81,11 @@ class PriceQuantityRow extends StatelessWidget {
                           const SizedBox(width: 8),
                         if (quantity > 1)
                           Text(
-                            '\$${unitPrice.toStringAsFixed(2)} / unit',
+                            'price_quantity_row.price_per_unit'.tr(
+                              namedArgs: {
+                                'price': '\$${localizedPrice(unitPrice)}',
+                              },
+                            ),
                             style: AppFonts.primary(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -155,7 +161,7 @@ class _QtyStepper extends StatelessWidget {
             width: 30,
             child: Center(
               child: Text(
-                '$quantity',
+                localizedNumber(quantity),
                 style: AppFonts.primary(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,

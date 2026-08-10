@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -295,12 +296,19 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fg = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.arrowLeft, size: 18, color: fg),
+            icon: FaIcon(
+              isRtl
+                  ? FontAwesomeIcons.arrowRight
+                  : FontAwesomeIcons.arrowLeft,
+              size: 18,
+              color: fg,
+            ),
             onPressed: () => Navigator.of(context).pop(),
           ),
           Expanded(
@@ -365,6 +373,11 @@ class _StickyZone extends StatelessWidget {
     final dividerColor = isDark
         ? AppColors.white.withValues(alpha: 0.07)
         : AppColors.auroraPurple.withValues(alpha: 0.10);
+    // Breadcrumb separator points along the reading direction: a single left
+    // angle quote in RTL, a right one otherwise. Built from code points so this
+    // source stays plain ASCII.
+    final crumbSeparator = String.fromCharCode(
+        Directionality.of(context) == TextDirection.rtl ? 0x2039 : 0x203A);
 
     return ClipRect(
       child: BackdropFilter(
@@ -375,11 +388,11 @@ class _StickyZone extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
                 child: Row(
                   children: [
                     Text(
-                      'Categories',
+                      'category_detail_screen.breadcrumb_categories'.tr(),
                       style: AppTextStyles.captionSmall.copyWith(
                         color: mutedText,
                         fontSize: 11,
@@ -388,7 +401,7 @@ class _StickyZone extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text('›',
+                      child: Text(crumbSeparator,
                           style: TextStyle(
                               color: sepColor,
                               fontSize: 11,
@@ -405,7 +418,7 @@ class _StickyZone extends StatelessWidget {
                     if (subCategory != null) ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text('›',
+                        child: Text(crumbSeparator,
                             style: TextStyle(
                                 color: sepColor,
                                 fontSize: 11,
@@ -475,7 +488,7 @@ class _ItemGrid extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 12, 0),
           sliver: SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (_, i) => ProductGridCard(item: items[i]),
@@ -522,7 +535,7 @@ class _SkeletonGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 32),
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 12, 32),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 10,
@@ -559,7 +572,7 @@ class _ErrorState extends StatelessWidget {
               children: [
                 FaIcon(FontAwesomeIcons.arrowsRotate, size: 32, color: color),
                 const SizedBox(height: 10),
-                Text('Tap to retry',
+                Text('category_detail_screen.tap_to_retry'.tr(),
                     style: AppTextStyles.caption.copyWith(color: color)),
               ],
             ),
@@ -594,7 +607,7 @@ class _EmptyState extends StatelessWidget {
               FaIcon(FontAwesomeIcons.boxOpen, size: 48, color: mutedIcon),
               const SizedBox(height: 16),
               Text(
-                'No products in this category yet',
+                'category_detail_screen.empty_state'.tr(),
                 style: AppTextStyles.bodyMedium.copyWith(color: mutedText),
               ),
             ],
@@ -618,7 +631,7 @@ class _EndLabel extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Center(
         child: Text(
-          "— You're all caught up —",
+          'category_detail_screen.all_caught_up'.tr(),
           style: AppTextStyles.captionSmall.copyWith(
             color: color,
             letterSpacing: 0.8,

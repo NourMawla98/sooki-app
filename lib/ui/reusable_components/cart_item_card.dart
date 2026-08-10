@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -5,6 +6,7 @@ import '../../backend_integration/dtos/cart/cart_dto.dart';
 import '../../services/theme_service.dart';
 import '../../themes/app_colors.dart';
 import '../../themes/app_text_styles.dart';
+import '../../utils/number_localization.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartLineItem item;
@@ -96,7 +98,7 @@ class CartItemCard extends StatelessWidget {
   }
 }
 
-// ─── Thumbnail ────────────────────────────────────────────────────────────────
+// --- Thumbnail ----------------------------------------------------------------
 
 class _Thumb extends StatelessWidget {
   final String? url;
@@ -139,7 +141,7 @@ class _Thumb extends StatelessWidget {
   }
 }
 
-// ─── Name + meta ──────────────────────────────────────────────────────────────
+// --- Name + meta --------------------------------------------------------------
 
 class _Info extends StatelessWidget {
   final CartLineItem item;
@@ -186,7 +188,9 @@ class _Info extends StatelessWidget {
               ),
             ),
             Text(
-              'Size ${item.sizeName}',
+              // Size labels (XS, 38) are identifiers, not quantities, so their
+              // digits stay Western.
+              'cart_item_card.size'.tr(namedArgs: {'name': item.sizeName}),
               style: AppTextStyles.caption.copyWith(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
@@ -195,7 +199,8 @@ class _Info extends StatelessWidget {
             ),
             if (lowStock)
               Text(
-                'Only ${item.stock} left',
+                'cart_item_card.only_left'
+                    .tr(namedArgs: {'count': localizedNumber(item.stock)}),
                 style: AppTextStyles.caption.copyWith(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
@@ -204,7 +209,7 @@ class _Info extends StatelessWidget {
               ),
             if (!item.isAvailable)
               Text(
-                'Unavailable',
+                'cart_item_card.unavailable'.tr(),
                 style: AppTextStyles.caption.copyWith(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
@@ -218,7 +223,7 @@ class _Info extends StatelessWidget {
   }
 }
 
-// ─── Price + stepper ──────────────────────────────────────────────────────────
+// --- Price + stepper ----------------------------------------------------------
 
 class _RightBottom extends StatelessWidget {
   final int quantity;
@@ -252,7 +257,7 @@ class _RightBottom extends StatelessWidget {
             colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
           ).createShader(rect),
           child: Text(
-            '\$${lineTotal.toStringAsFixed(2)}',
+            '\$${localizedPrice(lineTotal)}',
             style: AppTextStyles.productPrice.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.w900,
@@ -275,7 +280,7 @@ class _RightBottom extends StatelessWidget {
   }
 }
 
-// ─── Quantity stepper ──────────────────────────────────────────────────────────
+// --- Quantity stepper ----------------------------------------------------------
 
 class _Stepper extends StatelessWidget {
   final int quantity;
@@ -325,7 +330,7 @@ class _Stepper extends StatelessWidget {
             width: 24,
             child: Center(
               child: Text(
-                '$quantity',
+                localizedNumber(quantity),
                 style: AppTextStyles.caption.copyWith(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w800,

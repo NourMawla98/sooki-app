@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/number_localization.dart';
 import 'size_guide_data.dart';
 
 class SizeGuideSheet extends StatefulWidget {
@@ -66,7 +68,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.auroraPurple.withValues(alpha: 0.12);
 
-        final content = kSizeGuides[widget.standardName];
+        final content = sizeGuideFor(widget.standardName);
 
         return Container(
           decoration: BoxDecoration(
@@ -91,7 +93,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Size Guide',
+                            'size_guide_sheet.title'.tr(),
                             style: AppFonts.primary(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
@@ -102,7 +104,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
                           if (content != null) ...[
                             const SizedBox(height: 2),
                             Text(
-                              content.subtitle,
+                              content.subtitle.tr(),
                               style: AppFonts.primary(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w400,
@@ -141,9 +143,9 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
               const SizedBox(height: 14),
               if (content == null)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
                   child: Text(
-                    'No size guide available for this item.',
+                    'size_guide_sheet.no_guide_available'.tr(),
                     style: AppFonts.primary(
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
@@ -155,7 +157,8 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
               else
                 Flexible(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -183,7 +186,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
                         if (content.howToMeasure != null) ...[
                           const SizedBox(height: 14),
                           _TipCard(
-                            text: content.howToMeasure!,
+                            text: content.howToMeasure!.tr(),
                             mutedBody: mutedBody,
                           ),
                         ],
@@ -303,7 +306,7 @@ class _GuideTable extends StatelessWidget {
               children: content.columns
                   .map((col) => Expanded(
                         child: Text(
-                          col.toUpperCase(),
+                          col.tr().toUpperCase(),
                           style: AppFonts.primary(
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
@@ -371,7 +374,7 @@ class _GuideRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Left gradient accent bar (selected only)
+            // Leading gradient accent bar (selected only)
             Container(
               width: 3,
               decoration: isSelected
@@ -388,14 +391,18 @@ class _GuideRow extends StatelessWidget {
               final isFirst = e.key == 0;
               return Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(
+                  padding: EdgeInsetsDirectional.fromSTEB(
                     isFirst ? 11 : 8,
                     11,
                     8,
                     11,
                   ),
+                  // The first column holds the size label (38, XL, 90x200). It
+                  // stays in Western digits so it matches the picked size.
                   child: Text(
-                    e.value,
+                    isSizeGuideKey(e.value)
+                        ? e.value.tr()
+                        : (isFirst ? e.value : localizedDigits(e.value)),
                     style: AppFonts.primary(
                       fontSize: 12,
                       fontWeight:
@@ -440,9 +447,8 @@ class _BraGuide extends StatelessWidget {
       children: [
         _BraStep(
           step: '1',
-          title: 'Measure your band',
-          body: 'Wrap a tape measure around your ribcage, directly under your bust. '
-              'Breathe out and measure in cm. Round up to the nearest 5 (e.g. 78 cm → 80).',
+          title: 'size_guide_sheet.bra_step1_title'.tr(),
+          body: 'size_guide_sheet.bra_step1_body'.tr(),
           cellBg: cellBg,
           cellBorder: cellBorder,
           textColor: textColor,
@@ -451,9 +457,8 @@ class _BraGuide extends StatelessWidget {
         const SizedBox(height: 10),
         _BraStep(
           step: '2',
-          title: 'Find your cup size',
-          body: 'Measure around the fullest part of your bust. '
-              'Subtract your band from this number to find the cup difference.',
+          title: 'size_guide_sheet.bra_step2_title'.tr(),
+          body: 'size_guide_sheet.bra_step2_body'.tr(),
           cellBg: cellBg,
           cellBorder: cellBorder,
           textColor: textColor,
@@ -469,8 +474,8 @@ class _BraGuide extends StatelessWidget {
         const SizedBox(height: 10),
         _BraStep(
           step: '3',
-          title: 'Combine',
-          body: 'Combine your band and cup — e.g. band 80 + cup B = 80B.',
+          title: 'size_guide_sheet.bra_step3_title'.tr(),
+          body: 'size_guide_sheet.bra_step3_body'.tr(),
           cellBg: cellBg,
           cellBorder: cellBorder,
           textColor: textColor,
@@ -523,7 +528,8 @@ class _BraStep extends StatelessWidget {
                 ).createShader(b),
                 blendMode: BlendMode.srcIn,
                 child: Text(
-                  'Step $step',
+                  'size_guide_sheet.step_label'
+                      .tr(namedArgs: {'step': localizedDigits(step)}),
                   style: AppFonts.primary(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
@@ -604,7 +610,7 @@ class _CupDiffTable extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+            padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 8),
             decoration: BoxDecoration(
               border: Border(bottom: BorderSide(color: divider)),
             ),
@@ -612,7 +618,7 @@ class _CupDiffTable extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'CUP',
+                    'size_guide_sheet.cup_header'.tr(),
                     style: AppFonts.primary(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
@@ -624,7 +630,7 @@ class _CupDiffTable extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'DIFFERENCE',
+                    'size_guide_sheet.difference_header'.tr(),
                     style: AppFonts.primary(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
@@ -642,7 +648,7 @@ class _CupDiffTable extends StatelessWidget {
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 8),
                   child: Row(
                     children: [
                       Expanded(
@@ -658,7 +664,7 @@ class _CupDiffTable extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          row[1],
+                          localizedDigits(row[1]),
                           style: AppFonts.primary(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -692,7 +698,7 @@ class _TipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 14, 12),
       decoration: BoxDecoration(
         color: AppColors.auroraElectricBlue.withValues(alpha: 0.10),
         border: Border.all(
@@ -748,7 +754,7 @@ class _UnitToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerEnd,
       child: Container(
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(
@@ -760,14 +766,14 @@ class _UnitToggle extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _UnitChip(
-              label: 'IN',
+              label: 'size_guide_sheet.unit_in'.tr(),
               isSelected: !useCm,
               textColor: textColor,
               mutedLabel: mutedLabel,
               onTap: () => onChanged(false),
             ),
             _UnitChip(
-              label: 'CM',
+              label: 'size_guide_sheet.unit_cm'.tr(),
               isSelected: useCm,
               textColor: textColor,
               mutedLabel: mutedLabel,

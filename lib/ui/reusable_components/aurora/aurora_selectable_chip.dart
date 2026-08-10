@@ -4,10 +4,10 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// Multi-select chip — 32 px tall, 10 px radius, 12 px horizontal padding.
+/// Multi-select chip. 32 px tall, 10 px radius, 12 px horizontal padding.
 ///
-/// • Selected   — aurora gradient fill, white text
-/// • Unselected — glass fill, aurora border, muted text
+/// Selected: aurora gradient fill, white text.
+/// Unselected: glass fill, aurora border, muted text.
 class AuroraSelectableChip extends StatelessWidget {
   final String label;
   final bool isSelected;

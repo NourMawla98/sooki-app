@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -8,6 +9,7 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_fonts.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 
 class NotificationPanel extends StatelessWidget {
   final VoidCallback onClose;
@@ -58,11 +60,11 @@ class NotificationPanel extends StatelessWidget {
               children: [
                 // Header
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 12, 12),
                   child: Row(
                     children: [
                       Text(
-                        'Notifications',
+                        'notification_panel.title'.tr(),
                         style: AppTextStyles.heading4.copyWith(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
@@ -78,7 +80,7 @@ class NotificationPanel extends StatelessWidget {
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Text(
-                            '$unread',
+                            localizedNumber(unread),
                             style: AppTextStyles.captionSmall.copyWith(
                               color: AppColors.white,
                               fontSize: 9,
@@ -92,7 +94,7 @@ class NotificationPanel extends StatelessWidget {
                         GestureDetector(
                           onTap: svc.markAllRead,
                           child: Text(
-                            'Mark all read',
+                            'notification_panel.mark_all_read'.tr(),
                             style: AppTextStyles.captionSmall.copyWith(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
@@ -112,7 +114,7 @@ class NotificationPanel extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 28),
                     child: Text(
-                      'No notifications',
+                      'notification_panel.empty'.tr(),
                       style: AppTextStyles.bodySmall.copyWith(
                         color: isDark
                             ? AppColors.white.withValues(alpha: 0.3)
@@ -154,7 +156,7 @@ class NotificationPanel extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'VIEW ALL NOTIFICATIONS',
+                              'notification_panel.view_all'.tr(),
                               style: AppFonts.primary(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
@@ -163,8 +165,10 @@ class NotificationPanel extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            const FaIcon(
-                              FontAwesomeIcons.arrowRight,
+                            FaIcon(
+                              Directionality.of(context) == TextDirection.rtl
+                                  ? FontAwesomeIcons.arrowLeft
+                                  : FontAwesomeIcons.arrowRight,
                               size: 12,
                               color: AppColors.white,
                             ),
@@ -203,7 +207,7 @@ class _PanelRow extends StatelessWidget {
       },
       child: Container(
         color: item.isRead ? null : unreadBg,
-        padding: const EdgeInsets.fromLTRB(16, 11, 16, 11),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 11, 16, 11),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -228,7 +232,7 @@ class _PanelRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    item.relativeLabel,
+                    localizedDigits(item.relativeLabel),
                     style: AppTextStyles.captionSmall.copyWith(
                       fontSize: 11,
                       color: isDark

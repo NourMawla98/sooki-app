@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -11,6 +12,7 @@ import '../../../services/toast_service.dart';
 import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/number_localization.dart';
 import '../cart/widgets/cart_background.dart';
 
 class WishlistScreen extends StatefulWidget {
@@ -58,8 +60,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       child: items.isEmpty
                           ? _WishlistEmptyState(isDark: isDark)
                           : ListView.builder(
-                              padding:
-                                  const EdgeInsets.fromLTRB(14, 4, 14, 24),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  14, 4, 14, 24),
                               itemCount: items.length,
                               itemBuilder: (_, i) => _WishlistCard(
                                 isDark: isDark,
@@ -84,7 +86,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   }
 }
 
-// ─── Top bar ──────────────────────────────────────────────────────────────────
+// --- Top bar ------------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final bool isDark;
@@ -93,8 +95,9 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isDark ? AppColors.white : AppColors.auroraPurple;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 16, 8),
       child: Row(
         children: [
           GestureDetector(
@@ -102,13 +105,18 @@ class _TopBar extends StatelessWidget {
             onTap: () => Navigator.pop(context),
             child: Padding(
               padding: const EdgeInsets.all(10),
-              child:
-                  FaIcon(FontAwesomeIcons.arrowLeft, size: 16, color: color),
+              child: FaIcon(
+                isRtl
+                    ? FontAwesomeIcons.arrowRight
+                    : FontAwesomeIcons.arrowLeft,
+                size: 16,
+                color: color,
+              ),
             ),
           ),
           const SizedBox(width: 4),
           Text(
-            'Wishlist',
+            'common.wishlist'.tr(),
             style: AppTextStyles.heading3.copyWith(
               color: color,
               fontSize: 18,
@@ -121,7 +129,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Card ─────────────────────────────────────────────────────────────────────
+// --- Card ---------------------------------------------------------------------
 
 class _WishlistCard extends StatelessWidget {
   final bool isDark;
@@ -191,7 +199,7 @@ class _WishlistCard extends StatelessWidget {
                     children: [
                       if (!item.isAvailable)
                         _TagBadge(
-                          label: 'Out of stock',
+                          label: 'common.out_of_stock'.tr(),
                           textColor: isDark
                               ? AppColors.auroraRed.withValues(alpha: 0.85)
                               : AppColors.auroraRed,
@@ -202,7 +210,7 @@ class _WishlistCard extends StatelessWidget {
                         const SizedBox(width: 5),
                       if (hasDiscount)
                         _TagBadge(
-                          label: '−$discountPct%',
+                          label: '-${localizedNumber(discountPct)}%',
                           textColor: AppColors.auroraPink,
                           bgColor: AppColors.auroraPink.withValues(alpha: isDark ? 0.12 : 0.08),
                           borderColor: AppColors.auroraPink.withValues(alpha: isDark ? 0.22 : 0.18),
@@ -222,7 +230,7 @@ class _WishlistCard extends StatelessWidget {
                         ).createShader(bounds),
                         blendMode: BlendMode.srcIn,
                         child: Text(
-                          '\$${currentPrice.toStringAsFixed(2)}',
+                          '\$${localizedPrice(currentPrice)}',
                           style: AppTextStyles.productPrice.copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
@@ -234,7 +242,7 @@ class _WishlistCard extends StatelessWidget {
                       if (hasDiscount) ...[
                         const SizedBox(width: 5),
                         Text(
-                          '\$${item.originalPrice.toStringAsFixed(2)}',
+                          '\$${localizedPrice(item.originalPrice)}',
                           style: AppTextStyles.caption.copyWith(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -269,7 +277,7 @@ class _WishlistCard extends StatelessWidget {
   }
 }
 
-// ─── Thumbnail ────────────────────────────────────────────────────────────────
+// --- Thumbnail ----------------------------------------------------------------
 
 class _Thumb extends StatelessWidget {
   final String url;
@@ -313,7 +321,7 @@ class _Thumb extends StatelessWidget {
   }
 }
 
-// ─── Tag badge ────────────────────────────────────────────────────────────────
+// --- Tag badge ----------------------------------------------------------------
 
 class _TagBadge extends StatelessWidget {
   final String label;
@@ -350,7 +358,7 @@ class _TagBadge extends StatelessWidget {
   }
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
+// --- Empty state --------------------------------------------------------------
 
 class _WishlistEmptyState extends StatefulWidget {
   final bool isDark;
@@ -447,14 +455,14 @@ class _WishlistEmptyStateState extends State<_WishlistEmptyState>
               ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
               blendMode: BlendMode.srcIn,
               child: Text(
-                'YOUR WISHLIST',
+                'wishlist_screen.empty_section_label'.tr(),
                 style:
                     AppTextStyles.dsSectionLabel.copyWith(color: AppColors.white),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Nothing saved yet',
+              'wishlist_screen.empty_title'.tr(),
               style: AppTextStyles.dsH2.copyWith(
                 color: headingColor,
                 fontSize: 24,
@@ -463,7 +471,7 @@ class _WishlistEmptyStateState extends State<_WishlistEmptyState>
             ),
             const SizedBox(height: 8),
             Text(
-              "Tap the heart on any item\nand it'll appear right here.",
+              'wishlist_screen.empty_subtitle'.tr(),
               style: AppTextStyles.dsMuted.copyWith(
                 color: subColor,
                 fontSize: 13,
@@ -538,6 +546,8 @@ class _HeartIllustration extends StatelessWidget {
                   ),
                 ),
               ),
+              // The orbiting dots are decorative geometry plotted from an
+              // angle, so their offsets stay physical rather than directional.
               Positioned(
                 left: center + r1 * cos(a1) - 3.5,
                 top: center + r1 * sin(a1) - 3.5,

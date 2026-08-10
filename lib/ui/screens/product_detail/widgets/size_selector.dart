@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -28,6 +29,7 @@ class SizeSelector extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
         final mutedLabel =
             (isDark ? AppColors.white : AppColors.primaryPurple)
                 .withValues(alpha: 0.65);
@@ -46,7 +48,7 @@ class SizeSelector extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      'SIZE',
+                      'size_selector.size'.tr(),
                       style: AppFonts.primary(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -58,7 +60,7 @@ class SizeSelector extends StatelessWidget {
                     if (selected != null) ...[
                       const SizedBox(width: 6),
                       Text(
-                        '·',
+                        '\u00b7',
                         style: AppFonts.primary(
                           fontSize: 11,
                           color: mutedLabel,
@@ -78,7 +80,7 @@ class SizeSelector extends StatelessWidget {
                     ],
                   ],
                 ),
-                if (kSizeGuides.containsKey(standardName))
+                if (sizeGuideFor(standardName) != null)
                 GestureDetector(
                   onTap: onSizeGuide,
                   behavior: HitTestBehavior.opaque,
@@ -98,7 +100,7 @@ class SizeSelector extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'SIZE GUIDE',
+                          'size_selector.size_guide'.tr(),
                           style: AppFonts.primary(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
@@ -108,8 +110,10 @@ class SizeSelector extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 5),
-                        const FaIcon(
-                          FontAwesomeIcons.chevronRight,
+                        FaIcon(
+                          isRtl
+                              ? FontAwesomeIcons.chevronLeft
+                              : FontAwesomeIcons.chevronRight,
                           size: 9,
                           color: AppColors.auroraElectricBlue,
                         ),
@@ -123,6 +127,8 @@ class SizeSelector extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
+              // displayValue is a size label (38, XL). It keeps Western digits
+              // so it matches the size guide and the seller's labelling.
               children: sizes.map((size) {
                 final isAvailable = size.stock > 0;
                 return _SizeChip(
