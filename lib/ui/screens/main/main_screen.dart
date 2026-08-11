@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/route_history_service.dart';
 import '../../../services/toast_service.dart';
 import '../../header/app_header.dart';
 import '../../nav_bar/custom_bottom_nav_bar.dart';
@@ -11,14 +12,18 @@ import '../deals/deals_screen.dart';
 import '../auction/auction_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({super.key, this.initialTabIndex = 0});
+
+  /// Tab to open on. Defaults to Browse, and is supplied when the screen is
+  /// rebuilt after a language change so the customer keeps their tab.
+  final int initialTabIndex;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0; // Default to Browse tab
+  late int _currentIndex = widget.initialTabIndex;
 
   late final List<Widget> _pages = [
     const BrowseScreen(),
@@ -31,6 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    RouteHistoryService.instance.mainTabIndex = widget.initialTabIndex;
     // Toasts on this screen must sit above the 68px nav bar.
     ToastService.setBottomInset(68);
   }
@@ -42,6 +48,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onTabTapped(int index) {
+    RouteHistoryService.instance.mainTabIndex = index;
     setState(() {
       _currentIndex = index;
     });

@@ -11,6 +11,7 @@ import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
 import 'services/language_service.dart';
 import 'services/push_notification_service.dart';
+import 'services/route_history_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'themes/themes.dart';
@@ -58,8 +59,58 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final LanguageService _languageService = serviceLocator<LanguageService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _languageService.addListener(_onLanguageChanged);
+  }
+
+  @override
+  void dispose() {
+    _languageService.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  /// Rebuild every route the customer has open, in the new language.
+  ///
+  /// Rebuilding in place is not enough: `.tr()` is context-free so text already
+  /// built keeps the old language, and each screen still holds the data it
+  /// fetched under the old `X-Language`. Pushing the stack again recreates the
+  /// screens, which re-runs their fetches and lands the customer back where
+  /// they were.
+  void _onLanguageChanged() {
+    final navigator = ToastService.navigatorKey.currentState;
+    if (navigator == null) return;
+
+    final stack = RouteHistoryService.instance.stack;
+    if (stack.isEmpty) return;
+
+    navigator.pushNamedAndRemoveUntil(
+      stack.first.name!,
+      (_) => false,
+      arguments: _argumentsFor(stack.first),
+    );
+    for (final route in stack.skip(1)) {
+      navigator.pushNamed(route.name!, arguments: _argumentsFor(route));
+    }
+  }
+
+  /// The main screen's tab is widget state rather than a route argument, so it
+  /// is fed back in when that route is rebuilt.
+  Object? _argumentsFor(RouteSettings route) =>
+      route.name == router.mainScreenRoute
+          ? RouteHistoryService.instance.mainTabIndex
+          : route.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +121,7 @@ class MyApp extends StatelessWidget {
           title: 'Sooki',
           debugShowCheckedModeBanner: false,
           navigatorKey: ToastService.navigatorKey,
+          navigatorObservers: [RouteHistoryService.instance],
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeService.instance.themeMode,

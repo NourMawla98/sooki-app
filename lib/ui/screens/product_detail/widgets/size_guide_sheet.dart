@@ -10,16 +10,16 @@ import 'size_guide_data.dart';
 class SizeGuideSheet extends StatefulWidget {
   const SizeGuideSheet({
     super.key,
-    this.standardName,
+    this.sizeStandardId,
     this.selectedLabel,
   });
 
-  final String? standardName;
+  final int? sizeStandardId;
   final String? selectedLabel;
 
   static Future<void> show(
     BuildContext context, {
-    String? standardName,
+    int? sizeStandardId,
     String? selectedLabel,
   }) {
     return showDialog<void>(
@@ -29,7 +29,7 @@ class SizeGuideSheet extends StatefulWidget {
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: SizeGuideSheet(
-          standardName: standardName,
+          sizeStandardId: sizeStandardId,
           selectedLabel: selectedLabel,
         ),
       ),
@@ -68,7 +68,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.auroraPurple.withValues(alpha: 0.12);
 
-        final content = sizeGuideFor(widget.standardName);
+        final content = sizeGuideFor(widget.sizeStandardId);
 
         return Container(
           decoration: BoxDecoration(

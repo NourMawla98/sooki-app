@@ -1,17 +1,16 @@
 // Static size guide content, keyed by a language-neutral slug.
-// ONE_SIZE / Canvas Size / Paper Size are intentionally absent - button is hidden for them.
+// ONE_SIZE / Canvas Size / Paper Size are intentionally absent - button is
+// hidden for them.
 //
-// The backend returns standardName already translated, so it can never be a map
-// key. `sizeGuideFor` matches it against the localized name of each slug, held
-// in the translations under `size_guide.standard_name.<slug>`.
+// The guide is selected by the backend size standard id, which is stable across
+// languages. Matching on the standard name instead would break as soon as the
+// app is not in English, because the backend translates that name.
 //
 // Text fields (subtitle, howToMeasure, columns) hold translation keys, resolved
 // with .tr() by the sheet. Row cells are raw values except the ones prefixed
 // with `size_guide.`, which are translated the same way - see `isSizeGuideKey`.
 // Size labels (first column) are never translated: they are matched against the
 // size the customer picked on the product.
-
-import 'package:easy_localization/easy_localization.dart';
 
 enum SizeGuideType { table, bra, bed }
 
@@ -47,20 +46,30 @@ class SizeGuideContent {
   final List<List<String>>? rowsCm; // alternate (cm) - only when hasUnitToggle=true
 }
 
+// Backend size standard id -> guide slug. The ids are seeded and stable; the
+// standards with no guide (1 One Size, 11 Canvas Size, 12 Paper Size) are absent
+// on purpose, so the guide button stays hidden for them.
+const Map<int, String> _kStandardIdToSlug = {
+  2: 'international_letter',
+  3: 'womens_apparel',
+  4: 'kids_shoes',
+  5: 'baby_sizes',
+  6: 'kids_sizes',
+  7: 'bra',
+  8: 'ring_sizes',
+  9: 'bed_sizes',
+  10: 'belt_size',
+};
+
 /// Guide for the standard the backend reported, or null when that standard has
-/// no guide (One Size, Canvas Size, Paper Size) or the name is unknown.
-SizeGuideContent? sizeGuideFor(String? standardName) {
-  final name = standardName?.trim().toLowerCase();
-  if (name == null || name.isEmpty) return null;
-  for (final entry in kSizeGuides.entries) {
-    final localized =
-        'size_guide.standard_name.${entry.key}'.tr().trim().toLowerCase();
-    if (localized == name) return entry.value;
-  }
-  return null;
+/// no guide or the id is unknown.
+SizeGuideContent? sizeGuideFor(int? sizeStandardId) {
+  final slug = _kStandardIdToSlug[sizeStandardId];
+  if (slug == null) return null;
+  return kSizeGuides[slug];
 }
 
-// Key = language-neutral slug, matched to the backend name by [sizeGuideFor].
+// Key = language-neutral slug, reached from the backend id by [sizeGuideFor].
 const Map<String, SizeGuideContent> kSizeGuides = {
   'international_letter': SizeGuideContent(
     type: SizeGuideType.table,

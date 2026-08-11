@@ -44,7 +44,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     signUpScreenRoute: (_) => const SignUpScreen(),
     signInScreenRoute: (_) => const SignInScreen(),
     forgotPasswordScreenRoute: (_) => const ForgotPasswordScreen(),
-    mainScreenRoute: (_) => const MainScreen(),
+    mainScreenRoute: (_) {
+      final tab = settings.arguments;
+      return MainScreen(initialTabIndex: tab is int ? tab : 0);
+    },
     browseScreenRoute: (_) => const BrowseScreen(),
     dealsScreenRoute: (_) => const DealsScreen(),
     shoppingScreenRoute: (_) => const ShoppingScreen(),
@@ -87,11 +90,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     privacySettingsScreenRoute: (_) => const PrivacySettingsScreen(),
     shippingInfoScreenRoute: (_) => const ShippingInfoScreen(),
     termsConditionsScreenRoute: (_) => LegalPageScreen(
-      title: 'Terms & Conditions',
+      titleKey: 'help_support_screen.terms_conditions',
       sections: LegalPageScreen.termsAndConditions,
     ),
     privacyPolicyScreenRoute: (_) => LegalPageScreen(
-      title: 'Privacy Policy',
+      titleKey: 'help_support_screen.privacy_policy',
       sections: LegalPageScreen.privacyPolicy,
     ),
     emailSupportScreenRoute: (_) => const EmailSupportScreen(),
@@ -120,6 +123,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   };
 
   return MaterialPageRoute(
+    // The settings carry the route name, which is what lets the navigator
+    // history know which screen to rebuild after a language change.
+    settings: settings,
     builder: routes[settings.name] ?? (_) => const SplashScreen(),
   );
 }

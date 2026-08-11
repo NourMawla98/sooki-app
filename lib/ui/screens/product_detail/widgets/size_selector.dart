@@ -14,14 +14,14 @@ class SizeSelector extends StatelessWidget {
     required this.selected,
     required this.onSelected,
     required this.onSizeGuide,
-    this.standardName,
+    this.sizeStandardId,
   });
 
   final List<ItemDetailSizeDto> sizes;
   final ItemDetailSizeDto? selected;
   final ValueChanged<ItemDetailSizeDto> onSelected;
   final VoidCallback onSizeGuide;
-  final String? standardName;
+  final int? sizeStandardId;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class SizeSelector extends StatelessWidget {
                     ],
                   ],
                 ),
-                if (sizeGuideFor(standardName) != null)
+                if (sizeGuideFor(sizeStandardId) != null)
                 GestureDetector(
                   onTap: onSizeGuide,
                   behavior: HitTestBehavior.opaque,

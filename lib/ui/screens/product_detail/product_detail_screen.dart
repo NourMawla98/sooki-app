@@ -225,7 +225,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void _showSizeGuide() {
     SizeGuideSheet.show(
       context,
-      standardName: _selectedColor?.sizes.firstOrNull?.standardName,
+      sizeStandardId: _selectedColor?.sizes.firstOrNull?.sizeStandardId,
       selectedLabel: _selectedSize?.displayValue,
     );
   }
@@ -389,7 +389,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: SizeSelector(
                   sizes: _currentSizes,
                   selected: _selectedSize,
-                  standardName: _selectedColor?.sizes.firstOrNull?.standardName,
+                  sizeStandardId:
+                      _selectedColor?.sizes.firstOrNull?.sizeStandardId,
                   onSelected: (size) => setState(() {
                     _selectedSize = size;
                     if (size.stock > 0 && _quantity > size.stock) {

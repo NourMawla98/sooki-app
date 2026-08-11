@@ -91,6 +91,7 @@ abstract class ItemDetailSizeDto with _$ItemDetailSizeDto {
     required int sizeValueId,
     required String displayValue,
     required String standardName,
+    int? sizeStandardId,
     required int stock,
     double? additionalPrice,
   }) = _ItemDetailSizeDto;

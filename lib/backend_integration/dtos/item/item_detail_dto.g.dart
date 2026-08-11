@@ -110,6 +110,7 @@ _ItemDetailSizeDto _$ItemDetailSizeDtoFromJson(Map<String, dynamic> json) =>
       sizeValueId: (json['sizeValueId'] as num).toInt(),
       displayValue: json['displayValue'] as String,
       standardName: json['standardName'] as String,
+      sizeStandardId: (json['sizeStandardId'] as num?)?.toInt(),
       stock: (json['stock'] as num).toInt(),
       additionalPrice: (json['additionalPrice'] as num?)?.toDouble(),
     );

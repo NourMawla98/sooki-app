@@ -10,11 +10,12 @@ import '../splash/widgets/aurora_glow_blob.dart';
 class LegalPageScreen extends StatelessWidget {
   const LegalPageScreen({
     super.key,
-    required this.title,
+    required this.titleKey,
     required this.sections,
   });
 
-  final String title;
+  /// Translation key, resolved on build so the title follows the app language.
+  final String titleKey;
   final List<LegalSection> sections;
 
   @override
@@ -40,7 +41,7 @@ class LegalPageScreen extends StatelessWidget {
               SafeArea(
                 child: Column(
                   children: [
-                    _TopBar(title: title, isDark: isDark),
+                    _TopBar(title: titleKey.tr(), isDark: isDark),
                     Expanded(
                       child: SingleChildScrollView(
                         padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 32),
