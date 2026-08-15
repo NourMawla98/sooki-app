@@ -152,13 +152,13 @@ class ItemsApi {
         final body = response.data as Map<String, dynamic>;
         final list = (body['data'] as List).cast<Map<String, dynamic>>();
         final reviews = list.map((j) {
-          final dt = DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now();
-          final months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
           return Review(
             userName: j['reviewerDisplayName'] as String? ?? '',
             rating: ((j['rating'] as num?) ?? 0).toDouble(),
             text: j['body'] as String? ?? '',
-            date: '${dt.day} ${months[dt.month - 1]} ${dt.year}',
+            createdAt:
+                DateTime.tryParse(j['createdAt'] as String? ?? '') ??
+                    DateTime.now(),
           );
         }).toList();
         return (

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Review {
 
- String get userName; double get rating; String get text; String get date; bool get isVerifiedPurchase; int get helpfulCount;
+ String get userName; double get rating; String get text; DateTime get createdAt; bool get isVerifiedPurchase; int get helpfulCount;
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ReviewCopyWith<Review> get copyWith => _$ReviewCopyWithImpl<Review>(this as Rev
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Review&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.text, text) || other.text == text)&&(identical(other.date, date) || other.date == date)&&(identical(other.isVerifiedPurchase, isVerifiedPurchase) || other.isVerifiedPurchase == isVerifiedPurchase)&&(identical(other.helpfulCount, helpfulCount) || other.helpfulCount == helpfulCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Review&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.text, text) || other.text == text)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isVerifiedPurchase, isVerifiedPurchase) || other.isVerifiedPurchase == isVerifiedPurchase)&&(identical(other.helpfulCount, helpfulCount) || other.helpfulCount == helpfulCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userName,rating,text,date,isVerifiedPurchase,helpfulCount);
+int get hashCode => Object.hash(runtimeType,userName,rating,text,createdAt,isVerifiedPurchase,helpfulCount);
 
 @override
 String toString() {
-  return 'Review(userName: $userName, rating: $rating, text: $text, date: $date, isVerifiedPurchase: $isVerifiedPurchase, helpfulCount: $helpfulCount)';
+  return 'Review(userName: $userName, rating: $rating, text: $text, createdAt: $createdAt, isVerifiedPurchase: $isVerifiedPurchase, helpfulCount: $helpfulCount)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ReviewCopyWith<$Res>  {
   factory $ReviewCopyWith(Review value, $Res Function(Review) _then) = _$ReviewCopyWithImpl;
 @useResult
 $Res call({
- String userName, double rating, String text, String date, bool isVerifiedPurchase, int helpfulCount
+ String userName, double rating, String text, DateTime createdAt, bool isVerifiedPurchase, int helpfulCount
 });
 
 
@@ -65,13 +65,13 @@ class _$ReviewCopyWithImpl<$Res>
 
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userName = null,Object? rating = null,Object? text = null,Object? date = null,Object? isVerifiedPurchase = null,Object? helpfulCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userName = null,Object? rating = null,Object? text = null,Object? createdAt = null,Object? isVerifiedPurchase = null,Object? helpfulCount = null,}) {
   return _then(_self.copyWith(
 userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
-as String,isVerifiedPurchase: null == isVerifiedPurchase ? _self.isVerifiedPurchase : isVerifiedPurchase // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,isVerifiedPurchase: null == isVerifiedPurchase ? _self.isVerifiedPurchase : isVerifiedPurchase // ignore: cast_nullable_to_non_nullable
 as bool,helpfulCount: null == helpfulCount ? _self.helpfulCount : helpfulCount // ignore: cast_nullable_to_non_nullable
 as int,
   ));
@@ -158,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userName,  double rating,  String text,  String date,  bool isVerifiedPurchase,  int helpfulCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userName,  double rating,  String text,  DateTime createdAt,  bool isVerifiedPurchase,  int helpfulCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Review() when $default != null:
-return $default(_that.userName,_that.rating,_that.text,_that.date,_that.isVerifiedPurchase,_that.helpfulCount);case _:
+return $default(_that.userName,_that.rating,_that.text,_that.createdAt,_that.isVerifiedPurchase,_that.helpfulCount);case _:
   return orElse();
 
 }
@@ -179,10 +179,10 @@ return $default(_that.userName,_that.rating,_that.text,_that.date,_that.isVerifi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userName,  double rating,  String text,  String date,  bool isVerifiedPurchase,  int helpfulCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userName,  double rating,  String text,  DateTime createdAt,  bool isVerifiedPurchase,  int helpfulCount)  $default,) {final _that = this;
 switch (_that) {
 case _Review():
-return $default(_that.userName,_that.rating,_that.text,_that.date,_that.isVerifiedPurchase,_that.helpfulCount);case _:
+return $default(_that.userName,_that.rating,_that.text,_that.createdAt,_that.isVerifiedPurchase,_that.helpfulCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +199,10 @@ return $default(_that.userName,_that.rating,_that.text,_that.date,_that.isVerifi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userName,  double rating,  String text,  String date,  bool isVerifiedPurchase,  int helpfulCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userName,  double rating,  String text,  DateTime createdAt,  bool isVerifiedPurchase,  int helpfulCount)?  $default,) {final _that = this;
 switch (_that) {
 case _Review() when $default != null:
-return $default(_that.userName,_that.rating,_that.text,_that.date,_that.isVerifiedPurchase,_that.helpfulCount);case _:
+return $default(_that.userName,_that.rating,_that.text,_that.createdAt,_that.isVerifiedPurchase,_that.helpfulCount);case _:
   return null;
 
 }
@@ -214,13 +214,13 @@ return $default(_that.userName,_that.rating,_that.text,_that.date,_that.isVerifi
 @JsonSerializable()
 
 class _Review implements Review {
-  const _Review({required this.userName, required this.rating, required this.text, required this.date, this.isVerifiedPurchase = false, this.helpfulCount = 0});
+  const _Review({required this.userName, required this.rating, required this.text, required this.createdAt, this.isVerifiedPurchase = false, this.helpfulCount = 0});
   factory _Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
 
 @override final  String userName;
 @override final  double rating;
 @override final  String text;
-@override final  String date;
+@override final  DateTime createdAt;
 @override@JsonKey() final  bool isVerifiedPurchase;
 @override@JsonKey() final  int helpfulCount;
 
@@ -237,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Review&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.text, text) || other.text == text)&&(identical(other.date, date) || other.date == date)&&(identical(other.isVerifiedPurchase, isVerifiedPurchase) || other.isVerifiedPurchase == isVerifiedPurchase)&&(identical(other.helpfulCount, helpfulCount) || other.helpfulCount == helpfulCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Review&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.text, text) || other.text == text)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isVerifiedPurchase, isVerifiedPurchase) || other.isVerifiedPurchase == isVerifiedPurchase)&&(identical(other.helpfulCount, helpfulCount) || other.helpfulCount == helpfulCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userName,rating,text,date,isVerifiedPurchase,helpfulCount);
+int get hashCode => Object.hash(runtimeType,userName,rating,text,createdAt,isVerifiedPurchase,helpfulCount);
 
 @override
 String toString() {
-  return 'Review(userName: $userName, rating: $rating, text: $text, date: $date, isVerifiedPurchase: $isVerifiedPurchase, helpfulCount: $helpfulCount)';
+  return 'Review(userName: $userName, rating: $rating, text: $text, createdAt: $createdAt, isVerifiedPurchase: $isVerifiedPurchase, helpfulCount: $helpfulCount)';
 }
 
 
@@ -257,7 +257,7 @@ abstract mixin class _$ReviewCopyWith<$Res> implements $ReviewCopyWith<$Res> {
   factory _$ReviewCopyWith(_Review value, $Res Function(_Review) _then) = __$ReviewCopyWithImpl;
 @override @useResult
 $Res call({
- String userName, double rating, String text, String date, bool isVerifiedPurchase, int helpfulCount
+ String userName, double rating, String text, DateTime createdAt, bool isVerifiedPurchase, int helpfulCount
 });
 
 
@@ -274,13 +274,13 @@ class __$ReviewCopyWithImpl<$Res>
 
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userName = null,Object? rating = null,Object? text = null,Object? date = null,Object? isVerifiedPurchase = null,Object? helpfulCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userName = null,Object? rating = null,Object? text = null,Object? createdAt = null,Object? isVerifiedPurchase = null,Object? helpfulCount = null,}) {
   return _then(_Review(
 userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
-as String,isVerifiedPurchase: null == isVerifiedPurchase ? _self.isVerifiedPurchase : isVerifiedPurchase // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,isVerifiedPurchase: null == isVerifiedPurchase ? _self.isVerifiedPurchase : isVerifiedPurchase // ignore: cast_nullable_to_non_nullable
 as bool,helpfulCount: null == helpfulCount ? _self.helpfulCount : helpfulCount // ignore: cast_nullable_to_non_nullable
 as int,
   ));

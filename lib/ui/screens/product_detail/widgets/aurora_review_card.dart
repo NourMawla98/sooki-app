@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../models/review.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/themes.dart';
+import '../../../../utils/date_localization.dart';
 import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/rating_stars/star_rating.dart';
 
@@ -62,7 +63,7 @@ class AuroraReviewCard extends StatelessWidget {
                   ],
                   const Spacer(),
                   Text(
-                    localizedDigits(review.date),
+                    localizedLongDate(review.createdAt),
                     style: AppFonts.primary(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,

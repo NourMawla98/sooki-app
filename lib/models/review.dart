@@ -9,7 +9,7 @@ abstract class Review with _$Review {
     required String userName,
     required double rating,
     required String text,
-    required String date,
+    required DateTime createdAt,
     @Default(false) bool isVerifiedPurchase,
     @Default(0) int helpfulCount,
   }) = _Review;

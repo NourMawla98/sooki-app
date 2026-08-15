@@ -41,6 +41,21 @@
       "account": "Compte",
       "suggestion": "Suggestion",
       "other": "Autre"
+    },
+    "sort_option": {
+      "newest": "Plus récents",
+      "price_low_to_high": "Prix : croissant",
+      "price_high_to_low": "Prix : décroissant",
+      "rating": "Note",
+      "most_popular": "Les plus populaires",
+      "biggest_discount": "Meilleure remise"
+    },
+    "sort_option_short": {
+      "newest": "RÉCENT",
+      "price": "PRIX",
+      "rating": "NOTE",
+      "most_popular": "POPULAIRE",
+      "biggest_discount": "PROMO"
     }
   },
   "auth": {

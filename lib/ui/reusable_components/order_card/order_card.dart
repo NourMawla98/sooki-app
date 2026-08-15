@@ -6,13 +6,8 @@ import '../../../enums/order_status.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/date_localization.dart';
 import '../../../utils/number_localization.dart';
-
-String _formatDate(DateTime dt) => 'time.long_date'.tr(namedArgs: {
-      'day': localizedNumber(dt.day),
-      'month': 'time.month_short.${dt.month}'.tr(),
-      'year': localizedNumber(dt.year),
-    });
 
 class OrderCard extends StatelessWidget {
   final OrderListItemDto dto;
@@ -53,7 +48,7 @@ class OrderCard extends StatelessWidget {
 
         final visibleItems = dto.items.take(3).toList();
         final overflow = dto.items.length - visibleItems.length;
-        final date = _formatDate(dto.createdAt);
+        final date = localizedLongDate(dto.createdAt);
 
         return GestureDetector(
           onTap: onTap,

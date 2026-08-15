@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 /// The five ways a user can sort the Shopping screen's product grid. The
@@ -14,17 +15,17 @@ enum SortOption {
   String get label {
     switch (this) {
       case SortOption.newest:
-        return 'Newest';
+        return 'enums.sort_option.newest'.tr();
       case SortOption.priceLowToHigh:
-        return 'Price: Low to High';
+        return 'enums.sort_option.price_low_to_high'.tr();
       case SortOption.priceHighToLow:
-        return 'Price: High to Low';
+        return 'enums.sort_option.price_high_to_low'.tr();
       case SortOption.rating:
-        return 'Rating';
+        return 'enums.sort_option.rating'.tr();
       case SortOption.mostPopular:
-        return 'Most popular';
+        return 'enums.sort_option.most_popular'.tr();
       case SortOption.biggestDiscount:
-        return 'Biggest discount';
+        return 'enums.sort_option.biggest_discount'.tr();
     }
   }
 
@@ -55,7 +56,7 @@ enum SortOption {
       case SortOption.priceHighToLow:
         return 3;
       case SortOption.rating:
-        return 4; // PopularViews — closest available
+        return 4; // PopularViews, the closest available
       case SortOption.mostPopular:
         return 5; // PopularOrders
       case SortOption.biggestDiscount:
@@ -68,17 +69,17 @@ enum SortOption {
   String get buttonLabel {
     switch (this) {
       case SortOption.newest:
-        return 'NEWEST';
+        return 'enums.sort_option_short.newest'.tr();
       case SortOption.priceLowToHigh:
-        return 'PRICE \u2191';
+        return '${'enums.sort_option_short.price'.tr()} \u2191';
       case SortOption.priceHighToLow:
-        return 'PRICE \u2193';
+        return '${'enums.sort_option_short.price'.tr()} \u2193';
       case SortOption.rating:
-        return 'RATING';
+        return 'enums.sort_option_short.rating'.tr();
       case SortOption.mostPopular:
-        return 'POPULAR';
+        return 'enums.sort_option_short.most_popular'.tr();
       case SortOption.biggestDiscount:
-        return 'DEAL';
+        return 'enums.sort_option_short.biggest_discount'.tr();
     }
   }
 }

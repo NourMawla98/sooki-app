@@ -13,6 +13,7 @@ import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/date_localization.dart';
 import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
@@ -27,12 +28,6 @@ const _kStepLabels = [
   'order_detail_screen.step_out_for_delivery',
   'order_detail_screen.step_delivered',
 ];
-
-String _fmtDate(DateTime dt) => 'time.long_date'.tr(namedArgs: {
-      'day': localizedNumber(dt.day),
-      'month': 'time.month_short.${dt.month}'.tr(),
-      'year': localizedNumber(dt.year),
-    });
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -318,7 +313,7 @@ class _HeroCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       'order_detail_screen.hero_meta'.tr(namedArgs: {
-                        'date': _fmtDate(detail.createdAt),
+                        'date': localizedLongDate(detail.createdAt),
                         'count': localizedNumber(detail.items.length),
                       }),
                       style: AppTextStyles.dsMuted.copyWith(
