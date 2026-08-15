@@ -231,26 +231,6 @@
     "empty_category": "Aucun produit dans cette catégorie pour l'instant",
     "all_caught_up": "Vous avez tout vu"
   },
-  "privacy_settings_screen": {
-    "title": "Confidentialité",
-    "data_collection": "Collecte de données",
-    "analytics": "Analytique",
-    "analytics_subtitle": "Aidez-nous à nous améliorer en partageant vos données d'utilisation",
-    "personalized_ads": "Publicités personnalisées",
-    "personalized_ads_subtitle": "Afficher des publicités selon vos centres d'intérêt",
-    "data_sharing_partners": "Partage de données avec des partenaires",
-    "data_sharing_partners_subtitle": "Partager des données avec des partenaires de confiance",
-    "location_tracking": "Suivi de la localisation",
-    "location_tracking_subtitle": "Autoriser les recommandations basées sur la localisation",
-    "your_data": "Vos données",
-    "download_my_data": "Télécharger mes données",
-    "download_my_data_subtitle": "Obtenez une copie de vos données personnelles",
-    "clear_search_history": "Effacer l'historique de recherche",
-    "clear_search_history_subtitle": "Supprimer tout l'historique de recherche",
-    "clear_browsing_data": "Effacer les données de navigation",
-    "clear_browsing_data_subtitle": "Supprimer les produits consultés en cache",
-    "coming_soon": "{title} - bientôt disponible"
-  },
   "aurora_review_card": {
     "helpful_count": "{count} utile",
     "verified": "VÉRIFIÉ"
@@ -431,10 +411,6 @@
     "empty_section_label": "VOTRE LISTE DE SOUHAITS",
     "empty_title": "Rien d'enregistré pour l'instant",
     "empty_subtitle": "Touchez le coeur sur un article\net il apparaîtra ici."
-  },
-  "payment_methods_screen": {
-    "feature_name": "MOYENS DE PAIEMENT",
-    "tagline": "Enregistrez vos cartes en toute sécurité pour un paiement plus rapide. Bientôt disponible."
   },
   "addresses_screen": {
     "title": "Adresses",

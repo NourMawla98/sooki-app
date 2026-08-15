@@ -13,6 +13,8 @@ class AppColors {
   static const Color auroraPink = Color(0xFFFF00C8);
   static const Color auroraElectricBlue = Color(0xFF0096FF);
   static const Color auroraDeepBase = Color(0xFF0A0A18);
+  // Lifted dark surface for panels and dialogs that sit above the deep base.
+  static const Color auroraDeepElevated = Color(0xFF12122A);
   static const Color auroraLightBase = Color(0xFFEFEDF8);
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000); // shadows / overlays only

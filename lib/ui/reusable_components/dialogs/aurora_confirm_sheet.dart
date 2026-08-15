@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../icons/mirrored_fa_icon.dart';
 
 Future<bool> showAuroraConfirmSheet(
   BuildContext context, {
@@ -12,6 +13,7 @@ Future<bool> showAuroraConfirmSheet(
   String? subtitle,
   required FaIconData icon,
   Color iconColor = AppColors.auroraRed,
+  bool mirrorIconInRtl = false,
   String? confirmLabel,
   Color confirmColor = AppColors.auroraRed,
   String? cancelLabel,
@@ -28,6 +30,7 @@ Future<bool> showAuroraConfirmSheet(
       subtitle: subtitle,
       icon: icon,
       iconColor: iconColor,
+      mirrorIconInRtl: mirrorIconInRtl,
       confirmLabel: confirmLabel ?? 'common.confirm'.tr(),
       confirmColor: confirmColor,
       cancelLabel: cancelLabel ?? 'common.cancel'.tr(),
@@ -63,6 +66,7 @@ class _AuroraConfirmSheet extends StatefulWidget {
   final String? subtitle;
   final FaIconData icon;
   final Color iconColor;
+  final bool mirrorIconInRtl;
   final String confirmLabel;
   final Color confirmColor;
   final String cancelLabel;
@@ -73,6 +77,7 @@ class _AuroraConfirmSheet extends StatefulWidget {
     this.subtitle,
     required this.icon,
     required this.iconColor,
+    required this.mirrorIconInRtl,
     required this.confirmLabel,
     required this.confirmColor,
     required this.cancelLabel,
@@ -99,7 +104,7 @@ class _AuroraConfirmSheetState extends State<_AuroraConfirmSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = ThemeService.instance.isDarkMode;
-    final fill = isDark ? const Color(0xFF12122A) : AppColors.white;
+    final fill = isDark ? AppColors.auroraDeepElevated : AppColors.white;
     final border = isDark
         ? AppColors.white.withValues(alpha: 0.08)
         : AppColors.auroraPurple.withValues(alpha: 0.12);
@@ -126,7 +131,10 @@ class _AuroraConfirmSheetState extends State<_AuroraConfirmSheet> {
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: FaIcon(widget.icon, size: 18, color: widget.iconColor),
+            child: widget.mirrorIconInRtl
+                ? MirroredFaIcon(widget.icon,
+                    size: 18, color: widget.iconColor)
+                : FaIcon(widget.icon, size: 18, color: widget.iconColor),
           ),
           const SizedBox(height: 14),
           Text(

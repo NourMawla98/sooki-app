@@ -16,6 +16,7 @@ import '../../../services/token_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../dialogs/aurora_confirm_sheet.dart';
+import '../icons/mirrored_fa_icon.dart';
 
 /// Aurora glass user menu rendered as a 2×2 grid of tinted tiles. Items:
 /// Profile (blue tint) · Language (purple tint) · Theme (neutral) ·
@@ -63,6 +64,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
       subtitle: 'user_menu_dropdown.logout_confirm'.tr(),
       icon: FontAwesomeIcons.rightFromBracket,
       iconColor: AppColors.auroraPink,
+      mirrorIconInRtl: true,
       confirmLabel: 'common.logout'.tr(),
       confirmColor: AppColors.auroraPink,
       cancelLabel: 'common.cancel'.tr(),
@@ -200,6 +202,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                       label: 'common.logout'.tr(),
                       accent: AppColors.auroraPink,
                       isDark: isDark,
+                      mirrorIcon: true,
                       subColor: AppColors.auroraPink.withValues(alpha: 0.75),
                       labelColor: AppColors.auroraPink,
                       onTap: () {
@@ -213,6 +216,7 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
                       sub: '',
                       accent: AppColors.auroraPink,
                       isDark: isDark,
+                      mirrorIcon: true,
                       subColor: AppColors.auroraPink.withValues(alpha: 0.75),
                       labelColor: AppColors.auroraPink,
                       onTap: _goToSignIn,
@@ -271,6 +275,7 @@ class _Tile extends StatelessWidget {
   final Color subColor;
   final Color? labelColor;
   final bool isDark;
+  final bool mirrorIcon;
   final VoidCallback onTap;
 
   const _Tile({
@@ -280,6 +285,7 @@ class _Tile extends StatelessWidget {
     required this.accent,
     required this.subColor,
     required this.isDark,
+    this.mirrorIcon = false,
     required this.onTap,
     this.labelColor,
   });
@@ -316,7 +322,9 @@ class _Tile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              FaIcon(icon, size: 18, color: accent),
+              mirrorIcon
+                  ? MirroredFaIcon(icon, size: 18, color: accent)
+                  : FaIcon(icon, size: 18, color: accent),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,

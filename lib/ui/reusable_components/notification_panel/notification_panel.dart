@@ -27,7 +27,7 @@ class NotificationPanel extends StatelessWidget {
         final unread = svc.unreadCount;
 
         final fill = isDark
-            ? const Color(0xFF12122A)
+            ? AppColors.auroraDeepElevated
             : AppColors.white;
         final border = isDark
             ? AppColors.white.withValues(alpha: 0.08)

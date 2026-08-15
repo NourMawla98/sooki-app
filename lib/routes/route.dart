@@ -9,14 +9,12 @@ import '../ui/screens/profile/profile_screen.dart';
 import '../ui/screens/orders/orders_screen.dart';
 import '../ui/screens/wishlist/wishlist_screen.dart';
 import '../ui/screens/addresses/addresses_screen.dart';
-import '../ui/screens/payment_methods/payment_methods_screen.dart';
 import '../ui/screens/settings/settings_screen.dart';
 import '../ui/screens/help_support/help_support_screen.dart';
 import '../ui/screens/orders/order_detail_screen.dart';
 import '../backend_integration/dtos/address/address_dto.dart';
 import '../ui/screens/address_form/address_form_screen.dart';
 import '../ui/screens/settings/change_password_screen.dart';
-import '../ui/screens/settings/privacy_settings_screen.dart';
 import '../ui/screens/help_support/shipping_info_screen.dart';
 import '../ui/screens/help_support/legal_page_screen.dart';
 import '../ui/screens/help_support/email_support_screen.dart';
@@ -74,7 +72,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     ordersScreenRoute: (_) => const OrdersScreen(),
     wishlistScreenRoute: (_) => const WishlistScreen(),
     addressesScreenRoute: (_) => const AddressesScreen(),
-    paymentMethodsScreenRoute: (_) => const PaymentMethodsScreen(),
     settingsScreenRoute: (_) => const SettingsScreen(),
     helpSupportScreenRoute: (_) => const HelpSupportScreen(),
     orderDetailScreenRoute: (_) {
@@ -87,7 +84,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return AddressFormScreen(initialAddress: address);
     },
     changePasswordScreenRoute: (_) => const ChangePasswordScreen(),
-    privacySettingsScreenRoute: (_) => const PrivacySettingsScreen(),
     shippingInfoScreenRoute: (_) => const ShippingInfoScreen(),
     termsConditionsScreenRoute: (_) => LegalPageScreen(
       titleKey: 'help_support_screen.terms_conditions',

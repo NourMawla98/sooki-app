@@ -583,7 +583,7 @@ class _LanguageSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = isDark
-        ? const Color(0xFF12122A)
+        ? AppColors.auroraDeepElevated
         : AppColors.white;
     final borderColor = isDark
         ? AppColors.white.withValues(alpha: 0.08)

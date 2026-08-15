@@ -231,26 +231,6 @@
     "empty_category": "لا توجد منتجات في هذه الفئة حتى الآن",
     "all_caught_up": "شاهدت كل شيء"
   },
-  "privacy_settings_screen": {
-    "title": "الخصوصية",
-    "data_collection": "جمع البيانات",
-    "analytics": "التحليلات",
-    "analytics_subtitle": "ساعدنا على التحسين بمشاركة بيانات الاستخدام",
-    "personalized_ads": "إعلانات مخصصة",
-    "personalized_ads_subtitle": "عرض إعلانات تناسب اهتماماتك",
-    "data_sharing_partners": "مشاركة البيانات مع الشركاء",
-    "data_sharing_partners_subtitle": "مشاركة البيانات مع شركاء موثوقين",
-    "location_tracking": "تتبع الموقع",
-    "location_tracking_subtitle": "السماح بالتوصيات حسب موقعك",
-    "your_data": "بياناتك",
-    "download_my_data": "تنزيل بياناتي",
-    "download_my_data_subtitle": "احصل على نسخة من بياناتك الشخصية",
-    "clear_search_history": "مسح سجل البحث",
-    "clear_search_history_subtitle": "حذف كل سجل البحث",
-    "clear_browsing_data": "مسح بيانات التصفح",
-    "clear_browsing_data_subtitle": "حذف المنتجات المحفوظة مؤقتا",
-    "coming_soon": "{title} - قريبا"
-  },
   "aurora_review_card": {
     "helpful_count": "{count} وجدوه مفيدا",
     "verified": "موثق"
@@ -431,10 +411,6 @@
     "empty_section_label": "قائمة أمنياتك",
     "empty_title": "لم تحفظ أي منتج بعد",
     "empty_subtitle": "اضغط على القلب في أي منتج\nوسيظهر لك هنا."
-  },
-  "payment_methods_screen": {
-    "feature_name": "طرق الدفع",
-    "tagline": "احفظ بطاقاتك بأمان لإتمام الشراء بشكل أسرع. قريباً جداً."
   },
   "addresses_screen": {
     "title": "العناوين",

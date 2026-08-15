@@ -29,7 +29,7 @@ class _AuroraLoginGateSheet extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final fill = isDark ? const Color(0xFF12122A) : AppColors.white;
+        final fill = isDark ? AppColors.auroraDeepElevated : AppColors.white;
         final border = isDark
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.auroraPurple.withValues(alpha: 0.12);

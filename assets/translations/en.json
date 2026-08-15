@@ -231,26 +231,6 @@
     "empty_category": "No products in this category yet",
     "all_caught_up": "You're all caught up"
   },
-  "privacy_settings_screen": {
-    "title": "Privacy",
-    "data_collection": "Data Collection",
-    "analytics": "Analytics",
-    "analytics_subtitle": "Help us improve by sharing usage data",
-    "personalized_ads": "Personalized Ads",
-    "personalized_ads_subtitle": "Show ads based on your interests",
-    "data_sharing_partners": "Data Sharing with Partners",
-    "data_sharing_partners_subtitle": "Share data with trusted partners",
-    "location_tracking": "Location Tracking",
-    "location_tracking_subtitle": "Allow location-based recommendations",
-    "your_data": "Your Data",
-    "download_my_data": "Download My Data",
-    "download_my_data_subtitle": "Get a copy of your personal data",
-    "clear_search_history": "Clear Search History",
-    "clear_search_history_subtitle": "Remove all search history",
-    "clear_browsing_data": "Clear Browsing Data",
-    "clear_browsing_data_subtitle": "Remove cached product views",
-    "coming_soon": "{title} - coming soon"
-  },
   "aurora_review_card": {
     "helpful_count": "{count} helpful",
     "verified": "VERIFIED"
@@ -431,10 +411,6 @@
     "empty_section_label": "YOUR WISHLIST",
     "empty_title": "Nothing saved yet",
     "empty_subtitle": "Tap the heart on any item\nand it'll appear right here."
-  },
-  "payment_methods_screen": {
-    "feature_name": "PAYMENT METHODS",
-    "tagline": "Securely save your cards for faster checkout. Almost here."
   },
   "addresses_screen": {
     "title": "Addresses",

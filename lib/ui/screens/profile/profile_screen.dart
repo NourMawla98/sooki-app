@@ -18,6 +18,7 @@ import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/aurora/aurora_secondary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
+import '../../reusable_components/icons/mirrored_fa_icon.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 import 'widgets/profile_header_card.dart';
 import 'widgets/profile_menu_list.dart';
@@ -312,6 +313,7 @@ class _SignOutRowState extends State<_SignOutRow> {
       title: 'common.logout'.tr(),
       subtitle: 'profile_screen.logout_confirm'.tr(),
       icon: FontAwesomeIcons.rightFromBracket,
+      mirrorIconInRtl: true,
       confirmLabel: 'common.logout'.tr(),
     );
     if (!confirmed || !mounted) return;
@@ -374,7 +376,7 @@ class _SignOutRowState extends State<_SignOutRow> {
                           color: AppColors.auroraRed,
                         ),
                       )
-                    : const FaIcon(
+                    : const MirroredFaIcon(
                         FontAwesomeIcons.rightFromBracket,
                         size: 15,
                         color: AppColors.auroraRed,

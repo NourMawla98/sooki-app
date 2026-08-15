@@ -51,7 +51,6 @@ class PushNotificationService {
       await _messaging.requestPermission();
 
       _token = await _messaging.getToken();
-      debugPrint('FCM token: $_token');
       if (_token != null) await _register(_token!);
 
       _refreshSub = _messaging.onTokenRefresh.listen((token) {
