@@ -8,11 +8,7 @@ import '../../../../utils/number_localization.dart';
 import 'size_guide_data.dart';
 
 class SizeGuideSheet extends StatefulWidget {
-  const SizeGuideSheet({
-    super.key,
-    this.sizeStandardId,
-    this.selectedLabel,
-  });
+  const SizeGuideSheet({super.key, this.sizeStandardId, this.selectedLabel});
 
   final int? sizeStandardId;
   final String? selectedLabel;
@@ -49,12 +45,14 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bg = isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+        final bg = isDark
+            ? AppColors.auroraDeepBase
+            : AppColors.auroraLightBase;
         final textColor = isDark ? AppColors.white : AppColors.auroraPurple;
-        final mutedLabel =
-            (isDark ? AppColors.white : AppColors.auroraPurple).withValues(alpha: 0.55);
-        final mutedBody =
-            (isDark ? AppColors.white : AppColors.auroraPurple).withValues(alpha: 0.85);
+        final mutedLabel = (isDark ? AppColors.white : AppColors.auroraPurple)
+            .withValues(alpha: 0.55);
+        final mutedBody = (isDark ? AppColors.white : AppColors.auroraPurple)
+            .withValues(alpha: 0.85);
         final cellBg = isDark
             ? AppColors.white.withValues(alpha: 0.04)
             : AppColors.auroraPurple.withValues(alpha: 0.04);
@@ -157,8 +155,12 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
               else
                 Flexible(
                   child: SingleChildScrollView(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      0,
+                      20,
+                      24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -226,7 +228,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
           content: content,
           rows: content.rowsIn,
           selectedLabel: widget.selectedLabel,
-          firstColMatch: false,
+          firstColMatch: true,
           cellBg: cellBg,
           headerBg: headerBg,
           cellBorder: cellBorder,
@@ -235,10 +237,9 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
           mutedLabel: mutedLabel,
         );
       case SizeGuideType.table:
-        final rows =
-            (content.hasUnitToggle && _useCm && content.rowsCm != null)
-                ? content.rowsCm!
-                : content.rowsIn;
+        final rows = (content.hasUnitToggle && _useCm && content.rowsCm != null)
+            ? content.rowsCm!
+            : content.rowsIn;
         return _GuideTable(
           content: content,
           rows: rows,
@@ -282,6 +283,28 @@ class _GuideTable extends StatelessWidget {
   final Color textColor;
   final Color mutedLabel;
 
+  /// Row the customer's size points at, or -1 when nothing matches.
+  ///
+  /// The label is compared as it is first. The backend only sends the
+  /// translated display value, so a numeric fallback follows, and it is only
+  /// trusted when exactly one row answers to it.
+  int get _selectedRowIndex {
+    final label = selectedLabel;
+    if (label == null) return -1;
+
+    final exact = rows.indexWhere((row) => row.isNotEmpty && row[0] == label);
+    if (exact != -1) return exact;
+
+    final key = sizeMatchKey(label);
+    if (key.isEmpty) return -1;
+    final matches = <int>[];
+    for (var i = 0; i < rows.length; i++) {
+      final row = rows[i];
+      if (row.isNotEmpty && sizeMatchKey(row[0]) == key) matches.add(i);
+    }
+    return matches.length == 1 ? matches.first : -1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -304,18 +327,20 @@ class _GuideTable extends StatelessWidget {
             ),
             child: Row(
               children: content.columns
-                  .map((col) => Expanded(
-                        child: Text(
-                          col.tr().toUpperCase(),
-                          style: AppFonts.primary(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
-                            color: mutedLabel,
-                            letterSpacing: 1.3,
-                            height: 1.1,
-                          ),
+                  .map(
+                    (col) => Expanded(
+                      child: Text(
+                        col.tr().toUpperCase(),
+                        style: AppFonts.primary(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: mutedLabel,
+                          letterSpacing: 1.3,
+                          height: 1.1,
                         ),
-                      ))
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -323,8 +348,7 @@ class _GuideTable extends StatelessWidget {
           ...rows.asMap().entries.expand((entry) {
             final i = entry.key;
             final row = entry.value;
-            final isSelected =
-                firstColMatch && row.isNotEmpty && row[0] == selectedLabel;
+            final isSelected = firstColMatch && i == _selectedRowIndex;
             return [
               _GuideRow(
                 row: row,
@@ -405,8 +429,9 @@ class _GuideRow extends StatelessWidget {
                         : (isFirst ? e.value : localizedDigits(e.value)),
                     style: AppFonts.primary(
                       fontSize: 12,
-                      fontWeight:
-                          isFirst || isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: isFirst || isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                       color: isSelected || isFirst ? textColor : mutedLabel,
                       height: 1.2,
                     ),
@@ -528,8 +553,9 @@ class _BraStep extends StatelessWidget {
                 ).createShader(b),
                 blendMode: BlendMode.srcIn,
                 child: Text(
-                  'size_guide_sheet.step_label'
-                      .tr(namedArgs: {'step': localizedDigits(step)}),
+                  'size_guide_sheet.step_label'.tr(
+                    namedArgs: {'step': localizedDigits(step)},
+                  ),
                   style: AppFonts.primary(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
@@ -563,10 +589,7 @@ class _BraStep extends StatelessWidget {
               height: 1.45,
             ),
           ),
-          if (extra != null) ...[
-            const SizedBox(height: 12),
-            extra!,
-          ],
+          if (extra != null) ...[const SizedBox(height: 12), extra!],
         ],
       ),
     );

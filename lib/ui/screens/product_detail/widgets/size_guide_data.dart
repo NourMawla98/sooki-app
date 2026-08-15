@@ -21,6 +21,37 @@ const String _keyPrefix = 'size_guide.';
 /// else (measurements, size labels) is rendered as-is.
 bool isSizeGuideKey(String value) => value.startsWith(_keyPrefix);
 
+/// Reduces a size label to the digits that identify it, so a guide row can be
+/// matched against the size the backend sends.
+///
+/// The backend keeps a language-neutral code per size value but only returns
+/// the translated display value, so "0-3M" arrives as "0-3 Months", "0-3 Mois"
+/// or the Arabic equivalent, and "90x200" arrives as "90 x 200 cm". Dropping
+/// the words, the units, the spacing and the digit shape leaves the part that
+/// is the same in every language.
+///
+/// Returns an empty string for a purely alphabetic label such as "M" or "NB",
+/// which carries no digits to compare, so the caller must fall back to an
+/// exact comparison for those.
+String sizeMatchKey(String value) {
+  final buffer = StringBuffer();
+  for (final rune in value.toLowerCase().runes) {
+    if (rune >= 0x30 && rune <= 0x39) {
+      buffer.writeCharCode(rune);
+    } else if (rune >= 0x0660 && rune <= 0x0669) {
+      // Arabic-Indic digit.
+      buffer.writeCharCode(0x30 + (rune - 0x0660));
+    } else if (rune == 0x2d) {
+      buffer.write('-');
+    } else if (rune == 0x78 || rune == 0xd7) {
+      // Latin x and the multiplication sign both separate bed dimensions.
+      buffer.write('x');
+    }
+  }
+  final key = buffer.toString();
+  return key.contains(RegExp(r'[0-9]')) ? key : '';
+}
+
 class SizeGuideContent {
   const SizeGuideContent({
     required this.type,
@@ -39,11 +70,14 @@ class SizeGuideContent {
 
   /// Translation key.
   final String? howToMeasure;
-  final bool hasUnitToggle; // IN/CM toggle - only for body-measurement standards
+  final bool
+  hasUnitToggle; // IN/CM toggle - only for body-measurement standards
   /// Translation keys.
   final List<String> columns;
-  final List<List<String>> rowsIn; // primary (inches when toggle present, otherwise cm/mm)
-  final List<List<String>>? rowsCm; // alternate (cm) - only when hasUnitToggle=true
+  final List<List<String>>
+  rowsIn; // primary (inches when toggle present, otherwise cm/mm)
+  final List<List<String>>?
+  rowsCm; // alternate (cm) - only when hasUnitToggle=true
 }
 
 // Backend size standard id -> guide slug. The ids are seeded and stable; the
@@ -200,10 +234,8 @@ const Map<String, SizeGuideContent> kSizeGuides = {
       ['5-6Y', 'size_guide.age.years_5_6', '110-116', '19-21'],
       ['6-7Y', 'size_guide.age.years_6_7', '116-122', '21-24'],
       ['7-8Y', 'size_guide.age.years_7_8', '122-128', '24-27'],
-      ['8-9Y', 'size_guide.age.years_8_9', '128-134', '27-30'],
-      ['9-10Y', 'size_guide.age.years_9_10', '134-140', '30-34'],
-      ['10-11Y', 'size_guide.age.years_10_11', '140-146', '34-38'],
-      ['11-12Y', 'size_guide.age.years_11_12', '146-152', '38-43'],
+      ['8-10Y', 'size_guide.age.years_8_10', '128-140', '27-34'],
+      ['10-12Y', 'size_guide.age.years_10_12', '140-152', '34-43'],
       ['12-14Y', 'size_guide.age.years_12_14', '152-158', '43-50'],
       ['14-16Y', 'size_guide.age.years_14_16', '158-164', '50-60'],
     ],
@@ -252,7 +284,11 @@ const Map<String, SizeGuideContent> kSizeGuides = {
     ],
     rowsIn: [
       ['90x200', 'size_guide.bed.single', 'size_guide.bed.single_use'],
-      ['120x200', 'size_guide.bed.small_double', 'size_guide.bed.small_double_use'],
+      [
+        '120x200',
+        'size_guide.bed.small_double',
+        'size_guide.bed.small_double_use',
+      ],
       ['140x200', 'size_guide.bed.double', 'size_guide.bed.double_use'],
       ['160x200', 'size_guide.bed.queen', 'size_guide.bed.queen_use'],
       ['180x200', 'size_guide.bed.king', 'size_guide.bed.king_use'],
