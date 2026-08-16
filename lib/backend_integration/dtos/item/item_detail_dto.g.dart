@@ -107,7 +107,9 @@ _ItemDetailMediaDto _$ItemDetailMediaDtoFromJson(Map<String, dynamic> json) =>
 
 _ItemDetailSizeDto _$ItemDetailSizeDtoFromJson(Map<String, dynamic> json) =>
     _ItemDetailSizeDto(
+      itemSizeId: (json['itemSizeId'] as num).toInt(),
       sizeValueId: (json['sizeValueId'] as num).toInt(),
+      code: json['code'] as String? ?? '',
       displayValue: json['displayValue'] as String,
       standardName: json['standardName'] as String,
       sizeStandardId: (json['sizeStandardId'] as num?)?.toInt(),

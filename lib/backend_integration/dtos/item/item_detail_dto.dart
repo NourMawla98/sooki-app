@@ -88,7 +88,9 @@ abstract class ItemDetailMediaDto with _$ItemDetailMediaDto {
 @Freezed(toJson: false, fromJson: true)
 abstract class ItemDetailSizeDto with _$ItemDetailSizeDto {
   const factory ItemDetailSizeDto({
+    required int itemSizeId,
     required int sizeValueId,
+    @Default('') String code,
     required String displayValue,
     required String standardName,
     int? sizeStandardId,
@@ -112,8 +114,8 @@ abstract class ItemDetailSizeMeasurementGroupDto
   }) = _ItemDetailSizeMeasurementGroupDto;
 
   factory ItemDetailSizeMeasurementGroupDto.fromJson(
-          Map<String, dynamic> json) =>
-      _$ItemDetailSizeMeasurementGroupDtoFromJson(json);
+    Map<String, dynamic> json,
+  ) => _$ItemDetailSizeMeasurementGroupDtoFromJson(json);
 }
 
 @Freezed(toJson: false, fromJson: true)
@@ -131,10 +133,8 @@ abstract class ItemDetailMeasurementDto with _$ItemDetailMeasurementDto {
 
 @Freezed(toJson: false, fromJson: true)
 abstract class ItemDetailLabelDto with _$ItemDetailLabelDto {
-  const factory ItemDetailLabelDto({
-    required int id,
-    required String name,
-  }) = _ItemDetailLabelDto;
+  const factory ItemDetailLabelDto({required int id, required String name}) =
+      _ItemDetailLabelDto;
 
   factory ItemDetailLabelDto.fromJson(Map<String, dynamic> json) =>
       _$ItemDetailLabelDtoFromJson(json);

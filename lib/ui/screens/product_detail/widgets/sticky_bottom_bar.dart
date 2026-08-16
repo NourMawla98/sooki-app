@@ -14,7 +14,7 @@ class StickyBottomBar extends StatelessWidget {
     required this.itemTitle,
     this.mainImageUrl,
     this.selectedColorName,
-    this.selectedSizeValueId,
+    this.selectedItemSizeId,
     this.selectedSizeName,
     required this.unitPrice,
     required this.quantity,
@@ -25,14 +25,14 @@ class StickyBottomBar extends StatelessWidget {
   final String itemTitle;
   final String? mainImageUrl;
   final String? selectedColorName;
-  final int? selectedSizeValueId;
+  final int? selectedItemSizeId;
   final String? selectedSizeName;
   final double unitPrice;
   final int quantity;
   final bool hasSizes;
 
   bool get _requiresSize => hasSizes;
-  bool get _isEnabled => !_requiresSize || selectedSizeValueId != null;
+  bool get _isEnabled => !_requiresSize || selectedItemSizeId != null;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,9 @@ class StickyBottomBar extends StatelessWidget {
       listenable: ThemeService.instance,
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
-        final bg =
-            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
+        final bg = isDark
+            ? AppColors.auroraDeepBase
+            : AppColors.auroraLightBase;
         final divider = isDark
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.primaryPurple.withValues(alpha: 0.12);
@@ -73,8 +74,9 @@ class StickyBottomBar extends StatelessWidget {
                   boxShadow: _isEnabled
                       ? [
                           BoxShadow(
-                            color: AppColors.auroraPurple
-                                .withValues(alpha: 0.40),
+                            color: AppColors.auroraPurple.withValues(
+                              alpha: 0.40,
+                            ),
                             blurRadius: 18,
                             offset: const Offset(0, 6),
                           ),
@@ -83,7 +85,7 @@ class StickyBottomBar extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    _requiresSize && selectedSizeValueId == null
+                    _requiresSize && selectedItemSizeId == null
                         ? 'common.select_a_size'.tr()
                         : 'common.add_to_cart'.tr(),
                     style: AppFonts.primary(
@@ -106,7 +108,7 @@ class StickyBottomBar extends StatelessWidget {
   Future<void> _addToCart() async {
     final cart = GetIt.instance<CartService>();
     final msg = await cart.addToCart(
-      sizeValueId: selectedSizeValueId,
+      itemSizeId: selectedItemSizeId,
       itemId: itemId,
       itemTitle: itemTitle,
       mainImageUrl: mainImageUrl,

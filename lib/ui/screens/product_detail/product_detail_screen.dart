@@ -90,7 +90,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _fetchReviews() async {
-    final result = await _itemsApi.getReviews(widget.itemId, skip: 0, take: _reviewsTake);
+    final result = await _itemsApi.getReviews(
+      widget.itemId,
+      skip: 0,
+      take: _reviewsTake,
+    );
     if (!mounted) return;
     result.fold(
       (_) {},
@@ -177,8 +181,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return _item?.stock ?? 999;
   }
 
-  List<ItemDetailSizeDto> get _currentSizes =>
-      _selectedColor?.sizes ?? [];
+  List<ItemDetailSizeDto> get _currentSizes => _selectedColor?.sizes ?? [];
 
   bool get _hasSizes => _currentSizes.isNotEmpty;
 
@@ -214,7 +217,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void _onGalleryIndexChanged(int index) {
     final owner = _colorForImageIndex(index);
     if (owner == null || owner == _selectedColor) return;
-    final available = owner.sizes.isEmpty || owner.sizes.any((s) => s.stock > 0);
+    final available =
+        owner.sizes.isEmpty || owner.sizes.any((s) => s.stock > 0);
     if (!available) return;
     setState(() {
       _selectedColor = owner;
@@ -237,10 +241,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       builder: (context, _) {
         final isDark = ThemeService.instance.isDarkMode;
         final isRtl = Directionality.of(context) == TextDirection.rtl;
-        final bgColor =
-            isDark ? AppColors.auroraDeepBase : AppColors.auroraLightBase;
-        final isWishlisted =
-            _wishlist.isWishlisted(widget.itemId.toString());
+        final bgColor = isDark
+            ? AppColors.auroraDeepBase
+            : AppColors.auroraLightBase;
+        final isWishlisted = _wishlist.isWishlisted(widget.itemId.toString());
 
         return Scaffold(
           backgroundColor: bgColor,
@@ -248,8 +252,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -275,7 +281,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             activeColor: AppColors.auroraRed,
                             onTap: () async {
                               final msg = await _wishlist.toggle(
-                                  widget.itemId.toString());
+                                widget.itemId.toString(),
+                              );
                               if (msg != null && msg.isNotEmpty) {
                                 ToastService.instance.showSuccess(msg);
                               }
@@ -292,8 +299,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     itemId: widget.itemId,
                     itemTitle: _item!.title,
                     mainImageUrl: _mainImageUrl,
-                    selectedColorName: _selectedColor != null ? colorDisplayName(_selectedColor!) : null,
-                    selectedSizeValueId: _selectedSize?.sizeValueId,
+                    selectedColorName: _selectedColor != null
+                        ? colorDisplayName(_selectedColor!)
+                        : null,
+                    selectedItemSizeId: _selectedSize?.itemSizeId,
                     selectedSizeName: _selectedSize?.displayValue,
                     unitPrice: _effectivePrice,
                     quantity: _quantity,
@@ -365,7 +374,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: PriceQuantityRow(
                 unitPrice: _effectivePrice,
                 originalUnitPrice: item.discountedPrice != null
-                    ? item.originalPrice + (_selectedSize?.additionalPrice ?? 0.0)
+                    ? item.originalPrice +
+                          (_selectedSize?.additionalPrice ?? 0.0)
                     : null,
                 quantity: _quantity,
                 maxQuantity: _currentStock > 0 ? _currentStock : 1,
@@ -437,8 +447,8 @@ class _HeaderIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glyph = activeColor ??
-        (isDark ? AppColors.white : AppColors.auroraPurple);
+    final glyph =
+        activeColor ?? (isDark ? AppColors.white : AppColors.auroraPurple);
 
     return GestureDetector(
       onTap: onTap,
@@ -446,9 +456,7 @@ class _HeaderIcon extends StatelessWidget {
       child: SizedBox(
         width: 44,
         height: 44,
-        child: Center(
-          child: FaIcon(icon, size: 20, color: glyph),
-        ),
+        child: Center(child: FaIcon(icon, size: 20, color: glyph)),
       ),
     );
   }
@@ -542,38 +550,56 @@ class _LoadingView extends StatelessWidget {
                 Row(
                   children: [
                     SizedBox(
-                      width: 110, height: 22,
-                      child: SkeletonShimmer(borderRadius: BorderRadius.circular(999)),
+                      width: 110,
+                      height: 22,
+                      child: SkeletonShimmer(
+                        borderRadius: BorderRadius.circular(999),
+                      ),
                     ),
                     const SizedBox(width: 10),
                     SizedBox(
-                      width: 70, height: 16,
-                      child: SkeletonShimmer(borderRadius: BorderRadius.circular(999)),
+                      width: 70,
+                      height: 16,
+                      child: SkeletonShimmer(
+                        borderRadius: BorderRadius.circular(999),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
                 // Title — two lines
                 SizedBox(
-                  width: double.infinity, height: 26,
-                  child: SkeletonShimmer(borderRadius: BorderRadius.circular(8)),
+                  width: double.infinity,
+                  height: 26,
+                  child: SkeletonShimmer(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
-                  width: 200, height: 26,
-                  child: SkeletonShimmer(borderRadius: BorderRadius.circular(8)),
+                  width: 200,
+                  height: 26,
+                  child: SkeletonShimmer(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 // Subtitle
                 SizedBox(
-                  width: 160, height: 16,
-                  child: SkeletonShimmer(borderRadius: BorderRadius.circular(6)),
+                  width: 160,
+                  height: 16,
+                  child: SkeletonShimmer(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 // About glass box
                 SizedBox(
-                  width: double.infinity, height: 90,
-                  child: SkeletonShimmer(borderRadius: BorderRadius.circular(14)),
+                  width: double.infinity,
+                  height: 90,
+                  child: SkeletonShimmer(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 // Price + quantity row
@@ -581,36 +607,54 @@ class _LoadingView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 100, height: 28,
-                      child: SkeletonShimmer(borderRadius: BorderRadius.circular(8)),
+                      width: 100,
+                      height: 28,
+                      child: SkeletonShimmer(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     SizedBox(
-                      width: 90, height: 36,
-                      child: SkeletonShimmer(borderRadius: BorderRadius.circular(10)),
+                      width: 90,
+                      height: 36,
+                      child: SkeletonShimmer(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 // Color swatches
                 Row(
-                  children: List.generate(4, (i) => Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 10),
-                    child: SizedBox(
-                      width: 36, height: 36,
-                      child: SkeletonShimmer(borderRadius: BorderRadius.circular(999)),
+                  children: List.generate(
+                    4,
+                    (i) => Padding(
+                      padding: const EdgeInsetsDirectional.only(end: 10),
+                      child: SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: SkeletonShimmer(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                      ),
                     ),
-                  )),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 // Size chips
                 Row(
-                  children: List.generate(5, (i) => Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 8),
-                    child: SizedBox(
-                      width: 48, height: 40,
-                      child: SkeletonShimmer(borderRadius: BorderRadius.circular(10)),
+                  children: List.generate(
+                    5,
+                    (i) => Padding(
+                      padding: const EdgeInsetsDirectional.only(end: 8),
+                      child: SizedBox(
+                        width: 48,
+                        height: 40,
+                        child: SkeletonShimmer(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
-                  )),
+                  ),
                 ),
               ],
             ),
@@ -642,8 +686,11 @@ class _ErrorView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FaIcon(FontAwesomeIcons.circleExclamation,
-                    size: 36, color: AppColors.auroraPink),
+                FaIcon(
+                  FontAwesomeIcons.circleExclamation,
+                  size: 36,
+                  color: AppColors.auroraPink,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   message,
@@ -660,12 +707,14 @@ class _ErrorView extends StatelessWidget {
                   onTap: onRetry,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [
                           AppColors.auroraPink,
-                          AppColors.auroraElectricBlue
+                          AppColors.auroraElectricBlue,
                         ],
                       ),
                       borderRadius: BorderRadius.circular(999),

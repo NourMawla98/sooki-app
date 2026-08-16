@@ -25,12 +25,12 @@ class CartApi {
     );
   }
 
-  Future<Either<ApiFailure, String>> addToCart(int? sizeValueId, int quantity) {
+  Future<Either<ApiFailure, String>> addToCart(int? itemSizeId, int quantity) {
     return executeRequest(
       client: _dio,
       method: HttpMethod.post,
       path: 'customer/cart',
-      body: {'itemSizeId': sizeValueId, 'quantity': quantity},
+      body: {'itemSizeId': itemSizeId, 'quantity': quantity},
       operationName: 'addToCart',
       successParser: (r) =>
           (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',
@@ -38,7 +38,9 @@ class CartApi {
   }
 
   Future<Either<ApiFailure, String>> updateQuantity(
-      int cartItemId, int quantity) {
+    int cartItemId,
+    int quantity,
+  ) {
     return executeRequest(
       client: _dio,
       method: HttpMethod.put,

@@ -43,7 +43,7 @@ abstract class CartItemDto with _$CartItemDto {
 
 class CartLineItem {
   final String id;
-  final int sizeValueId;
+  final int itemSizeId;
   final int itemId;
   final String title;
   final String? imageUrl;
@@ -56,7 +56,7 @@ class CartLineItem {
 
   const CartLineItem({
     required this.id,
-    required this.sizeValueId,
+    required this.itemSizeId,
     required this.itemId,
     required this.title,
     required this.imageUrl,
@@ -71,16 +71,16 @@ class CartLineItem {
   double get lineTotal => unitPrice * quantity;
 
   static CartLineItem fromServer(CartItemDto dto) => CartLineItem(
-        id: dto.id.toString(),
-        sizeValueId: dto.itemSizeId,
-        itemId: dto.itemId,
-        title: dto.itemTitle,
-        imageUrl: dto.mainImageUrl,
-        colorName: dto.colorName,
-        sizeName: dto.sizeName,
-        unitPrice: dto.unitPrice,
-        quantity: dto.quantity,
-        stock: dto.stock,
-        isAvailable: dto.isAvailable,
-      );
+    id: dto.id.toString(),
+    itemSizeId: dto.itemSizeId,
+    itemId: dto.itemId,
+    title: dto.itemTitle,
+    imageUrl: dto.mainImageUrl,
+    colorName: dto.colorName,
+    sizeName: dto.sizeName,
+    unitPrice: dto.unitPrice,
+    quantity: dto.quantity,
+    stock: dto.stock,
+    isAvailable: dto.isAvailable,
+  );
 }

@@ -1251,7 +1251,7 @@ as bool,
 /// @nodoc
 mixin _$ItemDetailSizeDto {
 
- int get sizeValueId; String get displayValue; String get standardName; int? get sizeStandardId; int get stock; double? get additionalPrice;
+ int get itemSizeId; int get sizeValueId; String get code; String get displayValue; String get standardName; int? get sizeStandardId; int get stock; double? get additionalPrice;
 /// Create a copy of ItemDetailSizeDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1262,16 +1262,16 @@ $ItemDetailSizeDtoCopyWith<ItemDetailSizeDto> get copyWith => _$ItemDetailSizeDt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemDetailSizeDto&&(identical(other.sizeValueId, sizeValueId) || other.sizeValueId == sizeValueId)&&(identical(other.displayValue, displayValue) || other.displayValue == displayValue)&&(identical(other.standardName, standardName) || other.standardName == standardName)&&(identical(other.sizeStandardId, sizeStandardId) || other.sizeStandardId == sizeStandardId)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.additionalPrice, additionalPrice) || other.additionalPrice == additionalPrice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemDetailSizeDto&&(identical(other.itemSizeId, itemSizeId) || other.itemSizeId == itemSizeId)&&(identical(other.sizeValueId, sizeValueId) || other.sizeValueId == sizeValueId)&&(identical(other.code, code) || other.code == code)&&(identical(other.displayValue, displayValue) || other.displayValue == displayValue)&&(identical(other.standardName, standardName) || other.standardName == standardName)&&(identical(other.sizeStandardId, sizeStandardId) || other.sizeStandardId == sizeStandardId)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.additionalPrice, additionalPrice) || other.additionalPrice == additionalPrice));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,sizeValueId,displayValue,standardName,sizeStandardId,stock,additionalPrice);
+int get hashCode => Object.hash(runtimeType,itemSizeId,sizeValueId,code,displayValue,standardName,sizeStandardId,stock,additionalPrice);
 
 @override
 String toString() {
-  return 'ItemDetailSizeDto(sizeValueId: $sizeValueId, displayValue: $displayValue, standardName: $standardName, sizeStandardId: $sizeStandardId, stock: $stock, additionalPrice: $additionalPrice)';
+  return 'ItemDetailSizeDto(itemSizeId: $itemSizeId, sizeValueId: $sizeValueId, code: $code, displayValue: $displayValue, standardName: $standardName, sizeStandardId: $sizeStandardId, stock: $stock, additionalPrice: $additionalPrice)';
 }
 
 
@@ -1282,7 +1282,7 @@ abstract mixin class $ItemDetailSizeDtoCopyWith<$Res>  {
   factory $ItemDetailSizeDtoCopyWith(ItemDetailSizeDto value, $Res Function(ItemDetailSizeDto) _then) = _$ItemDetailSizeDtoCopyWithImpl;
 @useResult
 $Res call({
- int sizeValueId, String displayValue, String standardName, int? sizeStandardId, int stock, double? additionalPrice
+ int itemSizeId, int sizeValueId, String code, String displayValue, String standardName, int? sizeStandardId, int stock, double? additionalPrice
 });
 
 
@@ -1299,10 +1299,12 @@ class _$ItemDetailSizeDtoCopyWithImpl<$Res>
 
 /// Create a copy of ItemDetailSizeDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? sizeValueId = null,Object? displayValue = null,Object? standardName = null,Object? sizeStandardId = freezed,Object? stock = null,Object? additionalPrice = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? itemSizeId = null,Object? sizeValueId = null,Object? code = null,Object? displayValue = null,Object? standardName = null,Object? sizeStandardId = freezed,Object? stock = null,Object? additionalPrice = freezed,}) {
   return _then(_self.copyWith(
-sizeValueId: null == sizeValueId ? _self.sizeValueId : sizeValueId // ignore: cast_nullable_to_non_nullable
-as int,displayValue: null == displayValue ? _self.displayValue : displayValue // ignore: cast_nullable_to_non_nullable
+itemSizeId: null == itemSizeId ? _self.itemSizeId : itemSizeId // ignore: cast_nullable_to_non_nullable
+as int,sizeValueId: null == sizeValueId ? _self.sizeValueId : sizeValueId // ignore: cast_nullable_to_non_nullable
+as int,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,displayValue: null == displayValue ? _self.displayValue : displayValue // ignore: cast_nullable_to_non_nullable
 as String,standardName: null == standardName ? _self.standardName : standardName // ignore: cast_nullable_to_non_nullable
 as String,sizeStandardId: freezed == sizeStandardId ? _self.sizeStandardId : sizeStandardId // ignore: cast_nullable_to_non_nullable
 as int?,stock: null == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
@@ -1392,10 +1394,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int sizeValueId,  String displayValue,  String standardName,  int? sizeStandardId,  int stock,  double? additionalPrice)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int itemSizeId,  int sizeValueId,  String code,  String displayValue,  String standardName,  int? sizeStandardId,  int stock,  double? additionalPrice)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ItemDetailSizeDto() when $default != null:
-return $default(_that.sizeValueId,_that.displayValue,_that.standardName,_that.sizeStandardId,_that.stock,_that.additionalPrice);case _:
+return $default(_that.itemSizeId,_that.sizeValueId,_that.code,_that.displayValue,_that.standardName,_that.sizeStandardId,_that.stock,_that.additionalPrice);case _:
   return orElse();
 
 }
@@ -1413,10 +1415,10 @@ return $default(_that.sizeValueId,_that.displayValue,_that.standardName,_that.si
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int sizeValueId,  String displayValue,  String standardName,  int? sizeStandardId,  int stock,  double? additionalPrice)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int itemSizeId,  int sizeValueId,  String code,  String displayValue,  String standardName,  int? sizeStandardId,  int stock,  double? additionalPrice)  $default,) {final _that = this;
 switch (_that) {
 case _ItemDetailSizeDto():
-return $default(_that.sizeValueId,_that.displayValue,_that.standardName,_that.sizeStandardId,_that.stock,_that.additionalPrice);case _:
+return $default(_that.itemSizeId,_that.sizeValueId,_that.code,_that.displayValue,_that.standardName,_that.sizeStandardId,_that.stock,_that.additionalPrice);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1433,10 +1435,10 @@ return $default(_that.sizeValueId,_that.displayValue,_that.standardName,_that.si
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int sizeValueId,  String displayValue,  String standardName,  int? sizeStandardId,  int stock,  double? additionalPrice)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int itemSizeId,  int sizeValueId,  String code,  String displayValue,  String standardName,  int? sizeStandardId,  int stock,  double? additionalPrice)?  $default,) {final _that = this;
 switch (_that) {
 case _ItemDetailSizeDto() when $default != null:
-return $default(_that.sizeValueId,_that.displayValue,_that.standardName,_that.sizeStandardId,_that.stock,_that.additionalPrice);case _:
+return $default(_that.itemSizeId,_that.sizeValueId,_that.code,_that.displayValue,_that.standardName,_that.sizeStandardId,_that.stock,_that.additionalPrice);case _:
   return null;
 
 }
@@ -1448,10 +1450,12 @@ return $default(_that.sizeValueId,_that.displayValue,_that.standardName,_that.si
 @JsonSerializable(createToJson: false)
 
 class _ItemDetailSizeDto implements ItemDetailSizeDto {
-  const _ItemDetailSizeDto({required this.sizeValueId, required this.displayValue, required this.standardName, this.sizeStandardId, required this.stock, this.additionalPrice});
+  const _ItemDetailSizeDto({required this.itemSizeId, required this.sizeValueId, this.code = '', required this.displayValue, required this.standardName, this.sizeStandardId, required this.stock, this.additionalPrice});
   factory _ItemDetailSizeDto.fromJson(Map<String, dynamic> json) => _$ItemDetailSizeDtoFromJson(json);
 
+@override final  int itemSizeId;
 @override final  int sizeValueId;
+@override@JsonKey() final  String code;
 @override final  String displayValue;
 @override final  String standardName;
 @override final  int? sizeStandardId;
@@ -1468,16 +1472,16 @@ _$ItemDetailSizeDtoCopyWith<_ItemDetailSizeDto> get copyWith => __$ItemDetailSiz
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemDetailSizeDto&&(identical(other.sizeValueId, sizeValueId) || other.sizeValueId == sizeValueId)&&(identical(other.displayValue, displayValue) || other.displayValue == displayValue)&&(identical(other.standardName, standardName) || other.standardName == standardName)&&(identical(other.sizeStandardId, sizeStandardId) || other.sizeStandardId == sizeStandardId)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.additionalPrice, additionalPrice) || other.additionalPrice == additionalPrice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemDetailSizeDto&&(identical(other.itemSizeId, itemSizeId) || other.itemSizeId == itemSizeId)&&(identical(other.sizeValueId, sizeValueId) || other.sizeValueId == sizeValueId)&&(identical(other.code, code) || other.code == code)&&(identical(other.displayValue, displayValue) || other.displayValue == displayValue)&&(identical(other.standardName, standardName) || other.standardName == standardName)&&(identical(other.sizeStandardId, sizeStandardId) || other.sizeStandardId == sizeStandardId)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.additionalPrice, additionalPrice) || other.additionalPrice == additionalPrice));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,sizeValueId,displayValue,standardName,sizeStandardId,stock,additionalPrice);
+int get hashCode => Object.hash(runtimeType,itemSizeId,sizeValueId,code,displayValue,standardName,sizeStandardId,stock,additionalPrice);
 
 @override
 String toString() {
-  return 'ItemDetailSizeDto(sizeValueId: $sizeValueId, displayValue: $displayValue, standardName: $standardName, sizeStandardId: $sizeStandardId, stock: $stock, additionalPrice: $additionalPrice)';
+  return 'ItemDetailSizeDto(itemSizeId: $itemSizeId, sizeValueId: $sizeValueId, code: $code, displayValue: $displayValue, standardName: $standardName, sizeStandardId: $sizeStandardId, stock: $stock, additionalPrice: $additionalPrice)';
 }
 
 
@@ -1488,7 +1492,7 @@ abstract mixin class _$ItemDetailSizeDtoCopyWith<$Res> implements $ItemDetailSiz
   factory _$ItemDetailSizeDtoCopyWith(_ItemDetailSizeDto value, $Res Function(_ItemDetailSizeDto) _then) = __$ItemDetailSizeDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int sizeValueId, String displayValue, String standardName, int? sizeStandardId, int stock, double? additionalPrice
+ int itemSizeId, int sizeValueId, String code, String displayValue, String standardName, int? sizeStandardId, int stock, double? additionalPrice
 });
 
 
@@ -1505,10 +1509,12 @@ class __$ItemDetailSizeDtoCopyWithImpl<$Res>
 
 /// Create a copy of ItemDetailSizeDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? sizeValueId = null,Object? displayValue = null,Object? standardName = null,Object? sizeStandardId = freezed,Object? stock = null,Object? additionalPrice = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? itemSizeId = null,Object? sizeValueId = null,Object? code = null,Object? displayValue = null,Object? standardName = null,Object? sizeStandardId = freezed,Object? stock = null,Object? additionalPrice = freezed,}) {
   return _then(_ItemDetailSizeDto(
-sizeValueId: null == sizeValueId ? _self.sizeValueId : sizeValueId // ignore: cast_nullable_to_non_nullable
-as int,displayValue: null == displayValue ? _self.displayValue : displayValue // ignore: cast_nullable_to_non_nullable
+itemSizeId: null == itemSizeId ? _self.itemSizeId : itemSizeId // ignore: cast_nullable_to_non_nullable
+as int,sizeValueId: null == sizeValueId ? _self.sizeValueId : sizeValueId // ignore: cast_nullable_to_non_nullable
+as int,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,displayValue: null == displayValue ? _self.displayValue : displayValue // ignore: cast_nullable_to_non_nullable
 as String,standardName: null == standardName ? _self.standardName : standardName // ignore: cast_nullable_to_non_nullable
 as String,sizeStandardId: freezed == sizeStandardId ? _self.sizeStandardId : sizeStandardId // ignore: cast_nullable_to_non_nullable
 as int?,stock: null == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable

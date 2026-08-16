@@ -4,9 +4,7 @@ import '../backend_integration/apis/cart_api.dart';
 import '../backend_integration/dtos/cart/cart_dto.dart';
 
 class CartService extends ChangeNotifier {
-  static const Map<String, double> _promoCatalog = {
-    'AURORA20': 0.20,
-  };
+  static const Map<String, double> _promoCatalog = {'AURORA20': 0.20};
 
   final CartApi _cartApi;
 
@@ -17,7 +15,8 @@ class CartService extends ChangeNotifier {
 
   // ─── Public data ──────────────────────────────────────────────────────────
 
-  List<CartLineItem> get displayItems => _items.map(CartLineItem.fromServer).toList();
+  List<CartLineItem> get displayItems =>
+      _items.map(CartLineItem.fromServer).toList();
 
   bool get isEmpty => _items.isEmpty;
   int get itemCount => _items.fold(0, (s, i) => s + i.quantity);
@@ -37,25 +36,23 @@ class CartService extends ChangeNotifier {
     return raw < 0 ? 0 : raw;
   }
 
-  bool isInCart(int sizeValueId) => _items.any((i) => i.itemSizeId == sizeValueId);
+  bool isInCart(int itemSizeId) =>
+      _items.any((i) => i.itemSizeId == itemSizeId);
 
   // ─── Server sync ──────────────────────────────────────────────────────────
 
   Future<void> loadFromServer() async {
     final result = await _cartApi.getCart();
-    result.fold(
-      (_) {},
-      (dto) {
-        _items = dto.items;
-        notifyListeners();
-      },
-    );
+    result.fold((_) {}, (dto) {
+      _items = dto.items;
+      notifyListeners();
+    });
   }
 
   // ─── Mutations ────────────────────────────────────────────────────────────
 
   Future<String?> addToCart({
-    required int? sizeValueId,
+    required int? itemSizeId,
     required int itemId,
     required String itemTitle,
     String? mainImageUrl,
@@ -64,14 +61,11 @@ class CartService extends ChangeNotifier {
     required double unitPrice,
     int quantity = 1,
   }) async {
-    final result = await _cartApi.addToCart(sizeValueId, quantity);
-    return result.fold(
-      (_) => null,
-      (message) async {
-        await loadFromServer();
-        return message.isNotEmpty ? message : null;
-      },
-    );
+    final result = await _cartApi.addToCart(itemSizeId, quantity);
+    return result.fold((_) => null, (message) async {
+      await loadFromServer();
+      return message.isNotEmpty ? message : null;
+    });
   }
 
   Future<String?> removeItem(String id) async {
