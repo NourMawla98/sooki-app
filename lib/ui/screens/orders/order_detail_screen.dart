@@ -7,6 +7,7 @@ import '../../../backend_integration/apis/items_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../backend_integration/dtos/order/order_detail_dto.dart';
 import '../../../backend_integration/dtos/order/order_item_dto.dart';
+import '../../../enums/address_label_type.dart';
 import '../../../enums/order_status.dart';
 import '../../../services/orders_service.dart';
 import '../../../services/theme_service.dart';
@@ -843,7 +844,7 @@ class _AddressCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          detail.addressLabel!,
+                          localizedAddressLabel(detail.addressLabel),
                           style: AppTextStyles.dsMuted.copyWith(
                               color: AppColors.auroraPurple,
                               fontSize: 10,

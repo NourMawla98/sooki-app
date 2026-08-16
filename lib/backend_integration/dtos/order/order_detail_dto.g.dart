@@ -24,8 +24,8 @@ _OrderDetailDto _$OrderDetailDtoFromJson(Map<String, dynamic> json) =>
       deliveryFee: (json['deliveryFee'] as num).toDouble(),
       totalAmount: (json['totalAmount'] as num).toDouble(),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      paymentMethod: (json['paymentMethod'] as num).toInt(),
-      paymentStatus: (json['paymentStatus'] as num).toInt(),
+      paymentMethod: (json['paymentMethod'] as num?)?.toInt(),
+      paymentStatus: (json['paymentStatus'] as num?)?.toInt(),
       items:
           (json['items'] as List<dynamic>?)
               ?.map((e) => OrderItemDto.fromJson(e as Map<String, dynamic>))

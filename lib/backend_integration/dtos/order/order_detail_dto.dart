@@ -24,8 +24,8 @@ abstract class OrderDetailDto with _$OrderDetailDto {
     required double deliveryFee,
     required double totalAmount,
     required DateTime createdAt,
-    required int paymentMethod,
-    required int paymentStatus,
+    int? paymentMethod,
+    int? paymentStatus,
     @Default([]) List<OrderItemDto> items,
   }) = _OrderDetailDto;
 

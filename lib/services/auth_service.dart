@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../backend_integration/dio/client/api_error_handler.dart';
 import '../config/app_config.dart';
 import 'push_notification_service.dart';
 import 'token_service.dart';
@@ -169,15 +170,8 @@ class AuthService extends ChangeNotifier {
           notifyListeners();
         }
       }
-    } on DioException catch (e) {
-      final serverMsg = e.response?.data is Map
-          ? (e.response!.data as Map)['message'] as String?
-          : null;
-      throw Exception(
-        serverMsg ?? 'Failed to connect. Please check your internet connection.',
-      );
-    } catch (_) {
-      throw Exception('Failed to connect. Please check your internet connection.');
+    } catch (e) {
+      throw Exception(ApiErrorHandler.extractErrorMessage(e));
     }
   }
 
