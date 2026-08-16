@@ -52,6 +52,34 @@ String sizeMatchKey(String value) {
   return key.contains(RegExp(r'[0-9]')) ? key : '';
 }
 
+/// Index of the guide row the selected size points at, or -1 when nothing
+/// matches.
+///
+/// The first column of a guide row is the language-neutral code, so the size's
+/// own code settles it outright. The translated label follows, for the guides
+/// whose first column carries a unit rather than a bare code, and last comes
+/// the numeric key, which is only trusted when exactly one row answers to it.
+int sizeGuideRowIndex(List<List<String>> rows, {String? code, String? label}) {
+  if (code != null && code.isNotEmpty) {
+    final byCode = rows.indexWhere((row) => row.isNotEmpty && row[0] == code);
+    if (byCode != -1) return byCode;
+  }
+
+  if (label == null) return -1;
+
+  final exact = rows.indexWhere((row) => row.isNotEmpty && row[0] == label);
+  if (exact != -1) return exact;
+
+  final key = sizeMatchKey(label);
+  if (key.isEmpty) return -1;
+  final matches = <int>[];
+  for (var i = 0; i < rows.length; i++) {
+    final row = rows[i];
+    if (row.isNotEmpty && sizeMatchKey(row[0]) == key) matches.add(i);
+  }
+  return matches.length == 1 ? matches.first : -1;
+}
+
 class SizeGuideContent {
   const SizeGuideContent({
     required this.type,

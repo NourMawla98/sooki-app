@@ -8,15 +8,22 @@ import '../../../../utils/number_localization.dart';
 import 'size_guide_data.dart';
 
 class SizeGuideSheet extends StatefulWidget {
-  const SizeGuideSheet({super.key, this.sizeStandardId, this.selectedLabel});
+  const SizeGuideSheet({
+    super.key,
+    this.sizeStandardId,
+    this.selectedLabel,
+    this.selectedCode,
+  });
 
   final int? sizeStandardId;
   final String? selectedLabel;
+  final String? selectedCode;
 
   static Future<void> show(
     BuildContext context, {
     int? sizeStandardId,
     String? selectedLabel,
+    String? selectedCode,
   }) {
     return showDialog<void>(
       context: context,
@@ -27,6 +34,7 @@ class SizeGuideSheet extends StatefulWidget {
         child: SizeGuideSheet(
           sizeStandardId: sizeStandardId,
           selectedLabel: selectedLabel,
+          selectedCode: selectedCode,
         ),
       ),
     );
@@ -228,6 +236,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
           content: content,
           rows: content.rowsIn,
           selectedLabel: widget.selectedLabel,
+          selectedCode: widget.selectedCode,
           firstColMatch: true,
           cellBg: cellBg,
           headerBg: headerBg,
@@ -244,6 +253,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
           content: content,
           rows: rows,
           selectedLabel: widget.selectedLabel,
+          selectedCode: widget.selectedCode,
           firstColMatch: true,
           cellBg: cellBg,
           headerBg: headerBg,
@@ -263,6 +273,7 @@ class _GuideTable extends StatelessWidget {
     required this.content,
     required this.rows,
     required this.selectedLabel,
+    required this.selectedCode,
     required this.firstColMatch,
     required this.cellBg,
     required this.headerBg,
@@ -275,6 +286,7 @@ class _GuideTable extends StatelessWidget {
   final SizeGuideContent content;
   final List<List<String>> rows;
   final String? selectedLabel;
+  final String? selectedCode;
   final bool firstColMatch;
   final Color cellBg;
   final Color headerBg;
@@ -283,27 +295,8 @@ class _GuideTable extends StatelessWidget {
   final Color textColor;
   final Color mutedLabel;
 
-  /// Row the customer's size points at, or -1 when nothing matches.
-  ///
-  /// The label is compared as it is first. The backend only sends the
-  /// translated display value, so a numeric fallback follows, and it is only
-  /// trusted when exactly one row answers to it.
-  int get _selectedRowIndex {
-    final label = selectedLabel;
-    if (label == null) return -1;
-
-    final exact = rows.indexWhere((row) => row.isNotEmpty && row[0] == label);
-    if (exact != -1) return exact;
-
-    final key = sizeMatchKey(label);
-    if (key.isEmpty) return -1;
-    final matches = <int>[];
-    for (var i = 0; i < rows.length; i++) {
-      final row = rows[i];
-      if (row.isNotEmpty && sizeMatchKey(row[0]) == key) matches.add(i);
-    }
-    return matches.length == 1 ? matches.first : -1;
-  }
+  int get _selectedRowIndex =>
+      sizeGuideRowIndex(rows, code: selectedCode, label: selectedLabel);
 
   @override
   Widget build(BuildContext context) {

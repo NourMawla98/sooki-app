@@ -231,6 +231,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       context,
       sizeStandardId: _selectedColor?.sizes.firstOrNull?.sizeStandardId,
       selectedLabel: _selectedSize?.displayValue,
+      selectedCode: _selectedSize?.code,
     );
   }
 

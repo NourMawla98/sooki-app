@@ -28,25 +28,21 @@ final Map<String, Map<String, String>> _displayToRow = {
   'belt_size': {'70 cm': '70 cm', '130 cm': '130 cm'},
 };
 
-int _matchingRows(String slug, String displayValue) {
-  final rows = kSizeGuides[slug]!.rowsIn;
-  final exact = rows.indexWhere((row) => row[0] == displayValue);
-  if (exact != -1) return 1;
-  final key = sizeMatchKey(displayValue);
-  if (key.isEmpty) return 0;
-  return rows.where((row) => sizeMatchKey(row[0]) == key).length;
-}
+/// Codes the backend now sends alongside the display value, per standard.
+final Map<String, List<String>> _codes = {
+  'international_letter': ['XS', 'M', '3XL'],
+  'womens_apparel': ['38', '48'],
+  'kids_shoes': ['17', '35'],
+  'baby_sizes': ['NB', '0-3M', '18-24M'],
+  'kids_sizes': ['3-4Y', '8-10Y', '10-12Y', '14-16Y'],
+  'ring_sizes': ['44', '70'],
+  'bed_sizes': ['90x200', '160x200'],
+};
 
-String? _matchedRow(String slug, String displayValue) {
+String? _matchedRow(String slug, {String? code, String? label}) {
   final rows = kSizeGuides[slug]!.rowsIn;
-  final exact = rows.indexWhere((row) => row[0] == displayValue);
-  if (exact != -1) return rows[exact][0];
-  final key = sizeMatchKey(displayValue);
-  if (key.isEmpty) return null;
-  for (final row in rows) {
-    if (sizeMatchKey(row[0]) == key) return row[0];
-  }
-  return null;
+  final index = sizeGuideRowIndex(rows, code: code, label: label);
+  return index == -1 ? null : rows[index][0];
 }
 
 void main() {
@@ -69,14 +65,38 @@ void main() {
     });
   });
 
+  group('the size code picks its own row', () {
+    _codes.forEach((slug, codes) {
+      for (final code in codes) {
+        test('$slug: $code', () {
+          expect(_matchedRow(slug, code: code), code);
+        });
+      }
+    });
+
+    test('a code the guide does not list falls through to the label', () {
+      expect(
+        _matchedRow('kids_sizes', code: '20-22Y', label: '8-10 Years'),
+        '8-10Y',
+      );
+    });
+
+    test('an empty code falls through to the label', () {
+      expect(_matchedRow('baby_sizes', code: '', label: '0-3 Mois'), '0-3M');
+    });
+  });
+
   group('translated display values resolve to one guide row', () {
     _displayToRow.forEach((slug, cases) {
       cases.forEach((displayValue, expectedRow) {
         test('$slug: $displayValue', () {
-          expect(_matchingRows(slug, displayValue), 1);
-          expect(_matchedRow(slug, displayValue), expectedRow);
+          expect(_matchedRow(slug, label: displayValue), expectedRow);
         });
       });
+    });
+
+    test('nothing matches when neither a code nor a label is given', () {
+      expect(_matchedRow('kids_sizes'), isNull);
     });
   });
 
