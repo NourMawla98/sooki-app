@@ -255,6 +255,7 @@
   },
   "cart_screen": {
     "remove_item_title": "Remove item?",
+    "remove_item_subtitle": "{title}\n{color} · {size}",
     "remove": "Remove"
   },
   "cart_empty_state": {

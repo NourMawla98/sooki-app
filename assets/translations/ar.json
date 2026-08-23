@@ -255,6 +255,7 @@
   },
   "cart_screen": {
     "remove_item_title": "إزالة المنتج؟",
+    "remove_item_subtitle": "{title}\n{color}، {size}",
     "remove": "إزالة"
   },
   "cart_empty_state": {

@@ -97,7 +97,17 @@ class _CartScreenState extends State<CartScreen> {
                                 final confirmed = await showAuroraConfirmSheet(
                                   context,
                                   title: 'cart_screen.remove_item_title'.tr(),
-                                  subtitle: item.title,
+                                  // Two colours of one product make two rows
+                                  // with the same title, so the variant is
+                                  // what tells the shopper which one goes.
+                                  subtitle: 'cart_screen.remove_item_subtitle'
+                                      .tr(
+                                        namedArgs: {
+                                          'title': item.title,
+                                          'color': item.colorName,
+                                          'size': item.sizeName,
+                                        },
+                                      ),
                                   icon: FontAwesomeIcons.trashCan,
                                   iconColor: AppColors.auroraRed,
                                   confirmLabel: 'cart_screen.remove'.tr(),

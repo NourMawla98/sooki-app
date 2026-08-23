@@ -255,6 +255,7 @@
   },
   "cart_screen": {
     "remove_item_title": "Retirer l'article ?",
+    "remove_item_subtitle": "{title}\n{color} · {size}",
     "remove": "Retirer"
   },
   "cart_empty_state": {

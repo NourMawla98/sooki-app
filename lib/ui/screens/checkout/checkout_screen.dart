@@ -17,6 +17,7 @@ import '../../../themes/app_text_styles.dart';
 import '../../../utils/number_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../../reusable_components/product_thumb.dart';
 import '../../reusable_components/skeleton/skeleton_shimmer.dart';
 import '../cart/widgets/address_pill.dart';
 import '../order_success/order_success_screen.dart';
@@ -371,17 +372,10 @@ class _OrderSummaryCard extends StatelessWidget {
                       // Thumbnail
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: SizedBox(
-                          width: 38,
-                          height: 38,
-                          child: item.imageUrl != null
-                              ? Image.network(
-                                  item.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, err, stack) =>
-                                      _GradientThumb(index: i),
-                                )
-                              : _GradientThumb(index: i),
+                        child: ProductThumb(
+                          url: item.imageUrl,
+                          size: 38,
+                          isDark: isDark,
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -555,35 +549,6 @@ class _DashedDivider extends StatelessWidget {
     );
   }
 }
-
-class _GradientThumb extends StatelessWidget {
-  final int index;
-  const _GradientThumb({required this.index});
-
-  static const _gradients = [
-    [AppColors.auroraPink, AppColors.auroraPurple],
-    [AppColors.auroraPurple, AppColors.auroraElectricBlue],
-    [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
-    [AppColors.auroraGold, AppColors.auroraRed],
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final pair = _gradients[index % _gradients.length];
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: pair,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: const SizedBox.expand(),
-    );
-  }
-}
-
-// ── Payment card ──────────────────────────────────────────────────────────────
 
 class _PaymentCard extends StatelessWidget {
   final bool isDark;

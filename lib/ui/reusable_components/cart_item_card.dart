@@ -7,6 +7,7 @@ import '../../services/theme_service.dart';
 import '../../themes/app_colors.dart';
 import '../../themes/app_text_styles.dart';
 import '../../utils/number_localization.dart';
+import 'product_thumb.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartLineItem item;
@@ -53,7 +54,7 @@ class CartItemCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Thumb(url: item.imageUrl, isDark: isDark),
+                ProductThumb(url: item.imageUrl, size: 64, isDark: isDark),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _Info(
@@ -94,49 +95,6 @@ class CartItemCard extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-// --- Thumbnail ----------------------------------------------------------------
-
-class _Thumb extends StatelessWidget {
-  final String? url;
-  final bool isDark;
-
-  const _Thumb({required this.url, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    final placeholderColor = isDark
-        ? AppColors.white.withValues(alpha: 0.06)
-        : AppColors.primaryPurple.withValues(alpha: 0.06);
-    final borderColor = isDark
-        ? AppColors.white.withValues(alpha: 0.10)
-        : AppColors.auroraPurple.withValues(alpha: 0.16);
-    final iconColor = isDark
-        ? AppColors.white.withValues(alpha: 0.20)
-        : AppColors.primaryPurple.withValues(alpha: 0.30);
-
-    final fallback =
-        Center(child: FaIcon(FontAwesomeIcons.image, size: 16, color: iconColor));
-
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: placeholderColor,
-        border: Border.all(color: borderColor),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: (url != null && url!.isNotEmpty)
-          ? Image.network(
-              url!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => fallback,
-            )
-          : fallback,
     );
   }
 }

@@ -20,6 +20,7 @@ import '../../../utils/text_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
+import '../../reusable_components/product_thumb.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
 
 // Short forms, not the full status labels: the tracker gives each step about
@@ -316,7 +317,11 @@ class _HeroCard extends StatelessWidget {
                     Text(
                       'order_detail_screen.hero_meta'.tr(namedArgs: {
                         'date': localizedLongDate(detail.createdAt),
-                        'count': localizedNumber(detail.items.length),
+                        // Quantities, not rows. The cart badge and footer both
+                        // count this way, and two of one shirt is two items to
+                        // the shopper who put them there.
+                        'count': localizedNumber(
+                            detail.items.fold<int>(0, (s, i) => s + i.quantity)),
                       }),
                       style: AppTextStyles.dsMuted.copyWith(
                         color: metaColor,
@@ -516,13 +521,6 @@ class _ItemsCard extends StatelessWidget {
     );
   }
 
-  static const _gradients = [
-    [AppColors.auroraPink, AppColors.auroraPurple],
-    [AppColors.auroraPurple, AppColors.auroraElectricBlue],
-    [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
-    [AppColors.auroraGold, AppColors.auroraRed],
-  ];
-
   @override
   Widget build(BuildContext context) {
     final textColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
@@ -541,8 +539,6 @@ class _ItemsCard extends StatelessWidget {
           final i = entry.key;
           final item = entry.value;
           final isLast = i == items.length - 1;
-          final pair = _gradients[i % _gradients.length];
-
           return Column(
             children: [
               Row(
@@ -550,17 +546,11 @@ class _ItemsCard extends StatelessWidget {
                   // Thumbnail
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: SizedBox(
-                      width: 46,
-                      height: 46,
-                      child: item.imageUrl != null
-                          ? Image.network(
-                              item.imageUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, err, stack) =>
-                                  _GradThumb(pair: pair),
-                            )
-                          : _GradThumb(pair: pair),
+                    child: ProductThumb(
+                      url: item.imageUrl,
+                      size: 46,
+                      borderRadius: 10,
+                      isDark: isDark,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -650,27 +640,6 @@ class _ItemsCard extends StatelessWidget {
     );
   }
 }
-
-class _GradThumb extends StatelessWidget {
-  const _GradThumb({required this.pair});
-  final List<Color> pair;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: pair,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: const SizedBox.expand(),
-    );
-  }
-}
-
-// ── Summary card ──────────────────────────────────────────────────────────────
 
 class _SummaryCard extends StatelessWidget {
   const _SummaryCard({required this.detail, required this.isDark});
