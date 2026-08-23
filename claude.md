@@ -72,3 +72,13 @@ Reference implementation: `lib/ui/screens/address_form/address_form_screen.dart`
 
 ### 10. General
 - Semantic naming. Follow existing patterns. Keep widgets focused and composable. Extract repeated patterns into reusables.
+
+### 11. Live testing on a device
+Never launch the emulator yourself. Ask the user to start the app from Android Studio and say when
+it is running, then drive it over `adb`.
+- An emulator started from the CLI opens a window the user cannot find. Android Studio shows the
+  screen in the **Running Devices** tool window, which is where they can type.
+- `adb` cannot type into the app's text fields. The field takes focus but no input connection binds,
+  so anything needing credentials or typed input is the user's to enter.
+- If the AVD hangs on "Starting up", the quickboot snapshot is bad. Delete
+  `~/.android/avd/<avd>.avd/snapshots/default_boot` and boot cold.

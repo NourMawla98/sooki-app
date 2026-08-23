@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,10 +13,24 @@ import '../../../themes/app_fonts.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/number_localization.dart';
 
-class NotificationPanel extends StatelessWidget {
+class NotificationPanel extends StatefulWidget {
   final VoidCallback onClose;
 
   const NotificationPanel({super.key, required this.onClose});
+
+  @override
+  State<NotificationPanel> createState() => _NotificationPanelState();
+}
+
+class _NotificationPanelState extends State<NotificationPanel> {
+  @override
+  void initState() {
+    super.initState();
+    // The service only holds what someone else fetched, so the panel loads its
+    // own list. Without this it opens empty on a cold start and stale after a
+    // notification arrives.
+    unawaited(NotificationService.instance.fetchNotifications());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +126,18 @@ class NotificationPanel extends StatelessWidget {
                 Container(height: 1, color: divider),
 
                 // List
-                if (items.isEmpty)
+                if (items.isEmpty && svc.isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 28),
+                    child: Center(
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  )
+                else if (items.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 28),
                     child: Text(
@@ -132,7 +159,7 @@ class NotificationPanel extends StatelessWidget {
                       separatorBuilder: (_, _) =>
                           Container(height: 1, color: divider),
                       itemBuilder: (context, i) =>
-                          _PanelRow(item: items[i], isDark: isDark, onClose: onClose),
+                          _PanelRow(item: items[i], isDark: isDark, onClose: widget.onClose),
                     ),
                   ),
 
@@ -141,7 +168,7 @@ class NotificationPanel extends StatelessWidget {
                 // Footer — same style as "SEE ALL RESULTS" in search bar
                 GestureDetector(
                   onTap: () {
-                    onClose();
+                    widget.onClose();
                     Navigator.of(context).pushNamed(notificationsScreenRoute);
                   },
                   behavior: HitTestBehavior.opaque,

@@ -1,10 +1,9 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
 
-import '../../../../backend_integration/apis/orders_api.dart';
-import '../../../../services/address_service.dart';
 import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
@@ -31,10 +30,6 @@ class _CartSummaryState extends State<CartSummary>
     with SingleTickerProviderStateMixin {
   late final AnimationController _dotsController;
 
-  double? _deliveryFee;
-  bool _loadingFee = false;
-  double _lastFetchedSubtotal = -1;
-
   @override
   void initState() {
     super.initState();
@@ -43,7 +38,7 @@ class _CartSummaryState extends State<CartSummary>
       vsync: this,
     )..repeat();
     widget.cartService.addListener(_onCartChanged);
-    _fetchFee();
+    unawaited(widget.cartService.refreshDeliveryFee());
   }
 
   @override
@@ -54,59 +49,10 @@ class _CartSummaryState extends State<CartSummary>
   }
 
   void _onCartChanged() {
-    final sub = widget.cartService.subtotal;
-    if (sub != _lastFetchedSubtotal) _fetchFee();
+    unawaited(widget.cartService.refreshDeliveryFee());
   }
 
-  Future<void> _fetchFee() async {
-    if (widget.cartService.isEmpty) {
-      setState(() {
-        _deliveryFee = 0.0;
-        _loadingFee = false;
-        _lastFetchedSubtotal = widget.cartService.subtotal;
-      });
-      return;
-    }
-
-    final addressService = GetIt.instance<AddressService>();
-    if (addressService.addresses.isEmpty) {
-      await addressService.loadFromServer();
-    }
-    final addressId = addressService.selectedId;
-    if (addressId == null) return;
-
-    final subtotal = widget.cartService.subtotal;
-    _lastFetchedSubtotal = subtotal;
-    setState(() => _loadingFee = true);
-
-    final api = GetIt.instance<OrdersApi>();
-    final result = await api.getDeliveryFee(
-      addressId: addressId,
-      cartTotal: subtotal,
-    );
-
-    if (!mounted) return;
-    result.fold(
-      (_) => setState(() => _loadingFee = false),
-      (fee) => setState(() {
-        _deliveryFee = fee;
-        _loadingFee = false;
-      }),
-    );
-  }
-
-  double get _effectiveShipping {
-    if (_deliveryFee != null) return _deliveryFee!;
-    return widget.cartService.shippingCost;
-  }
-
-  double get _effectiveTotal {
-    final raw =
-        widget.cartService.subtotal +
-        _effectiveShipping -
-        widget.cartService.promoDiscount;
-    return raw < 0 ? 0 : raw;
-  }
+  double get _effectiveTotal => widget.cartService.total;
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +102,8 @@ class _CartSummaryState extends State<CartSummary>
                       ),
                       const SizedBox(height: 6),
                       _ShippingRow(
-                        loadingFee: _loadingFee,
-                        deliveryFee: _deliveryFee,
+                        loadingFee: widget.cartService.isLoadingDeliveryFee,
+                        deliveryFee: widget.cartService.deliveryFee,
                         fallback: widget.cartService.shippingCost,
                         dotsController: _dotsController,
                         labelColor: c.textMute,

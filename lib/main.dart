@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -9,6 +11,7 @@ import 'backend_integration/dio/interceptors/global_headers_interceptor.dart';
 import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
+import 'services/address_service.dart';
 import 'services/language_service.dart';
 import 'services/push_notification_service.dart';
 import 'services/route_history_service.dart';
@@ -89,6 +92,10 @@ class _MyAppState extends State<MyApp> {
   /// screens, which re-runs their fetches and lands the customer back where
   /// they were.
   void _onLanguageChanged() {
+    // Addresses are fetched once and kept, so the re-push below would rebuild
+    // the delivery line from city and area names still in the old language.
+    unawaited(serviceLocator<AddressService>().loadFromServer());
+
     final navigator = ToastService.navigatorKey.currentState;
     if (navigator == null) return;
 

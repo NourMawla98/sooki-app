@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -47,6 +49,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     _loadPaymentMethods();
+    // The cart may have been priced for a different address or subtotal.
+    unawaited(_cartService.refreshDeliveryFee());
   }
 
   Future<void> _loadPaymentMethods() async {
@@ -443,8 +447,12 @@ class _OrderSummaryCard extends StatelessWidget {
                 const SizedBox(height: 5),
                 _TotalRow(
                   label: 'checkout_screen.delivery_fee'.tr(),
-                  value: 'checkout_screen.free'.tr(),
-                  valueColor: AppColors.verifiedGreen,
+                  value: cartService.shippingCost == 0
+                      ? 'checkout_screen.free'.tr()
+                      : '\$${localizedPrice(cartService.shippingCost)}',
+                  valueColor: cartService.shippingCost == 0
+                      ? AppColors.verifiedGreen
+                      : null,
                   isDark: isDark,
                 ),
                 Padding(
@@ -467,7 +475,7 @@ class _OrderSummaryCard extends StatelessWidget {
                         colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
                       ).createShader(rect),
                       child: Text(
-                        '\$${localizedPrice(cartService.subtotal)}',
+                        '\$${localizedPrice(cartService.total)}',
                         style: AppTextStyles.dsH2.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,

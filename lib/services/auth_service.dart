@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -7,9 +8,11 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
 
 import '../backend_integration/dio/client/api_error_handler.dart';
 import '../config/app_config.dart';
+import 'language_service.dart';
 import 'push_notification_service.dart';
 import 'token_service.dart';
 
@@ -56,6 +59,13 @@ class AuthService extends ChangeNotifier {
     await _saveTokenData(tokenData);
     _isCustomer = true;
     _isGuest = false;
+    // Everything the startup sync did under the guest JWT has to be redone
+    // now that the customer JWT is live, or the account keeps the language
+    // and the device token of whoever came before.
+    if (GetIt.instance.isRegistered<LanguageService>()) {
+      unawaited(GetIt.instance<LanguageService>().syncToBackend());
+    }
+    unawaited(PushNotificationService.instance.registerCurrentToken());
     notifyListeners();
   }
 

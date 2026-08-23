@@ -70,6 +70,16 @@ class PushNotificationService {
     }
   }
 
+  /// Re-bind the current token to whoever the JWT now identifies. [init] is
+  /// one-shot, so a login that happens after startup still leaves the token
+  /// attached to the guest record until this runs.
+  Future<void> registerCurrentToken() async {
+    final token = _token ?? await _messaging.getToken();
+    if (token == null) return;
+    _token = token;
+    await _register(token);
+  }
+
   /// Remove this device's token from the backend. Call on logout, while the
   /// current (customer) JWT is still active.
   Future<void> unregister() async {
