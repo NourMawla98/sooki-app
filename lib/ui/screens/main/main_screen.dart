@@ -25,12 +25,23 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late int _currentIndex = widget.initialTabIndex;
 
-  late final List<Widget> _pages = [
+  static const int _cartIndex = 4;
+
+  late final List<Widget> _keptAlivePages = [
     const BrowseScreen(),
     const DealsScreen(),
     const CategoryBrowseScreen(),
     const AuctionScreen(),
-    CartScreen(onSwitchToBrowse: () => _onTabTapped(0)),
+  ];
+
+  /// Tabs stay mounted, so a page that has to refetch on focus needs to be told
+  /// which tab is showing. Only the cart does today.
+  List<Widget> _pages() => [
+    ..._keptAlivePages,
+    CartScreen(
+      isActive: _currentIndex == _cartIndex,
+      onSwitchToBrowse: () => _onTabTapped(0),
+    ),
   ];
 
   @override
@@ -56,6 +67,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = _pages();
+
     return Scaffold(
       body: Column(
         children: [
@@ -65,12 +78,12 @@ class _MainScreenState extends State<MainScreen> {
           Expanded(
             child: Stack(
               children: [
-                for (int i = 0; i < _pages.length; i++)
+                for (int i = 0; i < pages.length; i++)
                   Offstage(
                     offstage: i != _currentIndex,
                     child: IgnorePointer(
                       ignoring: i != _currentIndex,
-                      child: _pages[i],
+                      child: pages[i],
                     ),
                   ),
               ],

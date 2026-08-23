@@ -51,7 +51,11 @@ class CartService extends ChangeNotifier {
   /// current subtotal. The fee moves with the subtotal because delivery is
   /// free above a threshold, so this reruns whenever the cart changes and
   /// no-ops when the subtotal it last priced is still current.
-  Future<void> refreshDeliveryFee() async {
+  ///
+  /// Pass [force] to price again even when the subtotal has not moved. A pull
+  /// to refresh has to reach the network, and the fee can change under a
+  /// steady subtotal when the selected address or the threshold changes.
+  Future<void> refreshDeliveryFee({bool force = false}) async {
     if (isEmpty) {
       if (_feeSubtotal == 0.0 && _deliveryFee == 0.0) return;
       _deliveryFee = 0.0;
@@ -61,7 +65,7 @@ class CartService extends ChangeNotifier {
       return;
     }
 
-    if (_feeSubtotal == subtotal) return;
+    if (!force && _feeSubtotal == subtotal) return;
 
     final addressService = GetIt.instance<AddressService>();
     if (addressService.addresses.isEmpty) {

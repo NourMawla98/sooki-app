@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,7 +24,11 @@ import 'widgets/promo_row.dart';
 class CartScreen extends StatefulWidget {
   final VoidCallback? onSwitchToBrowse;
 
-  const CartScreen({super.key, this.onSwitchToBrowse});
+  /// Whether the cart tab is the one on screen. The tab shell keeps every tab
+  /// mounted, so this is how the screen learns it has regained focus.
+  final bool isActive;
+
+  const CartScreen({super.key, this.onSwitchToBrowse, this.isActive = true});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -34,7 +40,23 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    _cart.loadFromServer();
+    unawaited(_refresh());
+  }
+
+  @override
+  void didUpdateWidget(CartScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The shell parks inactive tabs behind an Offstage instead of disposing
+    // them, so initState runs once for the life of the shell. Without this a
+    // row added anywhere else stays invisible until the whole screen rebuilds.
+    if (widget.isActive && !oldWidget.isActive) unawaited(_refresh());
+  }
+
+  /// The one loader for this screen. Entry, tab focus and pull to refresh all
+  /// go through it, so none of them can drift out of step with the others.
+  Future<void> _refresh() async {
+    await _cart.loadFromServer();
+    await _cart.refreshDeliveryFee(force: true);
   }
 
   @override
@@ -50,7 +72,7 @@ class _CartScreenState extends State<CartScreen> {
                 children: [
                   Expanded(
                     child: RefreshIndicator(
-                      onRefresh: () => _cart.loadFromServer(),
+                      onRefresh: _refresh,
                       color: AppColors.auroraPink,
                       child: ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
