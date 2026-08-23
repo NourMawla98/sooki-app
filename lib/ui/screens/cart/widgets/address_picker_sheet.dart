@@ -10,6 +10,7 @@ import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/aurora/aurora_primary_button.dart';
+import '../../../../utils/text_localization.dart';
 import '_cart_surface_theme.dart';
 
 Future<void> showAddressPickerSheet(BuildContext context) {
@@ -155,9 +156,7 @@ class _AddressRow extends StatelessWidget {
   });
 
   String get _locationLine {
-    final parts = <String>[addr.city.name];
-    if (addr.area != null) parts.add(addr.area!.name);
-    return parts.join(', ');
+    return joinLocalized([addr.city.name, addr.area?.name]);
   }
 
   @override

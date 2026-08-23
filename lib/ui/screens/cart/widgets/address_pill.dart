@@ -10,15 +10,13 @@ import '../../../../services/auth_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/text_localization.dart';
 import '_cart_surface_theme.dart';
 import 'address_picker_sheet.dart';
 import 'aurora_login_gate_dialog.dart';
 
-String _addressLine(AddressDto addr) {
-  final parts = <String>[addr.city.name];
-  if (addr.area != null) parts.add(addr.area!.name);
-  return parts.join(', ');
-}
+String _addressLine(AddressDto addr) =>
+    joinLocalized([addr.city.name, addr.area?.name]);
 
 /// A1 compact delivery-address pill. Tap anywhere on the row (or on CHANGE)
 /// to open the picker sheet with all saved addresses.

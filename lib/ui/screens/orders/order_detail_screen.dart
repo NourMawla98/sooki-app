@@ -16,6 +16,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/date_localization.dart';
 import '../../../utils/number_localization.dart';
+import '../../../utils/text_localization.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../../reusable_components/input_fields/aurora_input_field.dart';
@@ -791,9 +792,8 @@ class _AddressCard extends StatelessWidget {
       parts.add('order_detail_screen.floor'
           .tr(namedArgs: {'floor': localizedDigits(detail.floor!)}));
     }
-    final cityLine = [detail.city, if (detail.area != null) detail.area!].join(', ');
-    parts.add(cityLine);
-    return parts.join(', ');
+    parts.add(joinLocalized([detail.city, detail.area]));
+    return joinLocalized(parts);
   }
 
   @override

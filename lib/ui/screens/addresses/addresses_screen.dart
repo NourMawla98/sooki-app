@@ -15,6 +15,7 @@ import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/aurora/aurora_primary_button.dart';
 import '../../reusable_components/dialogs/aurora_confirm_sheet.dart';
 import '../splash/widgets/aurora_glow_blob.dart';
+import '../../../utils/text_localization.dart';
 
 class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key});
@@ -200,9 +201,7 @@ class _AddressCard extends StatelessWidget {
   const _AddressCard({required this.address, required this.isDark});
 
   String get _locationLine {
-    final parts = <String>[address.city.name];
-    if (address.area != null) parts.add(address.area!.name);
-    return parts.join(', ');
+    return joinLocalized([address.city.name, address.area?.name]);
   }
 
   @override

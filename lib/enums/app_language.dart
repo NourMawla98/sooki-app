@@ -43,6 +43,11 @@ enum AppLanguage {
   /// True when numbers should render with Arabic-Indic digits.
   bool get usesArabicIndicDigits => this == AppLanguage.arabic;
 
+  /// True when punctuation should use the Arabic forms, such as the comma
+  /// U+060C in place of the Latin one. Separate from
+  /// [usesArabicIndicDigits] because a language can want one and not the other.
+  bool get usesArabicPunctuation => this == AppLanguage.arabic;
+
   /// Get language from ISO code, defaults to English if not found
   static AppLanguage fromCode(String code) {
     final lowerCode = code.toLowerCase();
