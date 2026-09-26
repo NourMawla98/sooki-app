@@ -8,6 +8,7 @@ import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/date_localization.dart';
 import '../../../utils/number_localization.dart';
+import '../product_thumb.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderListItemDto dto;
@@ -48,6 +49,9 @@ class OrderCard extends StatelessWidget {
 
         final visibleItems = dto.items.take(3).toList();
         final overflow = dto.items.length - visibleItems.length;
+        // Quantities, not rows, so the card agrees with the cart badge and the
+        // order detail. Two of one shirt is two items to the shopper.
+        final unitCount = dto.items.fold<int>(0, (sum, i) => sum + i.quantity);
         final date = localizedLongDate(dto.createdAt);
 
         return GestureDetector(
@@ -128,9 +132,10 @@ class OrderCard extends StatelessWidget {
                                 ...visibleItems.asMap().entries.map(
                                   (e) => Padding(
                                     padding: const EdgeInsetsDirectional.only(end: 6),
-                                    child: _Thumbnail(
-                                      imageUrl: e.value.imageUrl,
-                                      index: e.key,
+                                    child: ProductThumb(
+                                      url: e.value.imageUrl,
+                                      size: 40,
+                                      isDark: isDark,
                                     ),
                                   ),
                                 ),
@@ -151,8 +156,8 @@ class OrderCard extends StatelessWidget {
                               children: [
                                 Text(
                                   'order_card.item_count'.plural(
-                                    dto.items.length,
-                                    args: [localizedNumber(dto.items.length)],
+                                    unitCount,
+                                    args: [localizedNumber(unitCount)],
                                   ),
                                   style: AppTextStyles.dsMuted.copyWith(
                                     color: itemCountColor,
@@ -211,57 +216,6 @@ class _StatusPill extends StatelessWidget {
           letterSpacing: 0.5,
         ),
       ),
-    );
-  }
-}
-
-class _Thumbnail extends StatelessWidget {
-  final String? imageUrl;
-  final int index;
-
-  const _Thumbnail({required this.imageUrl, required this.index});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        width: 40,
-        height: 40,
-        child: imageUrl != null
-            ? Image.network(
-                imageUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, err, stack) => _FallbackGrad(index: index),
-              )
-            : _FallbackGrad(index: index),
-      ),
-    );
-  }
-}
-
-class _FallbackGrad extends StatelessWidget {
-  final int index;
-  const _FallbackGrad({required this.index});
-
-  static const _pairs = [
-    [AppColors.auroraPink, AppColors.auroraPurple],
-    [AppColors.auroraPurple, AppColors.auroraElectricBlue],
-    [AppColors.auroraElectricBlue, AppColors.verifiedGreen],
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final pair = _pairs[index % _pairs.length];
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: pair,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: const SizedBox.expand(),
     );
   }
 }

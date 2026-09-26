@@ -46,6 +46,10 @@ class I18nBootstrap {
       fallbackLocale: fallbackLocale,
       startLocale: localeFor(languageService.currentLanguage),
       useOnlyLangCode: true,
+      // The default skips the real plural rules and collapses everything past
+      // two into "other", which reads wrong in Arabic, where three to ten take
+      // their own form.
+      ignorePluralRules: false,
       child: child,
     );
   }

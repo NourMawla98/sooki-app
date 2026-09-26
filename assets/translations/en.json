@@ -639,7 +639,11 @@
     "cancel_order": "Cancel order",
     "cancel_order_button": "CANCEL ORDER",
     "confirm_receipt": "Confirm receipt",
-    "hero_meta": "{date} · {count} items",
+    "hero_meta": "{date} · {items}",
+    "item_count": {
+      "one": "{} item",
+      "other": "{} items"
+    },
     "items_ordered": "ITEMS ORDERED",
     "item_variant": "{color} · {size} · Qty {qty}",
     "write_review": "Write a review",

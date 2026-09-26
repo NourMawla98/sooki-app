@@ -643,7 +643,15 @@
     "cancel_order": "إلغاء الطلب",
     "cancel_order_button": "إلغاء الطلب",
     "confirm_receipt": "تأكيد الاستلام",
-    "hero_meta": "{date}، {count} منتج",
+    "hero_meta": "{date}، {items}",
+    "item_count": {
+      "zero": "لا توجد عناصر",
+      "one": "عنصر واحد",
+      "two": "عنصران",
+      "few": "{} عناصر",
+      "many": "{} عنصرًا",
+      "other": "{} عنصر"
+    },
     "items_ordered": "المنتجات المطلوبة",
     "item_variant": "{color}، {size}، الكمية {qty}",
     "write_review": "اكتب تقييماً",

@@ -284,6 +284,9 @@ class _HeroCard extends StatelessWidget {
     final metaColor = isDark
         ? AppColors.white.withValues(alpha: 0.38)
         : AppColors.auroraDeepBase.withValues(alpha: 0.38);
+    // Quantities, not rows. The cart badge and footer both count this way, and
+    // two of one shirt is two items to the shopper who put them there.
+    final unitCount = detail.items.fold<int>(0, (s, i) => s + i.quantity);
 
     return Container(
       decoration: BoxDecoration(
@@ -317,11 +320,10 @@ class _HeroCard extends StatelessWidget {
                     Text(
                       'order_detail_screen.hero_meta'.tr(namedArgs: {
                         'date': localizedLongDate(detail.createdAt),
-                        // Quantities, not rows. The cart badge and footer both
-                        // count this way, and two of one shirt is two items to
-                        // the shopper who put them there.
-                        'count': localizedNumber(
-                            detail.items.fold<int>(0, (s, i) => s + i.quantity)),
+                        'items': 'order_detail_screen.item_count'.plural(
+                          unitCount,
+                          args: [localizedNumber(unitCount)],
+                        ),
                       }),
                       style: AppTextStyles.dsMuted.copyWith(
                         color: metaColor,
