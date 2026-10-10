@@ -295,7 +295,7 @@
   },
   "promo_row": {
     "code_applied": "تم تطبيق {code}",
-    "discount_hint": "خصم ٢٠% على الطلب بالكامل",
+    "discount_amount": "خصم {amount} على هذا الطلب",
     "have_promo": "لديك كود خصم؟",
     "tap_to_enter": "اضغط لإدخال الكود",
     "remove": "إزالة",
@@ -304,9 +304,10 @@
   "promo_sheet": {
     "promo_code": "كود الخصم",
     "enter_your_code": "أدخل الكود",
-    "code_hint": "مثال: AURORA20",
+    "code_hint": "رمزك",
     "apply": "تطبيق",
-    "invalid_code": "كود غير صالح"
+    "invalid_code": "كود غير صالح",
+    "address_needed": "أضف عنوان توصيل أولًا ليتم احتساب قيمة الرمز."
   },
   "address_picker_sheet": {
     "choose_address": "اختر العنوان",

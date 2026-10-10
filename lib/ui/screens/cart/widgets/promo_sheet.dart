@@ -30,6 +30,7 @@ class _PromoSheet extends StatefulWidget {
 class _PromoSheetState extends State<_PromoSheet> {
   final TextEditingController _controller = TextEditingController();
   String? _error;
+  bool _applying = false;
 
   @override
   void dispose() {
@@ -37,13 +38,27 @@ class _PromoSheetState extends State<_PromoSheet> {
     super.dispose();
   }
 
-  void _submit() {
-    final cart = GetIt.instance<CartService>();
-    final ok = cart.applyPromo(_controller.text);
-    if (ok) {
-      Navigator.of(context).pop();
-    } else {
-      setState(() => _error = 'promo_sheet.invalid_code'.tr());
+  Future<void> _submit() async {
+    if (_applying || _controller.text.trim().isEmpty) return;
+    setState(() {
+      _applying = true;
+      _error = null;
+    });
+    try {
+      final rejection =
+          await GetIt.instance<CartService>().applyPromo(_controller.text);
+      if (!mounted) return;
+      switch (rejection) {
+        case null:
+          Navigator.of(context).pop();
+        case PromoNeedsAddress():
+          setState(() => _error = 'promo_sheet.address_needed'.tr());
+        case PromoRejectedByBackend(:final message):
+          // The backend's reason when it gave one; the generic line only when it did not.
+          setState(() => _error = message ?? 'promo_sheet.invalid_code'.tr());
+      }
+    } finally {
+      if (mounted) setState(() => _applying = false);
     }
   }
 
@@ -112,6 +127,7 @@ class _PromoSheetState extends State<_PromoSheet> {
                             }
                           },
                           onSubmitted: (_) => _submit(),
+                          enabled: !_applying,
                           textCapitalization: TextCapitalization.characters,
                           textAlignVertical: TextAlignVertical.center,
                           style: AppTextStyles.bodyMedium.copyWith(
@@ -147,7 +163,7 @@ class _PromoSheetState extends State<_PromoSheet> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: _submit,
+                      onTap: _applying ? null : _submit,
                       child: Container(
                         height: 44,
                         padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -158,15 +174,24 @@ class _PromoSheetState extends State<_PromoSheet> {
                           ),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          'promo_sheet.apply'.tr(),
-                          style: AppTextStyles.buttonSmall.copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.5,
-                            color: AppColors.white,
-                          ),
-                        ),
+                        child: _applying
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.white,
+                                ),
+                              )
+                            : Text(
+                                'promo_sheet.apply'.tr(),
+                                style: AppTextStyles.buttonSmall.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.5,
+                                  color: AppColors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ],

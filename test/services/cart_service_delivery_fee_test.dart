@@ -49,6 +49,12 @@ class _FakeCartApi extends CartApi {
       items: items,
     ),
   );
+
+  @override
+  Future<Either<ApiFailure, String>> clearCart() async {
+    items = [];
+    return const Right('');
+  }
 }
 
 class _FakeOrdersApi extends OrdersApi {
@@ -69,6 +75,23 @@ class _FakeOrdersApi extends OrdersApi {
     lastCartTotal = cartTotal;
     lastAddressId = addressId;
     return shouldFail ? const Left(_failure) : Right(fee);
+  }
+
+  /// What the backend says a coupon is worth; tests change it to model the
+  /// backend accepting, refusing, or failing.
+  Either<ApiFailure, CouponPreview> coupon =
+      const Right((isApplicable: true, discountAmount: 20.0, reason: null));
+  String? lastCouponCode;
+  int? lastCouponAddressId;
+
+  @override
+  Future<Either<ApiFailure, CouponPreview>> getCouponPreview({
+    required String couponCode,
+    required int addressId,
+  }) async {
+    lastCouponCode = couponCode;
+    lastCouponAddressId = addressId;
+    return coupon;
   }
 }
 
@@ -219,23 +242,93 @@ void main() {
       expect(cart.total, 50.0);
     });
 
-    test('the promo discount comes off subtotal, not off delivery', () async {
+    test('the backend-quoted coupon discount comes off the total', () async {
       ordersApi.fee = 3.0;
       await fill([_item(unitPrice: 100.0)]);
       await cart.refreshDeliveryFee();
-      cart.applyPromo('AURORA20');
+      await cart.applyPromo('save20');
 
-      // 100 less 20 percent, plus the 3.00 fee.
+      // 100 less the 20.00 the backend quoted, plus the 3.00 fee.
       expect(cart.total, closeTo(83.0, 0.001));
     });
 
     test('never goes negative when the discount covers the cart', () async {
       ordersApi.fee = 0.0;
+      ordersApi.coupon =
+          const Right((isApplicable: true, discountAmount: 50.0, reason: null));
       await fill([_item(unitPrice: 10.0)]);
       await cart.refreshDeliveryFee();
-      cart.applyPromo('AURORA20');
+      await cart.applyPromo('SAVE50');
 
-      expect(cart.total, greaterThanOrEqualTo(0.0));
+      expect(cart.total, 0.0);
+    });
+  });
+
+  group('promo codes', () {
+    test('are priced by the backend for the selected address, upper-cased', () async {
+      await fill([_item()]);
+      final rejection = await cart.applyPromo(' save20 ');
+
+      expect(rejection, isNull);
+      expect(ordersApi.lastCouponCode, 'SAVE20');
+      expect(ordersApi.lastCouponAddressId, 7);
+      expect(cart.promoCode, 'SAVE20');
+      expect(cart.promoDiscount, 20.0);
+    });
+
+    test('a refused code is not applied and carries the backend reason', () async {
+      ordersApi.coupon =
+          const Right((isApplicable: false, discountAmount: 0.0, reason: 'Coupon expired'));
+      await fill([_item()]);
+      final rejection = await cart.applyPromo('OLD');
+
+      expect(rejection, isA<PromoRejectedByBackend>());
+      expect((rejection! as PromoRejectedByBackend).message, 'Coupon expired');
+      expect(cart.hasPromo, isFalse);
+      expect(cart.promoDiscount, 0.0);
+    });
+
+    test('a failed request is not applied and carries its message', () async {
+      ordersApi.coupon = const Left((message: 'Coupon not found', error: 'x'));
+      await fill([_item()]);
+      final rejection = await cart.applyPromo('NOPE');
+
+      expect((rejection! as PromoRejectedByBackend).message, 'Coupon not found');
+      expect(cart.hasPromo, isFalse);
+    });
+
+    test('needs an address before it can be priced', () async {
+      addresses.selected = null;
+      await fill([_item()]);
+      final rejection = await cart.applyPromo('SAVE20');
+
+      expect(rejection, isA<PromoNeedsAddress>());
+      expect(ordersApi.lastCouponCode, isNull);
+    });
+
+    test('is dropped when the cart changes and the backend no longer accepts it', () async {
+      await fill([_item(unitPrice: 100.0)]);
+      await cart.refreshDeliveryFee();
+      await cart.applyPromo('SAVE20');
+      expect(cart.hasPromo, isTrue);
+
+      ordersApi.coupon =
+          const Right((isApplicable: false, discountAmount: 0.0, reason: 'Minimum not met'));
+      await fill([_item(unitPrice: 30.0)]);
+      await cart.refreshDeliveryFee();
+
+      expect(cart.hasPromo, isFalse);
+      expect(cart.total, closeTo(33.0, 0.001));
+    });
+
+    test('is cleared with the cart', () async {
+      await fill([_item()]);
+      await cart.applyPromo('SAVE20');
+      cartApi.items = [];
+      await cart.clearCart();
+
+      expect(cart.hasPromo, isFalse);
+      expect(cart.promoDiscount, 0.0);
     });
   });
 

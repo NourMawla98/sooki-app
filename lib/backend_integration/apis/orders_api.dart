@@ -14,6 +14,10 @@ typedef OrdersPage = ({
   bool isLastPage,
 });
 
+/// What a coupon is worth on the current cart and address, as the backend
+/// works it out. [reason] explains a coupon that does not apply.
+typedef CouponPreview = ({bool isApplicable, double discountAmount, String? reason});
+
 /// A payment method option offered at checkout (e.g. Cash on delivery).
 typedef PaymentMethodOption = ({int id, String name});
 
@@ -149,6 +153,34 @@ class OrdersApi {
           return (data['fee'] as num?)?.toDouble() ?? 0.0;
         }
         return (data as num?)?.toDouble() ?? 0.0;
+      },
+    );
+  }
+
+  /// Prices [couponCode] against the server cart for [addressId]. Silent,
+  /// because the promo sheet shows the backend's reason under the field.
+  Future<Either<ApiFailure, CouponPreview>> getCouponPreview({
+    required String couponCode,
+    required int addressId,
+  }) {
+    return executeRequest(
+      client: _dio,
+      method: HttpMethod.get,
+      path: 'customer/orders/coupon-preview',
+      queryParameters: {
+        'couponCode': couponCode,
+        'addressId': addressId,
+      },
+      extra: const {'silentError': true},
+      operationName: 'getCouponPreview',
+      successParser: (r) {
+        final data = (r.data as Map<String, dynamic>?)?['data']
+            as Map<String, dynamic>? ?? {};
+        return (
+          isApplicable: data['isApplicable'] as bool? ?? false,
+          discountAmount: (data['discountAmount'] as num?)?.toDouble() ?? 0.0,
+          reason: data['reason'] as String?,
+        );
       },
     );
   }

@@ -6,13 +6,27 @@ import '../backend_integration/apis/orders_api.dart';
 import '../backend_integration/dtos/cart/cart_dto.dart';
 import 'address_service.dart';
 
-class CartService extends ChangeNotifier {
-  static const Map<String, double> _promoCatalog = {'AURORA20': 0.20};
+/// Why a promo code was not applied: the backend's own reason when it gave
+/// one, or that the shopper has no delivery address to price it against.
+sealed class PromoRejection {
+  const PromoRejection();
+}
 
+class PromoRejectedByBackend extends PromoRejection {
+  final String? message;
+  const PromoRejectedByBackend(this.message);
+}
+
+class PromoNeedsAddress extends PromoRejection {
+  const PromoNeedsAddress();
+}
+
+class CartService extends ChangeNotifier {
   final CartApi _cartApi;
 
   List<CartItemDto> _items = [];
   String? _promoCode;
+  double _promoDiscount = 0.0;
   double? _deliveryFee;
   double? _feeSubtotal;
   bool _loadingDeliveryFee = false;
@@ -36,11 +50,8 @@ class CartService extends ChangeNotifier {
   String? get promoCode => _promoCode;
   bool get hasPromo => _promoCode != null;
 
-  double get promoDiscount {
-    final pct = _promoCatalog[_promoCode];
-    if (pct == null) return 0.0;
-    return subtotal * pct;
-  }
+  /// The discount the backend quoted for [promoCode] on this cart and address.
+  double get promoDiscount => _promoCode == null ? 0.0 : _promoDiscount;
 
   double get total {
     final raw = subtotal + shippingCost - promoDiscount;
@@ -89,6 +100,8 @@ class CartService extends ChangeNotifier {
       (fee) => _deliveryFee = fee,
     );
     notifyListeners();
+    // A coupon's value can move with the subtotal and the delivery fee.
+    await _repricePromo();
   }
 
   bool isInCart(int itemSizeId) =>
@@ -145,19 +158,45 @@ class CartService extends ChangeNotifier {
   Future<void> clearCart() async {
     await _cartApi.clearCart();
     _items = [];
+    _promoCode = null;
+    _promoDiscount = 0.0;
     notifyListeners();
   }
 
-  bool applyPromo(String code) {
+  /// Asks the backend what [code] is worth on this cart for the selected
+  /// address. Returns null once applied, or why it was not.
+  Future<PromoRejection?> applyPromo(String code) async {
     final normalized = code.trim().toUpperCase();
-    if (!_promoCatalog.containsKey(normalized)) return false;
-    _promoCode = normalized;
-    notifyListeners();
-    return true;
+    final addressId = GetIt.instance<AddressService>().selectedId;
+    if (addressId == null) return const PromoNeedsAddress();
+
+    final result = await GetIt.instance<OrdersApi>()
+        .getCouponPreview(couponCode: normalized, addressId: addressId);
+    return result.fold(
+      (failure) => PromoRejectedByBackend(failure.message),
+      (preview) {
+        if (!preview.isApplicable) return PromoRejectedByBackend(preview.reason);
+        _promoCode = normalized;
+        _promoDiscount = preview.discountAmount;
+        notifyListeners();
+        return null;
+      },
+    );
   }
 
   void removePromo() {
     _promoCode = null;
+    _promoDiscount = 0.0;
     notifyListeners();
+  }
+
+  /// Prices the applied code again after the cart or address changed, and
+  /// drops it when it no longer applies, so the totals never show a discount
+  /// the backend would refuse at checkout.
+  Future<void> _repricePromo() async {
+    final code = _promoCode;
+    if (code == null) return;
+    final rejection = await applyPromo(code);
+    if (rejection != null && _promoCode == code) removePromo();
   }
 }

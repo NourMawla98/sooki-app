@@ -295,7 +295,7 @@
   },
   "promo_row": {
     "code_applied": "{code} appliqué",
-    "discount_hint": "20 % de réduction sur toute la commande",
+    "discount_amount": "{amount} de réduction sur cette commande",
     "have_promo": "Vous avez un code promo ?",
     "tap_to_enter": "Appuyez pour saisir le code",
     "remove": "RETIRER",
@@ -304,9 +304,10 @@
   "promo_sheet": {
     "promo_code": "CODE PROMO",
     "enter_your_code": "Saisissez votre code",
-    "code_hint": "ex. AURORA20",
+    "code_hint": "Votre code",
     "apply": "APPLIQUER",
-    "invalid_code": "Code invalide"
+    "invalid_code": "Code invalide",
+    "address_needed": "Ajoutez d'abord une adresse de livraison pour calculer la valeur du code."
   },
   "address_picker_sheet": {
     "choose_address": "Choisir une adresse",

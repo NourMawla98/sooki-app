@@ -7,6 +7,7 @@ import '../../../../services/cart_service.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
+import '../../../../utils/number_localization.dart';
 import '_cart_surface_theme.dart';
 import 'promo_sheet.dart';
 
@@ -80,7 +81,12 @@ class PromoRow extends StatelessWidget {
                           ),
                           const SizedBox(height: 1),
                           Text(
-                            'promo_row.discount_hint'.tr(),
+                            'promo_row.discount_amount'.tr(
+                              namedArgs: {
+                                'amount':
+                                    '\$${localizedPrice(cartService.promoDiscount)}',
+                              },
+                            ),
                             style: AppTextStyles.bodySmall.copyWith(
                               fontSize: 10.5,
                               color: c.textMute,

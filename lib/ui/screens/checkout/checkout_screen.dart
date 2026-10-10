@@ -81,6 +81,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       customerNote: _noteController.text.trim().isEmpty
           ? null
           : _noteController.text.trim(),
+      couponCode: _cartService.promoCode,
     );
 
     final result = await _ordersService.placeOrder(dto);
@@ -449,6 +450,18 @@ class _OrderSummaryCard extends StatelessWidget {
                       : null,
                   isDark: isDark,
                 ),
+                // The total already takes the coupon off, so its line shows why.
+                if (cartService.hasPromo) ...[
+                  const SizedBox(height: 5),
+                  _TotalRow(
+                    label: 'cart_summary.promo_label'.tr(
+                      namedArgs: {'code': cartService.promoCode ?? ''},
+                    ),
+                    value: '\u2212\$${localizedPrice(cartService.promoDiscount)}',
+                    valueColor: AppColors.auroraPink,
+                    isDark: isDark,
+                  ),
+                ],
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: _DashedDivider(color: divider),
