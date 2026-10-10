@@ -8,6 +8,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'backend_integration/dio/interceptors/global_headers_interceptor.dart';
+import 'config/app_config.dart';
+import 'enums/app_environment.dart';
 import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
@@ -19,7 +21,16 @@ import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'themes/themes.dart';
 
-Future<void> main() async {
+Future<void> main() => runSooki(AppEnvironment.dev);
+
+/// Starts the app against [environment]. Every entry point goes through here.
+Future<void> runSooki(AppEnvironment environment) async {
+  if (environment.appSecret.isEmpty) {
+    throw StateError(
+      'No app secret for ${environment.name}. Pass --dart-define-from-file=env/${environment.name}.json',
+    );
+  }
+  AppConfig.environment = environment;
   WidgetsFlutterBinding.ensureInitialized();
 
   // easy_localization requires this before any EasyLocalization widgets build.

@@ -1,4 +1,9 @@
+import '../enums/app_environment.dart';
+
 class AppConfig {
-  static const appSecret = 'dev-secret-change-in-production';
-  static const baseUrl = 'http://10.0.2.2:1010/api/';
+  /// Set once by the entry point before anything reads [baseUrl] or [appSecret].
+  static AppEnvironment environment = AppEnvironment.dev;
+
+  static String get baseUrl => environment.baseUrl;
+  static String get appSecret => environment.appSecret;
 }

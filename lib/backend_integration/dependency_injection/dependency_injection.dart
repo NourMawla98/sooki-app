@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../config/app_config.dart';
 import '../../services/address_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/cart_service.dart';
@@ -23,9 +24,6 @@ import 'dependency_injection.config.dart';
 
 /// Global service locator instance
 final GetIt serviceLocator = GetIt.instance;
-
-/// API base URL for Android emulator localhost
-const String apiBaseUrl = 'http://10.0.2.2:1010/api/';
 
 @InjectableInit(
   initializerName: r'$initGetIt',
@@ -59,7 +57,7 @@ Future<void> setupDependencyInjection({
 
   serviceLocator.registerSingleton<Dio>(
     createApiClient(
-      baseUrl: apiBaseUrl,
+      baseUrl: AppConfig.baseUrl,
       languageService: languageService,
       authService: serviceLocator<AuthService>(),
     ),

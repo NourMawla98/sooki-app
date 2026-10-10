@@ -54,3 +54,8 @@ app.*.map.json
 !CLAUDE.md
 !CLAUDE_SESSION.md
 /.superpowers
+
+
+# Build-time secrets passed with --dart-define-from-file
+/env/*.json
+!/env/*.example.json
