@@ -43,6 +43,14 @@ class AddressService extends ChangeNotifier {
     );
   }
 
+  /// Forgets the addresses held for the previous identity, before the next
+  /// one's addresses are fetched.
+  void reset() {
+    _addresses.clear();
+    _selectedId = null;
+    notifyListeners();
+  }
+
   void select(int id) {
     if (!_addresses.any((a) => a.id == id)) return;
     _selectedId = id;

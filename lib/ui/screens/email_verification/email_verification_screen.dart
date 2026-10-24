@@ -8,8 +8,6 @@ import '../../../backend_integration/apis/auth_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
-import '../../../services/wishlist_service.dart';
-import '../../../services/cart_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../themes/app_colors.dart';
@@ -70,8 +68,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         final tokenData = data['data'] as Map<String, dynamic>?;
         if (tokenData != null) {
           await serviceLocator<AuthService>().signIn(tokenData);
-          await serviceLocator<WishlistService>().loadFromServer();
-          await serviceLocator<CartService>().loadFromServer();
         }
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, mainScreenRoute);

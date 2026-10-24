@@ -321,19 +321,17 @@ class _SignOutRowState extends State<_SignOutRow> {
     setState(() => _isLoading = true);
     final refreshToken = await TokenService.instance.getRefreshToken();
     String? toastMessage;
-    Map<String, dynamic>? guestTokenData;
     if (refreshToken != null) {
       final result = await serviceLocator<AuthApi>().logout(refreshToken: refreshToken);
       result.fold(
         (_) => null,
         (data) {
           toastMessage = data['message'] as String?;
-          guestTokenData = data['data'] as Map<String, dynamic>?;
         },
       );
     }
     if (!mounted) return;
-    await GetIt.instance<AuthService>().signOut(guestTokenData: guestTokenData);
+    await GetIt.instance<AuthService>().signOut();
     await serviceLocator<UserProfileService>().clear();
     if (toastMessage != null) {
       ToastService.instance.showSuccess(toastMessage!);

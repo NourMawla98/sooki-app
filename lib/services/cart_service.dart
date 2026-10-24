@@ -117,6 +117,18 @@ class CartService extends ChangeNotifier {
     });
   }
 
+  /// Forgets the cart held for the previous identity, before the next one's
+  /// cart is fetched.
+  void reset() {
+    _items = [];
+    _promoCode = null;
+    _promoDiscount = 0.0;
+    _deliveryFee = null;
+    _feeSubtotal = null;
+    _loadingDeliveryFee = false;
+    notifyListeners();
+  }
+
   // ─── Mutations ────────────────────────────────────────────────────────────
 
   Future<String?> addToCart({

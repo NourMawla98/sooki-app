@@ -71,18 +71,16 @@ class _UserMenuDropdownState extends State<UserMenuDropdown> {
       onConfirm: () async {
         final refreshToken = await TokenService.instance.getRefreshToken();
         String? toastMessage;
-        Map<String, dynamic>? guestTokenData;
         if (refreshToken != null) {
           final result = await serviceLocator<AuthApi>().logout(refreshToken: refreshToken);
           result.fold(
             (_) => null,
             (data) {
               toastMessage = data['message'] as String?;
-              guestTokenData = data['data'] as Map<String, dynamic>?;
             },
           );
         }
-        await _authService.signOut(guestTokenData: guestTokenData);
+        await _authService.signOut();
         if (toastMessage != null) ToastService.instance.showSuccess(toastMessage!);
       },
     );

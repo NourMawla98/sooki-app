@@ -12,9 +12,12 @@ import 'package:get_it/get_it.dart';
 
 import '../backend_integration/dio/client/api_error_handler.dart';
 import '../config/app_config.dart';
+import 'address_service.dart';
+import 'cart_service.dart';
 import 'language_service.dart';
 import 'push_notification_service.dart';
 import 'token_service.dart';
+import 'wishlist_service.dart';
 
 /// Tracks identity state (guest vs customer) derived from the stored JWT.
 /// Every user always has a JWT — guest on first launch, customer after login.
@@ -66,13 +69,15 @@ class AuthService extends ChangeNotifier {
       unawaited(GetIt.instance<LanguageService>().syncToBackend());
     }
     unawaited(PushNotificationService.instance.registerCurrentToken());
+    _reloadIdentityData();
     notifyListeners();
   }
 
-  /// Called after logout.
-  /// If [guestTokenData] is provided (from logout API response), saves those tokens.
-  /// Otherwise clears tokens and runs guest auth as fallback.
-  Future<void> signOut({Map<String, dynamic>? guestTokenData}) async {
+  /// Called after logout. Always switches to this device's own guest identity.
+  /// The guest token the logout endpoint returns still points at the signed-out
+  /// customer's row, so using it would leave the guest reading and changing
+  /// that customer's cart and wishlist.
+  Future<void> signOut() async {
     // Unbind this device's push token while the customer JWT is still active.
     try {
       await PushNotificationService.instance.unregister();
@@ -80,18 +85,34 @@ class AuthService extends ChangeNotifier {
       // Best-effort — never block logout on token removal.
     }
 
-    if (guestTokenData != null) {
-      await _saveTokenData(guestTokenData);
-      _isCustomer = false;
-      _isGuest = true;
+    await TokenService.instance.clearTokens();
+    _isCustomer = false;
+    _isGuest = false;
+    try {
+      await _runGuestAuth();
+    } catch (_) {
+      // Guest auth failed, so the app stays signed out with no token.
       notifyListeners();
-    } else {
-      await TokenService.instance.clearTokens();
-      try {
-        await _runGuestAuth();
-      } catch (_) {
-        // Guest auth failed as post-logout fallback — app stays in cleared state.
-      }
+    }
+    _reloadIdentityData();
+  }
+
+  /// The cart, wishlist and addresses are held in memory per identity, so a
+  /// token switch drops them and fetches them again under the new token.
+  /// Without this a guest keeps seeing the account that just signed out.
+  void _reloadIdentityData() {
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<CartService>()) {
+      final cart = getIt<CartService>()..reset();
+      unawaited(cart.loadFromServer());
+    }
+    if (getIt.isRegistered<WishlistService>()) {
+      final wishlist = getIt<WishlistService>()..reset();
+      unawaited(wishlist.loadFromServer());
+    }
+    if (getIt.isRegistered<AddressService>()) {
+      final addresses = getIt<AddressService>()..reset();
+      unawaited(addresses.loadFromServer());
     }
   }
 

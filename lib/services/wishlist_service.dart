@@ -30,6 +30,14 @@ class WishlistService extends ChangeNotifier {
     await _fetchAndSet();
   }
 
+  /// Forgets the wishlist held for the previous identity, before the next
+  /// one's wishlist is fetched.
+  void reset() {
+    _items = [];
+    _ids.clear();
+    notifyListeners();
+  }
+
   // ─── Server toggle (optimistic) ─────────────────────────────────────────────
 
   Future<String?> _toggleServer(int itemId) async {
