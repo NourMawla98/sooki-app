@@ -18,6 +18,7 @@ import 'language_service.dart';
 import 'notification_service.dart';
 import 'push_notification_service.dart';
 import 'token_service.dart';
+import 'user_profile_service.dart';
 import 'wishlist_service.dart';
 
 /// Tracks identity state (guest vs customer) derived from the stored JWT.
@@ -87,6 +88,9 @@ class AuthService extends ChangeNotifier {
     }
 
     await TokenService.instance.clearTokens();
+    if (GetIt.instance.isRegistered<UserProfileService>()) {
+      await GetIt.instance<UserProfileService>().clear();
+    }
     _isCustomer = false;
     _isGuest = false;
     try {

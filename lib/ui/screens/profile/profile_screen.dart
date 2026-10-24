@@ -332,7 +332,6 @@ class _SignOutRowState extends State<_SignOutRow> {
     }
     if (!mounted) return;
     await GetIt.instance<AuthService>().signOut();
-    await serviceLocator<UserProfileService>().clear();
     if (toastMessage != null) {
       ToastService.instance.showSuccess(toastMessage!);
     }
