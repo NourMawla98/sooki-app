@@ -10,7 +10,7 @@ class AuroraGlowBlob extends StatelessWidget {
   final double size;
   final Color color;
 
-  /// Peak inner-opacity of the radial gradient (0.0 – 1.0).
+  /// Peak inner-opacity of the radial gradient (0.0 - 1.0).
   final double intensity;
 
   const AuroraGlowBlob({

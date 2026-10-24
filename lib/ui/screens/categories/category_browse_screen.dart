@@ -114,7 +114,7 @@ class _CategoryBrowseScreenState extends State<CategoryBrowseScreen> {
   }
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// --- Skeleton -----------------------------------------------------------------
 
 class _SkeletonBody extends StatelessWidget {
   final bool isDark;
@@ -212,7 +212,7 @@ class _SkeletonBody extends StatelessWidget {
   }
 }
 
-// ─── Error ────────────────────────────────────────────────────────────────────
+// --- Error --------------------------------------------------------------------
 
 class _ErrorBody extends StatelessWidget {
   final bool isDark;
@@ -244,7 +244,7 @@ class _ErrorBody extends StatelessWidget {
   }
 }
 
-// ─── Left sidebar ─────────────────────────────────────────────────────────────
+// --- Left sidebar -------------------------------------------------------------
 
 class _Sidebar extends StatelessWidget {
   final bool isDark;
@@ -459,7 +459,7 @@ class _CategoryImage extends StatelessWidget {
   }
 }
 
-// ─── Right content panel ──────────────────────────────────────────────────────
+// --- Right content panel ------------------------------------------------------
 
 class _ContentPanel extends StatelessWidget {
   final bool isDark;

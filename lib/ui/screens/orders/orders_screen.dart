@@ -209,7 +209,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 }
 
-// ── Filter tab ────────────────────────────────────────────────────────────────
+// -- Filter tab ----------------------------------------------------------------
 
 class _FilterTab extends StatelessWidget {
   final String label;
@@ -251,7 +251,7 @@ class _FilterTab extends StatelessWidget {
   }
 }
 
-// ── Empty state ───────────────────────────────────────────────────────────────
+// -- Empty state ---------------------------------------------------------------
 
 class _EmptyState extends StatelessWidget {
   final bool isDark;

@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Global theme notifier — toggles between light and dark mode.
+/// Global theme notifier, toggles between light and dark mode.
 /// User preference is persisted to SharedPreferences and restored on startup.
 class ThemeService extends ChangeNotifier {
   ThemeService._();

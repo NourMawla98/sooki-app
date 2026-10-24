@@ -220,13 +220,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   color: AppColors.auroraPurple, intensity: isDark ? 0.20 : 0.10),
               AuroraGlowBlob(bottom: -100, left: -100, size: 300,
                   color: AppColors.auroraElectricBlue, intensity: isDark ? 0.18 : 0.08),
-              const FloatingEmoji(emoji: '🛍️', size: 36, opacity: 0.2,
+              const FloatingEmoji(emoji: '\u{1F6CD}\uFE0F', size: 36, opacity: 0.2,
                   top: 80, left: 32, floatDistance: 15.5, rotationAngle: 7.7, durationMs: 2200),
-              const FloatingEmoji(emoji: '❤️', size: 30, opacity: 0.2,
+              const FloatingEmoji(emoji: '\u2764\uFE0F', size: 30, opacity: 0.2,
                   top: 160, right: 48, floatDistance: 14.6, rotationAngle: -9.7, durationMs: 2400),
-              const FloatingEmoji(emoji: '⭐', size: 30, opacity: 0.2,
+              const FloatingEmoji(emoji: '\u2B50', size: 30, opacity: 0.2,
                   bottom: 128, right: 32, floatDistance: 14.5, rotationAngle: 14.5, durationMs: 2100),
-              const FloatingEmoji(emoji: '🎁', size: 36, opacity: 0.2,
+              const FloatingEmoji(emoji: '\u{1F381}', size: 36, opacity: 0.2,
                   bottom: 80, left: 48, floatDistance: 18.5, rotationAngle: -13.9, durationMs: 2300),
 
               SafeArea(
@@ -263,7 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
 
-                                    // ── Email ──
+                                    // -- Email --
                                     AuroraInputField(
                                       label: 'auth.email'.tr(), required: true,
                                       hint: 'auth.email_hint'.tr(),
@@ -278,7 +278,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     const SizedBox(height: 14),
 
-                                    // ── First / Last name ──
+                                    // -- First / Last name --
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -319,7 +319,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     const SizedBox(height: 14),
 
-                                    // ── Mobile Number ──
+                                    // -- Mobile Number --
                                     AuroraPhoneField(
                                       label: 'auth.mobile_number'.tr(),
                                       required: true,
@@ -335,10 +335,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     const SizedBox(height: 14),
 
-                                    // ── Password ──
+                                    // -- Password --
                                     AuroraInputField(
                                       label: 'auth.password'.tr(), required: true,
-                                      hint: '••••••••',
+                                      hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
                                       controller: _passwordController,
                                       focusNode: _passwordFocusNode,
                                       errorText: _passwordError,
@@ -353,10 +353,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     const SizedBox(height: 14),
 
-                                    // ── Confirm Password ──
+                                    // -- Confirm Password --
                                     AuroraInputField(
                                       label: 'auth.confirm_password'.tr(), required: true,
-                                      hint: '••••••••',
+                                      hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
                                       controller: _confirmController,
                                       focusNode: _confirmFocusNode,
                                       isPassword: true,

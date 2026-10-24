@@ -40,19 +40,19 @@ class AuthInterceptor extends Interceptor {
   ) async {
     if (err.response?.statusCode != 401) return handler.next(err);
 
-    // Refresh call itself failed → transition to guest, no retry
+    // Refresh call itself failed -> transition to guest, no retry
     if (err.requestOptions.path.contains('auth/customer/refresh')) {
       await _handleAuthFailure();
       return handler.reject(err);
     }
 
-    // Already retried with a fresh token and still got 401 → transition to guest
+    // Already retried with a fresh token and still got 401 -> transition to guest
     if (err.requestOptions.extra['isRetry'] == true) {
       await _handleAuthFailure();
       return handler.reject(err);
     }
 
-    // Another refresh is in progress — queue this request
+    // Another refresh is in progress, queue this request
     if (_isRefreshing) {
       _pending.add((options: err.requestOptions, handler: handler));
       return;
@@ -133,7 +133,7 @@ class AuthInterceptor extends Interceptor {
     return null;
   }
 
-  /// Called when token refresh fails — silently transitions to guest state.
+  /// Called when token refresh fails, silently transitions to guest state.
   Future<void> _handleAuthFailure() async {
     await _authService.signOut();
   }

@@ -48,7 +48,7 @@ class PlacesService {
     });
   }
 
-  /// Loads all cities for Lebanon by traversing countries → provinces → cities.
+  /// Loads all cities for Lebanon by traversing countries -> provinces -> cities.
   /// Results are cached so subsequent calls are free.
   Future<List<LocationItemDto>> loadLebanonCities() async {
     final countries = await loadCountries();

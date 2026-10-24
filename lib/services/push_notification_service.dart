@@ -111,7 +111,7 @@ class PushNotificationService {
   }
 
   void _onMessageOpened(RemoteMessage message) {
-    // Tap from background/terminated → mark read + deep-link.
+    // Tap from background/terminated -> mark read + deep-link.
     _markRead(message);
     _route(message);
   }
@@ -130,7 +130,7 @@ class PushNotificationService {
   }
 
   /// Mark the notification read on the server using the `notificationId` data
-  /// key (absent for broadcasts — skipped).
+  /// key (absent for broadcasts, skipped).
   void _markRead(RemoteMessage message) {
     final id = int.tryParse('${message.data['notificationId']}');
     if (id == null || id <= 0) return;

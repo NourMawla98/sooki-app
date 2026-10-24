@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>
     String? error;
     try {
       await authService.restoreSession();
-      // A JWT now exists (guest or customer) — persist the device-detected /
+      // A JWT now exists (guest or customer), persist the device-detected /
       // cached language to the account so the DB matches the app.
       unawaited(serviceLocator<LanguageService>().syncToBackend());
       // Register this device for push now that we hold a JWT.
@@ -148,7 +148,7 @@ class _SplashScreenState extends State<SplashScreen>
                 intensity: isDark ? 0.18 : 0.10,
               ),
               const FloatingEmoji(
-                emoji: '🛍️',
+                emoji: '\u{1F6CD}\uFE0F',
                 size: 36,
                 opacity: 0.2,
                 top: 80,
@@ -158,7 +158,7 @@ class _SplashScreenState extends State<SplashScreen>
                 durationMs: 2200,
               ),
               const FloatingEmoji(
-                emoji: '❤️',
+                emoji: '\u2764\uFE0F',
                 size: 30,
                 opacity: 0.2,
                 top: 160,
@@ -168,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen>
                 durationMs: 2400,
               ),
               const FloatingEmoji(
-                emoji: '⭐',
+                emoji: '\u2B50',
                 size: 30,
                 opacity: 0.2,
                 bottom: 128,
@@ -178,7 +178,7 @@ class _SplashScreenState extends State<SplashScreen>
                 durationMs: 2100,
               ),
               const FloatingEmoji(
-                emoji: '🎁',
+                emoji: '\u{1F381}',
                 size: 36,
                 opacity: 0.2,
                 bottom: 80,

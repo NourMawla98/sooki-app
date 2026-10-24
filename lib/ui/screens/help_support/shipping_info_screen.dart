@@ -96,7 +96,7 @@ class ShippingInfoScreen extends StatelessWidget {
   }
 }
 
-// ─── Top bar ──────────────────────────────────────────────────────────────────
+// --- Top bar ------------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final bool isDark;
@@ -133,7 +133,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// --- Section label ------------------------------------------------------------
 
 class _GroupLabel extends StatelessWidget {
   final String label;
@@ -157,7 +157,7 @@ class _GroupLabel extends StatelessWidget {
   }
 }
 
-// ─── Glass group card ─────────────────────────────────────────────────────────
+// --- Glass group card ---------------------------------------------------------
 
 class _GroupCard extends StatelessWidget {
   final bool isDark;
@@ -183,7 +183,7 @@ class _GroupCard extends StatelessWidget {
   }
 }
 
-// ─── Divider ──────────────────────────────────────────────────────────────────
+// --- Divider ------------------------------------------------------------------
 
 class _Divider extends StatelessWidget {
   final bool isDark;
@@ -200,7 +200,7 @@ class _Divider extends StatelessWidget {
   }
 }
 
-// ─── Info row (title + value) ─────────────────────────────────────────────────
+// --- Info row (title + value) -------------------------------------------------
 
 class _InfoRow extends StatelessWidget {
   final bool isDark;
@@ -275,7 +275,7 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-// ─── Notice row ───────────────────────────────────────────────────────────────
+// --- Notice row ---------------------------------------------------------------
 
 class _NoticeRow extends StatelessWidget {
   final bool isDark;

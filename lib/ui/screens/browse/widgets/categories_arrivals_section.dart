@@ -257,7 +257,7 @@ class _CategoriesArrivalsSectionState extends State<CategoriesArrivalsSection>
   }
 }
 
-// ─── Skeleton card ────────────────────────────────────────────────────────────
+// --- Skeleton card ------------------------------------------------------------
 
 class _ItemCardSkeleton extends StatelessWidget {
   const _ItemCardSkeleton();
@@ -304,7 +304,7 @@ class _ItemCardSkeleton extends StatelessWidget {
   }
 }
 
-// ─── Loading indicator ───────────────────────────────────────────────────────
+// --- Loading indicator -------------------------------------------------------
 
 class _LoadingIndicator extends StatelessWidget {
   @override
@@ -325,7 +325,7 @@ class _LoadingIndicator extends StatelessWidget {
   }
 }
 
-// ─── End of feed label ───────────────────────────────────────────────────────
+// --- End of feed label -------------------------------------------------------
 
 class _EndOfFeedLabel extends StatelessWidget {
   @override

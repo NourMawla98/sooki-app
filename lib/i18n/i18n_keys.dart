@@ -2,7 +2,7 @@
 ///
 /// Keys mirror the JSON structure in `assets/translations/{en,ar,fr}.json`
 /// using dot notation. Always reference a key through this class rather than
-/// passing a raw string literal to `tr(...)` — this prevents typos and gives
+/// passing a raw string literal to `tr(...)`, this prevents typos and gives
 /// the editor one place to jump to for rename/find-usages.
 ///
 /// When adding a new key: (1) add a constant here, (2) add the same key to
@@ -11,6 +11,6 @@
 class I18nKeys {
   I18nKeys._();
 
-  // ─── common ─────────────────────────────────────────────────────────────
+  // --- common -------------------------------------------------------------
   static const appName = 'common.app_name';
 }

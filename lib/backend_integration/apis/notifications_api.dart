@@ -33,7 +33,7 @@ class NotificationsApi {
       path: 'customer/notifications/device-token',
       body: {'token': token, 'platform': platform},
       operationName: 'registerDeviceToken',
-      // Background concern — never surface a toast on failure.
+      // Background concern, never surface a toast on failure.
       extra: const {'silentError': true},
       successParser: (r) =>
           (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',

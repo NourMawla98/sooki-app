@@ -160,7 +160,7 @@ class _CartEmptyStateState extends State<CartEmptyState>
   }
 }
 
-// ── Bag illustration with glow + orbit dots + float ──────────────────────────
+// -- Bag illustration with glow + orbit dots + float --------------------------
 
 class _BagIllustration extends StatelessWidget {
   final Animation<double> floatY;
@@ -185,7 +185,7 @@ class _BagIllustration extends StatelessWidget {
     const center = wrapSize / 2;
     // Orbit radii matching the mockup
     const r1 = 58.0, r2 = 62.0, r3 = 55.0;
-    // Starting angles (0°, 120°, 240° in radians)
+    // Starting angles (0 deg, 120 deg, 240 deg in radians)
     const a1Start = 0.0;
     const a2Start = 2 * pi / 3;
     const a3Start = 4 * pi / 3;
@@ -234,7 +234,7 @@ class _BagIllustration extends StatelessWidget {
                 ),
               ),
 
-              // Orbit dot 1 — pink
+              // Orbit dot 1, pink
               Positioned(
                 left: center + r1 * cos(a1) - 3.5,
                 top: center + r1 * sin(a1) - 3.5,
@@ -248,7 +248,7 @@ class _BagIllustration extends StatelessWidget {
                 ),
               ),
 
-              // Orbit dot 2 — blue
+              // Orbit dot 2, blue
               Positioned(
                 left: center + r2 * cos(a2) - 2.5,
                 top: center + r2 * sin(a2) - 2.5,
@@ -262,7 +262,7 @@ class _BagIllustration extends StatelessWidget {
                 ),
               ),
 
-              // Orbit dot 3 — green
+              // Orbit dot 3, green
               Positioned(
                 left: center + r3 * cos(a3) - 2.0,
                 top: center + r3 * sin(a3) - 2.0,
@@ -292,7 +292,7 @@ class _BagIllustration extends StatelessWidget {
   }
 }
 
-// ── Bag stroke painter ────────────────────────────────────────────────────────
+// -- Bag stroke painter --------------------------------------------------------
 
 class _BagPainter extends CustomPainter {
   @override
@@ -315,7 +315,7 @@ class _BagPainter extends CustomPainter {
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 
-    // Scale from 72×72 viewBox to actual size
+    // Scale from 72x72 viewBox to actual size
     final sx = size.width / 72;
     final sy = size.height / 72;
 

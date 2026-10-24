@@ -6,7 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 /// Extracts a user-facing error message from a [DioException].
 ///
 /// Used by [executeRequest] to populate the [ApiFailure] message.
-/// Toast display is handled globally by [ErrorInterceptor] — callers
+/// Toast display is handled globally by [ErrorInterceptor], callers
 /// must not show an additional toast from this message.
 class ApiErrorHandler {
   const ApiErrorHandler._();

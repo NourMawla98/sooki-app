@@ -16,9 +16,9 @@ import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
 import '../../cart/widgets/aurora_login_gate_dialog.dart';
 
-/// Section 6 — Quick Actions. Four circular glass bubbles that shortcut to
+/// Section 6, Quick Actions. Four circular glass bubbles that shortcut to
 /// the user's most-used utilities (Track Order, Wishlist, Reorder, Settings).
-/// Rewards is intentionally omitted — it's already a bottom nav tab.
+/// Rewards is intentionally omitted, it's already a bottom nav tab.
 ///
 /// Each bubble has a distinct subtle animation tied to its meaning:
 ///   - Track: pulsing blue glow (live order)

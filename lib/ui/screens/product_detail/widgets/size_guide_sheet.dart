@@ -266,7 +266,7 @@ class _SizeGuideSheetState extends State<SizeGuideSheet> {
   }
 }
 
-// ─── Generic guide table ──────────────────────────────────────────────────────
+// --- Generic guide table ------------------------------------------------------
 
 class _GuideTable extends StatelessWidget {
   const _GuideTable({
@@ -439,7 +439,7 @@ class _GuideRow extends StatelessWidget {
   }
 }
 
-// ─── Bra guide ────────────────────────────────────────────────────────────────
+// --- Bra guide ----------------------------------------------------------------
 
 class _BraGuide extends StatelessWidget {
   const _BraGuide({
@@ -590,14 +590,14 @@ class _BraStep extends StatelessWidget {
 }
 
 const _kCupDiffs = [
-  ['AA', '0–2 cm'],
-  ['A', '2–4 cm'],
-  ['B', '4–6 cm'],
-  ['C', '6–8 cm'],
-  ['D', '8–10 cm'],
-  ['E', '10–12 cm'],
-  ['F', '12–14 cm'],
-  ['G', '14–16 cm'],
+  ['AA', '0\u20132 cm'],
+  ['A', '2\u20134 cm'],
+  ['B', '4\u20136 cm'],
+  ['C', '6\u20138 cm'],
+  ['D', '8\u201310 cm'],
+  ['E', '10\u201312 cm'],
+  ['F', '12\u201314 cm'],
+  ['G', '14\u201316 cm'],
 ];
 
 class _CupDiffTable extends StatelessWidget {
@@ -703,7 +703,7 @@ class _CupDiffTable extends StatelessWidget {
   }
 }
 
-// ─── Tip card ─────────────────────────────────────────────────────────────────
+// --- Tip card -----------------------------------------------------------------
 
 class _TipCard extends StatelessWidget {
   const _TipCard({required this.text, required this.mutedBody});
@@ -748,7 +748,7 @@ class _TipCard extends StatelessWidget {
   }
 }
 
-// ─── Unit toggle ─────────────────────────────────────────────────────────────
+// --- Unit toggle -------------------------------------------------------------
 
 class _UnitToggle extends StatelessWidget {
   const _UnitToggle({

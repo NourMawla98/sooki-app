@@ -13,7 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 class AppFonts {
   AppFonts._();
 
-  /// Primary app font — DM Sans. Wraps [GoogleFonts.roboto] so every style
+  /// Primary app font, DM Sans. Wraps [GoogleFonts.roboto] so every style
   /// funnels through a single function.
   static TextStyle primary({
     TextStyle? textStyle,
@@ -46,7 +46,7 @@ class AppFonts {
         decorationThickness: decorationThickness,
       );
 
-  /// Editorial serif — Playfair Display. Used for aurora hero headings only.
+  /// Editorial serif, Playfair Display. Used for aurora hero headings only.
   static TextStyle editorial({
     TextStyle? textStyle,
     Color? color,

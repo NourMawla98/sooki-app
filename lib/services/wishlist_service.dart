@@ -38,7 +38,7 @@ class WishlistService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Server toggle (optimistic) ─────────────────────────────────────────────
+  // --- Server toggle (optimistic) ---------------------------------------------
 
   Future<String?> _toggleServer(int itemId) async {
     final wasWishlisted = _ids.contains(itemId);

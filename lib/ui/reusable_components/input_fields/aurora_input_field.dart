@@ -5,7 +5,7 @@ import '../../../services/theme_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 
-/// V2 aurora input — matches agreed HTML spec.
+/// V2 aurora input, matches agreed HTML spec.
 ///
 /// Error state is driven by EITHER [errorText] (manual) OR by the [validator]
 /// returning a non-null string when the parent Form validates. In both cases
@@ -134,9 +134,9 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
         final textColor =
             isDark ? AppColors.white : AppColors.auroraDeepBase;
 
-        // ── Inner TextField ──────────────────────────────────────────────
-        // filled: false — Container provides the rounded background.
-        // errorStyle is invisible — we render our own error text below.
+        // -- Inner TextField ----------------------------------------------
+        // filled: false, Container provides the rounded background.
+        // errorStyle is invisible, we render our own error text below.
         Widget buildTextField() {
           return TextFormField(
             controller: widget.controller,
@@ -210,7 +210,7 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
               errorBorder: InputBorder.none,
               focusedErrorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              // Zero-height error style — suppresses Flutter's built-in
+              // Zero-height error style, suppresses Flutter's built-in
               // error space entirely. We render our own error text below.
               // (Cannot use error: widget + errorText simultaneously.)
               errorStyle: const TextStyle(height: 0, fontSize: 0),
@@ -225,7 +225,7 @@ class _AuroraInputFieldState extends State<AuroraInputField> {
           );
         }
 
-        // ── Container per state ───────────────────────────────────────────
+        // -- Container per state -------------------------------------------
         Widget field;
 
         if (hasError) {

@@ -230,7 +230,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 }
 
-// ── Section label ─────────────────────────────────────────────────────────────
+// -- Section label -------------------------------------------------------------
 
 class _SectionLabel extends StatelessWidget {
   final String label;
@@ -275,7 +275,7 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-// ── No address warning ────────────────────────────────────────────────────────
+// -- No address warning --------------------------------------------------------
 
 class _NoAddressWarning extends StatelessWidget {
   @override
@@ -311,7 +311,7 @@ class _NoAddressWarning extends StatelessWidget {
   }
 }
 
-// ── Order summary card ────────────────────────────────────────────────────────
+// -- Order summary card --------------------------------------------------------
 
 class _OrderSummaryCard extends StatelessWidget {
   final CartService cartService;
@@ -702,7 +702,7 @@ class _PaymentCard extends StatelessWidget {
   }
 }
 
-// ── Sticky bottom bar ─────────────────────────────────────────────────────────
+// -- Sticky bottom bar ---------------------------------------------------------
 
 class _StickyBar extends StatelessWidget {
   final bool isDark;

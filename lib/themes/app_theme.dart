@@ -44,7 +44,7 @@ class AppTheme {
         titleTextStyle: AppTextStyles.heading3,
       ),
 
-      // Text Theme — primary font applied via AppFonts so any Text widget
+      // Text Theme, primary font applied via AppFonts so any Text widget
       // that reads from Theme.of(context).textTheme inherits DM Sans.
       textTheme: AppFonts.applyPrimary(
         TextTheme(

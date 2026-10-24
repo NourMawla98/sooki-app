@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Sooki Aurora palette — the **only** canonical colors in the app.
+/// Sooki Aurora palette, the **only** canonical colors in the app.
 ///
 /// Every other name in this file is a deprecated alias that resolves to one
 /// of the approved colors below. Migrate each callsite to the canonical name
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // ─── APPROVED PALETTE ────────────────────────────────────────────────
+  // --- APPROVED PALETTE ------------------------------------------------
   static const Color auroraPurple = Color(0xFF7C3AED);
   static const Color auroraPink = Color(0xFFFF00C8);
   static const Color auroraElectricBlue = Color(0xFF0096FF);
@@ -24,7 +24,7 @@ class AppColors {
   static const Color auroraTeal = Color(0xFF06B6D4); // Quality Checked tag
   static const Color skeletonBase = Color(0xFFE5E7EB); // skeleton loading placeholders only
 
-  /// Signature aurora gradient — pink → purple → blue. Every primary CTA,
+  /// Signature aurora gradient, pink -> purple -> blue. Every primary CTA,
   /// every shimmer, every gradient-masked text uses this.
   static const List<Color> auroraGradient = <Color>[
     auroraPink,
@@ -32,16 +32,16 @@ class AppColors {
     auroraElectricBlue,
   ];
 
-  // ─── Muted text — NEVER grey. Aurora-tinted alpha only. ─────────────
+  // --- Muted text, NEVER grey. Aurora-tinted alpha only. -------------
   static Color get mutedOnLight => auroraPurple.withValues(alpha: 0.65);
   static Color get mutedOnDark => white.withValues(alpha: 0.65);
 
-  // ─── Aurora glow variants (alpha on aurora colors). ─────────────────
+  // --- Aurora glow variants (alpha on aurora colors). -----------------
   static Color get auroraPinkGlow => auroraPink.withValues(alpha: 0.30);
   static Color get auroraPurpleGlow => auroraPurple.withValues(alpha: 0.30);
   static Color get auroraBlueGlow => auroraElectricBlue.withValues(alpha: 0.30);
 
-  // ─── Shadow & overlay (black-alpha only — never a new color). ───────
+  // --- Shadow & overlay (black-alpha only, never a new color). -------
   static Color get shadowLight => black.withValues(alpha: 0.05);
   static Color get shadowMedium => black.withValues(alpha: 0.10);
   static Color get shadowDark => black.withValues(alpha: 0.20);
@@ -49,11 +49,11 @@ class AppColors {
   static Color get overlayMedium => black.withValues(alpha: 0.50);
   static Color get overlayDark => black.withValues(alpha: 0.70);
 
-  // ─── Glass surfaces (used by cart/address sheets + splash/auth). ────
+  // --- Glass surfaces (used by cart/address sheets + splash/auth). ----
   static Color get auroraGlass => black.withValues(alpha: 0.55);
   static Color get auroraLightGlass => white.withValues(alpha: 0.65);
 
-  // ─── Cart background gradient ────────────────────────────────────────
+  // --- Cart background gradient ----------------------------------------
   // Four-stop aurora gradient for depth. Built from alpha-shifted aurora
   // tokens so no new literal colors are introduced.
   static List<Color> get cartBackgroundGradientDark => <Color>[
@@ -69,12 +69,12 @@ class AppColors {
         auroraLightBase,
       ];
 
-  // ════════════════════════════════════════════════════════════════════
-  // DEPRECATED — every legacy name below now points at an approved color.
+  // ====================================================================
+  // DEPRECATED, every legacy name below now points at an approved color.
   // Migrate callsites to the canonical name, then delete the alias.
-  // ════════════════════════════════════════════════════════════════════
+  // ====================================================================
 
-  // ── Legacy brand / purples ────────────────────────────────────────
+  // -- Legacy brand / purples ----------------------------------------
   @Deprecated('Use auroraPurple.')
   static const Color primaryPurple = auroraPurple;
   @Deprecated('Use auroraPurple.')
@@ -90,7 +90,7 @@ class AppColors {
   @Deprecated('Use auroraDeepBase.')
   static const Color textBlack = auroraDeepBase;
 
-  // ── Legacy accents ────────────────────────────────────────────────
+  // -- Legacy accents ------------------------------------------------
   @Deprecated('Use auroraPink.')
   static const Color accentRed = auroraPink;
   @Deprecated('Use auroraPink.')
@@ -102,7 +102,7 @@ class AppColors {
   @Deprecated('Use auroraPink.')
   static const Color accentYellow = auroraPink;
 
-  // ── Legacy grays — NEVER grey on screen anymore. ──────────────────
+  // -- Legacy grays, NEVER grey on screen anymore. ------------------
   @Deprecated('Use auroraLightBase.')
   static const Color gray50 = auroraLightBase;
   @Deprecated('Use auroraLightBase.')
@@ -124,7 +124,7 @@ class AppColors {
   @Deprecated('Use auroraDeepBase.')
   static const Color gray900 = auroraDeepBase;
 
-  // ── Semantic ──────────────────────────────────────────────────────
+  // -- Semantic ------------------------------------------------------
   @Deprecated('Use verifiedGreen.')
   static const Color success = verifiedGreen;
   @Deprecated('Use auroraRed.')
@@ -134,7 +134,7 @@ class AppColors {
   @Deprecated('Use auroraElectricBlue.')
   static const Color info = auroraElectricBlue;
 
-  // ── Backgrounds ───────────────────────────────────────────────────
+  // -- Backgrounds ---------------------------------------------------
   @Deprecated('Use auroraLightBase.')
   static const Color backgroundLight = auroraLightBase;
   @Deprecated('Use white.')
@@ -142,7 +142,7 @@ class AppColors {
   @Deprecated('Use auroraLightBase.')
   static const Color backgroundGray = auroraLightBase;
 
-  // ── Borders ───────────────────────────────────────────────────────
+  // -- Borders -------------------------------------------------------
   @Deprecated('Use auroraPurple (with alpha for softness).')
   static const Color borderLight = auroraPurple;
   @Deprecated('Use auroraPurple.')
@@ -150,7 +150,7 @@ class AppColors {
   @Deprecated('Use auroraPurple.')
   static const Color borderDark = auroraPurple;
 
-  // ── Logo ──────────────────────────────────────────────────────────
+  // -- Logo ----------------------------------------------------------
   @Deprecated('Use auroraPink.')
   static const Color logoCoral = auroraPink;
   @Deprecated('Use auroraElectricBlue.')
@@ -160,7 +160,7 @@ class AppColors {
   @Deprecated('Use auroraPurple.')
   static const Color logoText = auroraPurple;
 
-  // ── Gradients ─────────────────────────────────────────────────────
+  // -- Gradients -----------------------------------------------------
   @Deprecated('Use auroraGradient.')
   static const List<Color> primaryGradient = auroraGradient;
   @Deprecated('Use auroraGradient.')
@@ -172,13 +172,13 @@ class AppColors {
   @Deprecated('Use auroraGradient.')
   static const List<Color> auroraCartButtonGradient = auroraGradient;
 
-  // ── Interactive hovers ────────────────────────────────────────────
+  // -- Interactive hovers --------------------------------------------
   @Deprecated('Use auroraPurple.withValues(alpha: 0.05).')
   static Color get hoverPurple => auroraPurple.withValues(alpha: 0.05);
   @Deprecated('Use auroraPink.withValues(alpha: 0.05).')
   static Color get hoverRed => auroraPink.withValues(alpha: 0.05);
 
-  // ── Badges ────────────────────────────────────────────────────────
+  // -- Badges --------------------------------------------------------
   @Deprecated('Use auroraPink.')
   static const Color badgeNew = auroraPink;
   @Deprecated('Use auroraPink.')
@@ -186,13 +186,13 @@ class AppColors {
   @Deprecated('Use verifiedGreen.')
   static const Color badgeVerified = verifiedGreen;
 
-  // ── Notifications ─────────────────────────────────────────────────
+  // -- Notifications -------------------------------------------------
   @Deprecated('Use auroraPink.')
   static const Color notificationUnread = auroraPink;
   @Deprecated('Use AppColors.mutedOnLight or mutedOnDark.')
   static const Color notificationRead = auroraPurple;
 
-  // ── Banner (will be rebuilt) ──────────────────────────────────────
+  // -- Banner (will be rebuilt) --------------------------------------
   @Deprecated('Use auroraLightBase.')
   static const Color bannerBackground = auroraLightBase;
   @Deprecated('Use auroraPink.')
@@ -202,17 +202,17 @@ class AppColors {
   @Deprecated('Use auroraPurple.')
   static const Color bannerProductFrame = auroraPurple;
 
-  // ── Verified extras ───────────────────────────────────────────────
+  // -- Verified extras -----------------------------------------------
   @Deprecated('Use verifiedGreen.')
   static const Color verifiedGreenLight = verifiedGreen;
   @Deprecated('Use verifiedGreen.')
   static const Color verifiedGreenBorder = verifiedGreen;
 
-  // ── Discount ──────────────────────────────────────────────────────
+  // -- Discount ------------------------------------------------------
   @Deprecated('Use auroraPink.')
   static const Color discountBadge = auroraPink;
 
-  // ── Deals ─────────────────────────────────────────────────────────
+  // -- Deals ---------------------------------------------------------
   @Deprecated('Use auroraDeepBase.')
   static const Color dealsBannerDark = auroraDeepBase;
   @Deprecated('Use auroraPink.')
@@ -222,7 +222,7 @@ class AppColors {
   @Deprecated('Use verifiedGreen.')
   static const Color freeShippingGreenLight = verifiedGreen;
 
-  // ── Loyalty / tiers ───────────────────────────────────────────────
+  // -- Loyalty / tiers -----------------------------------------------
   @Deprecated('Use auroraPurple.')
   static const Color loyaltyPurple = auroraPurple;
   @Deprecated('Use auroraPurple.')
@@ -232,7 +232,7 @@ class AppColors {
   @Deprecated('Use auroraPurple.')
   static const Color tierPlatinum = auroraPurple;
 
-  // ── Reward card gradients ─────────────────────────────────────────
+  // -- Reward card gradients -----------------------------------------
   @Deprecated('Use verifiedGreen.')
   static const Color rewardGreen1 = verifiedGreen;
   @Deprecated('Use verifiedGreen.')
@@ -250,13 +250,13 @@ class AppColors {
   @Deprecated('Use auroraPurple.')
   static const Color rewardPurple2 = auroraPurple;
 
-  // ── Referral ──────────────────────────────────────────────────────
+  // -- Referral ------------------------------------------------------
   @Deprecated('Use verifiedGreen.')
   static const Color referralGreen = verifiedGreen;
   @Deprecated('Use verifiedGreen.')
   static const Color referralGreenDark = verifiedGreen;
 
-  // ── Profile ───────────────────────────────────────────────────────
+  // -- Profile -------------------------------------------------------
   @Deprecated('Use auroraPurple.')
   static const Color profileCardPurple = auroraPurple;
   @Deprecated('Use auroraPurple.')
@@ -276,7 +276,7 @@ class AppColors {
   @Deprecated('Use auroraPink.')
   static const Color profileIconHelpPink = auroraPink;
 
-  // ── Aurora extras (kept for now, will fold into canonical aurora) ─
+  // -- Aurora extras (kept for now, will fold into canonical aurora) -
   @Deprecated('Use auroraElectricBlue.')
   static const Color auroraElectricBlueLight = auroraElectricBlue;
   @Deprecated('Use auroraPinkGlow.')
@@ -286,7 +286,7 @@ class AppColors {
   @Deprecated('Use auroraPurple.')
   static const Color splashDimViolet = auroraPurple;
 
-  // ── Dark neutrals (from the old ThemedColors system) ──────────────
+  // -- Dark neutrals (from the old ThemedColors system) --------------
   @Deprecated('Use auroraDeepBase.')
   static const Color darkBackground = auroraDeepBase;
   @Deprecated('Use auroraDeepBase.')

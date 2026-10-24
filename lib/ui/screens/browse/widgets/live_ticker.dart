@@ -11,7 +11,7 @@ import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
-/// Section 1 — Live Ticker.
+/// Section 1, Live Ticker.
 ///
 /// Fetches announcements from [AnnouncementApi]. Messages slide upward and
 /// fade every 3 seconds. Shows a localized placeholder when the list is empty.
@@ -74,7 +74,7 @@ class _LiveTickerState extends State<LiveTicker>
 
   String _currentMessage() {
     final msgs = _messages;
-    if (msgs == null) return ''; // loading — dot only
+    if (msgs == null) return ''; // loading, dot only
     if (msgs.isEmpty) return tr('ticker.no_announcements');
     return msgs[_index];
   }

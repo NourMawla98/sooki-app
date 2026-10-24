@@ -84,7 +84,7 @@ class LegalPageScreen extends StatelessWidget {
     );
   }
 
-  // ── Terms & Conditions content ───────────────────────────────────────────────
+  // -- Terms & Conditions content -----------------------------------------------
 
   static List<LegalSection> get termsAndConditions => [
     LegalSection(
@@ -113,7 +113,7 @@ class LegalPageScreen extends StatelessWidget {
     ),
   ];
 
-  // ── Privacy Policy content ───────────────────────────────────────────────────
+  // -- Privacy Policy content ---------------------------------------------------
 
   static List<LegalSection> get privacyPolicy => [
     LegalSection(
@@ -145,7 +145,7 @@ class LegalSection {
   final String content;
 }
 
-// ─── Top bar ──────────────────────────────────────────────────────────────────
+// --- Top bar ------------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final String title;
@@ -186,7 +186,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// --- Section label ------------------------------------------------------------
 
 class _GroupLabel extends StatelessWidget {
   final String label;
@@ -210,7 +210,7 @@ class _GroupLabel extends StatelessWidget {
   }
 }
 
-// ─── Glass group card ─────────────────────────────────────────────────────────
+// --- Glass group card ---------------------------------------------------------
 
 class _GroupCard extends StatelessWidget {
   final bool isDark;

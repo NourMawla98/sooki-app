@@ -41,7 +41,7 @@ class OrderSuccessScreen extends StatefulWidget {
   State<OrderSuccessScreen> createState() => _OrderSuccessScreenState();
 }
 
-// ── Confetti data model ──────────────────────────────────────────────────────
+// -- Confetti data model ------------------------------------------------------
 
 class _ConfettiPiece {
   final double x;
@@ -61,7 +61,7 @@ class _ConfettiPiece {
   });
 }
 
-// ── Confetti painter ─────────────────────────────────────────────────────────
+// -- Confetti painter ---------------------------------------------------------
 
 class _ConfettiPainter extends CustomPainter {
   final double animValue;
@@ -108,7 +108,7 @@ class _ConfettiPainter extends CustomPainter {
   bool shouldRepaint(_ConfettiPainter old) => old.animValue != animValue;
 }
 
-// ── Screen state ─────────────────────────────────────────────────────────────
+// -- Screen state -------------------------------------------------------------
 
 class _OrderSuccessScreenState extends State<OrderSuccessScreen>
     with TickerProviderStateMixin {
@@ -381,7 +381,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
   }
 }
 
-// ── Sub-widgets ───────────────────────────────────────────────────────────────
+// -- Sub-widgets ---------------------------------------------------------------
 
 class _EmojiCelebration extends StatelessWidget {
   final Animation<double> bounceAnim;
@@ -417,7 +417,7 @@ class _EmojiCelebration extends StatelessWidget {
                 ),
               ),
             ),
-            const Text('🎉', style: TextStyle(fontSize: 56)),
+            const Text('\u{1F389}', style: TextStyle(fontSize: 56)),
           ],
         ),
       ),

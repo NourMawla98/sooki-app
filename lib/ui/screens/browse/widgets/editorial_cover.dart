@@ -8,7 +8,7 @@ import '../../../../themes/app_fonts.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
-/// Section 4 — Editorial Cover.
+/// Section 4, Editorial Cover.
 ///
 /// Full-bleed 280 px editorial card with a moody photo background, a Playfair
 /// italic headline, and a white CTA chip. Taps route to the item-details stub.

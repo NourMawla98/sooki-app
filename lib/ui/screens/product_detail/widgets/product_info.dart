@@ -37,7 +37,7 @@ class ProductInfo extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Category chip + stock pill ──────────────────────────────────
+            // -- Category chip + stock pill ----------------------------------
             Row(
               children: [
                 _CategoryChip(categoryName: categoryName, isDark: isDark),
@@ -47,7 +47,7 @@ class ProductInfo extends StatelessWidget {
             ),
             const SizedBox(height: 14),
 
-            // ── Title ───────────────────────────────────────────────────────
+            // -- Title -------------------------------------------------------
             Text(
               title,
               style: AppFonts.primary(
@@ -59,7 +59,7 @@ class ProductInfo extends StatelessWidget {
               ),
             ),
 
-            // ── Subtitle ────────────────────────────────────────────────────
+            // -- Subtitle ----------------------------------------------------
             if (subtitle != null) ...[
               const SizedBox(height: 6),
               Text(
@@ -73,7 +73,7 @@ class ProductInfo extends StatelessWidget {
               ),
             ],
 
-            // ── Brand pill (optional) ────────────────────────────────────────
+            // -- Brand pill (optional) ----------------------------------------
             if (brand != null) ...[
               const SizedBox(height: 12),
               _BrandPill(brand: brand!, isDark: isDark),
@@ -81,7 +81,7 @@ class ProductInfo extends StatelessWidget {
 
             const SizedBox(height: 18),
 
-            // ── About glass box ─────────────────────────────────────────────
+            // -- About glass box ---------------------------------------------
             if (description != null && description!.isNotEmpty)
               _AboutGlass(description: description!, isDark: isDark),
           ],
@@ -91,7 +91,7 @@ class ProductInfo extends StatelessWidget {
   }
 }
 
-// ─── Category chip ────────────────────────────────────────────────────────────
+// --- Category chip ------------------------------------------------------------
 
 class _CategoryChip extends StatelessWidget {
   const _CategoryChip({required this.categoryName, required this.isDark});
@@ -123,7 +123,7 @@ class _CategoryChip extends StatelessWidget {
   }
 }
 
-// ─── Stock pill ───────────────────────────────────────────────────────────────
+// --- Stock pill ---------------------------------------------------------------
 
 class _StockPill extends StatelessWidget {
   const _StockPill({required this.stockCount});
@@ -164,7 +164,7 @@ class _StockPill extends StatelessWidget {
   }
 }
 
-// ─── Brand pill ───────────────────────────────────────────────────────────────
+// --- Brand pill ---------------------------------------------------------------
 
 class _BrandPill extends StatelessWidget {
   const _BrandPill({required this.brand, required this.isDark});
@@ -229,7 +229,7 @@ class _BrandPill extends StatelessWidget {
   }
 }
 
-// ─── About glass box ─────────────────────────────────────────────────────────
+// --- About glass box ---------------------------------------------------------
 
 class _AboutGlass extends StatefulWidget {
   const _AboutGlass({required this.description, required this.isDark});

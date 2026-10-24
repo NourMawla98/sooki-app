@@ -181,7 +181,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
 
   Future<void> _refresh() async => _fetchCategories();
 
-  // ─── Active DTO lookups ───────────────────────────────────────────────────
+  // --- Active DTO lookups ---------------------------------------------------
 
   CategoryDto? get _activeL1 =>
       _categories.where((c) => c.name == _selectedL1).firstOrNull;
@@ -203,7 +203,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         ?.id;
   }
 
-  // ─── Handlers ─────────────────────────────────────────────────────────────
+  // --- Handlers -------------------------------------------------------------
 
   void _onL1Selected(String label) {
     setState(() {
@@ -316,7 +316,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 }
 
-// ─── Loading body (taxonomy still fetching) ───────────────────────────────────
+// --- Loading body (taxonomy still fetching) -----------------------------------
 
 class _LoadingBody extends StatelessWidget {
   final bool isDark;
@@ -337,7 +337,7 @@ class _LoadingBody extends StatelessWidget {
   }
 }
 
-// ─── Loaded body ──────────────────────────────────────────────────────────────
+// --- Loaded body --------------------------------------------------------------
 
 class _LoadedBody extends StatelessWidget {
   final List<CategoryDto> categories;
@@ -526,7 +526,7 @@ class _LoadedBody extends StatelessWidget {
   }
 }
 
-// ─── L1 pills ─────────────────────────────────────────────────────────────────
+// --- L1 pills -----------------------------------------------------------------
 
 class _L1Row extends StatelessWidget {
   final List<CategoryDto> categories;
@@ -558,7 +558,7 @@ class _L1Row extends StatelessWidget {
   }
 }
 
-// ─── Separator ────────────────────────────────────────────────────────────────
+// --- Separator ----------------------------------------------------------------
 
 class _LevelSeparator extends StatelessWidget {
   final bool isDark;
@@ -576,7 +576,7 @@ class _LevelSeparator extends StatelessWidget {
   }
 }
 
-// ─── L2 tabs ──────────────────────────────────────────────────────────────────
+// --- L2 tabs ------------------------------------------------------------------
 
 class _L2Row extends StatelessWidget {
   final List<String> subcategories;
@@ -772,7 +772,7 @@ class _L2SweepPainter extends CustomPainter {
   bool shouldRepaint(_L2SweepPainter old) => old.phase != phase;
 }
 
-// ─── L3 pill buttons ──────────────────────────────────────────────────────────
+// --- L3 pill buttons ----------------------------------------------------------
 
 class _L3Row extends StatelessWidget {
   final List<String> details;
@@ -947,7 +947,7 @@ class _L3ButtonState extends State<_L3Button>
   }
 }
 
-// ─── Skeleton grid ────────────────────────────────────────────────────────────
+// --- Skeleton grid ------------------------------------------------------------
 
 class _SkeletonGrid extends StatelessWidget {
   const _SkeletonGrid();
@@ -970,7 +970,7 @@ class _SkeletonGrid extends StatelessWidget {
   }
 }
 
-// ─── States ───────────────────────────────────────────────────────────────────
+// --- States -------------------------------------------------------------------
 
 class _ErrorState extends StatelessWidget {
   final VoidCallback onRetry;

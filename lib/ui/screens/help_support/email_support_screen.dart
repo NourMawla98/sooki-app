@@ -78,7 +78,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
       return;
     }
 
-    // Backend has no order field — fold it into the description when provided.
+    // Backend has no order field, fold it into the description when provided.
     final order = _orderController.text.trim();
     final description = order.isEmpty ? message : 'Order: $order\n\n$message';
     if (description.length > _descriptionMax) {
@@ -237,7 +237,7 @@ class _EmailSupportScreenState extends State<EmailSupportScreen> {
   }
 }
 
-// ─── Top bar ──────────────────────────────────────────────────────────────────
+// --- Top bar ------------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final bool isDark;
@@ -274,7 +274,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// --- Section label ------------------------------------------------------------
 
 class _SectionLabel extends StatelessWidget {
   final String label;

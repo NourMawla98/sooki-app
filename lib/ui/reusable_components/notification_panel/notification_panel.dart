@@ -165,7 +165,7 @@ class _NotificationPanelState extends State<NotificationPanel> {
 
                 Container(height: 1, color: divider),
 
-                // Footer — same style as "SEE ALL RESULTS" in search bar
+                // Footer, same style as "SEE ALL RESULTS" in search bar
                 GestureDetector(
                   onTap: () {
                     widget.onClose();

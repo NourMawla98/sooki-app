@@ -16,7 +16,7 @@ abstract class OrderItemDto with _$OrderItemDto {
     required String colorName,
     required String sizeName,
     String? imageUrl,
-    // storeName intentionally omitted — never parsed or rendered
+    // storeName intentionally omitted, never parsed or rendered
   }) = _OrderItemDto;
 
   factory OrderItemDto.fromJson(Map<String, dynamic> json) =>

@@ -18,8 +18,8 @@ import '../../../themes/app_text_styles.dart';
 import '../dialogs/aurora_confirm_sheet.dart';
 import '../icons/mirrored_fa_icon.dart';
 
-/// Aurora glass user menu rendered as a 2×2 grid of tinted tiles. Items:
-/// Profile (blue tint) · Language (purple tint) · Theme (neutral) ·
+/// Aurora glass user menu rendered as a 2x2 grid of tinted tiles. Items:
+/// Profile (blue tint) - Language (purple tint) - Theme (neutral) -
 /// Logout (pink tint). Tapping Language swaps the body to a 3-item picker.
 class UserMenuDropdown extends StatefulWidget {
   final VoidCallback onClose;

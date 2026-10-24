@@ -21,7 +21,7 @@ import 'token_service.dart';
 import 'wishlist_service.dart';
 
 /// Tracks identity state (guest vs customer) derived from the stored JWT.
-/// Every user always has a JWT — guest on first launch, customer after login.
+/// Every user always has a JWT, guest on first launch, customer after login.
 class AuthService extends ChangeNotifier {
   bool _isCustomer = false;
   bool _isGuest = false;
@@ -58,7 +58,7 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Called after successful login or register — saves the customer token pair.
+  /// Called after successful login or register, saves the customer token pair.
   Future<void> signIn(Map<String, dynamic> tokenData) async {
     await _saveTokenData(tokenData);
     _isCustomer = true;
@@ -83,7 +83,7 @@ class AuthService extends ChangeNotifier {
     try {
       await PushNotificationService.instance.unregister();
     } catch (_) {
-      // Best-effort — never block logout on token removal.
+      // Best-effort, never block logout on token removal.
     }
 
     await TokenService.instance.clearTokens();
@@ -118,7 +118,7 @@ class AuthService extends ChangeNotifier {
     unawaited(NotificationService.instance.fetchUnreadCount());
   }
 
-  // ─── Token helpers ─────────────────────────────────────────────────────────
+  // --- Token helpers ---------------------------------------------------------
 
   void _applyToken(String token) {
     try {
@@ -144,7 +144,7 @@ class AuthService extends ChangeNotifier {
     );
   }
 
-  // ─── Silent refresh ─────────────────────────────────────────────────────────
+  // --- Silent refresh ---------------------------------------------------------
 
   Future<bool> _silentRefresh() async {
     final refreshToken = await TokenService.instance.getRefreshToken();
@@ -170,7 +170,7 @@ class AuthService extends ChangeNotifier {
     return false;
   }
 
-  // ─── Guest auth ─────────────────────────────────────────────────────────────
+  // --- Guest auth -------------------------------------------------------------
 
   Future<void> _runGuestAuth() async {
     try {
@@ -208,7 +208,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  // ─── Device info ────────────────────────────────────────────────────────────
+  // --- Device info ------------------------------------------------------------
 
   Future<String> _getOrCreateDeviceId() async {
     const key = 'sooki_device_id';

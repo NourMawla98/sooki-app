@@ -155,7 +155,7 @@ class _RotatingSmartHeroState extends State<RotatingSmartHero>
 // Skeleton
 // ---------------------------------------------------------------------------
 
-// SKELETON LOCKED — appearance approved 2026-05-12. Do not modify.
+// SKELETON LOCKED, appearance approved 2026-05-12. Do not modify.
 class HeroSkeleton extends StatelessWidget {
   final double height;
   const HeroSkeleton({super.key, this.height = 260});
@@ -173,7 +173,7 @@ class HeroSkeleton extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Retry state — same shape/size as skeleton, with centered tap-to-retry overlay
+// Retry state, same shape/size as skeleton, with centered tap-to-retry overlay
 // ---------------------------------------------------------------------------
 
 class _HeroRetry extends StatelessWidget {
@@ -282,7 +282,7 @@ class _BannerCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Top slot — always present so spaceBetween anchors bottom content correctly
+                // Top slot, always present so spaceBetween anchors bottom content correctly
                 if (banner.title != null && banner.title!.isNotEmpty)
                   Text(
                     banner.title!.toUpperCase(),

@@ -101,7 +101,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 intensity: isDark ? 0.18 : 0.08,
               ),
               const FloatingEmoji(
-                emoji: '🔑',
+                emoji: '\u{1F511}',
                 size: 36,
                 opacity: 0.2,
                 top: 80,
@@ -111,7 +111,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 durationMs: 2200,
               ),
               const FloatingEmoji(
-                emoji: '📧',
+                emoji: '\u{1F4E7}',
                 size: 30,
                 opacity: 0.2,
                 top: 160,
@@ -121,7 +121,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 durationMs: 2400,
               ),
               const FloatingEmoji(
-                emoji: '🔒',
+                emoji: '\u{1F512}',
                 size: 30,
                 opacity: 0.2,
                 bottom: 128,
@@ -131,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 durationMs: 2100,
               ),
               const FloatingEmoji(
-                emoji: '✉️',
+                emoji: '\u2709\uFE0F',
                 size: 36,
                 opacity: 0.2,
                 bottom: 80,

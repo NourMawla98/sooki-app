@@ -326,7 +326,7 @@ class _DetailsTab extends StatelessWidget {
   }
 }
 
-// ─── Measurements table (transposed: types=rows, sizes=columns) ───────────────
+// --- Measurements table (transposed: types=rows, sizes=columns) ---------------
 
 class _MeasurementsTable extends StatelessWidget {
   const _MeasurementsTable({
@@ -496,7 +496,7 @@ class _MeasurementsTable extends StatelessWidget {
                                   .firstOrNull;
                               final val = m != null
                                   ? localizedNumber(m.value, decimals: 1)
-                                  : '—';
+                                  : '\u2014';
                               return _MCell(
                                 width: 56,
                                 bg: isSelected
@@ -560,7 +560,7 @@ class _MCell extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel({required this.label, required this.color});
@@ -689,7 +689,7 @@ class _ReviewSummary extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                rating > 0 ? localizedNumber(rating, decimals: 1) : '—',
+                rating > 0 ? localizedNumber(rating, decimals: 1) : '\u2014',
                 style: AppFonts.primary(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,

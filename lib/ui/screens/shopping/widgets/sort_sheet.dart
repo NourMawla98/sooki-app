@@ -8,7 +8,7 @@ import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 
 /// Bottom sheet for picking a [SortOption]. Tapping a row pops the sheet
-/// with that option — the caller is responsible for applying it.
+/// with that option, the caller is responsible for applying it.
 class SortSheet extends StatelessWidget {
   final SortOption current;
   const SortSheet({super.key, required this.current});

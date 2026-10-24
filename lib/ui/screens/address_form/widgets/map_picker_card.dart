@@ -133,7 +133,7 @@ class _MapPickerCardState extends State<MapPickerCard> {
                 ),
                 children: [
                   TileLayer(
-                    // CartoDB tiles — fast Fastly-backed CDN, aurora-friendly
+                    // CartoDB tiles, fast Fastly-backed CDN, aurora-friendly
                     // palettes, switches with theme. Attribution must stay
                     // visible per the Nominatim/OSM + Carto usage policies.
                     urlTemplate: ThemeService.instance.isDarkMode
@@ -270,7 +270,7 @@ class _MapAttribution extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
-          '© OSM · CARTO',
+          '\u00A9 OSM \u00B7 CARTO',
           style: AppTextStyles.caption.copyWith(
             fontSize: 9,
             fontWeight: FontWeight.w600,

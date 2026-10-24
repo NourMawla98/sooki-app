@@ -44,7 +44,7 @@ class LabelChooser extends StatelessWidget {
       child: SizedBox(
         height: 40,
         child: isSelected
-            // Selected → secondary active: gradient border + gradient text
+            // Selected -> secondary active: gradient border + gradient text
             ? DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
@@ -85,7 +85,7 @@ class LabelChooser extends StatelessWidget {
                   ),
                 ),
               )
-            // Not selected → secondary disabled: faded secondary active
+            // Not selected -> secondary disabled: faded secondary active
             : Opacity(
                 opacity: 0.38,
                 child: DecoratedBox(

@@ -157,7 +157,7 @@ class _CartSummaryState extends State<CartSummary>
   }
 }
 
-// ─── Shipping row with dots loader ──────────────────────────────────────
+// --- Shipping row with dots loader --------------------------------------
 class _ShippingRow extends StatelessWidget {
   final bool loadingFee;
   final double? deliveryFee;
@@ -216,7 +216,7 @@ class _ShippingRow extends StatelessWidget {
   }
 }
 
-// ─── Animated dots loader ────────────────────────────────────────────────
+// --- Animated dots loader ------------------------------------------------
 class _DotsLoader extends AnimatedWidget {
   final Color color;
 
@@ -244,7 +244,7 @@ class _DotsLoader extends AnimatedWidget {
   }
 }
 
-// ─── Animated aurora bar line ───────────────────────────────────────────
+// --- Animated aurora bar line -------------------------------------------
 class _AuroraBarLine extends StatefulWidget {
   const _AuroraBarLine();
 
@@ -310,7 +310,7 @@ class _AuroraBarLineState extends State<_AuroraBarLine>
   }
 }
 
-// ─── Generic label/value row ────────────────────────────────────────────
+// --- Generic label/value row --------------------------------------------
 class _SummaryRow extends StatelessWidget {
   final String label;
   final String value;
@@ -354,7 +354,7 @@ class _SummaryRow extends StatelessWidget {
   }
 }
 
-// ─── Total row ──────────────────────────────────────────────────────────
+// --- Total row ----------------------------------------------------------
 class _TotalRow extends StatelessWidget {
   final int itemCount;
   final double total;
@@ -423,7 +423,7 @@ class _TotalRow extends StatelessWidget {
   }
 }
 
-// ─── Dashed divider ─────────────────────────────────────────────────────
+// --- Dashed divider -----------------------------------------------------
 class _DashedDivider extends StatelessWidget {
   final Color color;
 
@@ -452,7 +452,7 @@ class _DashedDivider extends StatelessWidget {
   }
 }
 
-// ─── Trust row ──────────────────────────────────────────────────────────
+// --- Trust row ----------------------------------------------------------
 class _TrustRow extends StatelessWidget {
   final CartSurfaceColors surfaceColors;
 

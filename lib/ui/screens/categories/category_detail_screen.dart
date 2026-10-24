@@ -291,7 +291,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   }
 }
 
-// ─── Rule #9 top bar ──────────────────────────────────────────────────────────
+// --- Rule #9 top bar ----------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final String title;
@@ -333,7 +333,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Sticky zone: breadcrumb + chips + sort/filter ────────────────────────────
+// --- Sticky zone: breadcrumb + chips + sort/filter ----------------------------
 
 class _StickyZone extends StatelessWidget {
   final bool isDark;
@@ -470,7 +470,7 @@ class _StickyZone extends StatelessWidget {
   }
 }
 
-// ─── Item grid ────────────────────────────────────────────────────────────────
+// --- Item grid ----------------------------------------------------------------
 
 class _ItemGrid extends StatelessWidget {
   final List<ItemListItemDto> items;
@@ -534,7 +534,7 @@ class _ItemGrid extends StatelessWidget {
   }
 }
 
-// ─── Skeleton grid ────────────────────────────────────────────────────────────
+// --- Skeleton grid ------------------------------------------------------------
 
 class _SkeletonGrid extends StatelessWidget {
   @override
@@ -554,7 +554,7 @@ class _SkeletonGrid extends StatelessWidget {
   }
 }
 
-// ─── States ───────────────────────────────────────────────────────────────────
+// --- States -------------------------------------------------------------------
 
 class _ErrorState extends StatelessWidget {
   final VoidCallback onRetry;

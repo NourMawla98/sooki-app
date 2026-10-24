@@ -114,7 +114,7 @@ class AuthApi {
       path: 'auth/customer/language',
       body: {'language': language},
       operationName: 'updateLanguage',
-      // Background persistence — never surface a toast on failure.
+      // Background persistence, never surface a toast on failure.
       extra: const {'silentError': true},
       successParser: (r) =>
           (r.data as Map<String, dynamic>?)?['message'] as String? ?? '',

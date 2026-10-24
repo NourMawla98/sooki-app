@@ -33,7 +33,7 @@ class CartService extends ChangeNotifier {
 
   CartService(this._cartApi);
 
-  // ─── Public data ──────────────────────────────────────────────────────────
+  // --- Public data ----------------------------------------------------------
 
   List<CartLineItem> get displayItems =>
       _items.map(CartLineItem.fromServer).toList();
@@ -107,7 +107,7 @@ class CartService extends ChangeNotifier {
   bool isInCart(int itemSizeId) =>
       _items.any((i) => i.itemSizeId == itemSizeId);
 
-  // ─── Server sync ──────────────────────────────────────────────────────────
+  // --- Server sync ----------------------------------------------------------
 
   Future<void> loadFromServer() async {
     final result = await _cartApi.getCart();
@@ -129,7 +129,7 @@ class CartService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Mutations ────────────────────────────────────────────────────────────
+  // --- Mutations ------------------------------------------------------------
 
   Future<String?> addToCart({
     required int? itemSizeId,

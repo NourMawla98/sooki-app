@@ -45,7 +45,7 @@ class ToastService {
   }
 }
 
-// ─── Widget ──────────────────────────────────────────────────────────────────
+// --- Widget ------------------------------------------------------------------
 
 class _AuroraToastWidget extends StatefulWidget {
   final String message;
@@ -188,7 +188,7 @@ class _AuroraToastWidgetState extends State<_AuroraToastWidget>
                         ],
                       ),
                     ),
-                    // Dark overlay depletes right→left as timer runs
+                    // Dark overlay depletes right->left as timer runs
                     Positioned.fill(
                       child: IgnorePointer(
                         child: AnimatedBuilder(

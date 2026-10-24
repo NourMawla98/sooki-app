@@ -32,7 +32,7 @@ const _kStepLabels = [
   'order_detail_screen.step_delivered',
 ];
 
-// ── Screen ────────────────────────────────────────────────────────────────────
+// -- Screen --------------------------------------------------------------------
 
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({super.key, required this.orderId});
@@ -196,7 +196,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 }
 
-// ── Body ──────────────────────────────────────────────────────────────────────
+// -- Body ----------------------------------------------------------------------
 
 class _Body extends StatelessWidget {
   const _Body({
@@ -254,7 +254,7 @@ class _Body extends StatelessWidget {
   }
 }
 
-// ── Hero card ─────────────────────────────────────────────────────────────────
+// -- Hero card -----------------------------------------------------------------
 
 class _HeroCard extends StatelessWidget {
   const _HeroCard({
@@ -338,7 +338,7 @@ class _HeroCard extends StatelessWidget {
             ],
           ),
 
-          // Progress tracker — shown only for non-closed orders
+          // Progress tracker, shown only for non-closed orders
           if (progressStep != null) ...[
             Container(
               height: 1,
@@ -353,7 +353,7 @@ class _HeroCard extends StatelessWidget {
   }
 }
 
-// ── Status pill ───────────────────────────────────────────────────────────────
+// -- Status pill ---------------------------------------------------------------
 
 class _StatusPill extends StatelessWidget {
   const _StatusPill({required this.status});
@@ -382,7 +382,7 @@ class _StatusPill extends StatelessWidget {
   }
 }
 
-// ── Horizontal step tracker ───────────────────────────────────────────────────
+// -- Horizontal step tracker ---------------------------------------------------
 
 class _HorizontalTracker extends StatelessWidget {
   const _HorizontalTracker({required this.filledCount, required this.isDark});
@@ -505,7 +505,7 @@ class _HorizontalTracker extends StatelessWidget {
   }
 }
 
-// ── Items card ────────────────────────────────────────────────────────────────
+// -- Items card ----------------------------------------------------------------
 
 class _ItemsCard extends StatelessWidget {
   const _ItemsCard({required this.items, required this.isDark, required this.orderStatus});
@@ -748,7 +748,7 @@ class _PriceRow extends StatelessWidget {
   }
 }
 
-// ── Address card ──────────────────────────────────────────────────────────────
+// -- Address card --------------------------------------------------------------
 
 class _AddressCard extends StatelessWidget {
   const _AddressCard({required this.detail, required this.isDark});
@@ -840,7 +840,7 @@ class _AddressCard extends StatelessWidget {
   }
 }
 
-// ── Payment card ──────────────────────────────────────────────────────────────
+// -- Payment card --------------------------------------------------------------
 
 class _PaymentCard extends StatelessWidget {
   const _PaymentCard({required this.detail, required this.isDark});
@@ -921,7 +921,7 @@ class _PaymentCard extends StatelessWidget {
   }
 }
 
-// ── Note card ─────────────────────────────────────────────────────────────────
+// -- Note card -----------------------------------------------------------------
 
 class _NoteCard extends StatelessWidget {
   const _NoteCard({required this.note, required this.isDark});
@@ -946,7 +946,7 @@ class _NoteCard extends StatelessWidget {
   }
 }
 
-// ── Cancel button ─────────────────────────────────────────────────────────────
+// -- Cancel button -------------------------------------------------------------
 
 class _CancelButton extends StatelessWidget {
   const _CancelButton({
@@ -996,7 +996,7 @@ class _CancelButton extends StatelessWidget {
   }
 }
 
-// ── Error state ───────────────────────────────────────────────────────────────
+// -- Error state ---------------------------------------------------------------
 
 class _ErrorState extends StatelessWidget {
   const _ErrorState({required this.onRetry, required this.isDark});
@@ -1038,7 +1038,7 @@ class _ErrorState extends StatelessWidget {
   }
 }
 
-// ── Shared section card ───────────────────────────────────────────────────────
+// -- Shared section card -------------------------------------------------------
 
 class _SectionCard extends StatelessWidget {
   const _SectionCard({
@@ -1083,7 +1083,7 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-// ── Write review dialog ───────────────────────────────────────────────────────
+// -- Write review dialog -------------------------------------------------------
 
 class _WriteReviewDialog extends StatefulWidget {
   const _WriteReviewDialog({required this.item});

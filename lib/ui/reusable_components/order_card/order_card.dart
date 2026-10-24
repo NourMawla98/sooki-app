@@ -191,7 +191,7 @@ class OrderCard extends StatelessWidget {
   }
 }
 
-// ── Sub-widgets ───────────────────────────────────────────────────────────────
+// -- Sub-widgets ---------------------------------------------------------------
 
 class _StatusPill extends StatelessWidget {
   final OrderStatus status;

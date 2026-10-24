@@ -151,7 +151,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   }
 }
 
-// ─── Top bar ──────────────────────────────────────────────────────────────────
+// --- Top bar ------------------------------------------------------------------
 
 class _TopBar extends StatelessWidget {
   final bool isDark;
@@ -188,7 +188,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ─── Hero section ─────────────────────────────────────────────────────────────
+// --- Hero section -------------------------------------------------------------
 
 class _HeroSection extends StatelessWidget {
   final bool isDark;
@@ -378,7 +378,7 @@ class _HeroSection extends StatelessWidget {
   }
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// --- Section label ------------------------------------------------------------
 
 class _GroupLabel extends StatelessWidget {
   final String label;
@@ -402,7 +402,7 @@ class _GroupLabel extends StatelessWidget {
   }
 }
 
-// ─── Glass group card ─────────────────────────────────────────────────────────
+// --- Glass group card ---------------------------------------------------------
 
 class _GroupCard extends StatelessWidget {
   final bool isDark;
@@ -428,7 +428,7 @@ class _GroupCard extends StatelessWidget {
   }
 }
 
-// ─── Divider ──────────────────────────────────────────────────────────────────
+// --- Divider ------------------------------------------------------------------
 
 class _Divider extends StatelessWidget {
   final bool isDark;
@@ -445,7 +445,7 @@ class _Divider extends StatelessWidget {
   }
 }
 
-// ─── Chevron row ──────────────────────────────────────────────────────────────
+// --- Chevron row --------------------------------------------------------------
 
 class _ChevronRow extends StatelessWidget {
   final bool isDark;
@@ -522,7 +522,7 @@ class _ChevronRow extends StatelessWidget {
   }
 }
 
-// ─── FAQ tile ─────────────────────────────────────────────────────────────────
+// --- FAQ tile -----------------------------------------------------------------
 
 class _FaqTile extends StatelessWidget {
   final _FaqItem item;

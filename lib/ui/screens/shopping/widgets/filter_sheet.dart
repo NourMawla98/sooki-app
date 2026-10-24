@@ -258,7 +258,7 @@ class _FilterSheetState extends State<FilterSheet> {
   }
 }
 
-// ─── Section heading ──────────────────────────────────────────────────────────
+// --- Section heading ----------------------------------------------------------
 
 class _SectionHeading extends StatelessWidget {
   final String text;
@@ -279,7 +279,7 @@ class _SectionHeading extends StatelessWidget {
   }
 }
 
-// ─── Price ────────────────────────────────────────────────────────────────────
+// --- Price --------------------------------------------------------------------
 
 class _PriceSection extends StatelessWidget {
   final double min;
@@ -365,7 +365,7 @@ class _GradientPriceText extends StatelessWidget {
   }
 }
 
-// ─── Collapsible dropdown ─────────────────────────────────────────────────────
+// --- Collapsible dropdown -----------------------------------------------------
 
 class _FilterDropdown extends StatefulWidget {
   final String label;
@@ -586,7 +586,7 @@ class _SearchField extends StatelessWidget {
   }
 }
 
-// ─── Shared checkbox ──────────────────────────────────────────────────────────
+// --- Shared checkbox ----------------------------------------------------------
 
 class _CheckBox extends StatelessWidget {
   final bool isChecked;
@@ -627,14 +627,14 @@ class _CheckBox extends StatelessWidget {
   }
 }
 
-// ─── Color helpers ────────────────────────────────────────────────────────────
+// --- Color helpers ------------------------------------------------------------
 
 Color _hexToColor(String hex) {
   final c = hex.replaceAll('#', '');
   return Color(int.parse('FF$c', radix: 16));
 }
 
-// ─── Color trigger preview ────────────────────────────────────────────────────
+// --- Color trigger preview ----------------------------------------------------
 
 class _ColorTriggerPreview extends StatelessWidget {
   final List<ColorDto> colors;
@@ -776,7 +776,7 @@ class _ColorItem extends StatelessWidget {
   }
 }
 
-// ─── Size trigger preview ─────────────────────────────────────────────────────
+// --- Size trigger preview -----------------------------------------------------
 
 class _SizeTriggerPreview extends StatelessWidget {
   final SizeStandardDto standard;

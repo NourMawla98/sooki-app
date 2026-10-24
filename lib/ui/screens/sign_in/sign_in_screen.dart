@@ -162,7 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
 
               const FloatingEmoji(
-                emoji: '🛍️',
+                emoji: '\u{1F6CD}\uFE0F',
                 size: 36,
                 opacity: 0.2,
                 top: 80,
@@ -172,7 +172,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 durationMs: 2200,
               ),
               const FloatingEmoji(
-                emoji: '❤️',
+                emoji: '\u2764\uFE0F',
                 size: 30,
                 opacity: 0.2,
                 top: 160,
@@ -182,7 +182,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 durationMs: 2400,
               ),
               const FloatingEmoji(
-                emoji: '⭐',
+                emoji: '\u2B50',
                 size: 30,
                 opacity: 0.2,
                 bottom: 128,
@@ -192,7 +192,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 durationMs: 2100,
               ),
               const FloatingEmoji(
-                emoji: '🎁',
+                emoji: '\u{1F381}',
                 size: 36,
                 opacity: 0.2,
                 bottom: 80,
@@ -276,7 +276,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       AuroraInputField(
                                         label: 'auth.password'.tr(),
                                         required: true,
-                                        hint: '••••••••',
+                                        hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
                                         controller: _passwordController,
                                         isPassword: true,
                                         prefixIcon: FontAwesomeIcons.lock,

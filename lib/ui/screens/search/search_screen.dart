@@ -320,7 +320,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-// ─── State 2 — Typing ────────────────────────────────────────────────────────
+// --- State 2, Typing --------------------------------------------------------
 
 class _TypingState extends StatelessWidget {
   final String query;
@@ -378,7 +378,7 @@ class _TypingState extends StatelessWidget {
   }
 }
 
-// ─── State 3 — Results (grid) ─────────────────────────────────────────────────
+// --- State 3, Results (grid) -------------------------------------------------
 
 class _ResultsState extends StatelessWidget {
   final String query;
@@ -478,7 +478,7 @@ class _ResultsState extends StatelessWidget {
   }
 }
 
-// ─── Did you mean ────────────────────────────────────────────────────────────
+// --- Did you mean ------------------------------------------------------------
 
 /// Tappable spelling correction shown above the no-results message. Tapping it
 /// re-runs the search with the corrected term, keeping the active filters.
@@ -522,7 +522,7 @@ class _DidYouMeanRow extends StatelessWidget {
   }
 }
 
-// ─── Empty state (state 1 — Discovery) ───────────────────────────────────────
+// --- Empty state (state 1, Discovery) ---------------------------------------
 
 class _EmptyState extends StatelessWidget {
   final bool isDark;
@@ -552,7 +552,7 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Recent ────────────────────────────────────────────────────
+          // -- Recent ----------------------------------------------------
           Row(
             children: [
               Text(

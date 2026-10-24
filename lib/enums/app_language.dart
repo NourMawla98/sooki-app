@@ -8,8 +8,8 @@ import 'dart:ui' show TextDirection;
 /// - French = 3
 enum AppLanguage {
   english(code: 'en', backendValue: 1, displayName: 'English'),
-  arabic(code: 'ar', backendValue: 2, displayName: 'العربية'),
-  french(code: 'fr', backendValue: 3, displayName: 'Français');
+  arabic(code: 'ar', backendValue: 2, displayName: '\u0627\u0644\u0639\u0631\u0628\u064A\u0629'),
+  french(code: 'fr', backendValue: 3, displayName: 'Fran\u00E7ais');
 
   const AppLanguage({
     required this.code,
