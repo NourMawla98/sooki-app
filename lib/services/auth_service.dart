@@ -15,6 +15,7 @@ import '../config/app_config.dart';
 import 'address_service.dart';
 import 'cart_service.dart';
 import 'language_service.dart';
+import 'notification_service.dart';
 import 'push_notification_service.dart';
 import 'token_service.dart';
 import 'wishlist_service.dart';
@@ -97,7 +98,7 @@ class AuthService extends ChangeNotifier {
     _reloadIdentityData();
   }
 
-  /// The cart, wishlist and addresses are held in memory per identity, so a
+  /// The cart, wishlist, addresses and unread count are held per identity, so a
   /// token switch drops them and fetches them again under the new token.
   /// Without this a guest keeps seeing the account that just signed out.
   void _reloadIdentityData() {
@@ -114,6 +115,7 @@ class AuthService extends ChangeNotifier {
       final addresses = getIt<AddressService>()..reset();
       unawaited(addresses.loadFromServer());
     }
+    unawaited(NotificationService.instance.fetchUnreadCount());
   }
 
   // ─── Token helpers ─────────────────────────────────────────────────────────

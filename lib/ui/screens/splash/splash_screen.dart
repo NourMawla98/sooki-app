@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/cart_service.dart';
 import '../../../services/language_service.dart';
 import '../../../services/notification_service.dart';
 import '../../../services/push_notification_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
+import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../reusable_components/app_logo/app_logo.dart';
@@ -76,6 +78,10 @@ class _SplashScreenState extends State<SplashScreen>
       unawaited(PushNotificationService.instance.init());
       // Prime the bell badge with the current unread count.
       unawaited(NotificationService.instance.fetchUnreadCount());
+      // Prime the wishlist hearts and the cart badge, which every screen reads
+      // before the wishlist or cart screen has been opened.
+      unawaited(serviceLocator<WishlistService>().loadFromServer());
+      unawaited(serviceLocator<CartService>().loadFromServer());
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');
     }
