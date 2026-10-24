@@ -28,17 +28,18 @@ class _MainScreenState extends State<MainScreen> {
   static const int _dealsIndex = 1;
   static const int _cartIndex = 4;
 
-  late final List<Widget> _keptAlivePages = [
-    BrowseScreen(onOpenDeals: () => _onTabTapped(_dealsIndex)),
-    const DealsScreen(),
-    const CategoryBrowseScreen(),
-    const AuctionScreen(),
-  ];
+  late final Widget _browsePage =
+      BrowseScreen(onOpenDeals: () => _onTabTapped(_dealsIndex));
+  static const Widget _categoriesPage = CategoryBrowseScreen();
+  static const Widget _auctionPage = AuctionScreen();
 
   /// Tabs stay mounted, so a page that has to refetch on focus needs to be told
-  /// which tab is showing. Only the cart does today.
+  /// which tab is showing: the deals and the cart do.
   List<Widget> _pages() => [
-    ..._keptAlivePages,
+    _browsePage,
+    DealsScreen(isActive: _currentIndex == _dealsIndex),
+    _categoriesPage,
+    _auctionPage,
     CartScreen(
       isActive: _currentIndex == _cartIndex,
       onSwitchToBrowse: () => _onTabTapped(0),

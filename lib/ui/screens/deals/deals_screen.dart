@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,7 +19,11 @@ import '../splash/widgets/aurora_glow_blob.dart';
 /// The Deals tab: live deals with their time left, then deals coming up with
 /// the time until they start. Upcoming items show their normal price.
 class DealsScreen extends StatefulWidget {
-  const DealsScreen({super.key});
+  /// Whether the Deals tab is the one on screen. The tab shell keeps every tab
+  /// mounted, so this is how the screen learns it has regained focus.
+  final bool isActive;
+
+  const DealsScreen({super.key, this.isActive = true});
 
   @override
   State<DealsScreen> createState() => _DealsScreenState();
@@ -34,6 +40,14 @@ class _DealsScreenState extends State<DealsScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void didUpdateWidget(DealsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Deals start and end all the time, so the list loaded when the app opened
+    // goes stale; coming back to the tab reads it again.
+    if (widget.isActive && !oldWidget.isActive) unawaited(_load());
   }
 
   Future<void> _load() async {
