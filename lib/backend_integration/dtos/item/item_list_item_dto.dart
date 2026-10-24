@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../deal/item_deal_dto.dart';
 import 'item_tag_dto.dart';
 
 part 'item_list_item_dto.freezed.dart';
@@ -16,6 +17,7 @@ abstract class ItemListItemDto with _$ItemListItemDto {
     required String categoryName,
     @Default([]) List<String> colorImages,
     @Default([]) List<ItemTagDto> tags,
+    ItemDealDto? deal,
   }) = _ItemListItemDto;
 
   factory ItemListItemDto.fromJson(Map<String, dynamic> json) =>

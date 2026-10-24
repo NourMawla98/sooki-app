@@ -80,6 +80,7 @@ class CartItemCard extends StatelessWidget {
                     _RightBottom(
                       quantity: item.quantity,
                       lineTotal: item.lineTotal,
+                      lineTotalBeforeDeal: item.lineTotalBeforeDeal,
                       stock: item.stock,
                       isAvailable: item.isAvailable,
                       onQuantityChanged: onQuantityChanged,
@@ -186,6 +187,7 @@ class _Info extends StatelessWidget {
 class _RightBottom extends StatelessWidget {
   final int quantity;
   final double lineTotal;
+  final double? lineTotalBeforeDeal;
   final int stock;
   final bool isAvailable;
   final ValueChanged<int> onQuantityChanged;
@@ -196,6 +198,7 @@ class _RightBottom extends StatelessWidget {
   const _RightBottom({
     required this.quantity,
     required this.lineTotal,
+    required this.lineTotalBeforeDeal,
     required this.stock,
     required this.isAvailable,
     required this.onQuantityChanged,
@@ -206,23 +209,44 @@ class _RightBottom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final before = lineTotalBeforeDeal;
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ShaderMask(
-          shaderCallback: (rect) => const LinearGradient(
-            colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
-          ).createShader(rect),
-          child: Text(
-            '\$${localizedPrice(lineTotal)}',
-            style: AppTextStyles.productPrice.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: AppColors.white,
-              letterSpacing: -0.2,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // The server already priced the line at the deal; this is the
+            // price it replaced, for reference only.
+            if (before != null)
+              Text(
+                '\$${localizedPrice(before)}',
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: muteColor,
+                  decoration: TextDecoration.lineThrough,
+                  decorationColor: muteColor,
+                  height: 1.1,
+                ),
+              ),
+            ShaderMask(
+              shaderCallback: (rect) => const LinearGradient(
+                colors: [AppColors.auroraPink, AppColors.auroraElectricBlue],
+              ).createShader(rect),
+              child: Text(
+                '\$${localizedPrice(lineTotal)}',
+                style: AppTextStyles.productPrice.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.white,
+                  letterSpacing: -0.2,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
         const SizedBox(width: 8),
         _Stepper(

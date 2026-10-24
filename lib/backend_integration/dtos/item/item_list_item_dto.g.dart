@@ -24,4 +24,7 @@ _ItemListItemDto _$ItemListItemDtoFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ItemTagDto.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      deal: json['deal'] == null
+          ? null
+          : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
     );

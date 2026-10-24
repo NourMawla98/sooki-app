@@ -29,6 +29,9 @@ abstract class CartItemDto with _$CartItemDto {
     required int itemSizeId,
     required String sizeName,
     required double unitPrice,
+    // Set when a live deal lowered the unit price: the deal and the price before it.
+    int? dealId,
+    double? unitPriceBeforeDeal,
     required int quantity,
     required double lineTotal,
     required int stock,
@@ -50,6 +53,7 @@ class CartLineItem {
   final String colorName;
   final String sizeName;
   final double unitPrice;
+  final double? unitPriceBeforeDeal;
   final int quantity;
   final int stock;
   final bool isAvailable;
@@ -63,12 +67,19 @@ class CartLineItem {
     required this.colorName,
     required this.sizeName,
     required this.unitPrice,
+    this.unitPriceBeforeDeal,
     required this.quantity,
     required this.stock,
     required this.isAvailable,
   });
 
   double get lineTotal => unitPrice * quantity;
+
+  /// The line at the price before a deal, or null when no deal applies.
+  double? get lineTotalBeforeDeal {
+    final before = unitPriceBeforeDeal;
+    return before == null ? null : before * quantity;
+  }
 
   static CartLineItem fromServer(CartItemDto dto) => CartLineItem(
     id: dto.id.toString(),
@@ -79,6 +90,7 @@ class CartLineItem {
     colorName: dto.colorName,
     sizeName: dto.sizeName,
     unitPrice: dto.unitPrice,
+    unitPriceBeforeDeal: dto.unitPriceBeforeDeal,
     quantity: dto.quantity,
     stock: dto.stock,
     isAvailable: dto.isAvailable,

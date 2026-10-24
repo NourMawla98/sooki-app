@@ -27,6 +27,8 @@ _CartItemDto _$CartItemDtoFromJson(Map<String, dynamic> json) => _CartItemDto(
   itemSizeId: (json['itemSizeId'] as num).toInt(),
   sizeName: json['sizeName'] as String,
   unitPrice: (json['unitPrice'] as num).toDouble(),
+  dealId: (json['dealId'] as num?)?.toInt(),
+  unitPriceBeforeDeal: (json['unitPriceBeforeDeal'] as num?)?.toDouble(),
   quantity: (json['quantity'] as num).toInt(),
   lineTotal: (json['lineTotal'] as num).toDouble(),
   stock: (json['stock'] as num).toInt(),

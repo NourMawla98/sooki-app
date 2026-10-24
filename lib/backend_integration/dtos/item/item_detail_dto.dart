@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../deal/item_deal_dto.dart';
 import 'item_tag_dto.dart';
 
 part 'item_detail_dto.freezed.dart';
@@ -29,6 +30,7 @@ abstract class ItemDetailDto with _$ItemDetailDto {
     @Default([]) List<ItemDetailLabelDto> labels,
     @Default([]) List<ItemDetailAttributeDto> attributes,
     @Default([]) List<ItemDetailSizeMeasurementGroupDto> sizeMeasurements,
+    ItemDealDto? deal,
   }) = _ItemDetailDto;
 
   factory ItemDetailDto.fromJson(Map<String, dynamic> json) =>

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ItemListItemDto {
 
- int get id; String get title; double get originalPrice; double? get discountedPrice; String get storeName; String get categoryName; List<String> get colorImages; List<ItemTagDto> get tags;
+ int get id; String get title; double get originalPrice; double? get discountedPrice; String get storeName; String get categoryName; List<String> get colorImages; List<ItemTagDto> get tags; ItemDealDto? get deal;
 /// Create a copy of ItemListItemDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ItemListItemDtoCopyWith<ItemListItemDto> get copyWith => _$ItemListItemDtoCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.storeName, storeName) || other.storeName == storeName)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&const DeepCollectionEquality().equals(other.colorImages, colorImages)&&const DeepCollectionEquality().equals(other.tags, tags));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ItemListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.storeName, storeName) || other.storeName == storeName)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&const DeepCollectionEquality().equals(other.colorImages, colorImages)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.deal, deal) || other.deal == deal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,originalPrice,discountedPrice,storeName,categoryName,const DeepCollectionEquality().hash(colorImages),const DeepCollectionEquality().hash(tags));
+int get hashCode => Object.hash(runtimeType,id,title,originalPrice,discountedPrice,storeName,categoryName,const DeepCollectionEquality().hash(colorImages),const DeepCollectionEquality().hash(tags),deal);
 
 @override
 String toString() {
-  return 'ItemListItemDto(id: $id, title: $title, originalPrice: $originalPrice, discountedPrice: $discountedPrice, storeName: $storeName, categoryName: $categoryName, colorImages: $colorImages, tags: $tags)';
+  return 'ItemListItemDto(id: $id, title: $title, originalPrice: $originalPrice, discountedPrice: $discountedPrice, storeName: $storeName, categoryName: $categoryName, colorImages: $colorImages, tags: $tags, deal: $deal)';
 }
 
 
@@ -46,11 +46,11 @@ abstract mixin class $ItemListItemDtoCopyWith<$Res>  {
   factory $ItemListItemDtoCopyWith(ItemListItemDto value, $Res Function(ItemListItemDto) _then) = _$ItemListItemDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, String title, double originalPrice, double? discountedPrice, String storeName, String categoryName, List<String> colorImages, List<ItemTagDto> tags
+ int id, String title, double originalPrice, double? discountedPrice, String storeName, String categoryName, List<String> colorImages, List<ItemTagDto> tags, ItemDealDto? deal
 });
 
 
-
+$ItemDealDtoCopyWith<$Res>? get deal;
 
 }
 /// @nodoc
@@ -63,7 +63,7 @@ class _$ItemListItemDtoCopyWithImpl<$Res>
 
 /// Create a copy of ItemListItemDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? originalPrice = null,Object? discountedPrice = freezed,Object? storeName = null,Object? categoryName = null,Object? colorImages = null,Object? tags = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? originalPrice = null,Object? discountedPrice = freezed,Object? storeName = null,Object? categoryName = null,Object? colorImages = null,Object? tags = null,Object? deal = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -73,10 +73,23 @@ as double?,storeName: null == storeName ? _self.storeName : storeName // ignore:
 as String,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
 as String,colorImages: null == colorImages ? _self.colorImages : colorImages // ignore: cast_nullable_to_non_nullable
 as List<String>,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
-as List<ItemTagDto>,
+as List<ItemTagDto>,deal: freezed == deal ? _self.deal : deal // ignore: cast_nullable_to_non_nullable
+as ItemDealDto?,
   ));
 }
+/// Create a copy of ItemListItemDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ItemDealDtoCopyWith<$Res>? get deal {
+    if (_self.deal == null) {
+    return null;
+  }
 
+  return $ItemDealDtoCopyWith<$Res>(_self.deal!, (value) {
+    return _then(_self.copyWith(deal: value));
+  });
+}
 }
 
 
@@ -158,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags,  ItemDealDto? deal)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ItemListItemDto() when $default != null:
-return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_that.storeName,_that.categoryName,_that.colorImages,_that.tags);case _:
+return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_that.storeName,_that.categoryName,_that.colorImages,_that.tags,_that.deal);case _:
   return orElse();
 
 }
@@ -179,10 +192,10 @@ return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags,  ItemDealDto? deal)  $default,) {final _that = this;
 switch (_that) {
 case _ItemListItemDto():
-return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_that.storeName,_that.categoryName,_that.colorImages,_that.tags);case _:
+return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_that.storeName,_that.categoryName,_that.colorImages,_that.tags,_that.deal);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +212,10 @@ return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  double originalPrice,  double? discountedPrice,  String storeName,  String categoryName,  List<String> colorImages,  List<ItemTagDto> tags,  ItemDealDto? deal)?  $default,) {final _that = this;
 switch (_that) {
 case _ItemListItemDto() when $default != null:
-return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_that.storeName,_that.categoryName,_that.colorImages,_that.tags);case _:
+return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_that.storeName,_that.categoryName,_that.colorImages,_that.tags,_that.deal);case _:
   return null;
 
 }
@@ -214,7 +227,7 @@ return $default(_that.id,_that.title,_that.originalPrice,_that.discountedPrice,_
 @JsonSerializable(createToJson: false)
 
 class _ItemListItemDto implements ItemListItemDto {
-  const _ItemListItemDto({required this.id, required this.title, required this.originalPrice, this.discountedPrice, required this.storeName, required this.categoryName, final  List<String> colorImages = const [], final  List<ItemTagDto> tags = const []}): _colorImages = colorImages,_tags = tags;
+  const _ItemListItemDto({required this.id, required this.title, required this.originalPrice, this.discountedPrice, required this.storeName, required this.categoryName, final  List<String> colorImages = const [], final  List<ItemTagDto> tags = const [], this.deal}): _colorImages = colorImages,_tags = tags;
   factory _ItemListItemDto.fromJson(Map<String, dynamic> json) => _$ItemListItemDtoFromJson(json);
 
 @override final  int id;
@@ -237,6 +250,7 @@ class _ItemListItemDto implements ItemListItemDto {
   return EqualUnmodifiableListView(_tags);
 }
 
+@override final  ItemDealDto? deal;
 
 /// Create a copy of ItemListItemDto
 /// with the given fields replaced by the non-null parameter values.
@@ -248,16 +262,16 @@ _$ItemListItemDtoCopyWith<_ItemListItemDto> get copyWith => __$ItemListItemDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.storeName, storeName) || other.storeName == storeName)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&const DeepCollectionEquality().equals(other._colorImages, _colorImages)&&const DeepCollectionEquality().equals(other._tags, _tags));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ItemListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.storeName, storeName) || other.storeName == storeName)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&const DeepCollectionEquality().equals(other._colorImages, _colorImages)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.deal, deal) || other.deal == deal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,originalPrice,discountedPrice,storeName,categoryName,const DeepCollectionEquality().hash(_colorImages),const DeepCollectionEquality().hash(_tags));
+int get hashCode => Object.hash(runtimeType,id,title,originalPrice,discountedPrice,storeName,categoryName,const DeepCollectionEquality().hash(_colorImages),const DeepCollectionEquality().hash(_tags),deal);
 
 @override
 String toString() {
-  return 'ItemListItemDto(id: $id, title: $title, originalPrice: $originalPrice, discountedPrice: $discountedPrice, storeName: $storeName, categoryName: $categoryName, colorImages: $colorImages, tags: $tags)';
+  return 'ItemListItemDto(id: $id, title: $title, originalPrice: $originalPrice, discountedPrice: $discountedPrice, storeName: $storeName, categoryName: $categoryName, colorImages: $colorImages, tags: $tags, deal: $deal)';
 }
 
 
@@ -268,11 +282,11 @@ abstract mixin class _$ItemListItemDtoCopyWith<$Res> implements $ItemListItemDto
   factory _$ItemListItemDtoCopyWith(_ItemListItemDto value, $Res Function(_ItemListItemDto) _then) = __$ItemListItemDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String title, double originalPrice, double? discountedPrice, String storeName, String categoryName, List<String> colorImages, List<ItemTagDto> tags
+ int id, String title, double originalPrice, double? discountedPrice, String storeName, String categoryName, List<String> colorImages, List<ItemTagDto> tags, ItemDealDto? deal
 });
 
 
-
+@override $ItemDealDtoCopyWith<$Res>? get deal;
 
 }
 /// @nodoc
@@ -285,7 +299,7 @@ class __$ItemListItemDtoCopyWithImpl<$Res>
 
 /// Create a copy of ItemListItemDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? originalPrice = null,Object? discountedPrice = freezed,Object? storeName = null,Object? categoryName = null,Object? colorImages = null,Object? tags = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? originalPrice = null,Object? discountedPrice = freezed,Object? storeName = null,Object? categoryName = null,Object? colorImages = null,Object? tags = null,Object? deal = freezed,}) {
   return _then(_ItemListItemDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -295,11 +309,24 @@ as double?,storeName: null == storeName ? _self.storeName : storeName // ignore:
 as String,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
 as String,colorImages: null == colorImages ? _self._colorImages : colorImages // ignore: cast_nullable_to_non_nullable
 as List<String>,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
-as List<ItemTagDto>,
+as List<ItemTagDto>,deal: freezed == deal ? _self.deal : deal // ignore: cast_nullable_to_non_nullable
+as ItemDealDto?,
   ));
 }
 
+/// Create a copy of ItemListItemDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ItemDealDtoCopyWith<$Res>? get deal {
+    if (_self.deal == null) {
+    return null;
+  }
 
+  return $ItemDealDtoCopyWith<$Res>(_self.deal!, (value) {
+    return _then(_self.copyWith(deal: value));
+  });
+}
 }
 
 // dart format on

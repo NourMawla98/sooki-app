@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../deal/item_deal_dto.dart';
+
 part 'for_you_item_dto.freezed.dart';
 part 'for_you_item_dto.g.dart';
 
@@ -12,6 +14,7 @@ abstract class ForYouItemDto with _$ForYouItemDto {
     required double originalPrice,
     double? discountedPrice,
     required String reasonMessage,
+    ItemDealDto? deal,
   }) = _ForYouItemDto;
 
   factory ForYouItemDto.fromJson(Map<String, dynamic> json) =>

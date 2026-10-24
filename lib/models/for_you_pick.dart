@@ -1,12 +1,13 @@
 import 'dart:ui';
 
 import '../themes/app_colors.dart';
+import 'display_price.dart';
 
 /// Single "AI picked" recommendation surfaced in the For You Deck.
 class ForYouPick {
   final int itemId;
   final String name;
-  final double price;
+  final DisplayPrice price;
   final String why;
   final String? imageUrl;
   final List<Color> gradient;

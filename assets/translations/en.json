@@ -145,6 +145,20 @@
     "feature_name": "DEALS",
     "tagline": "We're lining up the best prices in town. Check back soon."
   },
+  "deals": {
+    "badge": "DEAL",
+    "ends_in": "Deal ends in",
+    "starts_in": "Starts in",
+    "days_hours": "{days}d {hours}h",
+    "live_now": "Live now",
+    "coming_up": "Coming up",
+    "flash_deals": "Flash deals",
+    "see_all": "See all",
+    "empty_title": "No deals right now",
+    "empty_subtitle": "New deals drop often. Pull down to check again.",
+    "error_title": "Couldn't load deals",
+    "tap_to_retry": "Tap to retry"
+  },
   "auction_screen": {
     "feature_name": "AUCTION",
     "tagline": "Bid, win, and own it. Live auctions are on their way."

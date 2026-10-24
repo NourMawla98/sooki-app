@@ -14,4 +14,7 @@ _ForYouItemDto _$ForYouItemDtoFromJson(Map<String, dynamic> json) =>
       originalPrice: (json['originalPrice'] as num).toDouble(),
       discountedPrice: (json['discountedPrice'] as num?)?.toDouble(),
       reasonMessage: json['reasonMessage'] as String,
+      deal: json['deal'] == null
+          ? null
+          : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
     );

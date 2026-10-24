@@ -54,6 +54,9 @@ _ItemDetailDto _$ItemDetailDtoFromJson(
           )
           .toList() ??
       const [],
+  deal: json['deal'] == null
+      ? null
+      : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
 );
 
 _ItemDetailColorDto _$ItemDetailColorDtoFromJson(

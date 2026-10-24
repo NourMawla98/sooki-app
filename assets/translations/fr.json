@@ -145,6 +145,20 @@
     "feature_name": "OFFRES",
     "tagline": "Nous préparons les meilleurs prix de la ville. Revenez bientôt."
   },
+  "deals": {
+    "badge": "PROMO",
+    "ends_in": "Fin de l'offre dans",
+    "starts_in": "Commence dans",
+    "days_hours": "{days} j {hours} h",
+    "live_now": "En cours",
+    "coming_up": "À venir",
+    "flash_deals": "Offres flash",
+    "see_all": "Tout voir",
+    "empty_title": "Aucune offre pour le moment",
+    "empty_subtitle": "De nouvelles offres arrivent souvent. Tirez vers le bas pour actualiser.",
+    "error_title": "Impossible de charger les offres",
+    "tap_to_retry": "Touchez pour réessayer"
+  },
   "auction_screen": {
     "feature_name": "ENCHÈRES",
     "tagline": "Enchérissez, gagnez et devenez propriétaire. Les enchères en direct arrivent bientôt."

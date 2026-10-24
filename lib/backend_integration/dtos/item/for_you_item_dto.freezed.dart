@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ForYouItemDto {
 
- int get id; String get title; String? get imageUrl; double get originalPrice; double? get discountedPrice; String get reasonMessage;
+ int get id; String get title; String? get imageUrl; double get originalPrice; double? get discountedPrice; String get reasonMessage; ItemDealDto? get deal;
 /// Create a copy of ForYouItemDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ForYouItemDtoCopyWith<ForYouItemDto> get copyWith => _$ForYouItemDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForYouItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.reasonMessage, reasonMessage) || other.reasonMessage == reasonMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForYouItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.reasonMessage, reasonMessage) || other.reasonMessage == reasonMessage)&&(identical(other.deal, deal) || other.deal == deal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,imageUrl,originalPrice,discountedPrice,reasonMessage);
+int get hashCode => Object.hash(runtimeType,id,title,imageUrl,originalPrice,discountedPrice,reasonMessage,deal);
 
 @override
 String toString() {
-  return 'ForYouItemDto(id: $id, title: $title, imageUrl: $imageUrl, originalPrice: $originalPrice, discountedPrice: $discountedPrice, reasonMessage: $reasonMessage)';
+  return 'ForYouItemDto(id: $id, title: $title, imageUrl: $imageUrl, originalPrice: $originalPrice, discountedPrice: $discountedPrice, reasonMessage: $reasonMessage, deal: $deal)';
 }
 
 
@@ -46,11 +46,11 @@ abstract mixin class $ForYouItemDtoCopyWith<$Res>  {
   factory $ForYouItemDtoCopyWith(ForYouItemDto value, $Res Function(ForYouItemDto) _then) = _$ForYouItemDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, String title, String? imageUrl, double originalPrice, double? discountedPrice, String reasonMessage
+ int id, String title, String? imageUrl, double originalPrice, double? discountedPrice, String reasonMessage, ItemDealDto? deal
 });
 
 
-
+$ItemDealDtoCopyWith<$Res>? get deal;
 
 }
 /// @nodoc
@@ -63,7 +63,7 @@ class _$ForYouItemDtoCopyWithImpl<$Res>
 
 /// Create a copy of ForYouItemDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? imageUrl = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? reasonMessage = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? imageUrl = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? reasonMessage = null,Object? deal = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -71,10 +71,23 @@ as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: c
 as String?,originalPrice: null == originalPrice ? _self.originalPrice : originalPrice // ignore: cast_nullable_to_non_nullable
 as double,discountedPrice: freezed == discountedPrice ? _self.discountedPrice : discountedPrice // ignore: cast_nullable_to_non_nullable
 as double?,reasonMessage: null == reasonMessage ? _self.reasonMessage : reasonMessage // ignore: cast_nullable_to_non_nullable
-as String,
+as String,deal: freezed == deal ? _self.deal : deal // ignore: cast_nullable_to_non_nullable
+as ItemDealDto?,
   ));
 }
+/// Create a copy of ForYouItemDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ItemDealDtoCopyWith<$Res>? get deal {
+    if (_self.deal == null) {
+    return null;
+  }
 
+  return $ItemDealDtoCopyWith<$Res>(_self.deal!, (value) {
+    return _then(_self.copyWith(deal: value));
+  });
+}
 }
 
 
@@ -156,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? imageUrl,  double originalPrice,  double? discountedPrice,  String reasonMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? imageUrl,  double originalPrice,  double? discountedPrice,  String reasonMessage,  ItemDealDto? deal)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ForYouItemDto() when $default != null:
-return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.discountedPrice,_that.reasonMessage);case _:
+return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.discountedPrice,_that.reasonMessage,_that.deal);case _:
   return orElse();
 
 }
@@ -177,10 +190,10 @@ return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.di
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? imageUrl,  double originalPrice,  double? discountedPrice,  String reasonMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? imageUrl,  double originalPrice,  double? discountedPrice,  String reasonMessage,  ItemDealDto? deal)  $default,) {final _that = this;
 switch (_that) {
 case _ForYouItemDto():
-return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.discountedPrice,_that.reasonMessage);case _:
+return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.discountedPrice,_that.reasonMessage,_that.deal);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +210,10 @@ return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.di
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? imageUrl,  double originalPrice,  double? discountedPrice,  String reasonMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? imageUrl,  double originalPrice,  double? discountedPrice,  String reasonMessage,  ItemDealDto? deal)?  $default,) {final _that = this;
 switch (_that) {
 case _ForYouItemDto() when $default != null:
-return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.discountedPrice,_that.reasonMessage);case _:
+return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.discountedPrice,_that.reasonMessage,_that.deal);case _:
   return null;
 
 }
@@ -212,7 +225,7 @@ return $default(_that.id,_that.title,_that.imageUrl,_that.originalPrice,_that.di
 @JsonSerializable(createToJson: false)
 
 class _ForYouItemDto implements ForYouItemDto {
-  const _ForYouItemDto({required this.id, required this.title, this.imageUrl, required this.originalPrice, this.discountedPrice, required this.reasonMessage});
+  const _ForYouItemDto({required this.id, required this.title, this.imageUrl, required this.originalPrice, this.discountedPrice, required this.reasonMessage, this.deal});
   factory _ForYouItemDto.fromJson(Map<String, dynamic> json) => _$ForYouItemDtoFromJson(json);
 
 @override final  int id;
@@ -221,6 +234,7 @@ class _ForYouItemDto implements ForYouItemDto {
 @override final  double originalPrice;
 @override final  double? discountedPrice;
 @override final  String reasonMessage;
+@override final  ItemDealDto? deal;
 
 /// Create a copy of ForYouItemDto
 /// with the given fields replaced by the non-null parameter values.
@@ -232,16 +246,16 @@ _$ForYouItemDtoCopyWith<_ForYouItemDto> get copyWith => __$ForYouItemDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ForYouItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.reasonMessage, reasonMessage) || other.reasonMessage == reasonMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ForYouItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountedPrice, discountedPrice) || other.discountedPrice == discountedPrice)&&(identical(other.reasonMessage, reasonMessage) || other.reasonMessage == reasonMessage)&&(identical(other.deal, deal) || other.deal == deal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,imageUrl,originalPrice,discountedPrice,reasonMessage);
+int get hashCode => Object.hash(runtimeType,id,title,imageUrl,originalPrice,discountedPrice,reasonMessage,deal);
 
 @override
 String toString() {
-  return 'ForYouItemDto(id: $id, title: $title, imageUrl: $imageUrl, originalPrice: $originalPrice, discountedPrice: $discountedPrice, reasonMessage: $reasonMessage)';
+  return 'ForYouItemDto(id: $id, title: $title, imageUrl: $imageUrl, originalPrice: $originalPrice, discountedPrice: $discountedPrice, reasonMessage: $reasonMessage, deal: $deal)';
 }
 
 
@@ -252,11 +266,11 @@ abstract mixin class _$ForYouItemDtoCopyWith<$Res> implements $ForYouItemDtoCopy
   factory _$ForYouItemDtoCopyWith(_ForYouItemDto value, $Res Function(_ForYouItemDto) _then) = __$ForYouItemDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String title, String? imageUrl, double originalPrice, double? discountedPrice, String reasonMessage
+ int id, String title, String? imageUrl, double originalPrice, double? discountedPrice, String reasonMessage, ItemDealDto? deal
 });
 
 
-
+@override $ItemDealDtoCopyWith<$Res>? get deal;
 
 }
 /// @nodoc
@@ -269,7 +283,7 @@ class __$ForYouItemDtoCopyWithImpl<$Res>
 
 /// Create a copy of ForYouItemDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? imageUrl = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? reasonMessage = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? imageUrl = freezed,Object? originalPrice = null,Object? discountedPrice = freezed,Object? reasonMessage = null,Object? deal = freezed,}) {
   return _then(_ForYouItemDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -277,11 +291,24 @@ as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: c
 as String?,originalPrice: null == originalPrice ? _self.originalPrice : originalPrice // ignore: cast_nullable_to_non_nullable
 as double,discountedPrice: freezed == discountedPrice ? _self.discountedPrice : discountedPrice // ignore: cast_nullable_to_non_nullable
 as double?,reasonMessage: null == reasonMessage ? _self.reasonMessage : reasonMessage // ignore: cast_nullable_to_non_nullable
-as String,
+as String,deal: freezed == deal ? _self.deal : deal // ignore: cast_nullable_to_non_nullable
+as ItemDealDto?,
   ));
 }
 
+/// Create a copy of ForYouItemDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ItemDealDtoCopyWith<$Res>? get deal {
+    if (_self.deal == null) {
+    return null;
+  }
 
+  return $ItemDealDtoCopyWith<$Res>(_self.deal!, (value) {
+    return _then(_self.copyWith(deal: value));
+  });
+}
 }
 
 // dart format on

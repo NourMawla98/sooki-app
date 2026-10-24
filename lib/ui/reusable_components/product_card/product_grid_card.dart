@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../backend_integration/dtos/item/item_list_item_dto.dart';
 import '../../../backend_integration/dtos/item/item_tag_dto.dart';
+import '../../../models/display_price.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
@@ -13,6 +14,8 @@ import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/number_localization.dart';
+import '../deals/deal_badge.dart';
+import '../deals/deal_countdown.dart';
 import '../skeleton/skeleton_shimmer.dart';
 
 // ─── Tag helpers ─────────────────────────────────────────────────────────────
@@ -51,14 +54,32 @@ FaIconData _iconForTag(ItemTagDto tag) {
   };
 }
 
+DisplayPrice _priceOf(ItemListItemDto item) => DisplayPrice.of(
+      original: item.originalPrice,
+      discounted: item.discountedPrice,
+      deal: item.deal,
+    );
+
 // ─── Card ────────────────────────────────────────────────────────────────────
 
-class ProductGridCard extends StatelessWidget {
+/// Stateful so the card can rebuild when its deal's countdown ends, which drops
+/// the deal badge and price without waiting for the list to be fetched again.
+class ProductGridCard extends StatefulWidget {
   final ItemListItemDto item;
   const ProductGridCard({super.key, required this.item});
 
   @override
+  State<ProductGridCard> createState() => _ProductGridCardState();
+}
+
+class _ProductGridCardState extends State<ProductGridCard> {
+  void _onDealEnded() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final item = widget.item;
     return ListenableBuilder(
       listenable: ThemeService.instance,
       builder: (context, _) {
@@ -91,7 +112,7 @@ class ProductGridCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _ImageArea(item: item),
+                  _ImageArea(item: item, onDealEnded: _onDealEnded),
                   _InfoArea(item: item, isDark: isDark, primaryTagColor: tagColor),
                 ],
               ),
@@ -107,12 +128,13 @@ class ProductGridCard extends StatelessWidget {
 
 class _ImageArea extends StatelessWidget {
   final ItemListItemDto item;
-  const _ImageArea({required this.item});
+  final VoidCallback onDealEnded;
+  const _ImageArea({required this.item, required this.onDealEnded});
 
   @override
   Widget build(BuildContext context) {
     final thumbnail = item.colorImages.isNotEmpty ? item.colorImages.first : null;
-    final hasDiscount = item.discountedPrice != null;
+    final price = _priceOf(item);
     final tags = item.tags.take(3).toList();
 
     return AspectRatio(
@@ -144,11 +166,38 @@ class _ImageArea extends StatelessWidget {
                 ),
               ),
             ),
-          if (hasDiscount)
+          if (price.isDeal)
+            PositionedDirectional(
+              top: 8, start: 8,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DealBadge(percentOff: price.percentOff),
+                  if (price.deal?.expiresAt != null) ...[
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.black.withValues(alpha: 0.55),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: DealCountdown(
+                        target: price.deal?.expiresAt,
+                        color: AppColors.white,
+                        fontSize: 9,
+                        onElapsed: onDealEnded,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            )
+          else if (price.percentOff != null)
             PositionedDirectional(
               top: 8, start: 8,
               child: _PillBadge(
-                '-${localizedNumber(((1 - item.discountedPrice! / item.originalPrice) * 100).round())}%',
+                '-${localizedNumber(price.percentOff!)}%',
                 AppColors.auroraRed,
               ),
             ),
@@ -205,7 +254,8 @@ class _InfoArea extends StatelessWidget {
     final origColor = isDark
         ? AppColors.white.withValues(alpha: 0.35)
         : AppColors.auroraPurple.withValues(alpha: 0.40);
-    final hasDiscount = item.discountedPrice != null;
+    final price = _priceOf(item);
+    final was = price.was;
 
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(9, 8, 9, 9),
@@ -235,13 +285,16 @@ class _InfoArea extends StatelessWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                _fmt(hasDiscount ? item.discountedPrice! : item.originalPrice),
-                style: AppTextStyles.productPrice.copyWith(color: priceColor, fontSize: 13),
+                _fmt(price.now),
+                style: AppTextStyles.productPrice.copyWith(
+                  color: price.isDeal ? AppColors.auroraPink : priceColor,
+                  fontSize: 13,
+                ),
               ),
-              if (hasDiscount) ...[
+              if (was != null) ...[
                 const SizedBox(width: 5),
                 Text(
-                  _fmt(item.originalPrice),
+                  _fmt(was),
                   style: AppTextStyles.productPrice.copyWith(
                     color: origColor,
                     fontSize: 10,

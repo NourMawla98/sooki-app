@@ -12,4 +12,7 @@ _TrendingItemDto _$TrendingItemDtoFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       imageUrl: json['imageUrl'] as String,
       price: (json['price'] as num).toDouble(),
+      deal: json['deal'] == null
+          ? null
+          : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
     );

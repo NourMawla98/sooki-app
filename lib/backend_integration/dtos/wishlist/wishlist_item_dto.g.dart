@@ -15,4 +15,7 @@ _WishlistItemDto _$WishlistItemDtoFromJson(Map<String, dynamic> json) =>
       originalPrice: (json['originalPrice'] as num).toDouble(),
       discountedPrice: (json['discountedPrice'] as num?)?.toDouble(),
       isAvailable: json['isAvailable'] as bool,
+      deal: json['deal'] == null
+          ? null
+          : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
     );

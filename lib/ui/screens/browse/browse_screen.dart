@@ -4,6 +4,7 @@ import '../../../services/refresh_notifier.dart';
 import '../../../themes/app_colors.dart';
 import '../../reusable_components/refresh/refresh_scope.dart';
 import 'widgets/categories_arrivals_section.dart';
+import 'widgets/flash_deals_section.dart';
 // import 'widgets/editorial_cover.dart';
 import 'widgets/for_you_deck.dart';
 import 'widgets/live_ticker.dart';
@@ -12,7 +13,10 @@ import 'widgets/rotating_smart_hero.dart';
 import 'widgets/trending_now_section.dart';
 
 class BrowseScreen extends StatefulWidget {
-  const BrowseScreen({super.key});
+  const BrowseScreen({super.key, this.onOpenDeals});
+
+  /// Switches to the Deals tab; the flash deals row hides its link without it.
+  final VoidCallback? onOpenDeals;
 
   @override
   State<BrowseScreen> createState() => _BrowseScreenState();
@@ -45,6 +49,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               children: [
                 const LiveTicker(),
                 const RotatingSmartHero(),
+                FlashDealsSection(onSeeAll: widget.onOpenDeals),
                 const TrendingNowSection(),
                 // const EditorialCover(),
                 const ForYouDeck(),

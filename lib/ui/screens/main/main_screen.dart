@@ -25,10 +25,11 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late int _currentIndex = widget.initialTabIndex;
 
+  static const int _dealsIndex = 1;
   static const int _cartIndex = 4;
 
   late final List<Widget> _keptAlivePages = [
-    const BrowseScreen(),
+    BrowseScreen(onOpenDeals: () => _onTabTapped(_dealsIndex)),
     const DealsScreen(),
     const CategoryBrowseScreen(),
     const AuctionScreen(),

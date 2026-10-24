@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../backend_integration/apis/items_api.dart';
+import '../../../models/display_price.dart';
 import '../../../models/review.dart';
 import '../../../services/viewed_items_service.dart';
 import '../../../backend_integration/dtos/item/item_detail_dto.dart';
@@ -16,6 +17,8 @@ import '../../../services/toast_service.dart';
 import '../../../services/wishlist_service.dart';
 import '../../../themes/themes.dart';
 import '../image_viewer/image_viewer_screen.dart';
+import '../../../ui/reusable_components/deals/deal_badge.dart';
+import '../../../ui/reusable_components/deals/deal_countdown.dart';
 import '../../../ui/reusable_components/skeleton/skeleton_shimmer.dart';
 import '../../../ui/reusable_components/swatch/color_swatch_type.dart';
 import 'widgets/color_selector.dart';
@@ -170,11 +173,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return main?.url ?? _selectedColor!.media.firstOrNull?.url;
   }
 
-  double get _effectivePrice {
-    final base = _item?.discountedPrice ?? _item?.originalPrice ?? 0.0;
-    final extra = _selectedSize?.additionalPrice ?? 0.0;
-    return base + extra;
-  }
+  DisplayPrice get _price => DisplayPrice.of(
+    original: _item?.originalPrice ?? 0.0,
+    discounted: _item?.discountedPrice,
+    deal: _item?.deal,
+    surcharge: _selectedSize?.additionalPrice ?? 0.0,
+  );
+
+  double get _effectivePrice => _price.now;
 
   int get _currentStock {
     if (_selectedSize != null) return _selectedSize!.stock;
@@ -324,6 +330,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
     final item = _item!;
     final isVerified = false; // no isVerified in ItemDetailDto yet
+    final price = _price;
 
     return RefreshIndicator(
       onRefresh: _fetchItem,
@@ -337,7 +344,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               key: _galleryKey,
               imageUrls: _masterImages,
               isVerified: isVerified,
-              discountPercentage: item.discountPercentage > 0
+              // A live deal shows its own badge by the price instead.
+              discountPercentage: !price.isDeal && item.discountPercentage > 0
                   ? item.discountPercentage
                   : null,
               onIndexChanged: _onGalleryIndexChanged,
@@ -370,14 +378,33 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ],
             const SizedBox(height: 18),
+            if (price.isDeal) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    DealBadge(percentOff: price.percentOff, fontSize: 10),
+                    DealCountdown(
+                      target: price.deal?.expiresAt,
+                      label: 'deals.ends_in'.tr(),
+                      color: AppColors.auroraPink,
+                      fontSize: 12,
+                      // Rebuilding drops the ended deal and restores the normal price.
+                      onElapsed: () => setState(() {}),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: PriceQuantityRow(
-                unitPrice: _effectivePrice,
-                originalUnitPrice: item.discountedPrice != null
-                    ? item.originalPrice +
-                          (_selectedSize?.additionalPrice ?? 0.0)
-                    : null,
+                unitPrice: price.now,
+                originalUnitPrice: price.was,
                 quantity: _quantity,
                 maxQuantity: _currentStock > 0 ? _currentStock : 1,
                 onQuantityChanged: (q) => setState(() => _quantity = q),

@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import '../../../../backend_integration/apis/items_api.dart';
 import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../../backend_integration/dtos/item/trending_item_dto.dart';
+import '../../../../models/display_price.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/theme_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../../utils/number_localization.dart';
 import '../../../reusable_components/aurora/aurora_gradient_text.dart';
+import '../../../reusable_components/deals/deal_badge.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
@@ -150,6 +152,8 @@ class _TrendingCard extends StatelessWidget {
             ? AppColors.white.withValues(alpha: 0.08)
             : AppColors.primaryPurple.withValues(alpha: 0.15);
         final nameColor = isDark ? AppColors.white : AppColors.primaryPurple;
+        final price = DisplayPrice.of(original: item.price, deal: item.deal);
+        final was = price.was;
 
         return SizedBox(
           width: 130,
@@ -195,14 +199,39 @@ class _TrendingCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          '\$${localizedDigits(item.price.toStringAsFixed(item.price.truncateToDouble() == item.price ? 0 : 2))}',
-                          style: AppTextStyles.auroraMonoPrice.copyWith(
-                            color: AppColors.auroraElectricBlue,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            height: 1.0,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              _fmt(price.now),
+                              style: AppTextStyles.auroraMonoPrice.copyWith(
+                                color: price.isDeal
+                                    ? AppColors.auroraPink
+                                    : AppColors.auroraElectricBlue,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                height: 1.0,
+                              ),
+                            ),
+                            if (was != null) ...[
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  _fmt(was),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.auroraMonoPrice.copyWith(
+                                    color: nameColor.withValues(alpha: 0.45),
+                                    fontSize: 9,
+                                    height: 1.0,
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationColor:
+                                        nameColor.withValues(alpha: 0.45),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ),
@@ -216,6 +245,12 @@ class _TrendingCard extends StatelessWidget {
                   spec: _heatBadges[heatIndex % _heatBadges.length],
                 ),
               ),
+              if (price.isDeal)
+                PositionedDirectional(
+                  top: 96,
+                  start: 12,
+                  child: DealBadge(percentOff: price.percentOff, fontSize: 8),
+                ),
             ],
           ),
         );
@@ -223,6 +258,8 @@ class _TrendingCard extends StatelessWidget {
     );
   }
 }
+
+String _fmt(double p) => '\$${localizedDigits(p.toStringAsFixed(p.truncateToDouble() == p ? 0 : 2))}';
 
 class _ItemImage extends StatelessWidget {
   final String url;

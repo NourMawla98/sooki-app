@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../backend_integration/dtos/wishlist/wishlist_item_dto.dart';
+import '../../../models/display_price.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
@@ -13,6 +14,7 @@ import '../../../services/wishlist_service.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/number_localization.dart';
+import '../../reusable_components/deals/deal_badge.dart';
 import '../cart/widgets/cart_background.dart';
 
 class WishlistScreen extends StatefulWidget {
@@ -157,11 +159,16 @@ class _WishlistCard extends StatelessWidget {
         ? AppColors.white.withValues(alpha: 0.28)
         : AppColors.auroraDeepBase.withValues(alpha: 0.28);
 
-    final currentPrice = item.discountedPrice ?? item.originalPrice;
-    final hasDiscount = item.discountedPrice != null;
-    final discountPct = hasDiscount
-        ? ((1 - item.discountedPrice! / item.originalPrice) * 100).round()
-        : 0;
+    final price = DisplayPrice.of(
+      original: item.originalPrice,
+      discounted: item.discountedPrice,
+      deal: item.deal,
+    );
+    final currentPrice = price.now;
+    final was = price.was;
+    final hasDiscount = !price.isDeal && price.percentOff != null;
+    final discountPct = price.percentOff ?? 0;
+    final hasPriceBadge = price.isDeal || hasDiscount;
 
     return GestureDetector(
       onTap: onTap,
@@ -206,8 +213,10 @@ class _WishlistCard extends StatelessWidget {
                           bgColor: AppColors.auroraRed.withValues(alpha: isDark ? 0.12 : 0.08),
                           borderColor: AppColors.auroraRed.withValues(alpha: isDark ? 0.22 : 0.18),
                         ),
-                      if (!item.isAvailable && hasDiscount)
+                      if (!item.isAvailable && hasPriceBadge)
                         const SizedBox(width: 5),
+                      if (price.isDeal)
+                        DealBadge(percentOff: price.percentOff),
                       if (hasDiscount)
                         _TagBadge(
                           label: '-${localizedNumber(discountPct)}%',
@@ -239,10 +248,10 @@ class _WishlistCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (hasDiscount) ...[
+                      if (was != null) ...[
                         const SizedBox(width: 5),
                         Text(
-                          '\$${localizedPrice(item.originalPrice)}',
+                          '\$${localizedPrice(was)}',
                           style: AppTextStyles.caption.copyWith(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,

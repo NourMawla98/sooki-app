@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../backend_integration/apis/items_api.dart';
 import '../../../../backend_integration/dependency_injection/dependency_injection.dart';
+import '../../../../models/display_price.dart';
 import '../../../../models/for_you_pick.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/search_history_service.dart';
@@ -16,6 +17,7 @@ import '../../../../services/wishlist_service.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_text_styles.dart';
 import '../../../../utils/number_localization.dart';
+import '../../../reusable_components/deals/deal_badge.dart';
 import '../../../reusable_components/refresh/refresh_scope.dart';
 import '../../../reusable_components/skeleton/skeleton_shimmer.dart';
 
@@ -98,7 +100,11 @@ class _ForYouDeckState extends State<ForYouDeck>
           return ForYouPick(
             itemId: dto.id,
             name: dto.title,
-            price: dto.discountedPrice ?? dto.originalPrice,
+            price: DisplayPrice.of(
+              original: dto.originalPrice,
+              discounted: dto.discountedPrice,
+              deal: dto.deal,
+            ),
             why: dto.reasonMessage,
             imageUrl: dto.imageUrl,
             gradient: gradient,
@@ -621,12 +627,21 @@ class _InfoBlock extends StatelessWidget {
   final ForYouPick pick;
   const _InfoBlock({required this.pick});
 
+  String _fmt(double p) =>
+      '\$${localizedDigits(p.toStringAsFixed(p.truncateToDouble() == p ? 0 : 2))}';
+
   @override
   Widget build(BuildContext context) {
+    final price = pick.price;
+    final was = price.was;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (price.isDeal) ...[
+          DealBadge(percentOff: price.percentOff),
+          const SizedBox(height: 6),
+        ],
         Text(
           pick.name,
           style: AppTextStyles.bodyMedium.copyWith(
@@ -638,14 +653,31 @@ class _InfoBlock extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 2),
-        Text(
-          '\$${localizedDigits(pick.price.toStringAsFixed(pick.price.truncateToDouble() == pick.price ? 0 : 2))}',
-          style: AppTextStyles.auroraMonoPrice.copyWith(
-            color: AppColors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            height: 1.0,
-          ),
+        Row(
+          children: [
+            Text(
+              _fmt(price.now),
+              style: AppTextStyles.auroraMonoPrice.copyWith(
+                color: AppColors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                height: 1.0,
+              ),
+            ),
+            if (was != null) ...[
+              const SizedBox(width: 6),
+              Text(
+                _fmt(was),
+                style: AppTextStyles.auroraMonoPrice.copyWith(
+                  color: AppColors.white.withValues(alpha: 0.60),
+                  fontSize: 10,
+                  height: 1.0,
+                  decoration: TextDecoration.lineThrough,
+                  decorationColor: AppColors.white.withValues(alpha: 0.60),
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 5),
         Text(
