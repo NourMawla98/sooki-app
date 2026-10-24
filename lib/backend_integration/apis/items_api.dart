@@ -23,6 +23,7 @@ typedef ItemsPage = ({
   double priceMin,
   double priceMax,
   List<int> availableSizeStandardIds,
+  List<int>? availableColorIds,
   String? suggestion,
 });
 
@@ -74,6 +75,10 @@ class ItemsApi {
         final rawSizeIds = data['availableSizeStandardIds'] as List?;
         final availableSizeStandardIds =
             rawSizeIds?.map((e) => (e as num).toInt()).toList() ?? <int>[];
+        // Null when the backend does not send it, which leaves every colour on offer.
+        final rawColorIds = data['availableColorIds'] as List?;
+        final availableColorIds =
+            rawColorIds?.map((e) => (e as num).toInt()).toList();
         final rawItems = data['items'];
         final items = rawItems is List
             ? rawItems
@@ -88,6 +93,7 @@ class ItemsApi {
           priceMin: priceMin,
           priceMax: priceMax,
           availableSizeStandardIds: availableSizeStandardIds,
+          availableColorIds: availableColorIds,
           // Spelling correction for a search that returned nothing. The backend
           // only sends it when the corrected term actually has results.
           suggestion: (data['suggestion'] as String?)?.trim().isNotEmpty == true

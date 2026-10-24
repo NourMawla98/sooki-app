@@ -44,12 +44,17 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   bool _isLastPage = false;
+  int _totalCount = 0;
   double _priceMin = 0;
   double _priceMax = 9999;
   String? _suggestion;
 
   List<ColorDto> _allColors = [];
   List<SizeStandardDto> _allSizeStandards = [];
+  List<int> _availableSizeStandardIds = [];
+  List<int>? _availableColorIds;
+  // A new search starts with clean filters; reloads for the same search keep them.
+  bool _isNewSearch = true;
 
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
@@ -128,13 +133,19 @@ class _SearchScreenState extends State<SearchScreen> {
           _isLastPage = page.isLastPage;
           if (reset) {
             _items = page.items;
+            _totalCount = page.totalCount;
             _suggestion = page.suggestion;
             _priceMin = page.priceMin;
             _priceMax = page.priceMax;
-            _filterState = FilterState.initial(
-              priceMin: page.priceMin,
-              priceMax: page.priceMax,
-            );
+            _availableSizeStandardIds = page.availableSizeStandardIds;
+            _availableColorIds = page.availableColorIds;
+            if (_isNewSearch) {
+              _filterState = FilterState.initial(
+                priceMin: page.priceMin,
+                priceMax: page.priceMax,
+              );
+              _isNewSearch = false;
+            }
           } else {
             _items = [..._items, ...page.items];
           }
@@ -164,6 +175,13 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _openFilterSheet() async {
+    final relevantStandards = _allSizeStandards
+        .where((s) => _availableSizeStandardIds.contains(s.id))
+        .toList();
+    final colorIds = _availableColorIds;
+    final relevantColors = colorIds == null
+        ? _allColors
+        : _allColors.where((c) => colorIds.contains(c.id)).toList();
     final result = await showModalBottomSheet<FilterState>(
       context: context,
       isScrollControlled: true,
@@ -173,8 +191,8 @@ class _SearchScreenState extends State<SearchScreen> {
         initial: _filterState,
         priceMin: _priceMin,
         priceMax: _priceMax,
-        availableColors: _allColors,
-        availableSizeStandards: _allSizeStandards,
+        availableColors: relevantColors,
+        availableSizeStandards: relevantStandards,
       ),
     );
     if (result != null && mounted) {
@@ -186,7 +204,11 @@ class _SearchScreenState extends State<SearchScreen> {
   int get _filterCount => _filterState.activeCount(priceMin: _priceMin, priceMax: _priceMax);
 
   void _onChanged(String q) {
-    setState(() => _liveQuery = q);
+    setState(() {
+      _liveQuery = q;
+      // A cleared field drops the committed search, so picking it again refills the bar.
+      if (q.trim().isEmpty) _committedQuery = '';
+    });
     _debounce?.cancel();
   }
 
@@ -198,6 +220,8 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _liveQuery = trimmed;
       _committedQuery = trimmed;
+      _isNewSearch = true;
+      _filterState = FilterState.initial(priceMin: 0, priceMax: 9999);
     });
     _loadResults(reset: true);
   }
@@ -273,6 +297,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           : _ResultsState(
                               query: _committedQuery,
                               items: _items,
+                              totalCount: _totalCount,
                               isLoading: _isLoading,
                               isLoadingMore: _isLoadingMore,
                               isDark: isDark,
@@ -358,6 +383,7 @@ class _TypingState extends StatelessWidget {
 class _ResultsState extends StatelessWidget {
   final String query;
   final List<ItemListItemDto> items;
+  final int totalCount;
   final bool isLoading;
   final bool isLoadingMore;
   final bool isDark;
@@ -373,6 +399,7 @@ class _ResultsState extends StatelessWidget {
   const _ResultsState({
     required this.query,
     required this.items,
+    required this.totalCount,
     required this.isLoading,
     required this.isLoadingMore,
     required this.isDark,
@@ -394,7 +421,7 @@ class _ResultsState extends StatelessWidget {
         SortFilterBar(
           sortOption: sortOption,
           filterCount: filterCount,
-          productCount: items.length,
+          productCount: totalCount,
           showSort: false,
           onFilter: onFilter,
           onSort: onSort,

@@ -67,6 +67,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   List<ColorDto> _allColors = [];
   List<SizeStandardDto> _allSizeStandards = [];
   List<int> _availableSizeStandardIds = [];
+  List<int>? _availableColorIds;
 
   // Sort & filter
   FilterState _filterState = FilterState.initial(priceMin: 0.0, priceMax: 9999.0);
@@ -166,6 +167,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
               ? page.priceMax
               : (_priceMin + 9999.0);
           _availableSizeStandardIds = page.availableSizeStandardIds;
+          _availableColorIds = page.availableColorIds;
         }
         _items.addAll(page.items);
         _totalCount = page.totalCount;
@@ -229,6 +231,10 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     final relevantStandards = _allSizeStandards
         .where((s) => _availableSizeStandardIds.contains(s.id))
         .toList();
+    final colorIds = _availableColorIds;
+    final relevantColors = colorIds == null
+        ? _allColors
+        : _allColors.where((c) => colorIds.contains(c.id)).toList();
     final result = await showModalBottomSheet<FilterState>(
       context: context,
       isScrollControlled: true,
@@ -243,7 +249,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         ),
         priceMin: _priceMin,
         priceMax: _priceMax,
-        availableColors: _allColors,
+        availableColors: relevantColors,
         availableSizeStandards: relevantStandards,
       ),
     );
