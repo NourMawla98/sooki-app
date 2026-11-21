@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../../../services/app_reload_signal.dart';
 import '../../../services/refresh_notifier.dart';
 import '../../../themes/app_colors.dart';
 import '../../reusable_components/refresh/refresh_scope.dart';
@@ -27,7 +30,16 @@ class _BrowseScreenState extends State<BrowseScreen> {
   final _refreshNotifier = RefreshNotifier();
 
   @override
+  void initState() {
+    super.initState();
+    AppReloadSignal.instance.addListener(_reload);
+  }
+
+  void _reload() => unawaited(_refreshNotifier.refresh());
+
+  @override
   void dispose() {
+    AppReloadSignal.instance.removeListener(_reload);
     _scrollController.dispose();
     _refreshNotifier.dispose();
     super.dispose();

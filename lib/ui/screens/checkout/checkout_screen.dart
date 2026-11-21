@@ -30,7 +30,8 @@ class CheckoutScreen extends StatefulWidget {
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
+class _CheckoutScreenState extends State<CheckoutScreen>
+    with WidgetsBindingObserver {
   final _noteController = TextEditingController();
   bool _placing = false;
 
@@ -49,9 +50,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadPaymentMethods();
-    // The cart may have been priced for a different address or subtotal.
-    unawaited(_cartService.refreshDeliveryFee());
+    unawaited(_reloadPricing());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Prices, deals and stock can change while the app is in the background.
+    if (state == AppLifecycleState.resumed) unawaited(_reloadPricing());
+  }
+
+  /// Reads the cart again and prices delivery and the coupon on it, so the
+  /// total on screen is the one the backend will charge.
+  Future<void> _reloadPricing() async {
+    await _cartService.loadFromServer();
+    await _cartService.refreshDeliveryFee(force: true);
   }
 
   Future<void> _loadPaymentMethods() async {
@@ -68,13 +82,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _noteController.dispose();
     super.dispose();
   }
 
   Future<void> _placeOrder() async {
     if (_placing || _addressService.selectedAddress == null) return;
+    // The total the shopper confirmed. If a reload below moves it, the
+    // backend refuses the order and the shopper confirms the new total.
+    final shownTotal = _cartService.total;
     setState(() => _placing = true);
+
+    await _reloadPricing();
+    if (!mounted) return;
+    if (_cartService.isEmpty) {
+      setState(() => _placing = false);
+      return;
+    }
 
     final dto = PlaceOrderRequestDto(
       customerAddressId: _addressService.selectedAddress!.id,
@@ -82,12 +107,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ? null
           : _noteController.text.trim(),
       couponCode: _cartService.promoCode,
+      expectedTotal: shownTotal,
     );
 
-    final result = await _ordersService.placeOrder(dto);
+    final outcome = await _ordersService.placeOrder(dto);
     if (!mounted) return;
     setState(() => _placing = false);
 
+    if (outcome.pricesChanged) {
+      // The backend's message is already on screen; show the new prices so
+      // the shopper can confirm again.
+      await _reloadPricing();
+      return;
+    }
+
+    final result = outcome.order;
     if (result != null) {
       await _cartService.clearCart();
       if (!mounted) return;
@@ -413,13 +447,34 @@ class _OrderSummaryCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '\$${localizedPrice(item.lineTotal)}',
-                        style: AppTextStyles.dsBody.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: textColor,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          // What the line costs before deals, so the lines
+                          // lead to the subtotal and the savings below.
+                          if (item.struckLineTotal != null)
+                            Text(
+                              '\$${localizedPrice(item.struckLineTotal!)}',
+                              style: AppTextStyles.dsMuted.copyWith(
+                                fontSize: 10.5,
+                                color: muteColor,
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor: muteColor,
+                              ),
+                            ),
+                          Text(
+                            item.isFreeGift
+                                ? 'checkout_screen.free'.tr()
+                                : '\$${localizedPrice(item.lineTotalAfterDeals)}',
+                            style: AppTextStyles.dsBody.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: item.isFreeGift
+                                  ? AppColors.verifiedGreen
+                                  : textColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -439,6 +494,30 @@ class _OrderSummaryCard extends StatelessWidget {
                   value: '\$${localizedPrice(cartService.subtotal)}',
                   isDark: isDark,
                 ),
+                // One line per deal the total already takes off.
+                for (final deal in cartService.dealSavingRows) ...[
+                    const SizedBox(height: 5),
+                    _TotalRow(
+                      label: deal.title,
+                      value: '\u2212\$${localizedPrice(deal.saving)}',
+                      valueColor: AppColors.auroraPink,
+                      isDark: isDark,
+                    ),
+                  ],
+                if (cartService.spendDealHint != null) ...[
+                  const SizedBox(height: 5),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      cartService.spendDealHint!,
+                      style: AppTextStyles.dsBody.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.auroraPink,
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 5),
                 _TotalRow(
                   label: 'checkout_screen.delivery_fee'.tr(),

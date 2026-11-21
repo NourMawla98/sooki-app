@@ -149,7 +149,6 @@
     "badge": "عرض",
     "ends_in": "ينتهي العرض خلال",
     "starts_in": "يبدأ خلال",
-    "days_hours": "{days} ي {hours} س",
     "live_now": "متاح الآن",
     "coming_up": "قريبًا",
     "flash_deals": "عروض سريعة",
@@ -157,7 +156,95 @@
     "empty_title": "لا توجد عروض حاليًا",
     "empty_subtitle": "تصل عروض جديدة باستمرار. اسحب للأسفل للتحقق مجددًا.",
     "error_title": "تعذّر تحميل العروض",
-    "tap_to_retry": "اضغط لإعادة المحاولة"
+    "tap_to_retry": "اضغط لإعادة المحاولة",
+    "times": "×{count}",
+    "save_sticker": "وفّر\n{amount}",
+    "ending_soon": "ينتهي قريبًا",
+    "all_deals": "كل العروض",
+    "empty_body": "المتاجر تحضّر عروضًا جديدة. فعّل تنبيهات العروض وسنخبرك فور نزول أي عرض.",
+    "notify_me": "نبّهني",
+    "alerts_on": "التنبيهات مفعّلة",
+    "browse_shop": "تصفّح المتجر",
+    "trending_while_you_wait": "الأكثر رواجًا ريثما تنتظر",
+    "types": {
+      "bundle_label": "باقة وتوفير",
+      "multi_label": "اشترِ أكثر ووفّر أكثر",
+      "gift_label": "هدية مجانية",
+      "spend_label": "أنفق ووفّر"
+    },
+    "filters": {
+      "all": "كل العروض",
+      "single": "خصم %",
+      "bundle": "باقات",
+      "multi": "اشترِ أكثر",
+      "gift": "هدية مجانية",
+      "spend": "أنفق ووفّر"
+    },
+    "filter_empty": {
+      "single": "لا توجد عروض خصم حاليًا",
+      "bundle": "لا توجد عروض باقات حاليًا",
+      "multi": "لا توجد عروض اشترِ أكثر حاليًا",
+      "gift": "لا توجد عروض هدايا مجانية حاليًا",
+      "spend": "لا توجد عروض أنفق ووفّر حاليًا",
+      "body": "تصفّح أنواع العروض الأخرى أو عد قريبًا.",
+      "see_all": "عرض كل العروض"
+    },
+    "hero": {
+      "eyebrow": "{count} عروض متاحة الآن",
+      "title_start": "طرق للتوفير، ",
+      "title_highlight": "متاحة الآن",
+      "subtitle": "باقات وعروض الكميات وهدايا مجانية وتوفير على السلة كلها.",
+      "subtitle_ends": "باقات وعروض الكميات وهدايا مجانية وتوفير على السلة كلها. ينتهي العرض التالي خلال",
+      "hours": "ساعة",
+      "minutes": "دقيقة",
+      "seconds": "ثانية",
+      "shop": "تسوّق العروض",
+      "days": "يوم"
+    },
+    "multi": {
+      "tier": "اشترِ {count} بخصم {percent}%",
+      "unlocked": "تم فتح خصم {percent}% على كل قطعة!"
+    },
+    "gift": {
+      "ribbon": "هدية مجانية",
+      "free": "مجانًا",
+      "unlocked": "اكتملت المجموعة! أضف {item} من صفحته وسيكون مجانيًا",
+      "in_cart": "هديتك المجانية في السلة",
+      "worth": "{item}، قيمتها {amount}"
+    },
+    "spend": {
+      "headline_start": "أنفق {amount} واحصل على ",
+      "headline_percent": "خصم {percent}%",
+      "headline_end": " على سلتك كلها",
+      "cart_of": "السلة: {amount} من {threshold}",
+      "away": "بقي {amount}",
+      "unlocked": "تم فتح خصم {percent}%! وفّرت {amount}"
+    },
+    "offer": {
+      "multi": "اشترِ {count} ووفّر {percent}%",
+      "multi_plain": "اشترِ أكثر ووفّر أكثر",
+      "bundle": "عرض باقة",
+      "gift": "هدية مجانية",
+      "gift_free": "مجانًا مع عرض",
+      "see_deal": "شاهد العرض"
+    },
+    "in_cart": "في السلة ×{count}",
+    "unlocked_badge": "مفتوح",
+    "days_clock": "{days}ي {clock}",
+    "progress": {
+      "bundle_add": "أضف {count} من {item} لإكمال الباقة",
+      "bundle_done": "اكتملت الباقة، وسعرها مطبّق في سلتك",
+      "multi_add": "أضف {count} من {item} لفتح خصم {percent}%",
+      "gift_add": "أضف {count} من {item} لفتح هديتك المجانية",
+      "better_deal": "ينطبق عرض أفضل على هذا المنتج",
+      "bundle_pitch": "اشترِ الـ{count} معًا ووفّر {amount}",
+      "bundle_pitch_plain": "اشترِ الـ{count} معًا بسعر الباقة",
+      "gift_pitch": "اشترِ المجموعة واحصل على {item} مجانًا",
+      "multi_pitch": "اشترِ {count} من {item} ووفّر {percent}%"
+    },
+    "guest_title": "سجّل الدخول لرؤية العروض",
+    "guest_subtitle": "العروض لأعضاء سوقي. سجّل الدخول أو أنشئ حسابًا لرؤية المتاح.",
+    "guest_sign_in": "تسجيل الدخول"
   },
   "auction_screen": {
     "feature_name": "المزاد",
@@ -415,7 +502,9 @@
     "items": "منتجات",
     "secure": "آمن",
     "fast": "سريع",
-    "cash_on_delivery": "الدفع عند الاستلام"
+    "cash_on_delivery": "الدفع عند الاستلام",
+    "spend_hint": "أضف {amount} لتحصل على خصم {percent}%",
+    "deal_price_savings": "توفير أسعار العروض"
   },
   "profile_screen": {
     "title": "الملف الشخصي",
@@ -515,7 +604,8 @@
   "cart_item_card": {
     "size": "المقاس {name}",
     "only_left": "بقي {count} فقط",
-    "unavailable": "غير متوفر"
+    "unavailable": "غير متوفر",
+    "free_gift": "هدية مجانية"
   },
   "notification_panel": {
     "title": "الإشعارات",
@@ -692,7 +782,16 @@
     "step_processing": "قيد المعالجة",
     "step_packaged": "تم التغليف",
     "step_out_for_delivery": "قيد التوصيل",
-    "step_delivered": "تم التوصيل"
+    "step_delivered": "تم التوصيل",
+    "deal_savings": "توفير العروض",
+    "deal": {
+      "price": "سعر العرض",
+      "bundle": "عرض باقة",
+      "multi": "عرض الكمية",
+      "gift": "عرض هدية مجانية",
+      "spend": "أنفق ووفّر",
+      "line_saving": "{deal}: -{amount}"
+    }
   },
   "size_guide": {
     "column": {
@@ -805,5 +904,13 @@
       "bed_sizes": "مقاسات الأسرّة",
       "belt_size": "مقاس الحزام (سم)"
     }
+  },
+  "app_update": {
+    "title": "التحديث مطلوب",
+    "body": "لم يعد هذا الإصدار من سوقي مدعومًا. حدّث التطبيق لمتابعة التسوق.",
+    "button": "حدّث الآن",
+    "banner_text": "يتوفر إصدار جديد من سوقي.",
+    "banner_action": "تحديث",
+    "dismiss": "إغلاق"
   }
 }

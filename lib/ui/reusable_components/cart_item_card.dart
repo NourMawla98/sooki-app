@@ -7,6 +7,7 @@ import '../../services/theme_service.dart';
 import '../../themes/app_colors.dart';
 import '../../themes/app_text_styles.dart';
 import '../../utils/number_localization.dart';
+import '../../utils/text_localization.dart';
 import 'product_thumb.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -79,8 +80,9 @@ class CartItemCard extends StatelessWidget {
                     ),
                     _RightBottom(
                       quantity: item.quantity,
-                      lineTotal: item.lineTotal,
-                      lineTotalBeforeDeal: item.lineTotalBeforeDeal,
+                      lineTotal: item.lineTotalAfterDeals,
+                      lineTotalBeforeDeal: item.struckLineTotal,
+                      isFreeGift: item.isFreeGift,
                       stock: item.stock,
                       isAvailable: item.isAvailable,
                       onQuantityChanged: onQuantityChanged,
@@ -149,7 +151,10 @@ class _Info extends StatelessWidget {
             Text(
               // Size labels (XS, 38) are identifiers, not quantities, so their
               // digits stay Western.
-              'cart_item_card.size'.tr(namedArgs: {'name': item.sizeName}),
+              composeSizeLabel(
+                'cart_item_card.size'.tr(namedArgs: {'name': '{name}'}),
+                item.sizeName,
+              ),
               style: AppTextStyles.caption.copyWith(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
@@ -188,6 +193,7 @@ class _RightBottom extends StatelessWidget {
   final int quantity;
   final double lineTotal;
   final double? lineTotalBeforeDeal;
+  final bool isFreeGift;
   final int stock;
   final bool isAvailable;
   final ValueChanged<int> onQuantityChanged;
@@ -199,6 +205,7 @@ class _RightBottom extends StatelessWidget {
     required this.quantity,
     required this.lineTotal,
     required this.lineTotalBeforeDeal,
+    required this.isFreeGift,
     required this.stock,
     required this.isAvailable,
     required this.onQuantityChanged,
@@ -218,6 +225,16 @@ class _RightBottom extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            if (isFreeGift)
+              Text(
+                'cart_item_card.free_gift'.tr(),
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.verifiedGreen,
+                  height: 1.1,
+                ),
+              ),
             // The server already priced the line at the deal; this is the
             // price it replaced, for reference only.
             if (before != null)

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'backend_integration/apis/app_version_api.dart';
 import 'backend_integration/dio/interceptors/global_headers_interceptor.dart';
 import 'config/app_config.dart';
 import 'enums/app_environment.dart';
@@ -14,12 +15,14 @@ import 'backend_integration/dependency_injection/dependency_injection.dart';
 import 'i18n/i18n_bootstrap.dart';
 import 'routes/route_exports.dart' as router;
 import 'services/address_service.dart';
+import 'services/app_version_gate.dart';
 import 'services/language_service.dart';
 import 'services/push_notification_service.dart';
 import 'services/route_history_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'themes/themes.dart';
+import 'ui/screens/app_update/app_version_overlay.dart';
 
 Future<void> main() => runSooki(AppEnvironment.dev);
 
@@ -65,6 +68,10 @@ Future<void> runSooki(AppEnvironment environment) async {
     languageService: languageService,
   );
 
+  // The version check starts as soon as there is a client to call with, and
+  // runs while the app starts rather than after it.
+  unawaited(checkAppVersion());
+
   runApp(
     I18nBootstrap.wrap(
       languageService: languageService,
@@ -73,6 +80,13 @@ Future<void> runSooki(AppEnvironment environment) async {
   );
 }
 
+/// Checks this build against the versions the backend supports.
+Future<void> checkAppVersion() => AppVersionGate.instance.check(
+  api: serviceLocator<AppVersionApi>(),
+  currentVersion: GlobalHeadersInterceptor.appVersion,
+  platform: GlobalHeadersInterceptor.versionPlatform,
+);
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -80,19 +94,27 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final LanguageService _languageService = serviceLocator<LanguageService>();
 
   @override
   void initState() {
     super.initState();
     _languageService.addListener(_onLanguageChanged);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _languageService.removeListener(_onLanguageChanged);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The minimum version can be raised while the app sits in the background.
+    if (state == AppLifecycleState.resumed) unawaited(checkAppVersion());
   }
 
   /// Rebuild every route the customer has open, in the new language.
@@ -139,7 +161,10 @@ class _MyAppState extends State<MyApp> {
           title: 'Sooki',
           debugShowCheckedModeBanner: false,
           navigatorKey: ToastService.navigatorKey,
-          navigatorObservers: [RouteHistoryService.instance],
+          navigatorObservers: [
+            RouteHistoryService.instance,
+            UpdateBarrier.observer,
+          ],
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeService.instance.themeMode,
@@ -151,6 +176,11 @@ class _MyAppState extends State<MyApp> {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
+
+          // The update banner and the blocking update screen sit above every
+          // route.
+          builder: (context, child) =>
+              AppVersionOverlay(child: child ?? const SizedBox.shrink()),
         );
       },
     );

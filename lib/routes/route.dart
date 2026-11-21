@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/deal_progress.dart';
 
 import '../ui/screens/browse/browse_screen.dart';
 import '../ui/screens/cart/cart_screen.dart';
@@ -47,7 +48,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MainScreen(initialTabIndex: tab is int ? tab : 0);
     },
     browseScreenRoute: (_) => const BrowseScreen(),
-    dealsScreenRoute: (_) => const DealsScreen(),
+    dealsScreenRoute: (_) {
+      final filter = settings.arguments;
+      return DealsScreen(
+        standalone: true,
+        initialFilter: filter is DealFilter ? filter : null,
+      );
+    },
     shoppingScreenRoute: (_) => const ShoppingScreen(),
     loyaltyScreenRoute: (_) => const LoyaltyScreen(),
     cartScreenRoute: (_) => const CartScreen(),

@@ -77,15 +77,18 @@ class OrdersService extends ChangeNotifier {
     return _api.getOrderById(id);
   }
 
-  Future<({int orderId, String trackingNumber})?> placeOrder(
-    PlaceOrderRequestDto dto,
-  ) async {
+  /// Places the order. [pricesChanged] is true when the backend refused it
+  /// because its total no longer matches the one the shopper saw; the backend's
+  /// message has already been shown by the request layer.
+  Future<({({int orderId, String trackingNumber})? order, bool pricesChanged})>
+      placeOrder(PlaceOrderRequestDto dto) async {
     final result = await _api.placeOrder(dto);
     return result.fold(
-      (_) => null,
+      (failure) async =>
+          (order: null, pricesChanged: isConflictFailure(failure)),
       (data) async {
         await refreshActiveCount();
-        return data;
+        return (order: data, pricesChanged: false);
       },
     );
   }

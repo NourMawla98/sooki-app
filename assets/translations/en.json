@@ -149,7 +149,6 @@
     "badge": "DEAL",
     "ends_in": "Deal ends in",
     "starts_in": "Starts in",
-    "days_hours": "{days}d {hours}h",
     "live_now": "Live now",
     "coming_up": "Coming up",
     "flash_deals": "Flash deals",
@@ -157,7 +156,95 @@
     "empty_title": "No deals right now",
     "empty_subtitle": "New deals drop often. Pull down to check again.",
     "error_title": "Couldn't load deals",
-    "tap_to_retry": "Tap to retry"
+    "tap_to_retry": "Tap to retry",
+    "times": "x{count}",
+    "save_sticker": "SAVE\n{amount}",
+    "ending_soon": "Ending soon",
+    "all_deals": "All deals",
+    "empty_body": "Stores are cooking up new offers. Turn on deal alerts and we will tell you the moment one drops.",
+    "notify_me": "Notify me",
+    "alerts_on": "Alerts on",
+    "browse_shop": "Browse the shop",
+    "trending_while_you_wait": "Trending while you wait",
+    "types": {
+      "bundle_label": "Bundle & save",
+      "multi_label": "Buy more, save more",
+      "gift_label": "Free gift",
+      "spend_label": "Spend & save"
+    },
+    "filters": {
+      "all": "All deals",
+      "single": "% Off",
+      "bundle": "Bundles",
+      "multi": "Buy more",
+      "gift": "Free gift",
+      "spend": "Spend & save"
+    },
+    "filter_empty": {
+      "single": "No % off deals right now",
+      "bundle": "No bundle deals right now",
+      "multi": "No buy more deals right now",
+      "gift": "No free gift deals right now",
+      "spend": "No spend & save deals right now",
+      "body": "Check the other deal types or come back soon.",
+      "see_all": "See all deals"
+    },
+    "hero": {
+      "eyebrow": "{count} deals live",
+      "title_start": "Ways to save, ",
+      "title_highlight": "live right now",
+      "subtitle": "Bundles, multi-buys, free gifts and cart-wide savings.",
+      "subtitle_ends": "Bundles, multi-buys, free gifts and cart-wide savings. The next deal ends in",
+      "hours": "hrs",
+      "minutes": "min",
+      "seconds": "sec",
+      "shop": "Shop the deals",
+      "days": "days"
+    },
+    "multi": {
+      "tier": "Buy {count} -{percent}%",
+      "unlocked": "{percent}% off unlocked on every unit!"
+    },
+    "gift": {
+      "ribbon": "FREE GIFT",
+      "free": "FREE",
+      "unlocked": "Group complete! Add {item} from its page and it is free",
+      "in_cart": "Your free gift is in the cart",
+      "worth": "{item}, worth {amount}"
+    },
+    "spend": {
+      "headline_start": "Spend {amount}, get ",
+      "headline_percent": "{percent}% off",
+      "headline_end": " your whole cart",
+      "cart_of": "Cart: {amount} of {threshold}",
+      "away": "You're {amount} away",
+      "unlocked": "{percent}% off unlocked! You save {amount}"
+    },
+    "offer": {
+      "multi": "Buy {count}, save {percent}%",
+      "multi_plain": "Buy more, save more",
+      "bundle": "Bundle deal",
+      "gift": "Free gift",
+      "gift_free": "Free with a deal",
+      "see_deal": "See the deal"
+    },
+    "in_cart": "In cart x{count}",
+    "unlocked_badge": "Unlocked",
+    "days_clock": "{days}d {clock}",
+    "progress": {
+      "bundle_add": "Add {count} more {item} to complete the bundle",
+      "bundle_done": "Bundle complete, the bundle price applies in your cart",
+      "multi_add": "Add {count} more {item} to unlock {percent}% off",
+      "gift_add": "Add {count} more {item} to unlock your free gift",
+      "better_deal": "A better deal applies to this item",
+      "bundle_pitch": "Buy all {count} together and save {amount}",
+      "bundle_pitch_plain": "Buy all {count} together for the bundle price",
+      "gift_pitch": "Buy the set and get {item} free",
+      "multi_pitch": "Buy {count} {item} and save {percent}%"
+    },
+    "guest_title": "Sign in to see the deals",
+    "guest_subtitle": "Deals are for Sooki members. Sign in or create an account to see what is on.",
+    "guest_sign_in": "Sign in"
   },
   "auction_screen": {
     "feature_name": "AUCTION",
@@ -415,7 +502,9 @@
     "items": "items",
     "secure": "Secure",
     "fast": "Fast",
-    "cash_on_delivery": "Cash on delivery"
+    "cash_on_delivery": "Cash on delivery",
+    "spend_hint": "Add {amount} more to get {percent}% off",
+    "deal_price_savings": "Deal price savings"
   },
   "profile_screen": {
     "title": "Profile",
@@ -511,7 +600,8 @@
   "cart_item_card": {
     "size": "Size {name}",
     "only_left": "Only {count} left",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "free_gift": "FREE GIFT"
   },
   "notification_panel": {
     "title": "Notifications",
@@ -684,7 +774,16 @@
     "step_processing": "Processing",
     "step_packaged": "Packed",
     "step_out_for_delivery": "Shipping",
-    "step_delivered": "Delivered"
+    "step_delivered": "Delivered",
+    "deal_savings": "Deal savings",
+    "deal": {
+      "price": "Deal price",
+      "bundle": "Bundle deal",
+      "multi": "Multi-buy deal",
+      "gift": "Free gift deal",
+      "spend": "Spend & save",
+      "line_saving": "{deal}: -{amount}"
+    }
   },
   "size_guide": {
     "column": {
@@ -797,5 +896,13 @@
       "bed_sizes": "Bed Sizes",
       "belt_size": "Belt Size (CM)"
     }
+  },
+  "app_update": {
+    "title": "Update required",
+    "body": "This version of Sooki is no longer supported. Update the app to keep shopping.",
+    "button": "Update now",
+    "banner_text": "A new version of Sooki is available.",
+    "banner_action": "Update",
+    "dismiss": "Dismiss"
   }
 }

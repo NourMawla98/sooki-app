@@ -13,11 +13,17 @@ class DealsApi {
   DealsApi(@Named(apiClientKey) this._dio);
 
   /// Live deals first, ending soonest at the top, then upcoming deals by start.
-  Future<Either<ApiFailure, List<CustomerDealDto>>> getDeals() {
+  ///
+  /// [silent] keeps a failure from showing an error toast, for a guest whose
+  /// screen shows a sign in view instead.
+  Future<Either<ApiFailure, List<CustomerDealDto>>> getDeals({
+    bool silent = false,
+  }) {
     return executeRequest(
       client: _dio,
       method: HttpMethod.get,
       path: 'customer/deals',
+      extra: silent ? const {'silentError': true} : null,
       operationName: 'getDeals',
       successParser: (response) {
         final data = (response.data as Map<String, dynamic>?)?['data'];

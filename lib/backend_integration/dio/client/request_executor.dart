@@ -133,3 +133,21 @@ enum HttpMethod {
   const HttpMethod(this.value);
   final String value;
 }
+
+/// The HTTP status the server answered a failed request with, or null when
+/// it never answered.
+int? failureStatus(ApiFailure failure) {
+  final error = failure.error;
+  return error is DioException ? error.response?.statusCode : null;
+}
+
+/// True when a request failed because the session is missing or no longer
+/// allowed: a 401 or 403 from the server.
+bool isAuthFailure(ApiFailure failure) {
+  final status = failureStatus(failure);
+  return status == 401 || status == 403;
+}
+
+/// True when the server refused a request because what it was based on has
+/// changed since, such as an order total that no longer matches: a 409.
+bool isConflictFailure(ApiFailure failure) => failureStatus(failure) == 409;

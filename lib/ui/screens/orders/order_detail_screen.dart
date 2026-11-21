@@ -9,6 +9,7 @@ import '../../../backend_integration/dtos/order/order_detail_dto.dart';
 import '../../../backend_integration/dtos/order/order_item_dto.dart';
 import '../../../enums/address_label_type.dart';
 import '../../../enums/order_status.dart';
+import '../../../models/deal_offer.dart';
 import '../../../services/orders_service.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
@@ -585,17 +586,52 @@ class _ItemsCard extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        for (final line in orderLineDealNotes(item)) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            line.amount > 0
+                                ? 'order_detail_screen.deal.line_saving'.tr(
+                                    namedArgs: {
+                                      'deal': line.labelKey.tr(),
+                                      'amount': '\$${localizedPrice(line.amount)}',
+                                    },
+                                  )
+                                : line.labelKey.tr(),
+                            style: AppTextStyles.dsMuted.copyWith(
+                              color: AppColors.auroraPink,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                  Text(
-                    '\$${localizedPrice(item.totalPrice)}',
-                    style: AppTextStyles.dsBodyBold.copyWith(
-                      color: textColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.1,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // The line price already has every deal taken off; the
+                      // struck amount is what it would have cost without.
+                      if (item.totalBeforeDeals != null)
+                        Text(
+                          '\$${localizedPrice(item.totalBeforeDeals!)}',
+                          style: AppTextStyles.dsMuted.copyWith(
+                            color: muteColor,
+                            fontSize: 11,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: muteColor,
+                          ),
+                        ),
+                      Text(
+                        '\$${localizedPrice(item.totalPrice)}',
+                        style: AppTextStyles.dsBodyBold.copyWith(
+                          color: textColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.1,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -664,8 +700,16 @@ class _SummaryCard extends StatelessWidget {
       child: Column(
         children: [
           _PriceRow(label: 'order_detail_screen.subtotal'.tr(),
-              value: '\$${localizedPrice(detail.subtotal)}',
+              value: '\$${localizedPrice(detail.displaySubtotal)}',
               labelColor: labelColor, valColor: valColor),
+          if (detail.totalDealDiscount > 0) ...[
+            const SizedBox(height: 6),
+            _PriceRow(
+                label: 'order_detail_screen.deal_savings'.tr(),
+                value: '-\$${localizedPrice(detail.totalDealDiscount)}',
+                labelColor: labelColor,
+                valColor: AppColors.auroraPink),
+          ],
           const SizedBox(height: 6),
           _PriceRow(
               label: 'order_detail_screen.delivery_fee'.tr(),

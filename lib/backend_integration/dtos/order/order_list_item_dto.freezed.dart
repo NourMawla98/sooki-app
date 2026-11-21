@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrderListItemDto {
 
- int get id; String get trackingNumber; int get status; double get totalAmount; DateTime get createdAt; List<OrderItemDto> get items;
+ int get id; String get trackingNumber; int get status; double get totalAmount;// Sent in UTC; shown in the device's time zone.
+@ServerUtcDateConverter() DateTime get createdAt; List<OrderItemDto> get items;// Everything deals took off the order.
+ double get totalDealDiscount;
 /// Create a copy of OrderListItemDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +28,16 @@ $OrderListItemDtoCopyWith<OrderListItemDto> get copyWith => _$OrderListItemDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, items));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.totalDealDiscount, totalDealDiscount) || other.totalDealDiscount == totalDealDiscount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,trackingNumber,status,totalAmount,createdAt,const DeepCollectionEquality().hash(items));
+int get hashCode => Object.hash(runtimeType,id,trackingNumber,status,totalAmount,createdAt,const DeepCollectionEquality().hash(items),totalDealDiscount);
 
 @override
 String toString() {
-  return 'OrderListItemDto(id: $id, trackingNumber: $trackingNumber, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items)';
+  return 'OrderListItemDto(id: $id, trackingNumber: $trackingNumber, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items, totalDealDiscount: $totalDealDiscount)';
 }
 
 
@@ -46,7 +48,7 @@ abstract mixin class $OrderListItemDtoCopyWith<$Res>  {
   factory $OrderListItemDtoCopyWith(OrderListItemDto value, $Res Function(OrderListItemDto) _then) = _$OrderListItemDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, String trackingNumber, int status, double totalAmount, DateTime createdAt, List<OrderItemDto> items
+ int id, String trackingNumber, int status, double totalAmount,@ServerUtcDateConverter() DateTime createdAt, List<OrderItemDto> items, double totalDealDiscount
 });
 
 
@@ -63,7 +65,7 @@ class _$OrderListItemDtoCopyWithImpl<$Res>
 
 /// Create a copy of OrderListItemDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? trackingNumber = null,Object? status = null,Object? totalAmount = null,Object? createdAt = null,Object? items = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? trackingNumber = null,Object? status = null,Object? totalAmount = null,Object? createdAt = null,Object? items = null,Object? totalDealDiscount = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,trackingNumber: null == trackingNumber ? _self.trackingNumber : trackingNumber // ignore: cast_nullable_to_non_nullable
@@ -71,7 +73,8 @@ as String,status: null == status ? _self.status : status // ignore: cast_nullabl
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as double,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<OrderItemDto>,
+as List<OrderItemDto>,totalDealDiscount: null == totalDealDiscount ? _self.totalDealDiscount : totalDealDiscount // ignore: cast_nullable_to_non_nullable
+as double,
   ));
 }
 
@@ -156,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String trackingNumber,  int status,  double totalAmount,  DateTime createdAt,  List<OrderItemDto> items)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String trackingNumber,  int status,  double totalAmount, @ServerUtcDateConverter()  DateTime createdAt,  List<OrderItemDto> items,  double totalDealDiscount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrderListItemDto() when $default != null:
-return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_that.createdAt,_that.items);case _:
+return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_that.createdAt,_that.items,_that.totalDealDiscount);case _:
   return orElse();
 
 }
@@ -177,10 +180,10 @@ return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String trackingNumber,  int status,  double totalAmount,  DateTime createdAt,  List<OrderItemDto> items)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String trackingNumber,  int status,  double totalAmount, @ServerUtcDateConverter()  DateTime createdAt,  List<OrderItemDto> items,  double totalDealDiscount)  $default,) {final _that = this;
 switch (_that) {
 case _OrderListItemDto():
-return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_that.createdAt,_that.items);case _:
+return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_that.createdAt,_that.items,_that.totalDealDiscount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +200,10 @@ return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String trackingNumber,  int status,  double totalAmount,  DateTime createdAt,  List<OrderItemDto> items)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String trackingNumber,  int status,  double totalAmount, @ServerUtcDateConverter()  DateTime createdAt,  List<OrderItemDto> items,  double totalDealDiscount)?  $default,) {final _that = this;
 switch (_that) {
 case _OrderListItemDto() when $default != null:
-return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_that.createdAt,_that.items);case _:
+return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_that.createdAt,_that.items,_that.totalDealDiscount);case _:
   return null;
 
 }
@@ -212,14 +215,15 @@ return $default(_that.id,_that.trackingNumber,_that.status,_that.totalAmount,_th
 @JsonSerializable(createToJson: false)
 
 class _OrderListItemDto implements OrderListItemDto {
-  const _OrderListItemDto({required this.id, required this.trackingNumber, required this.status, required this.totalAmount, required this.createdAt, final  List<OrderItemDto> items = const []}): _items = items;
+  const _OrderListItemDto({required this.id, required this.trackingNumber, required this.status, required this.totalAmount, @ServerUtcDateConverter() required this.createdAt, final  List<OrderItemDto> items = const [], this.totalDealDiscount = 0.0}): _items = items;
   factory _OrderListItemDto.fromJson(Map<String, dynamic> json) => _$OrderListItemDtoFromJson(json);
 
 @override final  int id;
 @override final  String trackingNumber;
 @override final  int status;
 @override final  double totalAmount;
-@override final  DateTime createdAt;
+// Sent in UTC; shown in the device's time zone.
+@override@ServerUtcDateConverter() final  DateTime createdAt;
  final  List<OrderItemDto> _items;
 @override@JsonKey() List<OrderItemDto> get items {
   if (_items is EqualUnmodifiableListView) return _items;
@@ -227,6 +231,8 @@ class _OrderListItemDto implements OrderListItemDto {
   return EqualUnmodifiableListView(_items);
 }
 
+// Everything deals took off the order.
+@override@JsonKey() final  double totalDealDiscount;
 
 /// Create a copy of OrderListItemDto
 /// with the given fields replaced by the non-null parameter values.
@@ -238,16 +244,16 @@ _$OrderListItemDtoCopyWith<_OrderListItemDto> get copyWith => __$OrderListItemDt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._items, _items));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderListItemDto&&(identical(other.id, id) || other.id == id)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.totalDealDiscount, totalDealDiscount) || other.totalDealDiscount == totalDealDiscount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,trackingNumber,status,totalAmount,createdAt,const DeepCollectionEquality().hash(_items));
+int get hashCode => Object.hash(runtimeType,id,trackingNumber,status,totalAmount,createdAt,const DeepCollectionEquality().hash(_items),totalDealDiscount);
 
 @override
 String toString() {
-  return 'OrderListItemDto(id: $id, trackingNumber: $trackingNumber, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items)';
+  return 'OrderListItemDto(id: $id, trackingNumber: $trackingNumber, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items, totalDealDiscount: $totalDealDiscount)';
 }
 
 
@@ -258,7 +264,7 @@ abstract mixin class _$OrderListItemDtoCopyWith<$Res> implements $OrderListItemD
   factory _$OrderListItemDtoCopyWith(_OrderListItemDto value, $Res Function(_OrderListItemDto) _then) = __$OrderListItemDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String trackingNumber, int status, double totalAmount, DateTime createdAt, List<OrderItemDto> items
+ int id, String trackingNumber, int status, double totalAmount,@ServerUtcDateConverter() DateTime createdAt, List<OrderItemDto> items, double totalDealDiscount
 });
 
 
@@ -275,7 +281,7 @@ class __$OrderListItemDtoCopyWithImpl<$Res>
 
 /// Create a copy of OrderListItemDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? trackingNumber = null,Object? status = null,Object? totalAmount = null,Object? createdAt = null,Object? items = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? trackingNumber = null,Object? status = null,Object? totalAmount = null,Object? createdAt = null,Object? items = null,Object? totalDealDiscount = null,}) {
   return _then(_OrderListItemDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,trackingNumber: null == trackingNumber ? _self.trackingNumber : trackingNumber // ignore: cast_nullable_to_non_nullable
@@ -283,7 +289,8 @@ as String,status: null == status ? _self.status : status // ignore: cast_nullabl
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as double,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<OrderItemDto>,
+as List<OrderItemDto>,totalDealDiscount: null == totalDealDiscount ? _self.totalDealDiscount : totalDealDiscount // ignore: cast_nullable_to_non_nullable
+as double,
   ));
 }
 

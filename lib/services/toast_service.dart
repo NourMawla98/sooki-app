@@ -166,9 +166,12 @@ class _AuroraToastWidgetState extends State<_AuroraToastWidget>
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
                                 color: AppColors.white,
-                                height: 1.1,
+                                height: 1.25,
                               ),
-                              maxLines: 1,
+                              // Backend messages can run long, such as a
+                              // checkout refused for changed prices; they wrap
+                              // rather than being cut off.
+                              maxLines: 5,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),

@@ -12,7 +12,6 @@ _ItemListItemDto _$ItemListItemDtoFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       originalPrice: (json['originalPrice'] as num).toDouble(),
       discountedPrice: (json['discountedPrice'] as num?)?.toDouble(),
-      storeName: json['storeName'] as String,
       categoryName: json['categoryName'] as String,
       colorImages:
           (json['colorImages'] as List<dynamic>?)
@@ -27,4 +26,9 @@ _ItemListItemDto _$ItemListItemDtoFromJson(Map<String, dynamic> json) =>
       deal: json['deal'] == null
           ? null
           : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
+      offers:
+          (json['offers'] as List<dynamic>?)
+              ?.map((e) => ItemOfferDto.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );

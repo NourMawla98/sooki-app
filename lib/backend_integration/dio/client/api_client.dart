@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../services/auth_service.dart';
 import '../../../services/language_service.dart';
+import '../interceptors/app_version_interceptor.dart';
 import '../interceptors/auth_interceptor.dart';
 import '../interceptors/error_interceptor.dart';
 import '../interceptors/global_headers_interceptor.dart';
@@ -35,6 +36,7 @@ Dio createApiClient({
     GlobalHeadersInterceptor(),
     LanguageInterceptor(languageService),
     ErrorInterceptor(),
+    AppVersionInterceptor(),
     // AuthInterceptor is last so its onError runs first (Dio processes errors LIFO)
     AuthInterceptor(authService: authService, dio: dio),
   ]);

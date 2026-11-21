@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 
+import '../../../services/app_reload_signal.dart';
 import '../../../backend_integration/apis/categories_api.dart';
 import '../../../backend_integration/dependency_injection/dependency_injection.dart';
 import '../../../backend_integration/dtos/category/category_dto.dart';
@@ -33,7 +34,14 @@ class _CategoryBrowseScreenState extends State<CategoryBrowseScreen> {
   @override
   void initState() {
     super.initState();
+    AppReloadSignal.instance.addListener(_fetchCategories);
     _fetchCategories();
+  }
+
+  @override
+  void dispose() {
+    AppReloadSignal.instance.removeListener(_fetchCategories);
+    super.dispose();
   }
 
   Future<void> _fetchCategories() async {

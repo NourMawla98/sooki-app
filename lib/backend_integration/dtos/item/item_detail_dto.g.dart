@@ -57,6 +57,11 @@ _ItemDetailDto _$ItemDetailDtoFromJson(
   deal: json['deal'] == null
       ? null
       : ItemDealDto.fromJson(json['deal'] as Map<String, dynamic>),
+  offers:
+      (json['offers'] as List<dynamic>?)
+          ?.map((e) => ItemOfferDto.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 _ItemDetailColorDto _$ItemDetailColorDtoFromJson(

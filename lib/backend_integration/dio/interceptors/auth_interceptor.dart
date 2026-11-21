@@ -19,6 +19,9 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // Anonymous requests skip the token, so they are not held up by a refresh.
+    if (options.extra['skipAuth'] == true) return handler.next(options);
+
     // Proactive refresh: if token expires within 5 minutes, refresh before sending
     final expiresAt = await TokenService.instance.getAccessTokenExpiresAt();
     if (expiresAt != null &&

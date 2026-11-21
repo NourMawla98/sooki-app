@@ -15,8 +15,17 @@ typedef OrdersPage = ({
 });
 
 /// What a coupon is worth on the current cart and address, as the backend
-/// works it out. [reason] explains a coupon that does not apply.
-typedef CouponPreview = ({bool isApplicable, double discountAmount, String? reason});
+/// works it out. [reason] explains a coupon that does not apply. The backend
+/// also prices the whole order with the coupon: [subtotal] after deals,
+/// [deliveryFee] and [total]. Each is null from a backend that leaves it out.
+typedef CouponPreview = ({
+  bool isApplicable,
+  double discountAmount,
+  String? reason,
+  double? subtotal,
+  double? deliveryFee,
+  double? total,
+});
 
 /// A payment method option offered at checkout (e.g. Cash on delivery).
 typedef PaymentMethodOption = ({int id, String name});
@@ -180,6 +189,9 @@ class OrdersApi {
           isApplicable: data['isApplicable'] as bool? ?? false,
           discountAmount: (data['discountAmount'] as num?)?.toDouble() ?? 0.0,
           reason: data['reason'] as String?,
+          subtotal: (data['subtotal'] as num?)?.toDouble(),
+          deliveryFee: (data['deliveryFee'] as num?)?.toDouble(),
+          total: (data['total'] as num?)?.toDouble(),
         );
       },
     );

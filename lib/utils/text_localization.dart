@@ -34,3 +34,13 @@ String joinLocalized(Iterable<String?> parts) => parts
     .where((p) => p != null && p.trim().isNotEmpty)
     .map((p) => p!.trim())
     .join(listSeparator);
+
+/// A size label from a [template] such as "Size {name}". When the size name
+/// already starts with the template's word, as "Taille Unique" does for
+/// "Taille {name}", the name is shown alone rather than "Taille Taille Unique".
+String composeSizeLabel(String template, String sizeName) {
+  final prefix = template.replaceAll('{name}', '').trim().toLowerCase();
+  final name = sizeName.trim();
+  if (prefix.isNotEmpty && name.toLowerCase().startsWith(prefix)) return name;
+  return template.replaceAll('{name}', name);
+}

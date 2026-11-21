@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../services/app_reload_signal.dart';
 import '../../../routes/route_constants.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/cart_service.dart';
@@ -40,7 +41,16 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
+    AppReloadSignal.instance.addListener(_reload);
     unawaited(_refresh());
+  }
+
+  void _reload() => unawaited(_refresh());
+
+  @override
+  void dispose() {
+    AppReloadSignal.instance.removeListener(_reload);
+    super.dispose();
   }
 
   @override
@@ -67,7 +77,20 @@ class _CartScreenState extends State<CartScreen> {
         final isDark = ThemeService.instance.isDarkMode;
         final items = _cart.displayItems;
         final Widget content = items.isEmpty
-            ? const CartEmptyState()
+            // Scrollable so a pull to refresh still works on an empty cart.
+            ? RefreshIndicator(
+                onRefresh: _refresh,
+                color: AppColors.auroraPink,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: constraints.maxHeight,
+                      child: const CartEmptyState(),
+                    ),
+                  ),
+                ),
+              )
             : Column(
                 children: [
                   Expanded(

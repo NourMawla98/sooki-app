@@ -26,6 +26,7 @@ class _MainScreenState extends State<MainScreen> {
   late int _currentIndex = widget.initialTabIndex;
 
   static const int _dealsIndex = 1;
+  static const int _shopIndex = 2;
   static const int _cartIndex = 4;
 
   late final Widget _browsePage =
@@ -37,7 +38,10 @@ class _MainScreenState extends State<MainScreen> {
   /// which tab is showing: the deals and the cart do.
   List<Widget> _pages() => [
     _browsePage,
-    DealsScreen(isActive: _currentIndex == _dealsIndex),
+    DealsScreen(
+      isActive: _currentIndex == _dealsIndex,
+      onBrowseShop: () => _onTabTapped(_shopIndex),
+    ),
     _categoriesPage,
     _auctionPage,
     CartScreen(
@@ -71,7 +75,12 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final pages = _pages();
 
-    return Scaffold(
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onTabTapped(0);
+      },
+      child: Scaffold(
       body: Column(
         children: [
           // Fixed header at the top
@@ -102,10 +111,11 @@ class _MainScreenState extends State<MainScreen> {
       // that overflows above the nav bar. Docking centers it on the nav
       // bar's top edge.
       floatingActionButton: AuroraShoppingFab(
-        isSelected: _currentIndex == 2,
-        onTap: () => _onTabTapped(2),
+        isSelected: _currentIndex == _shopIndex,
+        onTap: () => _onTabTapped(_shopIndex),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      ),
     );
   }
 }

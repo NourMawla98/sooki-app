@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../utils/server_date.dart';
+
 import 'order_item_dto.dart';
 
 part 'order_list_item_dto.freezed.dart';
@@ -12,8 +14,11 @@ abstract class OrderListItemDto with _$OrderListItemDto {
     required String trackingNumber,
     required int status,
     required double totalAmount,
-    required DateTime createdAt,
+    // Sent in UTC; shown in the device's time zone.
+    @ServerUtcDateConverter() required DateTime createdAt,
     @Default([]) List<OrderItemDto> items,
+    // Everything deals took off the order.
+    @Default(0.0) double totalDealDiscount,
   }) = _OrderListItemDto;
 
   factory OrderListItemDto.fromJson(Map<String, dynamic> json) =>

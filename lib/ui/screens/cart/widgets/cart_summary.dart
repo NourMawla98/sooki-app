@@ -100,6 +100,30 @@ class _CartSummaryState extends State<CartSummary>
                         labelColor: c.textMute,
                         valueColor: c.text,
                       ),
+                      // One line per deal the total takes off.
+                      for (final deal in widget.cartService.dealSavingRows) ...[
+                          const SizedBox(height: 6),
+                          _SummaryRow(
+                            label: deal.title,
+                            value: '\u2212\$${localizedPrice(deal.saving)}',
+                            labelColor: c.textMute,
+                            valueColor: AppColors.auroraPink,
+                          ),
+                        ],
+                      if (widget.cartService.spendDealHint != null) ...[
+                        const SizedBox(height: 6),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            widget.cartService.spendDealHint!,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.auroraPink,
+                            ),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 6),
                       _ShippingRow(
                         loadingFee: widget.cartService.isLoadingDeliveryFee,

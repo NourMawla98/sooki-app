@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -7,7 +8,7 @@ import 'package:get_it/get_it.dart';
 import '../../../backend_integration/dtos/item/item_list_item_dto.dart';
 import '../../../backend_integration/dtos/item/item_tag_dto.dart';
 import '../../../models/display_price.dart';
-import '../../../routes/route_constants.dart';
+import '../../../routes/item_navigation.dart';
 import '../../../services/theme_service.dart';
 import '../../../services/toast_service.dart';
 import '../../../services/wishlist_service.dart';
@@ -16,6 +17,9 @@ import '../../../themes/app_text_styles.dart';
 import '../../../utils/number_localization.dart';
 import '../deals/deal_badge.dart';
 import '../deals/deal_countdown.dart';
+import '../deals/in_cart_badge.dart';
+import '../deals/offer_pill.dart';
+import '../../../models/deal_offer.dart';
 import '../skeleton/skeleton_shimmer.dart';
 
 // ─── Tag helpers ─────────────────────────────────────────────────────────────
@@ -66,7 +70,22 @@ DisplayPrice _priceOf(ItemListItemDto item) => DisplayPrice.of(
 /// the deal badge and price without waiting for the list to be fetched again.
 class ProductGridCard extends StatefulWidget {
   final ItemListItemDto item;
-  const ProductGridCard({super.key, required this.item});
+
+  /// Units of this item already in the cart. Above zero the card gets a
+  /// green outline and an in-cart badge; zero, the default, leaves it as is.
+  final int inCartQuantity;
+
+  /// The item is in the cart but the cart prices it with another deal, so its
+  /// own deal price is not what the shopper pays. The card then shows the
+  /// normal price and says a better deal applies. False leaves the card as is.
+  final bool dealOverridden;
+
+  const ProductGridCard({
+    super.key,
+    required this.item,
+    this.inCartQuantity = 0,
+    this.dealOverridden = false,
+  });
 
   @override
   State<ProductGridCard> createState() => _ProductGridCardState();
@@ -79,7 +98,9 @@ class _ProductGridCardState extends State<ProductGridCard> {
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.item;
+    final item = widget.dealOverridden
+        ? widget.item.copyWith(deal: null)
+        : widget.item;
     return ListenableBuilder(
       listenable: ThemeService.instance,
       builder: (context, _) {
@@ -91,14 +112,17 @@ class _ProductGridCardState extends State<ProductGridCard> {
         final shadow = isDark
             ? null
             : [BoxShadow(color: AppColors.shadowMedium, blurRadius: 8, offset: const Offset(0, 2))];
-        final border = tagColor != null
+        final inCart = widget.inCartQuantity > 0;
+        final border = inCart
+            ? Border.all(color: AppColors.verifiedGreen, width: 2)
+            : tagColor != null
             ? Border.all(color: tagColor, width: 1.5)
             : isDark
                 ? Border.all(color: AppColors.white.withValues(alpha: 0.08))
                 : Border.all(color: AppColors.auroraPurple.withValues(alpha: 0.10));
 
         return GestureDetector(
-          onTap: () => Navigator.pushNamed(context, itemDetailsScreenRoute, arguments: item.id),
+          onTap: () => openItemDetail(context, item.id),
           child: Container(
             decoration: BoxDecoration(
               color: cardBg,
@@ -112,8 +136,17 @@ class _ProductGridCardState extends State<ProductGridCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _ImageArea(item: item, onDealEnded: _onDealEnded),
-                  _InfoArea(item: item, isDark: isDark, primaryTagColor: tagColor),
+                  _ImageArea(
+                    item: item,
+                    onDealEnded: _onDealEnded,
+                    inCartQuantity: widget.inCartQuantity,
+                  ),
+                  _InfoArea(
+                    item: item,
+                    isDark: isDark,
+                    primaryTagColor: tagColor,
+                    dealOverridden: widget.dealOverridden,
+                  ),
                 ],
               ),
             ),
@@ -129,29 +162,26 @@ class _ProductGridCardState extends State<ProductGridCard> {
 class _ImageArea extends StatelessWidget {
   final ItemListItemDto item;
   final VoidCallback onDealEnded;
-  const _ImageArea({required this.item, required this.onDealEnded});
+  final int inCartQuantity;
+  const _ImageArea({
+    required this.item,
+    required this.onDealEnded,
+    this.inCartQuantity = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
     final thumbnail = item.colorImages.isNotEmpty ? item.colorImages.first : null;
     final price = _priceOf(item);
     final tags = item.tags.take(3).toList();
+    final offers = badgeOffers(item.offers);
 
     return AspectRatio(
       aspectRatio: 1,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (thumbnail != null)
-            Image.network(
-              thumbnail,
-              fit: BoxFit.cover,
-              loadingBuilder: (_, child, progress) =>
-                  progress == null ? child : const SkeletonShimmer(),
-              errorBuilder: (_, _, _) => _placeholder(),
-            )
-          else
-            _placeholder(),
+          ProductCardImage(url: thumbnail),
           if (tags.isNotEmpty)
             PositionedDirectional(
               bottom: 0, start: 0, end: 0,
@@ -218,14 +248,51 @@ class _ImageArea extends StatelessWidget {
             ),
           PositionedDirectional(
             top: 7, end: 7,
-            child: _HeartButton(itemId: item.id),
+            child: WishlistHeartButton(itemId: item.id),
           ),
+          if (inCartQuantity > 0)
+            PositionedDirectional(
+              bottom: 6, end: 6,
+              child: InCartBadge(count: inCartQuantity),
+            )
+          else if (offers.isNotEmpty)
+            PositionedDirectional(
+              bottom: 6, end: 6,
+              child: OfferPill(offer: offers.first, maxWidth: 96),
+            ),
         ],
       ),
     );
   }
+}
 
-  Widget _placeholder() => Container(
+/// A product image the way the product card draws it: a shimmer while it
+/// loads and the aurora placeholder when there is none or it fails. Fills its
+/// parent, so the caller sizes and clips it.
+class ProductCardImage extends StatelessWidget {
+  final String? url;
+
+  const ProductCardImage({super.key, required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    final link = url;
+    if (link == null || link.isEmpty) return const _ImagePlaceholder();
+    return Image.network(
+      link,
+      fit: BoxFit.cover,
+      loadingBuilder: (_, child, progress) =>
+          progress == null ? child : const SkeletonShimmer(),
+      errorBuilder: (_, _, _) => const _ImagePlaceholder(),
+    );
+  }
+}
+
+class _ImagePlaceholder extends StatelessWidget {
+  const _ImagePlaceholder();
+
+  @override
+  Widget build(BuildContext context) => Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -245,17 +312,17 @@ class _InfoArea extends StatelessWidget {
   final ItemListItemDto item;
   final bool isDark;
   final Color? primaryTagColor;
-  const _InfoArea({required this.item, required this.isDark, required this.primaryTagColor});
+  final bool dealOverridden;
+  const _InfoArea({
+    required this.item,
+    required this.isDark,
+    required this.primaryTagColor,
+    this.dealOverridden = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final nameColor = isDark ? AppColors.white : AppColors.auroraDeepBase;
-    final priceColor = isDark ? AppColors.auroraElectricBlue : AppColors.auroraPurple;
-    final origColor = isDark
-        ? AppColors.white.withValues(alpha: 0.35)
-        : AppColors.auroraPurple.withValues(alpha: 0.40);
     final price = _priceOf(item);
-    final was = price.was;
 
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(9, 8, 9, 9),
@@ -265,14 +332,7 @@ class _InfoArea extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  item.title,
-                  style: AppTextStyles.productName.copyWith(color: nameColor, fontSize: 11),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+              Expanded(child: ProductCardTitle(title: item.title, isDark: isDark)),
               if (primaryTagColor != null) ...[
                 const SizedBox(width: 3),
                 FaIcon(FontAwesomeIcons.solidCircleCheck, size: 11, color: primaryTagColor),
@@ -280,38 +340,120 @@ class _InfoArea extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                _fmt(price.now),
-                style: AppTextStyles.productPrice.copyWith(
-                  color: price.isDeal ? AppColors.auroraPink : priceColor,
-                  fontSize: 13,
-                ),
-              ),
-              if (was != null) ...[
-                const SizedBox(width: 5),
-                Text(
-                  _fmt(was),
-                  style: AppTextStyles.productPrice.copyWith(
-                    color: origColor,
-                    fontSize: 10,
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-              ],
-            ],
+          ProductCardPrice(
+            now: price.now,
+            was: price.was,
+            isDeal: price.isDeal,
+            isDark: isDark,
           ),
+          if (dealOverridden) ...[
+            const SizedBox(height: 3),
+            Text(
+              'deals.progress.better_deal'.tr(),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.captionSmall.copyWith(
+                color: AppColors.auroraPink,
+                fontSize: 9.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
+}
 
-  String _fmt(double p) {
-    final hasDecimals = p.truncateToDouble() != p;
-    return '\$${localizedNumber(p, decimals: hasDecimals ? 2 : 0)}';
+/// A product name the way the product card sets it.
+class ProductCardTitle extends StatelessWidget {
+  final String title;
+  final bool isDark;
+  final int maxLines;
+  final double fontSize;
+  final TextAlign? textAlign;
+
+  const ProductCardTitle({
+    super.key,
+    required this.title,
+    required this.isDark,
+    this.maxLines = 1,
+    this.fontSize = 11,
+    this.textAlign,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      textAlign: textAlign,
+      style: AppTextStyles.productName.copyWith(
+        color: isDark ? AppColors.white : AppColors.auroraDeepBase,
+        fontSize: fontSize,
+      ),
+      maxLines: maxLines,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+}
+
+/// A price the way the product card shows it: whole amounts without
+/// decimals.
+String formatCardPrice(double p) {
+  final hasDecimals = p.truncateToDouble() != p;
+  return '\$${localizedNumber(p, decimals: hasDecimals ? 2 : 0)}';
+}
+
+/// The product card's price line: the price paid, pink when a deal set it,
+/// and the price it replaced struck through beside it.
+class ProductCardPrice extends StatelessWidget {
+  final double now;
+  final double? was;
+  final bool isDeal;
+  final bool isDark;
+  final double fontSize;
+
+  const ProductCardPrice({
+    super.key,
+    required this.now,
+    required this.isDark,
+    this.was,
+    this.isDeal = false,
+    this.fontSize = 13,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final priceColor = isDark ? AppColors.auroraElectricBlue : AppColors.auroraPurple;
+    final origColor = isDark
+        ? AppColors.white.withValues(alpha: 0.35)
+        : AppColors.auroraPurple.withValues(alpha: 0.40);
+    final before = was;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(
+          formatCardPrice(now),
+          style: AppTextStyles.productPrice.copyWith(
+            color: isDeal ? AppColors.auroraPink : priceColor,
+            fontSize: fontSize,
+          ),
+        ),
+        if (before != null && before > now) ...[
+          SizedBox(width: fontSize * 5 / 13),
+          Text(
+            formatCardPrice(before),
+            style: AppTextStyles.productPrice.copyWith(
+              color: origColor,
+              fontSize: fontSize * 10 / 13,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 }
 
@@ -372,9 +514,10 @@ class _TrustTagPill extends StatelessWidget {
   }
 }
 
-class _HeartButton extends StatelessWidget {
+/// The round heart that adds an item to the wishlist or takes it off.
+class WishlistHeartButton extends StatelessWidget {
   final int itemId;
-  const _HeartButton({required this.itemId});
+  const WishlistHeartButton({super.key, required this.itemId});
 
   static final _wishlist = GetIt.instance<WishlistService>();
 

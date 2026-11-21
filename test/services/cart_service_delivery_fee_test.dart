@@ -80,7 +80,7 @@ class _FakeOrdersApi extends OrdersApi {
   /// What the backend says a coupon is worth; tests change it to model the
   /// backend accepting, refusing, or failing.
   Either<ApiFailure, CouponPreview> coupon =
-      const Right((isApplicable: true, discountAmount: 20.0, reason: null));
+      const Right((isApplicable: true, discountAmount: 20.0, reason: null, subtotal: null, deliveryFee: null, total: null));
   String? lastCouponCode;
   int? lastCouponAddressId;
 
@@ -255,7 +255,7 @@ void main() {
     test('never goes negative when the discount covers the cart', () async {
       ordersApi.fee = 0.0;
       ordersApi.coupon =
-          const Right((isApplicable: true, discountAmount: 50.0, reason: null));
+          const Right((isApplicable: true, discountAmount: 50.0, reason: null, subtotal: null, deliveryFee: null, total: null));
       await fill([_item(unitPrice: 10.0)]);
       await cart.refreshDeliveryFee();
       await cart.applyPromo('SAVE50');
@@ -278,7 +278,7 @@ void main() {
 
     test('a refused code is not applied and carries the backend reason', () async {
       ordersApi.coupon =
-          const Right((isApplicable: false, discountAmount: 0.0, reason: 'Coupon expired'));
+          const Right((isApplicable: false, discountAmount: 0.0, reason: 'Coupon expired', subtotal: null, deliveryFee: null, total: null));
       await fill([_item()]);
       final rejection = await cart.applyPromo('OLD');
 
@@ -313,7 +313,7 @@ void main() {
       expect(cart.hasPromo, isTrue);
 
       ordersApi.coupon =
-          const Right((isApplicable: false, discountAmount: 0.0, reason: 'Minimum not met'));
+          const Right((isApplicable: false, discountAmount: 0.0, reason: 'Minimum not met', subtotal: null, deliveryFee: null, total: null));
       await fill([_item(unitPrice: 30.0)]);
       await cart.refreshDeliveryFee();
 

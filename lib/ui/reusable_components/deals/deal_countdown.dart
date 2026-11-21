@@ -7,20 +7,24 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/number_localization.dart';
 
-/// Time left as hh:mm:ss under a day, and as days plus hours beyond that.
-String formatDealRemaining(Duration remaining) {
+/// Hours, minutes and seconds of [remaining] as hh:mm:ss. Hours wrap at 24,
+/// since whole days are shown on their own.
+String formatDealClock(Duration remaining) {
   final d = remaining.isNegative ? Duration.zero : remaining;
-  if (d.inDays >= 1) {
-    return 'deals.days_hours'.tr(
-      namedArgs: {
-        'days': localizedNumber(d.inDays),
-        'hours': localizedNumber(d.inHours % 24),
-      },
-    );
-  }
   String two(int n) => n.toString().padLeft(2, '0');
   return localizedDigits(
-    '${two(d.inHours)}:${two(d.inMinutes % 60)}:${two(d.inSeconds % 60)}',
+    '${two(d.inHours % 24)}:${two(d.inMinutes % 60)}:${two(d.inSeconds % 60)}',
+  );
+}
+
+/// Time left as hh:mm:ss under a day, and with the days in front beyond
+/// that, such as 59d 23:18:59.
+String formatDealRemaining(Duration remaining) {
+  final d = remaining.isNegative ? Duration.zero : remaining;
+  final clock = formatDealClock(d);
+  if (d.inDays < 1) return clock;
+  return 'deals.days_clock'.tr(
+    namedArgs: {'days': localizedNumber(d.inDays), 'clock': clock},
   );
 }
 

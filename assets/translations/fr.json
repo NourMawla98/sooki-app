@@ -149,7 +149,6 @@
     "badge": "PROMO",
     "ends_in": "Fin de l'offre dans",
     "starts_in": "Commence dans",
-    "days_hours": "{days} j {hours} h",
     "live_now": "En cours",
     "coming_up": "À venir",
     "flash_deals": "Offres flash",
@@ -157,7 +156,95 @@
     "empty_title": "Aucune offre pour le moment",
     "empty_subtitle": "De nouvelles offres arrivent souvent. Tirez vers le bas pour actualiser.",
     "error_title": "Impossible de charger les offres",
-    "tap_to_retry": "Touchez pour réessayer"
+    "tap_to_retry": "Touchez pour réessayer",
+    "times": "x{count}",
+    "save_sticker": "ÉCONOMIE\n{amount}",
+    "ending_soon": "Bientôt terminé",
+    "all_deals": "Toutes les offres",
+    "empty_body": "Les boutiques préparent de nouvelles offres. Activez les alertes et nous vous préviendrons dès qu'une offre arrive.",
+    "notify_me": "Me prévenir",
+    "alerts_on": "Alertes activées",
+    "browse_shop": "Parcourir la boutique",
+    "trending_while_you_wait": "Tendances en attendant",
+    "types": {
+      "bundle_label": "Lot et économies",
+      "multi_label": "Achetez plus, économisez plus",
+      "gift_label": "Cadeau offert",
+      "spend_label": "Dépensez et économisez"
+    },
+    "filters": {
+      "all": "Toutes les offres",
+      "single": "% de réduction",
+      "bundle": "Lots",
+      "multi": "Achetez plus",
+      "gift": "Cadeau offert",
+      "spend": "Dépensez et économisez"
+    },
+    "filter_empty": {
+      "single": "Aucune réduction en ce moment",
+      "bundle": "Aucun lot en ce moment",
+      "multi": "Aucune offre Achetez plus en ce moment",
+      "gift": "Aucun cadeau offert en ce moment",
+      "spend": "Aucune offre Dépensez et économisez en ce moment",
+      "body": "Regardez les autres types d'offres ou revenez bientôt.",
+      "see_all": "Voir toutes les offres"
+    },
+    "hero": {
+      "eyebrow": "{count} offres en cours",
+      "title_start": "Des façons d'économiser, ",
+      "title_highlight": "en ce moment",
+      "subtitle": "Lots, achats multiples, cadeaux offerts et réductions sur tout le panier.",
+      "subtitle_ends": "Lots, achats multiples, cadeaux offerts et réductions sur tout le panier. La prochaine offre se termine dans",
+      "hours": "h",
+      "minutes": "min",
+      "seconds": "s",
+      "shop": "Voir les offres",
+      "days": "jours"
+    },
+    "multi": {
+      "tier": "Achetez-en {count} -{percent}%",
+      "unlocked": "-{percent}% débloqué sur chaque article !"
+    },
+    "gift": {
+      "ribbon": "CADEAU",
+      "free": "OFFERT",
+      "unlocked": "Groupe complet ! Ajoutez {item} depuis sa page, il est offert",
+      "in_cart": "Votre cadeau est dans le panier",
+      "worth": "{item}, d'une valeur de {amount}"
+    },
+    "spend": {
+      "headline_start": "Dépensez {amount}, obtenez ",
+      "headline_percent": "-{percent}%",
+      "headline_end": " sur tout votre panier",
+      "cart_of": "Panier : {amount} sur {threshold}",
+      "away": "Plus que {amount}",
+      "unlocked": "-{percent}% débloqué ! Vous économisez {amount}"
+    },
+    "offer": {
+      "multi": "Achetez-en {count}, -{percent}%",
+      "multi_plain": "Achetez plus, économisez plus",
+      "bundle": "Offre lot",
+      "gift": "Cadeau offert",
+      "gift_free": "Offert avec une offre",
+      "see_deal": "Voir l'offre"
+    },
+    "in_cart": "Au panier x{count}",
+    "unlocked_badge": "Débloqué",
+    "days_clock": "{days}j {clock}",
+    "progress": {
+      "bundle_add": "Ajoutez encore {count} {item} pour compléter le lot",
+      "bundle_done": "Lot complet, le prix du lot s'applique dans votre panier",
+      "multi_add": "Ajoutez encore {count} {item} pour débloquer -{percent}%",
+      "gift_add": "Ajoutez encore {count} {item} pour débloquer votre cadeau",
+      "better_deal": "Une meilleure offre s'applique à cet article",
+      "bundle_pitch": "Achetez les {count} ensemble et économisez {amount}",
+      "bundle_pitch_plain": "Achetez les {count} ensemble au prix du lot",
+      "gift_pitch": "Achetez le lot et recevez {item} offert",
+      "multi_pitch": "Achetez {count} {item} et économisez {percent}%"
+    },
+    "guest_title": "Connectez-vous pour voir les offres",
+    "guest_subtitle": "Les offres sont réservées aux membres Sooki. Connectez-vous ou créez un compte pour les voir.",
+    "guest_sign_in": "Se connecter"
   },
   "auction_screen": {
     "feature_name": "ENCHÈRES",
@@ -415,7 +502,9 @@
     "items": "articles",
     "secure": "Sécurisé",
     "fast": "Rapide",
-    "cash_on_delivery": "Paiement à la livraison"
+    "cash_on_delivery": "Paiement à la livraison",
+    "spend_hint": "Ajoutez {amount} de plus pour obtenir -{percent}%",
+    "deal_price_savings": "Économies prix promo"
   },
   "profile_screen": {
     "title": "Profil",
@@ -511,7 +600,8 @@
   "cart_item_card": {
     "size": "Taille {name}",
     "only_left": "Plus que {count} en stock",
-    "unavailable": "Indisponible"
+    "unavailable": "Indisponible",
+    "free_gift": "CADEAU OFFERT"
   },
   "notification_panel": {
     "title": "Notifications",
@@ -684,7 +774,16 @@
     "step_processing": "Traitement",
     "step_packaged": "Emballé",
     "step_out_for_delivery": "Livraison",
-    "step_delivered": "Livré"
+    "step_delivered": "Livré",
+    "deal_savings": "Économies des offres",
+    "deal": {
+      "price": "Prix promo",
+      "bundle": "Offre lot",
+      "multi": "Offre achat multiple",
+      "gift": "Offre cadeau",
+      "spend": "Dépensez et économisez",
+      "line_saving": "{deal} : -{amount}"
+    }
   },
   "size_guide": {
     "column": {
@@ -797,5 +896,13 @@
       "bed_sizes": "Tailles de Lit",
       "belt_size": "Taille de Ceinture (CM)"
     }
+  },
+  "app_update": {
+    "title": "Mise à jour requise",
+    "body": "Cette version de Sooki n'est plus prise en charge. Mettez l'application à jour pour continuer vos achats.",
+    "button": "Mettre à jour",
+    "banner_text": "Une nouvelle version de Sooki est disponible.",
+    "banner_action": "Mettre à jour",
+    "dismiss": "Fermer"
   }
 }

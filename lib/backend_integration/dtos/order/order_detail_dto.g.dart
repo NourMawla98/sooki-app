@@ -20,10 +20,13 @@ _OrderDetailDto _$OrderDetailDtoFromJson(Map<String, dynamic> json) =>
       floor: json['floor'] as String?,
       customerNote: json['customerNote'] as String?,
       subtotal: (json['subtotal'] as num).toDouble(),
+      subtotalBeforeDeals: (json['subtotalBeforeDeals'] as num?)?.toDouble(),
       discountAmount: (json['discountAmount'] as num).toDouble(),
       deliveryFee: (json['deliveryFee'] as num).toDouble(),
       totalAmount: (json['totalAmount'] as num).toDouble(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: const ServerUtcDateConverter().fromJson(
+        json['createdAt'] as String,
+      ),
       paymentMethod: (json['paymentMethod'] as num?)?.toInt(),
       paymentStatus: (json['paymentStatus'] as num?)?.toInt(),
       items:
@@ -31,4 +34,5 @@ _OrderDetailDto _$OrderDetailDtoFromJson(Map<String, dynamic> json) =>
               ?.map((e) => OrderItemDto.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      totalDealDiscount: (json['totalDealDiscount'] as num?)?.toDouble() ?? 0.0,
     );

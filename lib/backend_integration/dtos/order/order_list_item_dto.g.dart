@@ -12,10 +12,13 @@ _OrderListItemDto _$OrderListItemDtoFromJson(Map<String, dynamic> json) =>
       trackingNumber: json['trackingNumber'] as String,
       status: (json['status'] as num).toInt(),
       totalAmount: (json['totalAmount'] as num).toDouble(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: const ServerUtcDateConverter().fromJson(
+        json['createdAt'] as String,
+      ),
       items:
           (json['items'] as List<dynamic>?)
               ?.map((e) => OrderItemDto.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      totalDealDiscount: (json['totalDealDiscount'] as num?)?.toDouble() ?? 0.0,
     );

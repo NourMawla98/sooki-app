@@ -15,6 +15,7 @@ import 'package:injectable/injectable.dart' as _i526;
 
 import '../apis/address_api.dart' as _i645;
 import '../apis/announcement_api.dart' as _i733;
+import '../apis/app_version_api.dart' as _i876;
 import '../apis/auth_api.dart' as _i42;
 import '../apis/banner_api.dart' as _i923;
 import '../apis/cart_api.dart' as _i692;
@@ -43,6 +44,9 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i733.AnnouncementApi>(
     () => _i733.AnnouncementApi(gh<_i361.Dio>(instanceName: 'apiClient')),
+  );
+  gh.factory<_i876.AppVersionApi>(
+    () => _i876.AppVersionApi(gh<_i361.Dio>(instanceName: 'apiClient')),
   );
   gh.factory<_i42.AuthApi>(
     () => _i42.AuthApi(gh<_i361.Dio>(instanceName: 'apiClient')),

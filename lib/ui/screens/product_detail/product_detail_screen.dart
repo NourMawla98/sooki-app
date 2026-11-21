@@ -23,6 +23,8 @@ import '../../../ui/reusable_components/skeleton/skeleton_shimmer.dart';
 import '../../../ui/reusable_components/swatch/color_swatch_type.dart';
 import 'widgets/color_selector.dart';
 import 'widgets/image_gallery.dart';
+import 'widgets/item_offer_box.dart';
+import '../../../models/deal_offer.dart';
 import 'widgets/price_quantity_row.dart';
 import 'widgets/product_info.dart';
 import 'widgets/product_tabs.dart';
@@ -410,6 +412,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 onQuantityChanged: (q) => setState(() => _quantity = q),
               ),
             ),
+            if (badgeOffers(item.offers).isNotEmpty) ...[
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ItemOfferBox(
+                  offers: badgeOffers(item.offers),
+                  isDark: isDark,
+                ),
+              ),
+            ],
             const SizedBox(height: 18),
             if (item.colors.isNotEmpty)
               Padding(
